@@ -8,7 +8,6 @@ import { type ProcessingStyle, getProcessingStyle } from "@/lib/processingStyle"
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import type { JournalEntry, Challenge } from "@/types/database";
-import AppShell from "@/components/layout/AppShell";
 
 interface Props {
   mission: Mission;
@@ -20,61 +19,122 @@ interface Props {
   pairedStory?: { id: string; title: string; teaser: string } | null;
 }
 
-export default function ActivityClient({
+// ─── Conversational journal flow ──────────────────────────────────────────────
+
+type ConvPhase = "intro" | "q" | "done";
+
+interface CompletedTurn {
+  question: string;
+  answer: string;
+}
+
+function ConversationalActivity({
   mission,
   activity,
   userId,
-  isCompleted,
   existingEntry,
-  existingChallenge,
   pairedStory,
-}: Props) {
-  // Cast to any once — avoids the @supabase/ssr generic inference bug
-  // where .update()/.insert() payloads type as `never`
+  onComplete,
+}: {
+  mission: Mission;
+  activity: Activity;
+  userId: string;
+  existingEntry: JournalEntry | null;
+  pairedStory?: { id: string; title: string; teaser: string } | null;
+  onComplete: (response: string) => void;
+}) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
 
-  const [response, setResponse] = useState(existingEntry?.response || "");
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [valueReasons, setValueReasons] = useState<Record<string, string>>({});
-  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  // Questions: use scaffolding steps if available, else single prompt
+  const questions =
+    activity.scaffoldingSteps && activity.scaffoldingSteps.length > 0
+      ? activity.scaffoldingSteps
+      : [activity.prompt];
+
+  const [phase, setPhase] = useState<ConvPhase>(
+    existingEntry ? "done" : "intro"
+  );
+  const [qIdx, setQIdx] = useState(0);
+  const [turns, setTurns] = useState<CompletedTurn[]>([]);
+  const [current, setCurrent] = useState("");
+  const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(isCompleted);
   const [aiReflection, setAiReflection] = useState<string | null>(
     existingEntry?.ai_reflection || null
   );
-  const [challengeDebrief, setChallengeDebrief] = useState(
-    existingChallenge?.debrief_response || ""
-  );
-  const [debriefSubmitted, setDebriefSubmitted] = useState(
-    !!existingChallenge?.completed_at
-  );
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [existingResponse] = useState(existingEntry?.response || "");
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
 
-  // Processing style — read from localStorage after mount (SSR-safe)
-  const [style, setStyle] = useState<ProcessingStyle | null>(null);
-  const [whyExpanded, setWhyExpanded] = useState(false);
-  const [showAllSteps, setShowAllSteps] = useState(false);
-  const whyId = useId();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Scroll to bottom when new question appears
   useEffect(() => {
-    setStyle(getProcessingStyle());
-  }, []);
+    if (phase === "q") {
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    }
+  }, [qIdx, phase]);
 
-  // ─── Autosave every 30 seconds ───────────────────────────────────────────────
-  const autoSave = useCallback(async () => {
-    if (!response.trim() || activity.type === "challenge") return;
-    setSaving(true);
-    if (entryIdRef.current) {
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [current]);
+
+  // Focus textarea when question changes
+  useEffect(() => {
+    if (phase === "q") {
+      setTimeout(() => textareaRef.current?.focus(), 200);
+    }
+  }, [qIdx, phase]);
+
+  function applySentenceStarter(starter: string) {
+    const next = current ? `${current}\n\n${starter}` : starter;
+    setCurrent(next);
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(next.length, next.length);
+      }
+    }, 0);
+  }
+
+  function canSubmitCurrent() {
+    return current.trim().length > 5;
+  }
+
+  async function handleNextQuestion() {
+    if (!canSubmitCurrent()) return;
+
+    const newTurns = [...turns, { question: questions[qIdx], answer: current.trim() }];
+    setCurrent("");
+    setTurns(newTurns);
+
+    if (qIdx + 1 < questions.length) {
+      setQIdx(qIdx + 1);
+    } else {
+      // All questions answered — build final response and save
+      await finalise(newTurns);
+    }
+  }
+
+  async function finalise(allTurns: CompletedTurn[]) {
+    setSubmitting(true);
+
+    const finalResponse =
+      allTurns.length === 1
+        ? allTurns[0].answer
+        : allTurns.map((t, i) => `${i + 1}. ${t.question}\n${t.answer}`).join("\n\n");
+
+    let entryId = entryIdRef.current;
+    if (entryId) {
       await db
         .from("journal_entries")
-        .update({ response, updated_at: new Date().toISOString() })
-        .eq("id", entryIdRef.current);
+        .update({ response: finalResponse, updated_at: new Date().toISOString() })
+        .eq("id", entryId);
     } else {
       const { data } = await db
         .from("journal_entries")
@@ -83,128 +143,24 @@ export default function ActivityClient({
           mission_id: mission.id,
           activity_id: activity.id,
           prompt: activity.prompt,
-          response,
+          response: finalResponse,
           is_milestone: activity.isMilestone || false,
         })
         .select("id")
         .single();
-      if (data?.id) entryIdRef.current = data.id;
-    }
-    setLastSaved(new Date());
-    setSaving(false);
-  }, [response, activity, mission.id, userId, db]);
-
-  useEffect(() => {
-    if (submitted) return;
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(autoSave, 30000);
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    };
-  }, [response, autoSave, submitted]);
-
-  // ─── Values picker ───────────────────────────────────────────────────────────
-  function toggleValue(val: string) {
-    if (selectedValues.includes(val)) {
-      setSelectedValues(selectedValues.filter((v) => v !== val));
-      const updated = { ...valueReasons };
-      delete updated[val];
-      setValueReasons(updated);
-    } else if (selectedValues.length < (activity.valuesCount || 5)) {
-      setSelectedValues([...selectedValues, val]);
-    }
-  }
-
-  // ─── Sentence starter ────────────────────────────────────────────────────────
-  function applySentenceStarter(starter: string) {
-    const newText = response ? `${response}\n\n${starter}` : starter;
-    setResponse(newText);
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        textareaRef.current.setSelectionRange(newText.length, newText.length);
-      }
-    }, 0);
-  }
-
-  // ─── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    setSubmitting(true);
-
-    let finalResponse = response;
-    if (activity.type === "values_picker") {
-      finalResponse = selectedValues
-        .map((v) => `${v}: ${valueReasons[v] || "(no reason given)"}`)
-        .join("\n");
-    }
-
-    let entryId = entryIdRef.current;
-
-    if (activity.type !== "challenge") {
-      if (entryId) {
-        await db
-          .from("journal_entries")
-          .update({ response: finalResponse })
-          .eq("id", entryId);
-      } else {
-        const { data } = await db
-          .from("journal_entries")
-          .insert({
-            user_id: userId,
-            mission_id: mission.id,
-            activity_id: activity.id,
-            prompt: activity.prompt,
-            response: finalResponse,
-            is_milestone: activity.isMilestone || false,
-          })
-          .select("id")
-          .single();
-        if (data?.id) {
-          entryId = data.id;
-          entryIdRef.current = data.id;
-        }
+      if (data?.id) {
+        entryId = data.id;
+        entryIdRef.current = data.id;
       }
     }
 
-    // Mark progress
-    await db.from("mission_progress").upsert({
-      user_id: userId,
-      mission_id: mission.id,
-      activity_id: activity.id,
-    });
-
-    // Advance active_mission when the last activity of this mission is completed
-    const totalActivities = mission.activities.filter((a) => !a.locked).length;
-    const { count } = await db
-      .from("mission_progress")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .eq("mission_id", mission.id);
-    const nextMissionId = mission.id + 1;
-    const nextMissionExists = MISSIONS.some((m) => m.id === nextMissionId);
-    if (count !== null && count >= totalActivities && nextMissionExists) {
-      await db
-        .from("users")
-        .update({ active_mission: nextMissionId })
-        .eq("id", userId)
-        .lt("active_mission", nextMissionId);
-    }
-
-    // Create challenge record
-    if (activity.type === "challenge") {
-      await db.from("challenges").insert({
-        user_id: userId,
-        mission_id: mission.id,
-        challenge_text: activity.prompt,
-      });
-    }
-
-    // Request AI reflection (non-blocking, fail silently)
-    if (activity.type !== "challenge" && finalResponse.trim().length > 20 && entryId) {
+    // Request AI reflection async (non-blocking)
+    if (finalResponse.length > 20 && entryId) {
       fetchAiReflection(finalResponse, entryId);
     }
 
-    setSubmitted(true);
+    onComplete(finalResponse);
+    setPhase("done");
     setSubmitting(false);
   }
 
@@ -220,554 +176,922 @@ export default function ActivityClient({
         if (reflection) setAiReflection(reflection);
       }
     } catch {
-      // Fail silently
+      // fail silently
     }
   }
 
-  async function handleDebriefSubmit() {
-    if (!existingChallenge?.id || !challengeDebrief.trim()) return;
-    setSubmitting(true);
-    await db
-      .from("challenges")
-      .update({
-        completed_at: new Date().toISOString(),
-        debrief_response: challengeDebrief,
-      })
-      .eq("id", existingChallenge.id);
-
-    await db.from("journal_entries").insert({
-      user_id: userId,
-      mission_id: mission.id,
-      activity_id: `${activity.id}-debrief`,
-      prompt: "Reflect on your challenge: what happened?",
-      response: challengeDebrief,
-    });
-
-    setDebriefSubmitted(true);
-    setSubmitting(false);
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    // Cmd+Enter or Ctrl+Enter to advance
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleNextQuestion();
+    }
   }
 
-  const canSubmitJournal = response.trim().length > 10;
-  const canSubmitValues =
-    activity.type === "values_picker" &&
-    selectedValues.length === (activity.valuesCount || 5);
+  const isLastQuestion = qIdx === questions.length - 1;
+  const progressPct = Math.round((qIdx / questions.length) * 100);
 
-  const showDebrief =
-    activity.type === "challenge" &&
-    existingChallenge &&
-    !existingChallenge.completed_at;
-
-  // ─── Render ──────────────────────────────────────────────────────────────────
-  return (
-    <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-6">
-
-        {/* Back link */}
-        <Link
-          href={`/missions/${mission.id}`}
-          className="inline-flex items-center gap-1 text-ink-muted hover:text-ink text-sm mb-6 transition-colors"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {mission.title}
-        </Link>
-
-        {/* Activity header */}
-        <div className="mb-6" data-animate="1">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="text-xs font-medium text-ink-muted">{activity.subtitle}</div>
-            <span
-              className="text-xs font-semibold px-2 py-0.5 rounded-full"
-              style={{
-                background: `${mission.colour}18`,
-                color: mission.colour,
-              }}
+  // ── Intro phase ────────────────────────────────────────────────────────────
+  if (phase === "intro") {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+        {/* Minimal header */}
+        <div className="activity-header">
+          <div className="max-w-lg mx-auto flex items-center gap-3">
+            <Link
+              href={`/missions/${mission.id}`}
+              className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
             >
-              {mission.phaseLabel}
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+            <span className="text-xs font-semibold text-[--ink-muted] tracking-wide truncate">
+              {mission.title}
             </span>
           </div>
-          <h1
-            className="text-2xl text-navy mb-2"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
-          >
-            {activity.title}
-          </h1>
-          {activity.isMilestone && (
-            <span className="inline-flex items-center gap-1 text-xs text-gold bg-gold/10 px-2 py-1 rounded-full">
-              ★ Milestone entry
-            </span>
-          )}
-          {activity.timeEstimate && (
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-ink-muted">
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
-                <path d="M6 3.5V6l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-              </svg>
-              {activity.timeEstimate}
-            </div>
-          )}
         </div>
 
-        {/* Scaffolding — intro, paired story, warm-up */}
-        {!submitted && (activity.intro || pairedStory || activity.warmUp) && (
-          <div className="mb-6 space-y-3" data-animate="1">
-            {/* Intro — why this step matters */}
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-lg mx-auto px-5 pt-8 pb-40" data-animate="1">
+            {/* Activity header */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  style={{ background: `${mission.colour}18`, color: mission.colour }}
+                >
+                  {mission.phaseLabel}
+                </span>
+                {activity.isMilestone && (
+                  <span className="text-xs text-[--gold] bg-[rgba(200,152,42,0.1)] px-2.5 py-1 rounded-full font-semibold">
+                    ★ Milestone
+                  </span>
+                )}
+              </div>
+              <h1
+                className="text-[1.75rem] leading-tight text-[--navy] mb-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+              >
+                {activity.title}
+              </h1>
+              {activity.subtitle && (
+                <p className="text-sm text-[--ink-muted]">{activity.subtitle}</p>
+              )}
+              {activity.timeEstimate && (
+                <div className="flex items-center gap-1.5 mt-2 text-xs text-[--ink-muted]/70">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                    <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2" />
+                    <path d="M6 3.5V6l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+                  </svg>
+                  {activity.timeEstimate}
+                </div>
+              )}
+            </div>
+
+            {/* Intro text */}
             {activity.intro && (
-              <p className="text-sm text-ink-muted leading-relaxed">
+              <p className="text-[--ink-muted] text-sm leading-relaxed mb-5">
                 {activity.intro}
               </p>
+            )}
+
+            {/* Warm-up */}
+            {activity.warmUp && (
+              <div className="question-card mb-5">
+                <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
+                  Before you start
+                </div>
+                <p className="text-[--ink] leading-relaxed">{activity.warmUp}</p>
+              </div>
             )}
 
             {/* Paired story */}
             {pairedStory && (
               <Link
                 href={`/stories/${pairedStory.id}`}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed transition-all hover:border-solid hover:shadow-soft"
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-dashed mb-5 transition-all hover:border-solid"
                 style={{ borderColor: `${mission.colour}40`, background: `${mission.colour}06` }}
               >
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs"
-                  style={{ background: `${mission.colour}18` }}
-                >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: `${mission.colour}18` }}>
                   📖
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-0.5" style={{ color: mission.colour }}>
-                    Read someone else&apos;s story first
+                  <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                    Read first
                   </div>
-                  <div className="text-sm font-medium text-ink truncate">
-                    {pairedStory.title}
-                  </div>
-                  <div className="text-xs text-ink-muted mt-0.5 truncate">
-                    {pairedStory.teaser}
-                  </div>
+                  <div className="text-sm font-medium text-[--ink] truncate">{pairedStory.title}</div>
+                  <div className="text-xs text-[--ink-muted] mt-0.5 truncate">{pairedStory.teaser}</div>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted/40 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[--ink-muted]/40 flex-shrink-0">
                   <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
             )}
 
-            {/* Warm-up prompt */}
-            {activity.warmUp && (
-              <div className="rounded-xl bg-surface-muted px-4 py-3 border border-surface-border">
-                <div className="text-xs font-semibold text-ink-muted uppercase tracking-wide mb-1.5">
-                  Before you write
-                </div>
-                <p className="text-sm text-ink leading-relaxed">
-                  {activity.warmUp}
+            {/* What's coming */}
+            {questions.length > 1 && (
+              <div className="mb-5 px-1">
+                <p className="text-xs text-[--ink-muted] mb-2 font-medium">
+                  {questions.length} questions, answer them in order:
                 </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ─── JOURNAL / MILESTONE LETTER ─── */}
-        {(activity.type === "journal" || activity.type === "milestone_letter") && (
-          <div data-animate="2">
-            {/* Informational: "Why this works" expandable — shown before the prompt */}
-            {!submitted && style === "informational" && activity.whyItMatters && (
-              <div className="mb-4">
-                <button
-                  type="button"
-                  aria-expanded={whyExpanded}
-                  aria-controls={whyId}
-                  onClick={() => setWhyExpanded((v) => !v)}
-                  className="flex items-center gap-2 text-xs font-semibold text-teal hover:text-teal/80 transition-colors w-full text-left"
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    className={cn("transition-transform flex-shrink-0", whyExpanded && "rotate-90")}
-                  >
-                    <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  The idea behind this
-                </button>
-                {whyExpanded && (
-                  <div
-                    id={whyId}
-                    className="mt-2 px-4 py-3 rounded-xl text-xs text-ink-muted leading-relaxed"
-                    style={{ background: "rgba(46,125,140,0.04)", borderLeft: "2px solid rgba(46,125,140,0.25)" }}
-                  >
-                    {activity.whyItMatters}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Prompt card — shows scaffolding steps if available, otherwise main prompt */}
-            <div className="card p-5 mb-4">
-              {activity.scaffoldingSteps && activity.scaffoldingSteps.length > 0 ? (
-                <div>
-                  <p className="text-sm text-ink-muted mb-3 leading-relaxed">
-                    {activity.prompt}
-                  </p>
-                  {/* Normative: explicit "one at a time" heading */}
-                  {style === "normative" && (
-                    <p className="text-xs font-semibold text-ink-muted uppercase tracking-wide mb-2">
-                      Take these one at a time:
-                    </p>
-                  )}
-                  <ol className="space-y-2">
-                    {(style === "diffuse-avoidant" && !showAllSteps
-                      ? activity.scaffoldingSteps.slice(0, 1)
-                      : activity.scaffoldingSteps
-                    ).map((step, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span
-                          className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold text-white mt-0.5"
-                          style={{ background: mission.colour }}
-                        >
-                          {i + 1}
-                        </span>
-                        <p className="text-sm text-ink leading-relaxed">{step}</p>
-                      </li>
-                    ))}
-                  </ol>
-                  {/* Diffuse-Avoidant: progressive disclosure of remaining steps */}
-                  {style === "diffuse-avoidant" &&
-                    !showAllSteps &&
-                    activity.scaffoldingSteps.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setShowAllSteps(true)}
-                        className="mt-3 text-xs text-ink-muted hover:text-ink transition-colors"
+                <ol className="space-y-1.5">
+                  {questions.map((q, i) => (
+                    <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
+                      <span
+                        className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold text-white mt-0.5"
+                        style={{ background: `${mission.colour}60` }}
                       >
-                        Show the other prompts when you&apos;re ready →
-                      </button>
+                        {i + 1}
+                      </span>
+                      <span className="leading-relaxed">{q}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {/* Begin button */}
+            <button
+              onClick={() => setPhase("q")}
+              className="btn btn-primary w-full py-4 text-base rounded-xl mt-2"
+              style={{ background: mission.colour }}
+            >
+              {questions.length === 1 ? "Start writing" : "Begin →"}
+            </button>
+            <p className="text-[10px] text-[--ink-muted]/50 text-center mt-3 leading-relaxed">
+              All entries are private. Only you can see this.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Conversation phase ─────────────────────────────────────────────────────
+  if (phase === "q") {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+        {/* Header with progress */}
+        <div className="activity-header">
+          <div className="max-w-lg mx-auto">
+            <div className="flex items-center gap-3 mb-2">
+              <button
+                onClick={() => {
+                  if (qIdx > 0) {
+                    setQIdx(qIdx - 1);
+                    setTurns(turns.slice(0, -1));
+                  } else {
+                    setPhase("intro");
+                  }
+                }}
+                className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <span className="flex-1 text-sm font-medium text-[--ink] truncate">
+                {activity.title}
+              </span>
+              <span className="text-xs text-[--ink-muted] flex-shrink-0">
+                {qIdx + 1} of {questions.length}
+              </span>
+            </div>
+            {/* Progress bar */}
+            <div className="h-1 bg-[--border] rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${progressPct}%`, background: mission.colour }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Scrollable conversation area */}
+        <div
+          className="flex-1 overflow-y-auto"
+          style={{ paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))" }}
+        >
+          <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
+            {/* Completed turns */}
+            {turns.map((turn, i) => (
+              <div key={i} className="group">
+                <button
+                  onClick={() =>
+                    setExpandedTurns((prev) => {
+                      const next = new Set(prev);
+                      next.has(i) ? next.delete(i) : next.add(i);
+                      return next;
+                    })
+                  }
+                  className="w-full flex items-start gap-2.5 text-left"
+                >
+                  <span
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white mt-0.5"
+                    style={{ background: "var(--sage)" }}
+                  >
+                    ✓
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-[--ink-muted] leading-relaxed line-clamp-1">
+                      {turn.question}
+                    </p>
+                    {expandedTurns.has(i) && (
+                      <p className="text-sm text-[--ink] leading-relaxed mt-1 whitespace-pre-wrap">
+                        {turn.answer}
+                      </p>
                     )}
-                </div>
-              ) : (
-                <div>
-                  <p className="text-ink leading-relaxed">{activity.prompt}</p>
-                  {activity.secondaryPrompt && (
-                    <p className="text-sm text-ink-muted leading-relaxed italic mt-2">
-                      {activity.secondaryPrompt}
-                    </p>
-                  )}
-                </div>
-              )}
+                    {!expandedTurns.has(i) && (
+                      <p className="text-sm text-[--ink] leading-relaxed mt-0.5 line-clamp-2 italic">
+                        &ldquo;{turn.answer}&rdquo;
+                      </p>
+                    )}
+                  </div>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    className={cn("flex-shrink-0 mt-0.5 text-[--ink-muted]/40 transition-transform", expandedTurns.has(i) && "rotate-180")}
+                  >
+                    <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <div className="mt-3 ml-7 h-px bg-[--border]" />
+              </div>
+            ))}
+
+            {/* Current question */}
+            <div data-animate="1" className="question-card">
+              <div
+                className="text-[10px] font-bold uppercase tracking-widest mb-3"
+                style={{ color: mission.colour }}
+              >
+                Question {qIdx + 1}
+              </div>
+              <p className="text-[--ink] leading-relaxed text-base">
+                {questions[qIdx]}
+              </p>
             </div>
 
-            {submitted ? (
-              <div>
-                <div className="text-center py-6 mb-2" data-animate="1">
-                  <div className="text-3xl mb-2">✓</div>
-                  <p className="text-sm font-medium text-navy">Saved.</p>
-                  <p className="text-xs text-ink-muted mt-1">That's one more thing you know about yourself.</p>
-                </div>
-                <div className="card p-5 mb-4 bg-surface-muted">
-                  <p className="text-sm text-ink-muted mb-2 font-medium">Your reflection</p>
-                  <p className="text-ink leading-relaxed whitespace-pre-wrap">{response}</p>
-                </div>
-
-                {aiReflection && (() => {
-                  const parsed = parseReflection(aiReflection);
-                  if (!parsed) return null;
-                  return (
-                    <div
-                      className="rounded-xl p-5 mb-4 border"
-                      style={{ background: "rgba(46,125,140,0.04)", borderColor: "rgba(46,125,140,0.2)" }}
-                      data-animate="3"
+            {/* Sentence starters */}
+            {activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
+              <div data-animate="2">
+                <p className="text-xs text-[--ink-muted] mb-2 px-0.5">Try starting with:</p>
+                <div className="flex flex-wrap gap-2">
+                  {activity.sentenceStarters.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => applySentenceStarter(s)}
+                      className="starter-chip"
                     >
-                      <div className="text-xs font-semibold text-teal mb-3 uppercase tracking-wide">
-                        Something to sit with
-                      </div>
-                      {parsed.type === "tricheck" ? (
-                        <div className="space-y-3">
-                          {([
-                            { label: "What you believe", q: parsed.tricheck.conceptual },
-                            { label: "Something to try", q: parsed.tricheck.practical },
-                            { label: "Who gets it",      q: parsed.tricheck.collective },
-                          ] as const).map(({ label, q }) => (
-                            <div key={label} className="flex gap-3">
-                              <span className="text-[10px] font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
-                                {label}
-                              </span>
-                              <p className="text-sm text-ink leading-relaxed">{q}</p>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-ink leading-relaxed text-sm">{parsed.text}</p>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                <div className="flex gap-3">
-                  <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1">
-                    Back to mission
-                  </Link>
-                  <Link href="/dashboard" className="btn btn-primary flex-1">
-                    Dashboard
-                  </Link>
+                      {s}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            ) : (
-              <div>
-                {/* Sentence starters */}
-                {activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-ink-muted mb-2">Try starting with:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {activity.sentenceStarters.map((starter) => (
-                        <button
-                          key={starter}
-                          type="button"
-                          onClick={() => applySentenceStarter(starter)}
-                          className="text-xs px-3 py-1.5 rounded-full border border-surface-border bg-white text-ink-muted hover:border-navy/30 hover:text-ink transition-all"
-                        >
-                          {starter}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="relative mb-3">
-                  <textarea
-                    ref={textareaRef}
-                    className="journal-textarea"
-                    value={response}
-                    onChange={(e) => setResponse(e.target.value)}
-                    placeholder="Write whatever comes to mind. There are no wrong answers here."
-                    rows={8}
-                  />
-                  <div className="absolute bottom-3 right-3 text-xs text-ink-muted/50">
-                    {saving ? "Saving…" : lastSaved ? "Saved" : ""}
-                  </div>
-                </div>
-
-                {activity.secondaryPrompt && response.length > 50 && !activity.scaffoldingSteps && (
-                  <div className="mb-4 p-4 bg-teal/5 rounded-xl border border-teal/15">
-                    <p className="text-sm text-teal-dark italic">{activity.secondaryPrompt}</p>
-                  </div>
-                )}
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={!canSubmitJournal || submitting}
-                  className="btn btn-primary w-full"
-                >
-                  {submitting ? "Saving…" : "Save reflection"}
-                </button>
-                <p className="text-xs text-ink-muted text-center mt-3">
-                  All entries are private. Only you can see this.
-                </p>
               </div>
             )}
-          </div>
-        )}
 
-        {/* ─── VALUES PICKER ─── */}
-        {activity.type === "values_picker" && (
-          <div data-animate="2">
-            <div className="card p-5 mb-5">
-              <p className="text-ink leading-relaxed">{activity.prompt}</p>
+            <div ref={bottomRef} />
+          </div>
+        </div>
+
+        {/* Fixed input bar */}
+        <div className="conv-input-bar">
+          <div className="max-w-lg mx-auto">
+            <textarea
+              ref={textareaRef}
+              className="conv-textarea mb-2"
+              value={current}
+              onChange={(e) => setCurrent(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Write your answer here…"
+              rows={2}
+            />
+            <div className="flex items-center gap-3">
+              <p className="flex-1 text-[10px] text-[--ink-muted]/40 leading-tight">
+                ⌘ Return to advance
+              </p>
+              <button
+                onClick={handleNextQuestion}
+                disabled={!canSubmitCurrent() || submitting}
+                className={cn(
+                  "btn py-2.5 px-5 rounded-xl text-sm transition-all",
+                  canSubmitCurrent()
+                    ? "text-white"
+                    : "bg-[--border] text-[--ink-muted] cursor-not-allowed"
+                )}
+                style={canSubmitCurrent() ? { background: mission.colour } : undefined}
+              >
+                {submitting
+                  ? "Saving…"
+                  : isLastQuestion
+                  ? "Finish ✓"
+                  : "Next →"}
+              </button>
             </div>
-
-            {submitted ? (
-              <div>
-                <div className="card p-5 mb-4">
-                  <p className="text-sm text-ink-muted font-medium mb-3">Your values</p>
-                  <div className="space-y-3">
-                    {existingEntry?.response.split("\n").map((line, i) => (
-                      <div key={i} className="text-sm text-ink">
-                        <span className="font-semibold text-navy">{line.split(":")[0]}</span>
-                        {line.includes(":") && (
-                          <span className="text-ink-muted">
-                            {": " + line.split(": ").slice(1).join(": ")}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <Link href={`/missions/${mission.id}`} className="btn btn-primary w-full">
-                  Back to mission
-                </Link>
-              </div>
-            ) : (
-              <div>
-                <p className="text-sm text-ink-muted mb-4">
-                  Select {activity.valuesCount || 5} values ({selectedValues.length} of{" "}
-                  {activity.valuesCount || 5} chosen) — hover any value to see its definition
-                </p>
-
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  {(activity.valuesOptions || []).map((val) => {
-                    const sel = selectedValues.includes(val);
-                    const disabled = !sel && selectedValues.length >= (activity.valuesCount || 5);
-                    return (
-                      <button
-                        key={val}
-                        onClick={() => toggleValue(val)}
-                        onMouseEnter={() => setHoveredValue(val)}
-                        onMouseLeave={() => setHoveredValue(null)}
-                        disabled={disabled}
-                        className={cn(
-                          "p-3 rounded-xl text-sm font-medium border transition-all text-left",
-                          sel
-                            ? "bg-navy text-white border-navy"
-                            : disabled
-                            ? "opacity-40 bg-surface-muted border-surface-border cursor-not-allowed"
-                            : "bg-white text-ink border-surface-border hover:border-navy/30"
-                        )}
-                      >
-                        {val}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Value definition tooltip area — fixed height prevents layout shift */}
-                <div className="h-[5.5rem] mb-4 flex items-start">
-                  {hoveredValue ? (
-                    <div className="w-full rounded-xl bg-teal/5 border border-teal/20 px-4 py-3 text-sm text-ink-muted">
-                      <span className="font-semibold text-ink">{hoveredValue}: </span>
-                      {VALUES_WITH_DEFINITIONS[hoveredValue] || ""}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-ink-muted/50 px-1 pt-1">Hover over a value to learn more</p>
-                  )}
-                </div>
-
-                {selectedValues.length > 0 && (
-                  <div className="space-y-4 mb-5">
-                    <p className="text-sm font-medium text-ink">
-                      Optionally, add a sentence about why each one matters to you:
-                    </p>
-                    {selectedValues.map((val) => (
-                      <div key={val}>
-                        <label className="block text-sm font-medium text-navy mb-0.5">{val}</label>
-                        {VALUES_WITH_DEFINITIONS[val] && (
-                          <p className="text-xs text-ink-muted mb-1.5 leading-relaxed">
-                            {VALUES_WITH_DEFINITIONS[val]}
-                          </p>
-                        )}
-                        <input
-                          type="text"
-                          className="input text-sm"
-                          placeholder={`What does ${val} mean to you? (optional)`}
-                          value={valueReasons[val] || ""}
-                          onChange={(e) =>
-                            setValueReasons({ ...valueReasons, [val]: e.target.value })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={!canSubmitValues || submitting}
-                  className="btn btn-primary w-full"
-                >
-                  {submitting ? "Saving…" : "Save my values"}
-                </button>
-              </div>
-            )}
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        {/* ─── CHALLENGE ─── */}
-        {activity.type === "challenge" && (
-          <div data-animate="2">
-            {showDebrief ? (
-              <div>
-                <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "#C8982A" }}>
-                  <p className="text-xs font-semibold text-gold mb-2 uppercase tracking-wide">
-                    Weekly challenge — check in
+  // ── Done phase ─────────────────────────────────────────────────────────────
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+      <div className="activity-header">
+        <div className="max-w-lg mx-auto flex items-center gap-3">
+          <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-nav">
+        <div className="max-w-lg mx-auto px-5 pt-8">
+          {/* Celebration */}
+          <div className="text-center mb-8" data-animate="1">
+            <div className="text-4xl mb-4">✓</div>
+            <h2
+              className="text-2xl text-[--navy] mb-2"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+            >
+              Saved.
+            </h2>
+            <p className="text-sm text-[--ink-muted]">
+              That&apos;s one more thing you know about yourself.
+            </p>
+          </div>
+
+          {/* Summary of turns (when coming from conversation) */}
+          {turns.length > 0 && (
+            <div className="card p-5 mb-5 space-y-4" data-animate="2">
+              {turns.map((turn, i) => (
+                <div key={i}>
+                  {i > 0 && <div className="h-px bg-[--border] my-4" />}
+                  <p className="text-xs text-[--ink-muted] mb-1.5 leading-relaxed">
+                    {turn.question}
                   </p>
-                  <p className="text-ink text-sm leading-relaxed">
-                    {existingChallenge?.challenge_text}
+                  <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">
+                    {turn.answer}
                   </p>
                 </div>
+              ))}
+            </div>
+          )}
 
-                {debriefSubmitted ? (
-                  <div className="text-center py-8">
-                    <div className="text-4xl mb-3">✅</div>
-                    <p className="font-medium text-navy mb-2">Well done.</p>
-                    <p className="text-sm text-ink-muted mb-6">Your reflection has been saved.</p>
-                    <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+          {/* Pre-existing entry (returned to done state) */}
+          {turns.length === 0 && existingResponse && (
+            <div className="card p-5 mb-5" data-animate="2">
+              <p className="text-xs text-[--ink-muted] font-medium mb-2">Your reflection</p>
+              <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">
+                {existingResponse}
+              </p>
+            </div>
+          )}
+
+          {/* AI reflection */}
+          {aiReflection && (() => {
+            const parsed = parseReflection(aiReflection);
+            if (!parsed) return null;
+            return (
+              <div
+                className="rounded-2xl p-5 mb-5 border"
+                style={{ background: "rgba(46,125,140,0.04)", borderColor: "rgba(46,125,140,0.2)" }}
+                data-animate="3"
+              >
+                <div className="text-[10px] font-bold text-[--teal] mb-3 uppercase tracking-widest">
+                  Something to sit with
+                </div>
+                {parsed.type === "tricheck" ? (
+                  <div className="space-y-3">
+                    {([
+                      { label: "What you believe", q: parsed.tricheck.conceptual },
+                      { label: "Something to try", q: parsed.tricheck.practical },
+                      { label: "Who gets it", q: parsed.tricheck.collective },
+                    ] as const).map(({ label, q }) => (
+                      <div key={label} className="flex gap-3">
+                        <span className="text-[9px] font-bold text-[--teal]/50 uppercase tracking-wide w-20 flex-shrink-0 pt-0.5 leading-tight">
+                          {label}
+                        </span>
+                        <p className="text-sm text-[--ink] leading-relaxed">{q}</p>
+                      </div>
+                    ))}
                   </div>
                 ) : (
-                  <div>
-                    <p className="font-medium text-ink mb-1">What happened? What did you notice?</p>
-                    <p className="text-sm text-ink-muted mb-4">
-                      It&apos;s okay if it didn&apos;t go perfectly, or if you only partly did it. What did the experience tell you?
-                    </p>
-                    <textarea
-                      className="journal-textarea mb-3"
-                      rows={6}
-                      value={challengeDebrief}
-                      onChange={(e) => setChallengeDebrief(e.target.value)}
-                      placeholder="Be honest. It's okay if you didn't do it — just write about what got in the way."
-                    />
-                    <button
-                      onClick={handleDebriefSubmit}
-                      disabled={!challengeDebrief.trim() || submitting}
-                      className="btn btn-primary w-full"
-                    >
-                      {submitting ? "Saving…" : "Save reflection"}
-                    </button>
-                  </div>
+                  <p className="text-sm text-[--ink] leading-relaxed">{parsed.text}</p>
                 )}
               </div>
-            ) : submitted ? (
-              <div className="text-center py-10">
-                <div className="text-4xl mb-4">🎯</div>
-                <h2
-                  className="text-xl text-navy mb-4"
-                  style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
-                >
-                  Challenge accepted.
-                </h2>
-                <div className="card p-5 mb-6 text-left">
-                  <p className="text-sm text-ink leading-relaxed">{activity.prompt}</p>
-                </div>
-                <p className="text-sm text-ink-muted mb-6">
-                  Come back in a week to reflect on how it went.
-                </p>
-                <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+            );
+          })()}
+
+          {/* Loading state for AI reflection */}
+          {!aiReflection && turns.length > 0 && (
+            <div className="rounded-2xl p-5 mb-5 border border-[--border] bg-white" data-animate="3">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin" />
+                <p className="text-xs text-[--ink-muted]">Getting a reflection for you…</p>
               </div>
-            ) : (
-              <div>
-                <div
-                  className="rounded-2xl p-6 mb-6 text-white text-center"
-                  style={{ background: "#C8982A" }}
-                >
-                  <div className="text-3xl mb-3">🎯</div>
-                  <p
-                    className="text-xl mb-3"
-                    style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontStyle: "italic" }}
-                  >
-                    Your challenge this week
-                  </p>
-                  <p className="text-white/90 leading-relaxed">{activity.prompt}</p>
-                </div>
-                <p className="text-sm text-ink-muted text-center mb-5 leading-relaxed">
-                  Come back in 7 days to reflect on what happened.
-                  The reflection is the important part.
-                </p>
-                <button
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className="btn btn-primary w-full"
-                >
-                  {submitting ? "Starting challenge…" : "Accept this challenge"}
-                </button>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <div className="flex gap-3 pb-8" data-animate="4">
+            <Link
+              href={`/missions/${mission.id}`}
+              className="btn btn-secondary flex-1 py-3 rounded-xl"
+            >
+              Back to mission
+            </Link>
+            <Link
+              href="/dashboard"
+              className="btn btn-primary flex-1 py-3 rounded-xl"
+              style={{ background: "var(--navy)" }}
+            >
+              Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Values picker ────────────────────────────────────────────────────────────
+
+function ValuesPickerActivity({
+  mission,
+  activity,
+  userId,
+  existingEntry,
+  onComplete,
+}: {
+  mission: Mission;
+  activity: Activity;
+  userId: string;
+  existingEntry: JournalEntry | null;
+  onComplete: (response: string) => void;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = createClient() as any;
+  const entryIdRef = useRef<string | null>(existingEntry?.id || null);
+
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [valueReasons, setValueReasons] = useState<Record<string, string>>({});
+  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(!!existingEntry);
+  const whyId = useId();
+  const [whyExpanded, setWhyExpanded] = useState(false);
+  const [style] = useState<ProcessingStyle | null>(() =>
+    typeof window !== "undefined" ? getProcessingStyle() : null
+  );
+
+  function toggleValue(val: string) {
+    if (selectedValues.includes(val)) {
+      setSelectedValues(selectedValues.filter((v) => v !== val));
+      const updated = { ...valueReasons };
+      delete updated[val];
+      setValueReasons(updated);
+    } else if (selectedValues.length < (activity.valuesCount || 5)) {
+      setSelectedValues([...selectedValues, val]);
+    }
+  }
+
+  const canSubmit = selectedValues.length === (activity.valuesCount || 5);
+
+  async function handleSubmit() {
+    if (!canSubmit) return;
+    setSubmitting(true);
+
+    const finalResponse = selectedValues
+      .map((v) => `${v}: ${valueReasons[v] || "(no reason given)"}`)
+      .join("\n");
+
+    const entryId = entryIdRef.current;
+    if (entryId) {
+      await db.from("journal_entries").update({ response: finalResponse }).eq("id", entryId);
+    } else {
+      const { data } = await db
+        .from("journal_entries")
+        .insert({
+          user_id: userId,
+          mission_id: mission.id,
+          activity_id: activity.id,
+          prompt: activity.prompt,
+          response: finalResponse,
+          is_milestone: activity.isMilestone || false,
+        })
+        .select("id")
+        .single();
+      if (data?.id) entryIdRef.current = data.id;
+    }
+
+    onComplete(finalResponse);
+    setSubmitted(true);
+    setSubmitting(false);
+  }
+
+  if (submitted) {
+    const lines = existingEntry?.response.split("\n") ?? [];
+    return (
+      <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
+        <div className="activity-header">
+          <div className="max-w-lg mx-auto flex items-center gap-3">
+            <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+            <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+          </div>
+        </div>
+        <div className="max-w-lg mx-auto px-5 pt-8 pb-nav">
+          <div className="text-center mb-8">
+            <div className="text-4xl mb-4">✓</div>
+            <h2 className="text-2xl text-[--navy] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+              Your values are in.
+            </h2>
+          </div>
+          <div className="card p-5 mb-5 space-y-3">
+            {lines.map((line, i) => (
+              <div key={i} className="text-sm">
+                <span className="font-semibold text-[--navy]">{line.split(":")[0]}</span>
+                {line.includes(":") && (
+                  <span className="text-[--ink-muted]">{": " + line.split(": ").slice(1).join(": ")}</span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3">
+            <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">Back to mission</Link>
+            <Link href="/dashboard" className="btn btn-primary flex-1 py-3 rounded-xl">Dashboard</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
+      <div className="activity-header">
+        <div className="max-w-lg mx-auto flex items-center gap-3">
+          <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+          <span className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
+          <span className="text-xs text-[--ink-muted]">
+            {selectedValues.length} of {activity.valuesCount || 5}
+          </span>
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 pt-6 pb-nav">
+        <div className="card p-5 mb-5">
+          <p className="text-[--ink] leading-relaxed">{activity.prompt}</p>
+        </div>
+
+        {style === "informational" && activity.whyItMatters && (
+          <div className="mb-5">
+            <button
+              type="button"
+              aria-expanded={whyExpanded}
+              aria-controls={whyId}
+              onClick={() => setWhyExpanded((v) => !v)}
+              className="flex items-center gap-2 text-xs font-semibold text-[--teal] w-full text-left"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className={cn("transition-transform flex-shrink-0", whyExpanded && "rotate-90")}>
+                <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              The idea behind this
+            </button>
+            {whyExpanded && (
+              <div id={whyId} className="mt-2 px-4 py-3 rounded-xl text-xs text-[--ink-muted] leading-relaxed" style={{ background: "rgba(46,125,140,0.04)", borderLeft: "2px solid rgba(46,125,140,0.25)" }}>
+                {activity.whyItMatters}
               </div>
             )}
           </div>
         )}
+
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {(activity.valuesOptions || []).map((val) => {
+            const sel = selectedValues.includes(val);
+            const disabled = !sel && selectedValues.length >= (activity.valuesCount || 5);
+            return (
+              <button
+                key={val}
+                onClick={() => toggleValue(val)}
+                onMouseEnter={() => setHoveredValue(val)}
+                onMouseLeave={() => setHoveredValue(null)}
+                disabled={disabled}
+                className={cn(
+                  "p-3 rounded-xl text-sm font-medium border transition-all text-left",
+                  sel ? "bg-[--navy] text-white border-[--navy]"
+                  : disabled ? "opacity-40 bg-[--surface-muted] border-[--border] cursor-not-allowed"
+                  : "bg-white text-[--ink] border-[--border] hover:border-[rgba(27,58,92,0.3)]"
+                )}
+              >
+                {val}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="h-20 mb-4 flex items-start">
+          {hoveredValue ? (
+            <div className="w-full rounded-xl bg-[rgba(46,125,140,0.05)] border border-[rgba(46,125,140,0.2)] px-4 py-3 text-sm text-[--ink-muted]">
+              <span className="font-semibold text-[--ink]">{hoveredValue}: </span>
+              {VALUES_WITH_DEFINITIONS[hoveredValue] || ""}
+            </div>
+          ) : (
+            <p className="text-xs text-[--ink-muted]/40 px-1 pt-1">Tap a value to select it · hover to see the definition</p>
+          )}
+        </div>
+
+        {selectedValues.length > 0 && (
+          <div className="space-y-4 mb-6">
+            <p className="text-sm font-medium text-[--ink]">
+              Why does each one matter to you? (optional)
+            </p>
+            {selectedValues.map((val) => (
+              <div key={val}>
+                <label className="block text-sm font-medium text-[--navy] mb-1">{val}</label>
+                <input
+                  type="text"
+                  className="input text-sm"
+                  placeholder={`What does ${val} mean to you?`}
+                  value={valueReasons[val] || ""}
+                  onChange={(e) => setValueReasons({ ...valueReasons, [val]: e.target.value })}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button
+          onClick={handleSubmit}
+          disabled={!canSubmit || submitting}
+          className="btn btn-primary w-full py-4 rounded-xl text-base"
+        >
+          {submitting ? "Saving…" : "Save my values"}
+        </button>
       </div>
-    </AppShell>
+    </div>
+  );
+}
+
+// ─── Challenge activity ───────────────────────────────────────────────────────
+
+function ChallengeActivity({
+  mission,
+  activity,
+  userId,
+  existingChallenge,
+  onComplete,
+}: {
+  mission: Mission;
+  activity: Activity;
+  userId: string;
+  existingChallenge: Challenge | null;
+  onComplete: () => void;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = createClient() as any;
+
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(!!existingChallenge);
+  const [debrief, setDebrief] = useState(existingChallenge?.debrief_response || "");
+  const [debriefDone, setDebriefDone] = useState(!!existingChallenge?.completed_at);
+
+  const showDebrief = existingChallenge && !existingChallenge.completed_at;
+
+  async function acceptChallenge() {
+    setSubmitting(true);
+    await db.from("challenges").insert({
+      user_id: userId,
+      mission_id: mission.id,
+      challenge_text: activity.prompt,
+    });
+    onComplete();
+    setSubmitted(true);
+    setSubmitting(false);
+  }
+
+  async function submitDebrief() {
+    if (!existingChallenge?.id || !debrief.trim()) return;
+    setSubmitting(true);
+    await db.from("challenges").update({
+      completed_at: new Date().toISOString(),
+      debrief_response: debrief,
+    }).eq("id", existingChallenge.id);
+    await db.from("journal_entries").insert({
+      user_id: userId,
+      mission_id: mission.id,
+      activity_id: `${activity.id}-debrief`,
+      prompt: "Reflect on your challenge: what happened?",
+      response: debrief,
+    });
+    setDebriefDone(true);
+    setSubmitting(false);
+  }
+
+  const header = (
+    <div className="activity-header">
+      <div className="max-w-lg mx-auto flex items-center gap-3">
+        <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+        <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+      </div>
+    </div>
+  );
+
+  if (showDebrief) {
+    return (
+      <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
+        {header}
+        <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
+          <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "var(--gold)" }}>
+            <p className="text-xs font-semibold text-[--gold] mb-2 uppercase tracking-wide">Check in</p>
+            <p className="text-[--ink] text-sm leading-relaxed">{existingChallenge?.challenge_text}</p>
+          </div>
+          {debriefDone ? (
+            <div className="text-center py-10">
+              <div className="text-4xl mb-4">✓</div>
+              <p className="font-medium text-[--navy] mb-6">Reflection saved.</p>
+              <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+            </div>
+          ) : (
+            <>
+              <p className="font-medium text-[--ink] mb-1">What happened?</p>
+              <p className="text-sm text-[--ink-muted] mb-4">It&apos;s okay if it didn&apos;t go perfectly.</p>
+              <textarea
+                className="journal-textarea mb-4"
+                rows={6}
+                value={debrief}
+                onChange={(e) => setDebrief(e.target.value)}
+                placeholder="Be honest. It's okay if you didn't do it."
+              />
+              <button
+                onClick={submitDebrief}
+                disabled={!debrief.trim() || submitting}
+                className="btn btn-primary w-full"
+              >
+                {submitting ? "Saving…" : "Save reflection"}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
+        {header}
+        <div className="max-w-lg mx-auto px-5 pt-8 pb-nav text-center">
+          <div className="text-4xl mb-4">🎯</div>
+          <h2 className="text-xl text-[--navy] mb-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+            Challenge accepted.
+          </h2>
+          <div className="card p-5 mb-6 text-left">
+            <p className="text-sm text-[--ink] leading-relaxed">{activity.prompt}</p>
+          </div>
+          <p className="text-sm text-[--ink-muted] mb-6">Come back in a week to reflect.</p>
+          <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
+      {header}
+      <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
+        <div className="rounded-2xl p-6 mb-6 text-white text-center" style={{ background: "var(--gold)" }}>
+          <div className="text-3xl mb-3">🎯</div>
+          <p className="text-xl mb-3" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic" }}>
+            Your challenge this week
+          </p>
+          <p className="text-white/90 leading-relaxed">{activity.prompt}</p>
+        </div>
+        <p className="text-sm text-[--ink-muted] text-center mb-6 leading-relaxed">
+          Come back in 7 days to reflect on what happened. That&apos;s where the real learning is.
+        </p>
+        <button
+          onClick={acceptChallenge}
+          disabled={submitting}
+          className="btn btn-primary w-full py-4 rounded-xl text-base"
+        >
+          {submitting ? "Starting…" : "Accept this challenge"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main exported component ──────────────────────────────────────────────────
+
+export default function ActivityClient({
+  mission,
+  activity,
+  userId,
+  isCompleted,
+  existingEntry,
+  existingChallenge,
+  pairedStory,
+}: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = createClient() as any;
+
+  const [completed, setCompleted] = useState(isCompleted);
+
+  // After any activity type completes, mark mission_progress and advance active_mission if needed
+  const markProgress = useCallback(async () => {
+    await db.from("mission_progress").upsert({
+      user_id: userId,
+      mission_id: mission.id,
+      activity_id: activity.id,
+    });
+
+    const totalActivities = mission.activities.filter((a) => !a.locked).length;
+    const { count } = await db
+      .from("mission_progress")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("mission_id", mission.id);
+    const nextMissionId = mission.id + 1;
+    const nextMissionExists = MISSIONS.some((m) => m.id === nextMissionId);
+    if (count !== null && count >= totalActivities && nextMissionExists) {
+      await db
+        .from("users")
+        .update({ active_mission: nextMissionId })
+        .eq("id", userId)
+        .lt("active_mission", nextMissionId);
+    }
+  }, [db, userId, mission, activity]);
+
+  function handleComplete() {
+    markProgress();
+    setCompleted(true);
+  }
+
+  // Locked activities
+  if (activity.locked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--surface-muted)" }}>
+        <div className="text-center px-6">
+          <div className="text-4xl mb-4">🔒</div>
+          <p className="text-[--ink-muted]">This activity is coming soon.</p>
+          <Link href={`/missions/${mission.id}`} className="btn btn-secondary mt-4">
+            Back to mission
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Values picker
+  if (activity.type === "values_picker") {
+    return (
+      <ValuesPickerActivity
+        mission={mission}
+        activity={activity}
+        userId={userId}
+        existingEntry={completed ? existingEntry : null}
+        onComplete={() => handleComplete()}
+      />
+    );
+  }
+
+  // Challenge
+  if (activity.type === "challenge") {
+    return (
+      <ChallengeActivity
+        mission={mission}
+        activity={activity}
+        userId={userId}
+        existingChallenge={existingChallenge}
+        onComplete={handleComplete}
+      />
+    );
+  }
+
+  // Journal / milestone_letter → conversational flow
+  return (
+    <ConversationalActivity
+      mission={mission}
+      activity={activity}
+      userId={userId}
+      existingEntry={completed ? existingEntry : null}
+      pairedStory={pairedStory}
+      onComplete={() => handleComplete()}
+    />
   );
 }

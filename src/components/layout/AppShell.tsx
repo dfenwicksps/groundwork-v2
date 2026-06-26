@@ -1,27 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   {
     href: "/dashboard",
     label: "Home",
+    match: (p: string) => p === "/dashboard" || p === "/",
     icon: (active: boolean) => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
-          d="M3 10.5L10 3.5l7 7"
+          d="M3.5 11.5L11 4.5l7.5 7"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M5 8.5V15.5a.5.5 0 0 0 .5.5H8.5v-4h3v4h3a.5.5 0 0 0 .5-.5V8.5"
+          d="M5.5 9.5V17a.5.5 0 0 0 .5.5H9v-4.5h4V17.5h3a.5.5 0 0 0 .5-.5V9.5"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -30,21 +30,28 @@ const NAV_ITEMS = [
   },
   {
     href: "/missions/1",
-    label: "Missions",
+    label: "Journey",
+    match: (p: string) => p.startsWith("/missions"),
     icon: (active: boolean) => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
-          cx="10"
-          cy="10"
-          r="7"
+          cx="11"
+          cy="11"
+          r="7.5"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
         />
-        <circle cx="10" cy="10" r="2.5" fill="currentColor" />
         <path
-          d="M10 3v2M10 15v2M3 10h2M15 10h2"
+          d="M11 7.5v3.5l2.5 2"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M11 3.5V4.5M11 17.5V18.5M3.5 11H4.5M17.5 11H18.5"
+          stroke="currentColor"
+          strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
         />
       </svg>
@@ -53,55 +60,44 @@ const NAV_ITEMS = [
   {
     href: "/journal",
     label: "Journal",
+    match: (p: string) => p.startsWith("/journal") || p.startsWith("/revisit"),
     icon: (active: boolean) => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
         <rect
-          x="4"
-          y="3"
-          width="12"
-          height="14"
+          x="4.5"
+          y="3.5"
+          width="13"
+          height="15"
           rx="2"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
         />
         <path
-          d="M7 7h6M7 10h6M7 13h4"
+          d="M7.5 8h7M7.5 11h7M7.5 14h4"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
         />
       </svg>
     ),
   },
   {
-    href: "/stories",
-    label: "Stories",
+    href: "/me",
+    label: "Me",
+    match: (p: string) => p.startsWith("/me") || p.startsWith("/settings"),
     icon: (active: boolean) => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path
-          d="M10 4C7 4 4.5 6 4.5 8.5c0 2 1.3 3.7 3.2 4.4L10 16l2.3-3.1c1.9-.7 3.2-2.4 3.2-4.4C15.5 6 13 4 10 4z"
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle
+          cx="11"
+          cy="8"
+          r="3.5"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: "/support",
-    label: "Support",
-    icon: (active: boolean) => (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path
-          d="M13.5 6.5C13.5 8.43 11.93 10 10 10C8.07 10 6.5 8.43 6.5 6.5C6.5 4.57 8.07 3 10 3C11.93 3 13.5 4.57 13.5 6.5Z"
-          stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
         />
         <path
-          d="M4 17C4 14.24 6.69 12 10 12C13.31 12 16 14.24 16 17"
+          d="M4.5 18.5C4.5 15.46 7.46 13 11 13c3.54 0 6.5 2.46 6.5 5.5"
           stroke="currentColor"
-          strokeWidth={active ? "2" : "1.5"}
+          strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
         />
       </svg>
@@ -111,79 +107,39 @@ const NAV_ITEMS = [
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/");
-  }
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] flex flex-col">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-surface-border">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2"
-          >
-            <div className="w-6 h-6 bg-navy rounded-md flex items-center justify-center">
-              <span className="text-white text-[10px] font-semibold">G</span>
-            </div>
-            <span
-              className="font-semibold text-navy text-base"
-              style={{ fontFamily: "'Fraunces', serif" }}
-            >
-              Groundwork
-            </span>
-          </Link>
+    <div className="min-h-screen bg-[--surface-muted]">
+      <main className="pb-nav">{children}</main>
 
-          <button
-            onClick={handleSignOut}
-            className="text-xs text-ink-muted hover:text-ink transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
-
-      {/* Page content */}
-      <main className="flex-1 pb-24">{children}</main>
-
-      {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-surface-border safe-area-pb">
-        <div className="max-w-2xl mx-auto px-2">
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-40 bg-white/96 backdrop-blur-md border-t border-[--border]"
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div className="max-w-lg mx-auto px-1">
           <div className="flex items-center justify-around h-16">
             {NAV_ITEMS.map((item) => {
-              const active =
-                pathname === item.href ||
-                (item.href !== "/dashboard" &&
-                  pathname.startsWith(item.href.split("/")[1] === "missions" ? "/missions" : item.href));
-
+              const active = item.match(pathname);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all",
+                    "flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[60px] transition-all duration-150",
                     active
-                      ? "text-navy"
-                      : "text-ink-muted hover:text-ink"
+                      ? "text-[--teal]"
+                      : "text-[--ink-muted] hover:text-[--ink]"
                   )}
                 >
                   {item.icon(active)}
                   <span
                     className={cn(
-                      "text-[10px] font-medium",
-                      active ? "text-navy" : "text-ink-muted"
+                      "text-[10px] font-semibold tracking-wide leading-none",
+                      active ? "text-[--teal]" : "text-[--ink-muted]"
                     )}
                   >
                     {item.label}
                   </span>
-                  {active && (
-                    <div className="absolute bottom-0 w-1 h-1 rounded-full bg-navy" />
-                  )}
                 </Link>
               );
             })}
