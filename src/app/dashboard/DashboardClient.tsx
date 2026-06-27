@@ -51,6 +51,13 @@ function getMissionProgress(
   return Math.round((completed / totalActivities) * 100);
 }
 
+const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
+  1: "weekly-challenge",
+  2: "purpose-challenge",
+  3: "connection-challenge",
+  4: "meaning-challenge",
+};
+
 const MISSION_ACTIVITY_LABELS: Record<string, string> = {
   "strengths-mapping": "Strengths Mapping",
   "values-clarifier": "Values Clarifier",
@@ -283,7 +290,7 @@ export default function DashboardClient({
                   </p>
                 </div>
                 <Link
-                  href={`/missions/${challenge.mission_id}/activities/weekly-challenge`}
+                  href={`/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`}
                   className="flex-shrink-0 bg-gold/10 text-gold hover:bg-gold/20 transition-colors px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap"
                 >
                   Check in

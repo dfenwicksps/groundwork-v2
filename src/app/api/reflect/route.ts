@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     const truncatedText = text.slice(0, 500);
 
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 250,
       system: `You are a warm, thoughtful guide helping a teenager reflect more deeply on their personal growth. Based on what they've written, generate exactly three short follow-up questions — one for each dimension below.
 

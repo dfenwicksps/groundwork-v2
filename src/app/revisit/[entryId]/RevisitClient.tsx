@@ -13,6 +13,7 @@ const ACTIVITY_LABELS: Record<string, string> = {
   "values-clarifier": "Values Clarifier",
   "mask-check": "The Mask Check",
   "identity-letter": "Identity Letter",
+  "weekly-challenge": "Weekly Challenge",
   "what-matters": "What Matters",
   "contribution-map": "The Contribution Map",
   "the-other-side": "The Other Side",
