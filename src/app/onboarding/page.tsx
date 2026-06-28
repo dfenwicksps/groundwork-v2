@@ -154,7 +154,11 @@ export default function OnboardingPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = createClient() as any;
     const { data: { user } } = await db.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      router.push("/auth");
+      return;
+    }
 
     // Detect and persist processing style from the 3 style questions
     const votes = Object.values(styleAnswers);
@@ -162,17 +166,42 @@ export default function OnboardingPage() {
       setProcessingStyle(tallyStyle(votes));
     }
 
-    // Update display name
-    if (name) {
-      await db.from("users").update({ display_name: name }).eq("id", user.id);
+    // Ensure the user row exists and mark onboarding complete in a single
+    // upsert. The auto-create trigger may not have run for this account; a
+    // plain update would silently affect zero rows and loop the user back to
+    // onboarding. Upserting also guarantees the row exists before the
+    // onboarding_results insert below, which has a FK on users(id).
+    const { error: userErr } = await db
+      .from("users")
+      .upsert(
+        {
+          id: user.id,
+          onboarding_complete: true,
+          ...(name ? { display_name: name } : {}),
+        },
+        { onConflict: "id" }
+      );
+
+    if (userErr) {
+      setLoading(false);
+      alert(
+        "Something went wrong saving your profile. Please try again.\n\n" +
+          userErr.message
+      );
+      return;
     }
 
     // Save onboarding results
-    await db.from("onboarding_results").insert({
+    const { error: resultsErr } = await db.from("onboarding_results").insert({
       user_id: user.id,
       why_here: whyHere,
       values: selectedValues,
     });
+    if (resultsErr) {
+      // Non-fatal: the profile is already marked complete, so don't block the
+      // user from continuing — just log it.
+      console.error("Failed to save onboarding results:", resultsErr.message);
+    }
 
     // Save support circle contact if provided
     if (!skip && supportName && supportRelationship) {
@@ -182,12 +211,6 @@ export default function OnboardingPage() {
         relationship: supportRelationship,
       });
     }
-
-    // Mark onboarding complete
-    await db
-      .from("users")
-      .update({ onboarding_complete: true })
-      .eq("id", user.id);
 
     router.push("/dashboard");
   }
