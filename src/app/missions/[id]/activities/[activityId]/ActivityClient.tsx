@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { cn, parseReflection } from "@/lib/utils";
 import { type ProcessingStyle, getProcessingStyle } from "@/lib/processingStyle";
+import { type LearningMode, getLearningMode, setLearningMode } from "@/lib/learningMode";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import type { JournalEntry, Challenge } from "@/types/database";
@@ -17,6 +18,44 @@ interface Props {
   existingEntry: JournalEntry | null;
   existingChallenge: Challenge | null;
   pairedStory?: { id: string; title: string; teaser: string } | null;
+}
+
+// ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
+
+const OTHER_OPTION = "__other__";
+
+function ModeToggle({
+  mode,
+  onChange,
+  accent,
+}: {
+  mode: LearningMode;
+  onChange: (m: LearningMode) => void;
+  accent: string;
+}) {
+  return (
+    <div
+      className="inline-flex items-center p-0.5 rounded-full border border-[--border] bg-white text-xs font-semibold"
+      role="group"
+      aria-label="Answer mode"
+    >
+      {(["starter", "advanced"] as const).map((m) => (
+        <button
+          key={m}
+          type="button"
+          onClick={() => onChange(m)}
+          aria-pressed={mode === m}
+          className={cn(
+            "px-3 py-1.5 rounded-full transition-colors",
+            mode === m ? "text-white" : "text-[--ink-muted] hover:text-[--ink]"
+          )}
+          style={mode === m ? { background: accent } : undefined}
+        >
+          {m === "starter" ? "Starter" : "Advanced"}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 // ─── Conversational journal flow ──────────────────────────────────────────────
@@ -55,9 +94,34 @@ function ConversationalActivity({
   const [phase, setPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
   );
+  const [mode, setModeState] = useState<LearningMode>("starter");
+  // Read the saved preference after mount to avoid a hydration mismatch.
+  useEffect(() => setModeState(getLearningMode()), []);
   const [qIdx, setQIdx] = useState(0);
   const [turns, setTurns] = useState<CompletedTurn[]>([]);
   const [current, setCurrent] = useState("");
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Starter mode uses multiple-choice when the current step has options.
+  const stepOptions = activity.starterOptions?.[qIdx];
+  const usingStarter = mode === "starter" && !!stepOptions;
+  const writingOther = !usingStarter || selectedOption === OTHER_OPTION;
+
+  function changeMode(m: LearningMode) {
+    setModeState(m);
+    setLearningMode(m);
+    setSelectedOption(null);
+    setCurrent("");
+  }
+
+  function pickOption(opt: string) {
+    setSelectedOption(opt);
+    if (opt !== OTHER_OPTION) {
+      setCurrent("");
+    } else {
+      setTimeout(() => textareaRef.current?.focus(), 50);
+    }
+  }
   const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [aiReflection, setAiReflection] = useState<string | null>(
@@ -103,14 +167,25 @@ function ConversationalActivity({
   }
 
   function canSubmitCurrent() {
+    if (usingStarter) {
+      if (selectedOption && selectedOption !== OTHER_OPTION) return true;
+      if (selectedOption === OTHER_OPTION) return current.trim().length > 2;
+      return false;
+    }
     return current.trim().length > 5;
   }
 
   async function handleNextQuestion() {
     if (!canSubmitCurrent()) return;
 
-    const newTurns = [...turns, { question: questions[qIdx], answer: current.trim() }];
+    const answer =
+      usingStarter && selectedOption !== OTHER_OPTION
+        ? selectedOption ?? ""
+        : current.trim();
+
+    const newTurns = [...turns, { question: questions[qIdx], answer }];
     setCurrent("");
+    setSelectedOption(null);
     setTurns(newTurns);
 
     if (qIdx + 1 < questions.length) {
@@ -197,6 +272,7 @@ function ConversationalActivity({
     const prefill = single ? turns[0]?.answer || existingResponse : "";
     setTurns([]);
     setQIdx(0);
+    setSelectedOption(null);
     setCurrent(prefill);
     setPhase("q");
   }
@@ -262,6 +338,23 @@ function ConversationalActivity({
                 </div>
               )}
             </div>
+
+            {/* Starter / Advanced mode chooser */}
+            {activity.starterOptions && activity.starterOptions.length > 0 && (
+              <div className="mb-6 rounded-2xl border border-[--border] bg-white p-4">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <span className="text-sm font-semibold text-[--ink]">
+                    How do you want to answer?
+                  </span>
+                  <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
+                </div>
+                <p className="text-xs text-[--ink-muted] leading-relaxed">
+                  {mode === "starter"
+                    ? "Starter — pick the answer that fits you best. Quick and easy, no writing needed."
+                    : "Advanced — write your own reflection, in your own words."}
+                </p>
+              </div>
+            )}
 
             {/* Intro text */}
             {activity.intro && (
@@ -331,7 +424,11 @@ function ConversationalActivity({
               className="btn btn-primary w-full py-4 text-base rounded-xl mt-2"
               style={{ background: mission.colour }}
             >
-              {questions.length === 1 ? "Start writing" : "Begin →"}
+              {usingStarter
+                ? "Begin →"
+                : questions.length === 1
+                ? "Start writing"
+                : "Begin →"}
             </button>
             <p className="text-[10px] text-[--ink-muted]/50 text-center mt-3 leading-relaxed">
               All entries are private. Only you can see this.
@@ -379,6 +476,11 @@ function ConversationalActivity({
                 style={{ width: `${progressPct}%`, background: mission.colour }}
               />
             </div>
+            {activity.starterOptions && activity.starterOptions.length > 0 && (
+              <div className="flex justify-end mt-2">
+                <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -475,8 +577,50 @@ function ConversationalActivity({
               </p>
             </div>
 
-            {/* Sentence starters */}
-            {activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
+            {/* Starter mode: multiple-choice options */}
+            {usingStarter && (
+              <div data-animate="3" className="space-y-2">
+                {stepOptions!.map((opt) => {
+                  const sel = selectedOption === opt;
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => pickOption(opt)}
+                      className={cn(
+                        "w-full text-left px-4 py-3 rounded-xl border text-sm leading-relaxed transition-all",
+                        sel
+                          ? "text-white"
+                          : "bg-white text-[--ink] border-[--border] hover:border-[rgba(0,0,0,0.18)]"
+                      )}
+                      style={sel ? { background: mission.colour, borderColor: mission.colour } : undefined}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => pickOption(OTHER_OPTION)}
+                  className={cn(
+                    "w-full text-left px-4 py-3 rounded-xl border border-dashed text-sm transition-all",
+                    selectedOption === OTHER_OPTION
+                      ? "border-solid text-[--ink]"
+                      : "text-[--ink-muted] hover:text-[--ink]"
+                  )}
+                  style={
+                    selectedOption === OTHER_OPTION
+                      ? { borderColor: mission.colour, background: `${mission.colour}0D` }
+                      : { borderColor: "var(--border)" }
+                  }
+                >
+                  ✎ Something else — let me write it
+                </button>
+              </div>
+            )}
+
+            {/* Advanced mode: sentence starters */}
+            {!usingStarter && activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
               <div data-animate="3">
                 <p className="text-xs text-[--ink-muted] mb-2 px-0.5">Try starting with:</p>
                 <div className="flex flex-wrap gap-2">
@@ -501,18 +645,20 @@ function ConversationalActivity({
         {/* Fixed input bar */}
         <div className="conv-input-bar">
           <div className="max-w-lg mx-auto">
-            <textarea
-              ref={textareaRef}
-              className="conv-textarea mb-2"
-              value={current}
-              onChange={(e) => setCurrent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Write your answer here…"
-              rows={2}
-            />
+            {writingOther && (
+              <textarea
+                ref={textareaRef}
+                className="conv-textarea mb-2"
+                value={current}
+                onChange={(e) => setCurrent(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Write your answer here…"
+                rows={2}
+              />
+            )}
             <div className="flex items-center gap-3">
               <p className="flex-1 text-[10px] text-[--ink-muted]/40 leading-tight">
-                ⌘ Return to advance
+                {writingOther ? "⌘ Return to advance" : "Pick the one that fits you best"}
               </p>
               <button
                 onClick={handleNextQuestion}
@@ -701,6 +847,12 @@ function ValuesPickerActivity({
   const [style] = useState<ProcessingStyle | null>(() =>
     typeof window !== "undefined" ? getProcessingStyle() : null
   );
+  const [mode, setModeState] = useState<LearningMode>("starter");
+  useEffect(() => setModeState(getLearningMode()), []);
+  function changeMode(m: LearningMode) {
+    setModeState(m);
+    setLearningMode(m);
+  }
 
   function toggleValue(val: string) {
     if (selectedValues.includes(val)) {
@@ -720,7 +872,7 @@ function ValuesPickerActivity({
     setSubmitting(true);
 
     const finalResponse = selectedValues
-      .map((v) => `${v}: ${valueReasons[v] || "(no reason given)"}`)
+      .map((v) => (valueReasons[v] ? `${v}: ${valueReasons[v]}` : v))
       .join("\n");
 
     const entryId = entryIdRef.current;
@@ -757,10 +909,15 @@ function ValuesPickerActivity({
       const vals: string[] = [];
       const reasons: Record<string, string> = {};
       source.split("\n").forEach((line) => {
-        const idx = line.indexOf(":");
-        if (idx === -1) return;
-        const v = line.slice(0, idx).trim();
-        const r = line.slice(idx + 1).trim();
+        const t = line.trim();
+        if (!t) return;
+        const idx = t.indexOf(":");
+        if (idx === -1) {
+          vals.push(t);
+          return;
+        }
+        const v = t.slice(0, idx).trim();
+        const r = t.slice(idx + 1).trim();
         if (!v) return;
         vals.push(v);
         if (r && r !== "(no reason given)") reasons[v] = r;
@@ -843,6 +1000,21 @@ function ValuesPickerActivity({
           <p className="text-[--ink] leading-relaxed">{activity.prompt}</p>
         </div>
 
+        {/* Starter / Advanced mode chooser */}
+        <div className="mb-5 rounded-2xl border border-[--border] bg-white p-4">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-sm font-semibold text-[--ink]">
+              How do you want to answer?
+            </span>
+            <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
+          </div>
+          <p className="text-xs text-[--ink-muted] leading-relaxed">
+            {mode === "starter"
+              ? "Starter — just choose your values. That's all you need to do."
+              : "Advanced — choose your values, then add why each one matters."}
+          </p>
+        </div>
+
         {style === "informational" && activity.whyItMatters && (
           <div className="mb-5">
             <button
@@ -923,7 +1095,7 @@ function ValuesPickerActivity({
           )}
         </div>
 
-        {selectedValues.length > 0 && (
+        {mode === "advanced" && selectedValues.length > 0 && (
           <div className="space-y-4 mb-6">
             <p className="text-sm font-medium text-[--ink]">
               Why does each one matter to you? (optional)

@@ -31,6 +31,15 @@ export interface Activity {
   /** Clickable sentence openers to help with the blank-page moment */
   sentenceStarters?: string[];
   /**
+   * Multiple-choice answers for "Starter" mode, aligned 1:1 by index with
+   * scaffoldingSteps (starterOptions[i] are the choices for scaffoldingSteps[i]).
+   * In Starter mode (the default) the teen picks the option they align with most
+   * instead of writing; Advanced mode opens the open-ended textarea. A
+   * "Something else" path is always offered on top of these so nobody is boxed
+   * in. Optional — only Mission 1 authors these.
+   */
+  starterOptions?: string[][];
+  /**
    * Extra conceptual context shown to Informational-style users.
    * Explains the psychological or research basis for the activity.
    */
@@ -166,6 +175,36 @@ export const MISSIONS: Mission[] = [
           "What do you actually do for them — make a plan, calm them down, distract them, hype them up, just listen? What does your instinct in that moment say you're good at?",
           "What do you think they'd say — and is it something you'd find hard to claim about yourself? Looking back at the situations above, what keeps showing up?",
         ],
+        starterOptions: [
+          [
+            "The organiser — I sort out who's doing what",
+            "The ideas person — I get everyone thinking",
+            "The calm one — I keep the group steady",
+            "The doer — I quietly get the actual work done",
+            "The motivator — I keep everyone's energy up",
+          ],
+          [
+            "Making, building, or fixing something",
+            "Helping someone work through a problem",
+            "Competing, training, or playing",
+            "Creating — art, music, writing, video, design",
+            "Figuring out how something works",
+          ],
+          [
+            "Help them make a plan and break it down",
+            "Calm them down and steady their nerves",
+            "Distract them and lighten the mood",
+            "Hype them up and remind them they've got this",
+            "Just listen — let them get it all out",
+          ],
+          [
+            "I'm dependable — people know they can count on me",
+            "I'm creative — I see things others don't",
+            "I'm steady — I keep my head when things get tense",
+            "I'm driven — I push through and get things done",
+            "I'm a connector — I bring people together",
+          ],
+        ],
         sentenceStarters: [
           "The role I usually end up in is...",
           "I lose track of time when I'm...",
@@ -224,6 +263,36 @@ export const MISSIONS: Mission[] = [
           "What were you protecting in that moment — what did you think might happen if you'd left it as it was? What does that fear cost you over time?",
           "What's different about that place or person? What do they give you that the harder rooms don't — and what would it take to feel a little more of that elsewhere?",
         ],
+        starterOptions: [
+          [
+            "I get louder and more myself with close friends",
+            "I go quieter and more careful in some rooms",
+            "I act more grown-up or 'sorted' than I feel",
+            "I hide my real opinions to keep the peace",
+            "Honestly, I'm pretty much the same everywhere",
+          ],
+          [
+            "A creative side most people don't see",
+            "How much I actually care about things",
+            "Worries or pressure I keep to myself",
+            "An interest I think others would judge",
+            "A softer, more sensitive side",
+          ],
+          [
+            "Being judged or laughed at",
+            "Looking like I'm trying too hard",
+            "Being seen as 'too much' or 'too intense'",
+            "Letting people down or disappointing them",
+            "Not really sure — it's just a habit",
+          ],
+          [
+            "They accept me without me explaining myself",
+            "No pressure to perform or impress",
+            "We share the same humour or interests",
+            "I trust them not to judge me",
+            "They knew me before I started masking",
+          ],
+        ],
         sentenceStarters: [
           "The 'me' people see in that room is...",
           "I tend to hide the part of me that...",
@@ -259,6 +328,36 @@ export const MISSIONS: Mission[] = [
           "What's the true thing future-you might need reminding of on that hard day?",
           "What does that moment quietly tell you about something you're still working on — said kindly, the way you'd say it to a friend?",
           "What's their one sentence — and is it something you'd struggle to say about yourself? Try saying it anyway.",
+        ],
+        starterOptions: [
+          [
+            "I'm loyal — I show up for the people I care about",
+            "I'm curious — I love figuring things out",
+            "I'm creative — I'm always making or imagining",
+            "I'm thoughtful — I notice and feel things deeply",
+            "I'm determined — I don't give up easily",
+          ],
+          [
+            "This hard feeling won't last forever",
+            "You've gotten through hard things before",
+            "You are more than this one bad day",
+            "The people who love you are still there",
+            "It's okay to not be okay right now",
+          ],
+          [
+            "I'm learning to be kinder to myself",
+            "I'm working on speaking up for what I need",
+            "I'm learning it's okay to ask for help",
+            "I'm working on not comparing myself to others",
+            "I'm learning to handle big feelings better",
+          ],
+          [
+            "You're a genuinely good person",
+            "You're stronger than you give yourself credit for",
+            "You matter to more people than you realise",
+            "You're worth knowing, exactly as you are",
+            "You're doing better than you think",
+          ],
         ],
         sentenceStarters: [
           "Right now, you are someone who...",
