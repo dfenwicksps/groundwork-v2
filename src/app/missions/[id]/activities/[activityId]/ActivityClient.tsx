@@ -188,6 +188,19 @@ function ConversationalActivity({
     }
   }
 
+  // Reopen a completed activity to revise the answer. entryIdRef still holds
+  // the saved entry id, so finalise() will UPDATE it in place rather than
+  // create a duplicate. Single-question activities pre-fill the existing text;
+  // multi-step ones start fresh (the saved response can't be reliably split).
+  function startEdit() {
+    const single = questions.length === 1;
+    const prefill = single ? turns[0]?.answer || existingResponse : "";
+    setTurns([]);
+    setQIdx(0);
+    setCurrent(prefill);
+    setPhase("q");
+  }
+
   const isLastQuestion = qIdx === questions.length - 1;
   const progressPct = Math.round((qIdx / questions.length) * 100);
 
@@ -622,6 +635,18 @@ function ConversationalActivity({
             </div>
           )}
 
+          {/* Edit own answer */}
+          <button
+            onClick={startEdit}
+            className="w-full flex items-center justify-center gap-2 text-sm font-medium text-[--teal] mb-4 py-2.5 rounded-xl border border-[--border] bg-white hover:bg-[--surface-muted] transition-colors"
+            data-animate="4"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Edit my answer
+          </button>
+
           {/* Navigation */}
           <div className="flex gap-3 pb-8" data-animate="4">
             <Link
@@ -668,6 +693,9 @@ function ValuesPickerActivity({
   const [hoveredValue, setHoveredValue] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingEntry);
+  // Holds the saved response locally so the summary + edit work even right
+  // after a fresh submit (when the existingEntry prop is still null).
+  const [savedResponse, setSavedResponse] = useState(existingEntry?.response || "");
   const whyId = useId();
   const [whyExpanded, setWhyExpanded] = useState(false);
   const [style] = useState<ProcessingStyle | null>(() =>
@@ -714,13 +742,39 @@ function ValuesPickerActivity({
       if (data?.id) entryIdRef.current = data.id;
     }
 
+    setSavedResponse(finalResponse);
     onComplete(finalResponse);
     setSubmitted(true);
     setSubmitting(false);
   }
 
+  // Reopen to revise. Re-populate the grid + reasons from the saved entry so
+  // the teen edits their existing choices rather than starting over. entryIdRef
+  // still holds the id, so handleSubmit updates the same entry.
+  function startEdit() {
+    const source = savedResponse || existingEntry?.response;
+    if (source) {
+      const vals: string[] = [];
+      const reasons: Record<string, string> = {};
+      source.split("\n").forEach((line) => {
+        const idx = line.indexOf(":");
+        if (idx === -1) return;
+        const v = line.slice(0, idx).trim();
+        const r = line.slice(idx + 1).trim();
+        if (!v) return;
+        vals.push(v);
+        if (r && r !== "(no reason given)") reasons[v] = r;
+      });
+      if (vals.length) {
+        setSelectedValues(vals);
+        setValueReasons(reasons);
+      }
+    }
+    setSubmitted(false);
+  }
+
   if (submitted) {
-    const lines = existingEntry?.response.split("\n") ?? [];
+    const lines = (savedResponse || existingEntry?.response || "").split("\n").filter(Boolean);
     return (
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         <div className="activity-header">
@@ -750,6 +804,15 @@ function ValuesPickerActivity({
               </div>
             ))}
           </div>
+          <button
+            onClick={startEdit}
+            className="w-full flex items-center justify-center gap-2 text-sm font-medium text-[--teal] mb-4 py-2.5 rounded-xl border border-[--border] bg-white hover:bg-[--surface-muted] transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Edit my values
+          </button>
           <div className="flex gap-3">
             <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">Back to mission</Link>
             <Link href="/dashboard" className="btn btn-primary flex-1 py-3 rounded-xl">Dashboard</Link>

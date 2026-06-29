@@ -37,6 +37,7 @@ export default async function MissionPage({
   return (
     <MissionDetailClient
       mission={mission}
+      userId={user.id}
       completedActivities={completedActivities}
       stories={stories || []}
     />

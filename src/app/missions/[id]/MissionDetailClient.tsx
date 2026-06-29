@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import type { Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
@@ -14,20 +17,43 @@ interface StoryPreview {
 
 interface Props {
   mission: Mission;
+  userId: string;
   completedActivities: Set<string>;
   stories: StoryPreview[];
 }
 
 export default function MissionDetailClient({
   mission,
+  userId,
   completedActivities,
   stories,
 }: Props) {
+  const router = useRouter();
+  const [confirmingRestart, setConfirmingRestart] = useState(false);
+  const [restarting, setRestarting] = useState(false);
+
   const totalUnlocked = mission.activities.filter((a) => !a.locked).length;
   const totalCompleted = mission.activities.filter(
     (a) => !a.locked && completedActivities.has(a.id)
   ).length;
   const progressPct = Math.round((totalCompleted / totalUnlocked) * 100);
+
+  // Reset this mission's progress so every activity can be redone. Journal
+  // entries are intentionally NOT deleted — they stay in the Journal as a
+  // record of what the user wrote. RLS scopes the delete to the user's rows.
+  async function restartMission() {
+    setRestarting(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = createClient() as any;
+    await db
+      .from("mission_progress")
+      .delete()
+      .eq("user_id", userId)
+      .eq("mission_id", mission.id);
+    setRestarting(false);
+    setConfirmingRestart(false);
+    router.refresh();
+  }
 
   return (
     <AppShell>
@@ -293,6 +319,51 @@ export default function MissionDetailClient({
             </div>
           );
         })()}
+
+        {/* Restart mission — only shown once there's progress to reset */}
+        {totalCompleted > 0 && (
+          <div className="pt-4 mt-2 border-t border-surface-border">
+            {!confirmingRestart ? (
+              <button
+                onClick={() => setConfirmingRestart(true)}
+                className="flex items-center gap-2 text-sm font-medium text-ink-muted hover:text-ink transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M11.5 7a4.5 4.5 0 1 1-1.32-3.18M11.5 1.5V4H9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Restart this mission
+              </button>
+            ) : (
+              <div className="card p-5">
+                <p className="text-sm font-medium text-ink mb-1">
+                  Restart {mission.title}?
+                </p>
+                <p className="text-xs text-ink-muted mb-4 leading-relaxed">
+                  Every activity opens up again so you can redo it. Your existing
+                  journal entries are kept — nothing you&apos;ve written is
+                  deleted.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setConfirmingRestart(false)}
+                    disabled={restarting}
+                    className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={restartMission}
+                    disabled={restarting}
+                    className="btn btn-primary flex-1 py-2.5 rounded-xl text-sm"
+                    style={{ background: mission.colour }}
+                  >
+                    {restarting ? "Restarting…" : "Yes, restart"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </AppShell>
   );
