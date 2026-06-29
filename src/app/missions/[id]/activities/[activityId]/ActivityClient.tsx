@@ -423,13 +423,39 @@ function ConversationalActivity({
               </div>
             ))}
 
+            {/* Scenario setup — Mission 1 scenario-driven steps. Shown above
+                the question so teens react to a concrete situation rather than
+                introspect from a blank page. */}
+            {activity.scenarios?.[qIdx] && (
+              <div
+                data-animate="1"
+                className="rounded-2xl p-4 border"
+                style={{
+                  background: `${mission.colour}0D`,
+                  borderColor: `${mission.colour}25`,
+                }}
+              >
+                <div
+                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2"
+                  style={{ color: mission.colour }}
+                >
+                  <span aria-hidden>✦</span> Picture this
+                </div>
+                <p className="text-[--ink] leading-relaxed text-[0.95rem] italic">
+                  {activity.scenarios[qIdx]}
+                </p>
+              </div>
+            )}
+
             {/* Current question */}
-            <div data-animate="1" className="question-card">
+            <div data-animate="2" className="question-card">
               <div
                 className="text-[10px] font-bold uppercase tracking-widest mb-3"
                 style={{ color: mission.colour }}
               >
-                Question {qIdx + 1}
+                {activity.scenarios?.[qIdx]
+                  ? "Now — you"
+                  : `Question ${qIdx + 1}`}
               </div>
               <p className="text-[--ink] leading-relaxed text-base">
                 {questions[qIdx]}
@@ -438,7 +464,7 @@ function ConversationalActivity({
 
             {/* Sentence starters */}
             {activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
-              <div data-animate="2">
+              <div data-animate="3">
                 <p className="text-xs text-[--ink-muted] mb-2 px-0.5">Try starting with:</p>
                 <div className="flex flex-wrap gap-2">
                   {activity.sentenceStarters.map((s) => (
@@ -773,6 +799,29 @@ function ValuesPickerActivity({
                 {activity.whyItMatters}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Scenario priming — help teens recognise a value in a situation
+            before facing the abstract list. */}
+        {activity.scenarios && activity.scenarios.length > 0 && (
+          <div className="mb-5 space-y-2">
+            <p className="text-xs font-medium text-[--ink-muted] mb-1 px-0.5 flex items-center gap-1.5">
+              <span aria-hidden style={{ color: mission.colour }}>✦</span>
+              Sit with these first — notice which ones pull at you:
+            </p>
+            {activity.scenarios.map((s, i) => (
+              <div
+                key={i}
+                className="rounded-xl px-4 py-3 border text-sm leading-relaxed text-[--ink] italic"
+                style={{
+                  background: `${mission.colour}0D`,
+                  borderColor: `${mission.colour}25`,
+                }}
+              >
+                {s}
+              </div>
+            ))}
           </div>
         )}
 

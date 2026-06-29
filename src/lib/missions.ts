@@ -19,6 +19,15 @@ export interface Activity {
   storyBefore?: number;
   /** Numbered sub-questions that break the main prompt into smaller, guided steps */
   scaffoldingSteps?: string[];
+  /**
+   * Concrete, relatable scenarios shown *before* each question to help teens
+   * who "don't know what they don't know" recognise themselves in a situation
+   * rather than introspect from a blank page. Aligned 1:1 by index with
+   * scaffoldingSteps (scenarios[i] sets up scaffoldingSteps[i]). For
+   * values_picker activities, rendered as priming cards above the grid.
+   * Optional — only Mission 1 uses these, so other missions are unaffected.
+   */
+  scenarios?: string[];
   /** Clickable sentence openers to help with the blank-page moment */
   sentenceStarters?: string[];
   /**
@@ -138,23 +147,29 @@ export const MISSIONS: Mission[] = [
         title: "Strengths Mapping",
         subtitle: "Step 1 of 5 · Inner compass",
         intro:
-          "Your inner compass is who you feel yourself to be in your own skin — the abilities, instincts, and qualities that belong to you regardless of who's watching or what role you're playing. This step begins there. Not what you've been told you're good at. What you've actually felt.",
+          "Most people can't list their strengths if you ask them straight out — it feels like bragging, or your mind just goes blank. So we're not going to ask you that. Instead, we'll walk through a few everyday situations. Notice how you'd actually react in each one. That reaction is the clue. Your strengths are usually the things you do so naturally you don't even count them as skills.",
         warmUp:
-          "Think of one moment recently where you felt capable — not perfect, just: 'I can do this.' It doesn't have to be impressive. Hold that moment in your mind before you write.",
+          "There's no right answer to any of this, and nobody else will see it. You're just noticing patterns in how you already are.",
         prompt:
           "Think about a moment recently when you felt genuinely good at something. What were you doing, and what made it feel natural?",
         secondaryPrompt:
           "Try to be specific — not 'I'm good at sport' but what exactly were you doing, and what about it felt right?",
+        scenarios: [
+          "A teacher splits the class into groups for a big project. Within five minutes everyone's fallen into a role without being told to — one person's organising, one's firing out ideas, one's keeping everyone calm, one's quietly getting the actual work done.",
+          "It's the weekend and you've got a few free hours with nothing you have to do. You end up doing something and afterwards you feel more energised than when you started — not drained, not bored. Could be making something, fixing something, gaming, helping someone, going somewhere, figuring something out.",
+          "A friend messages you the night before something stressful — an exam, a tryout, a performance, a hard conversation. They're panicking. You're the one they came to.",
+          "Someone who's known you for years is asked: 'What's the thing that person is just naturally good at?' They answer without hesitating.",
+        ],
         scaffoldingSteps: [
-          "Describe the moment: where were you, and what were you actually doing?",
-          "What about it felt natural or right — not just that you did it well, but that it felt like you?",
-          "Think of another time you felt this way. What do those moments have in common?",
-          "What does this pattern suggest about who you are?",
+          "In a situation like that, which person do you usually become — and what do you end up actually doing? Describe it like it's a normal Tuesday for you.",
+          "What was the thing you did, and what was it about it that left you feeling good rather than tired?",
+          "What do you actually do for them — make a plan, calm them down, distract them, hype them up, just listen? What does your instinct in that moment say you're good at?",
+          "What do you think they'd say — and is it something you'd find hard to claim about yourself? Looking back at the situations above, what keeps showing up?",
         ],
         sentenceStarters: [
-          "I felt genuinely capable when...",
-          "Something that seems easy for me but hard for others is...",
+          "The role I usually end up in is...",
           "I lose track of time when I'm...",
+          "People seem to rely on me for...",
         ],
         whyItMatters:
           "Research on identity development shows that people who can articulate their strengths — not just their roles or achievements — make more confident decisions and navigate uncertainty better. This isn't about ego. It's about building a clear inner compass. The act of naming a strength in your own words activates it as part of your identity, not just a skill you happen to have.",
@@ -166,11 +181,17 @@ export const MISSIONS: Mission[] = [
         title: "Values Clarifier",
         subtitle: "Step 2 of 5 · Inner compass",
         intro:
-          "Strengths are about what you can do. Values sit even deeper — they're the beliefs that drive you from the inside, whether or not anyone else can see them. Both live at the core of your inner compass. This step asks you to move from ability to belief: from 'I'm good at this' to 'this genuinely matters to me.' Hover over any value to read its definition.",
+          "'What are your values?' is almost impossible to answer cold — the word feels big and abstract. But you make value-based choices every day without naming them. So before you pick, read the situations below. Notice which ones tug at you, which make you go 'I'd hate that' or 'that'd really bother me.' That reaction is a value showing itself. Then the list will feel a lot easier.",
         warmUp:
-          "Think about a recent decision you feel good about — something that felt right, even if it was hard. What was the value underneath that decision, even if you didn't name it at the time?",
+          "You don't have to relate to all of these — just notice which ones pull at something in you. That pull is the clue.",
+        scenarios: [
+          "You find out a friend has been quietly spreading something untrue about another friend. Calling it out could cost you — but staying quiet doesn't sit right either. What's the part of you that won't let it go?",
+          "Two free Saturdays, two versions of you. One stays in, deep into something you love, totally absorbed and happy on your own. The other is out, around people, in the middle of everything. Which one feels more like a good day — and what does that say you need?",
+          "An adult you respect breaks a promise to you and never mentions it again. It stings more than you expected. Which part stings most — the unfairness, the broken trust, the not being taken seriously?",
+          "You're handed the chance to do something new that you might genuinely be bad at in front of people. Part of you wants to run. Part of you is curious. Which part usually wins — and how do you feel about that?",
+        ],
         prompt:
-          "From the list below, choose the five values that feel most like you — not the ones you think you should have, but the ones that are actually true. When you're done, look at all five together and ask yourself: what does this combination say about my inner compass?",
+          "Now, from the list below, choose the five values that feel most like you — not the ones you think you should have, but the ones that are actually true. When you're done, look at all five together and ask: what does this combination say about my inner compass?",
         valuesOptions: VALUES_LIST,
         valuesCount: 5,
         whyItMatters:
@@ -183,24 +204,30 @@ export const MISSIONS: Mission[] = [
         title: "The Mask Check",
         subtitle: "Step 3 of 5 · Your public self",
         intro:
-          "Your public self is the version of you that others see — and it's shaped partly by the groups you belong to. At school, at home, with close friends, you might show up quite differently. That's not dishonesty — it's the natural gap between your inner compass and the social context you're in. This step is about noticing where that gap is biggest. Not judging it. Just seeing it clearly.",
+          "Everyone wears slightly different versions of themselves in different rooms — that's normal, not fake. But it's hard to see your own masks until someone points at a specific moment. So here are some specific moments. Notice which 'you' shows up in each, and how far that is from the you on the inside.",
         warmUp:
-          "Think of a group you're part of — a team, a friend group, a class, a community. When you're in that group, do you feel most like yourself, or do you feel like you're playing a role? Just notice that before you write.",
+          "This isn't about catching yourself being fake. Everyone adjusts. We're just looking at where the gap is biggest — because that's where the most interesting stuff usually is.",
         storyBefore: 0,
         prompt:
           "Think about who you are at school, at home, and with your closest friends. Where do you feel most like yourself? Where do you feel like you're performing?",
         secondaryPrompt:
           "What would it look like to bring a little more of the real you into one of those spaces?",
+        scenarios: [
+          "Same joke, three rooms. Something funny pops into your head. With your closest friends you'd say it one way. In class you'd say a watered-down version, or read the room and not bother. At a family dinner you might not say it at all.",
+          "There's a part of you that mostly only exists when you're completely alone — something you think about, like, make, or care about that almost nobody around you knows is there. Not a dark secret, just a part that stays private.",
+          "You're scrolling and you catch yourself posting — or almost posting — something. Then you delete it, or change it, because of how it might land. That tiny edit is the gap between the inside you and the outside you, happening in real time.",
+          "One place — a friend, a group, a team, a room, even one person — where you notice you don't brace yourself before walking in. You're just... already you.",
+        ],
         scaffoldingSteps: [
-          "Pick one of these settings — school, home, or with close friends. Describe the version of yourself people see there.",
-          "Where is the gap biggest between how you present yourself and how you actually feel inside?",
-          "What makes it feel risky to show more of yourself in that space? What would you lose — or what might people think?",
-          "Think about the groups you belong to — a friend group, a team, a community. In which one do you feel least like you're performing? What makes that group different from the others?",
+          "Pick two of those rooms. How does the 'you' that shows up actually change between them — your volume, your opinions, how much you let show?",
+          "What's one part of you that stays mostly hidden? You don't have to reveal it in detail — just name that it's there and where it lives.",
+          "What were you protecting in that moment — what did you think might happen if you'd left it as it was? What does that fear cost you over time?",
+          "What's different about that place or person? What do they give you that the harder rooms don't — and what would it take to feel a little more of that elsewhere?",
         ],
         sentenceStarters: [
-          "I feel most like myself when...",
+          "The 'me' people see in that room is...",
           "I tend to hide the part of me that...",
-          "I wish people knew that I...",
+          "I feel least like I'm performing when...",
         ],
         whyItMatters:
           "Psychologists call the gap between your private and public self 'self-monitoring'. Some gap is normal and healthy — we all adapt to context. But when the gap gets very large, it tends to correlate with higher anxiety and a fragmented sense of identity. This activity isn't about eliminating the gap. It's about seeing it clearly so you can decide — consciously — where you want to close it.",
@@ -214,23 +241,29 @@ export const MISSIONS: Mission[] = [
         intro:
           "You've explored your inner compass — your strengths and values. You've examined your public self — where you perform versus where you're real. You've started to notice your social self — where you feel genuinely known versus where you belong on the surface. Now comes the step that holds all three together. This letter asks you to speak directly to yourself about who you actually are right now — and who you sense you're becoming.",
         warmUp:
-          "If you had to describe yourself to someone who'd never met you — not your achievements or appearance, but who you genuinely are right now and who you sense you're becoming — what three things would you say?",
+          "You've already done the hard noticing in the last three steps. This letter just gathers it up. Write it to yourself as 'you' — it's private, permanent, and only ever for you.",
         storyBefore: 1,
         prompt:
           "Write a short letter to yourself — not who you think you should be, but who you actually are right now. Be honest. Be kind.",
         secondaryPrompt:
           "This letter is private. Nobody else will ever read it. That's the whole point.",
         isMilestone: true,
+        scenarios: [
+          "Someone your age has just moved here and knows literally nothing about you — not your grades, not your socials, not what you look like. You get one conversation to tell them who you actually are.",
+          "It's a hard day, a year from now. Future-you is reading this letter looking for something to hold onto. They need a reminder of something true about who you are right now.",
+          "Think of a recent moment you're not proud of — everyone has them. Not to beat yourself up. Just to be honest that you're a work in progress, like everyone.",
+          "The kindest person who really knows you is asked to describe you in one honest sentence. They don't flatter you — they just see you clearly.",
+        ],
         scaffoldingSteps: [
-          "Describe who you are today — your personality, your quirks, what genuinely matters to you (not your achievements or roles).",
-          "Acknowledge something difficult or uncertain about who you are right now. It's okay if things aren't settled.",
-          "Say something kind and honest about yourself that you rarely admit out loud.",
-          "What would you want your future self to remember about who you are at this exact moment?",
+          "What would you want them to understand about you first — your personality, your quirks, what actually matters to you, not your achievements?",
+          "What's the true thing future-you might need reminding of on that hard day?",
+          "What does that moment quietly tell you about something you're still working on — said kindly, the way you'd say it to a friend?",
+          "What's their one sentence — and is it something you'd struggle to say about yourself? Try saying it anyway.",
         ],
         sentenceStarters: [
           "Right now, you are someone who...",
-          "Something true about you that you don't say enough is...",
-          "The version of you that nobody sees is...",
+          "On a hard day, remember that you...",
+          "Something true you don't say enough is...",
         ],
         whyItMatters:
           "Writing about yourself in the second person — addressing yourself as 'you' — activates a different kind of self-awareness than thinking in the first person does. Studies on expressive writing show it can reduce self-criticism, increase clarity about values, and help consolidate fragmented self-perceptions into a more coherent sense of identity. The letter format isn't arbitrary — it works.",
@@ -242,9 +275,9 @@ export const MISSIONS: Mission[] = [
         title: "Weekly Challenge",
         subtitle: "Step 5 of 5",
         intro:
-          "Identity isn't only what you think about yourself — it's what happens when you actually live. This final step isn't about having everything figured out. It's about experimenting: taking one small thing you've discovered and seeing what it feels like to live it, even briefly. You don't need to be certain. Noticing counts.",
+          "Everything so far has been noticing. This step is one small experiment in the real world — taking one thing you discovered about yourself and actually living it once, just to see what it feels like. You don't need to be certain and it doesn't need to go well. Noticing what happens is the whole point.",
         prompt:
-          "This week, pick one small thing you discovered about yourself and actually do it — not to prove anything, just to see what it feels like. Maybe you speak up about something you'd normally stay quiet on. Maybe you make something, go somewhere, or just let one person see a side of you they haven't seen. It doesn't have to go well. Just notice what happens.",
+          "Pick ONE small experiment for this week — whichever one made you go 'ugh, maybe':\n\n• Say the toned-down thing at full volume once — voice an opinion in a room where you'd normally stay quiet.\n• Let one person see a hidden part — show someone a thing you make, think, or care about that you usually keep private.\n• Use a strength on purpose — put the thing you're naturally good at to use in a situation that isn't asking for it.\n• Spend an hour on the 'good day' version of you — do the thing that energises you, guilt-free, and pay attention to how it feels.\n\nPick one. Keep it small. Just notice what happens.",
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
