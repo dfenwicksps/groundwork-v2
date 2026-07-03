@@ -164,10 +164,10 @@ export const MISSIONS: Mission[] = [
         secondaryPrompt:
           "Try to be specific — not 'I'm good at sport' but what exactly were you doing, and what about it felt right?",
         scenarios: [
-          "A teacher splits the class into groups for a big project. Within five minutes everyone's fallen into a role without being told to — one person's organising, one's firing out ideas, one's keeping everyone calm, one's quietly getting the actual work done.",
+          "A teacher splits the class into groups for a big project. Within five minutes everyone's fallen into a role without being told to — one person's organising, one's throwing out ideas, one's keeping everyone calm, one's quietly getting the actual work done.",
           "It's the weekend and you've got a few free hours with nothing you have to do. You end up doing something and afterwards you feel more energised than when you started — not drained, not bored. Could be making something, fixing something, gaming, helping someone, going somewhere, figuring something out.",
           "A friend messages you the night before something stressful — an exam, a tryout, a performance, a hard conversation. They're panicking. You're the one they came to.",
-          "Someone who's known you for years is asked: 'What's the thing that person is just naturally good at?' They answer without hesitating.",
+          "Someone who's known you for years is asked what you're just naturally good at. They answer straight away, without having to stop and think.",
         ],
         scaffoldingSteps: [
           "In a situation like that, which person do you usually become — and what do you end up actually doing? Describe it like it's a normal Tuesday for you.",
@@ -230,7 +230,7 @@ export const MISSIONS: Mission[] = [
           "You're handed the chance to do something new that you might genuinely be bad at in front of people. Part of you wants to run. Part of you is curious. Which part usually wins — and how do you feel about that?",
         ],
         prompt:
-          "Now, from the list below, choose the five values that feel most like you — not the ones you think you should have, but the ones that are actually true. When you're done, look at all five together and ask: what does this combination say about my inner compass?",
+          "Values can feel like a big, abstract word — so don't try to name yours from a blank page. Read the situations below first and notice which ones pull at something in you. Then choose the five values that feel most true — not the ones you think you should have.",
         valuesOptions: VALUES_LIST,
         valuesCount: 5,
         whyItMatters:
@@ -255,7 +255,7 @@ export const MISSIONS: Mission[] = [
           "Same joke, three rooms. Something funny pops into your head. With your closest friends you'd say it one way. In class you'd say a watered-down version, or read the room and not bother. At a family dinner you might not say it at all.",
           "There's a part of you that mostly only exists when you're completely alone — something you think about, like, make, or care about that almost nobody around you knows is there. Not a dark secret, just a part that stays private.",
           "You're scrolling and you catch yourself posting — or almost posting — something. Then you delete it, or change it, because of how it might land. That tiny edit is the gap between the inside you and the outside you, happening in real time.",
-          "One place — a friend, a group, a team, a room, even one person — where you notice you don't brace yourself before walking in. You're just... already you.",
+          "One place or person — a friend, a group, a team, even a single person — where you don't quietly brace yourself before walking in. You're just already you.",
         ],
         scaffoldingSteps: [
           "Pick two of those rooms. How does the 'you' that shows up actually change between them — your volume, your opinions, how much you let show?",

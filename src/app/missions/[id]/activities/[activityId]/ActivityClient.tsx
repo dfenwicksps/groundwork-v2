@@ -91,6 +91,11 @@ function ConversationalActivity({
       ? activity.scaffoldingSteps
       : [activity.prompt];
 
+  // Next unlocked activity in this mission, for a "continue" action.
+  const currentIdx = mission.activities.findIndex((a) => a.id === activity.id);
+  const nextActivity =
+    mission.activities.slice(currentIdx + 1).find((a) => !a.locked) || null;
+
   const [phase, setPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
   );
@@ -101,6 +106,8 @@ function ConversationalActivity({
   const [turns, setTurns] = useState<CompletedTurn[]>([]);
   const [current, setCurrent] = useState("");
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const prevAnswersRef = useRef<string[]>([]);
 
   // Starter mode uses multiple-choice when the current step has options.
   const stepOptions = activity.starterOptions?.[qIdx];
@@ -122,6 +129,56 @@ function ConversationalActivity({
       setTimeout(() => textareaRef.current?.focus(), 50);
     }
   }
+
+  // Build the saved response string from a set of answered turns.
+  function buildResponse(allTurns: CompletedTurn[]) {
+    return allTurns.length === 1
+      ? allTurns[0].answer
+      : allTurns
+          .map((t, i) => `${i + 1}. ${t.question}\n${t.answer}`)
+          .join("\n\n");
+  }
+
+  // Split a previously-saved response back into per-question answers, using the
+  // known question text as delimiters so multi-line answers parse reliably.
+  function parsePrevAnswers(saved: string): string[] {
+    if (!saved) return [];
+    if (questions.length === 1) return [saved.trim()];
+    return questions.map((q, i) => {
+      const header = `${i + 1}. ${q}`;
+      const start = saved.indexOf(header);
+      if (start === -1) return "";
+      const answerStart = start + header.length;
+      let end = saved.length;
+      if (i + 1 < questions.length) {
+        const nextIdx = saved.indexOf(`${i + 2}. ${questions[i + 1]}`, answerStart);
+        if (nextIdx !== -1) end = nextIdx;
+      }
+      return saved.slice(answerStart, end).trim();
+    });
+  }
+
+  // When editing, pre-fill a step with the user's previous answer so they can
+  // adjust it rather than start from scratch.
+  function applyPrefill(idx: number) {
+    const prev = prevAnswersRef.current[idx] || "";
+    const opts = activity.starterOptions?.[idx];
+    if (mode === "starter" && opts) {
+      if (opts.includes(prev)) {
+        setSelectedOption(prev);
+        setCurrent("");
+      } else if (prev) {
+        setSelectedOption(OTHER_OPTION);
+        setCurrent(prev);
+      } else {
+        setSelectedOption(null);
+        setCurrent("");
+      }
+    } else {
+      setSelectedOption(null);
+      setCurrent(prev);
+    }
+  }
   const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [aiReflection, setAiReflection] = useState<string | null>(
@@ -132,12 +189,22 @@ function ConversationalActivity({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const questionTopRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when new question appears
+  // Bring the TOP of the new question (its scenario) into view so the user
+  // reads from the start, rather than landing scrolled to the bottom.
   useEffect(() => {
-    if (phase === "q") {
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-    }
+    if (phase !== "q") return;
+    const t = setTimeout(() => {
+      // First question: reset the scroll area to the very top.
+      if (qIdx === 0 && scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTo({ top: 0, behavior: "auto" });
+      } else {
+        questionTopRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    }, 60);
+    return () => clearTimeout(t);
   }, [qIdx, phase]);
 
   // Auto-resize textarea
@@ -148,12 +215,13 @@ function ConversationalActivity({
     }
   }, [current]);
 
-  // Focus textarea when question changes
+  // Focus the textarea when writing — but never let focusing scroll the page
+  // (that was pushing the scenario off the top of the screen).
   useEffect(() => {
-    if (phase === "q") {
-      setTimeout(() => textareaRef.current?.focus(), 200);
+    if (phase === "q" && writingOther) {
+      setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 200);
     }
-  }, [qIdx, phase]);
+  }, [qIdx, phase, writingOther]);
 
   function applySentenceStarter(starter: string) {
     const next = current ? `${current}\n\n${starter}` : starter;
@@ -189,7 +257,9 @@ function ConversationalActivity({
     setTurns(newTurns);
 
     if (qIdx + 1 < questions.length) {
-      setQIdx(qIdx + 1);
+      const nextIdx = qIdx + 1;
+      setQIdx(nextIdx);
+      if (editing) applyPrefill(nextIdx);
     } else {
       // All questions answered — build final response and save
       await finalise(newTurns);
@@ -199,10 +269,7 @@ function ConversationalActivity({
   async function finalise(allTurns: CompletedTurn[]) {
     setSubmitting(true);
 
-    const finalResponse =
-      allTurns.length === 1
-        ? allTurns[0].answer
-        : allTurns.map((t, i) => `${i + 1}. ${t.question}\n${t.answer}`).join("\n\n");
+    const finalResponse = buildResponse(allTurns);
 
     let entryId = entryIdRef.current;
     if (entryId) {
@@ -268,12 +335,12 @@ function ConversationalActivity({
   // create a duplicate. Single-question activities pre-fill the existing text;
   // multi-step ones start fresh (the saved response can't be reliably split).
   function startEdit() {
-    const single = questions.length === 1;
-    const prefill = single ? turns[0]?.answer || existingResponse : "";
+    const saved = turns.length ? buildResponse(turns) : existingResponse;
+    prevAnswersRef.current = parsePrevAnswers(saved);
+    setEditing(true);
     setTurns([]);
     setQIdx(0);
-    setSelectedOption(null);
-    setCurrent(prefill);
+    applyPrefill(0);
     setPhase("q");
   }
 
@@ -450,8 +517,10 @@ function ConversationalActivity({
               <button
                 onClick={() => {
                   if (qIdx > 0) {
-                    setQIdx(qIdx - 1);
+                    const prevIdx = qIdx - 1;
+                    setQIdx(prevIdx);
                     setTurns(turns.slice(0, -1));
+                    if (editing) applyPrefill(prevIdx);
                   } else {
                     setPhase("intro");
                   }
@@ -486,6 +555,7 @@ function ConversationalActivity({
 
         {/* Scrollable conversation area */}
         <div
+          ref={scrollAreaRef}
           className="flex-1 overflow-y-auto"
           style={{ paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))" }}
         >
@@ -538,6 +608,9 @@ function ConversationalActivity({
               </div>
             ))}
 
+            {/* Anchor for scrolling a new question's top into view */}
+            <div ref={questionTopRef} style={{ scrollMarginTop: "1rem" }} />
+
             {/* Scenario setup — Mission 1 scenario-driven steps. Shown above
                 the question so teens react to a concrete situation rather than
                 introspect from a blank page. */}
@@ -576,6 +649,18 @@ function ConversationalActivity({
                 {questions[qIdx]}
               </p>
             </div>
+
+            {/* Previous answer shown while editing, so the user can adjust it */}
+            {editing && prevAnswersRef.current[qIdx] && (
+              <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border]">
+                <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
+                  Previously you {usingStarter ? "chose" : "wrote"}
+                </div>
+                <p className="text-sm text-[--ink-muted] italic leading-relaxed whitespace-pre-wrap">
+                  &ldquo;{prevAnswersRef.current[qIdx]}&rdquo;
+                </p>
+              </div>
+            )}
 
             {/* Starter mode: multiple-choice options */}
             {usingStarter && (
@@ -736,15 +821,64 @@ function ConversationalActivity({
             </div>
           )}
 
-          {/* AI reflection */}
+          {/* Primary continue actions — available immediately, never gated on
+              the reflection loading below. */}
+          <div className="space-y-3 mb-5" data-animate="3">
+            {nextActivity ? (
+              <Link
+                href={`/missions/${mission.id}/activities/${nextActivity.id}`}
+                className="btn btn-primary w-full py-3.5 rounded-xl flex items-center justify-center gap-2"
+                style={{ background: mission.colour }}
+              >
+                Next: {nextActivity.title}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+            ) : (
+              <Link
+                href={`/missions/${mission.id}`}
+                className="btn btn-primary w-full py-3.5 rounded-xl"
+                style={{ background: mission.colour }}
+              >
+                Back to mission
+              </Link>
+            )}
+            <div className="flex gap-3">
+              <Link
+                href={`/missions/${mission.id}`}
+                className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm"
+              >
+                Mission
+              </Link>
+              <Link
+                href="/dashboard"
+                className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={startEdit}
+                className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm flex items-center justify-center gap-1.5"
+              >
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                  <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Edit
+              </button>
+            </div>
+          </div>
+
+          {/* AI reflection — a bonus that loads in the background. The user has
+              already been given everything they need to move on above. */}
           {aiReflection && (() => {
             const parsed = parseReflection(aiReflection);
             if (!parsed) return null;
             return (
               <div
-                className="rounded-2xl p-5 mb-5 border"
+                className="rounded-2xl p-5 mb-8 border"
                 style={{ background: "rgba(46,125,140,0.04)", borderColor: "rgba(46,125,140,0.2)" }}
-                data-animate="3"
+                data-animate="4"
               >
                 <div className="text-[10px] font-bold text-[--teal] mb-3 uppercase tracking-widest">
                   Something to sit with
@@ -771,44 +905,18 @@ function ConversationalActivity({
             );
           })()}
 
-          {/* Loading state for AI reflection */}
+          {/* Non-blocking note while the reflection generates */}
           {!aiReflection && turns.length > 0 && (
-            <div className="rounded-2xl p-5 mb-5 border border-[--border] bg-white" data-animate="3">
+            <div className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white" data-animate="4">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin" />
-                <p className="text-xs text-[--ink-muted]">Getting a reflection for you…</p>
+                <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin flex-shrink-0" />
+                <p className="text-xs text-[--ink-muted] leading-relaxed">
+                  A reflection is being written for you — it&apos;ll appear here and
+                  in your journal. Feel free to carry on in the meantime.
+                </p>
               </div>
             </div>
           )}
-
-          {/* Edit own answer */}
-          <button
-            onClick={startEdit}
-            className="w-full flex items-center justify-center gap-2 text-sm font-medium text-[--teal] mb-4 py-2.5 rounded-xl border border-[--border] bg-white hover:bg-[--surface-muted] transition-colors"
-            data-animate="4"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Edit my answer
-          </button>
-
-          {/* Navigation */}
-          <div className="flex gap-3 pb-8" data-animate="4">
-            <Link
-              href={`/missions/${mission.id}`}
-              className="btn btn-secondary flex-1 py-3 rounded-xl"
-            >
-              Back to mission
-            </Link>
-            <Link
-              href="/dashboard"
-              className="btn btn-primary flex-1 py-3 rounded-xl"
-              style={{ background: "var(--navy)" }}
-            >
-              Dashboard
-            </Link>
-          </div>
         </div>
       </div>
     </div>
@@ -1037,28 +1145,51 @@ function ValuesPickerActivity({
           </div>
         )}
 
-        {/* Scenario priming — help teens recognise a value in a situation
-            before facing the abstract list. */}
+        {/* Step 1 — read the scenarios. Presented as reading material (a
+            numbered list inside a single card), NOT as selectable options, so
+            it's unambiguous that the choosing happens in the grid below. */}
         {activity.scenarios && activity.scenarios.length > 0 && (
-          <div className="mb-5 space-y-2">
-            <p className="text-xs font-medium text-[--ink-muted] mb-1 px-0.5 flex items-center gap-1.5">
-              <span aria-hidden style={{ color: mission.colour }}>✦</span>
-              Sit with these first — notice which ones pull at you:
-            </p>
-            {activity.scenarios.map((s, i) => (
-              <div
-                key={i}
-                className="rounded-xl px-4 py-3 border text-sm leading-relaxed text-[--ink] italic"
-                style={{
-                  background: `${mission.colour}0D`,
-                  borderColor: `${mission.colour}25`,
-                }}
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-2 px-0.5">
+              <span
+                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                style={{ background: mission.colour }}
               >
-                {s}
-              </div>
-            ))}
+                1
+              </span>
+              <span className="text-sm font-semibold text-[--ink]">
+                Read these first
+              </span>
+            </div>
+            <p className="text-xs text-[--ink-muted] mb-3 px-0.5 leading-relaxed">
+              You don&apos;t answer these — just read them and notice which ones
+              pull at something in you. That pull points to a value.
+            </p>
+            <div className="card p-4 space-y-3">
+              {activity.scenarios.map((s, i) => (
+                <div key={i} className="flex gap-3">
+                  <span className="text-[--ink-muted]/40 text-sm font-semibold flex-shrink-0">
+                    {i + 1}.
+                  </span>
+                  <p className="text-sm text-[--ink] leading-relaxed">{s}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
+        {/* Step 2 — choose values */}
+        <div className="flex items-center gap-2 mb-3 px-0.5">
+          <span
+            className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+            style={{ background: mission.colour }}
+          >
+            {activity.scenarios && activity.scenarios.length > 0 ? 2 : 1}
+          </span>
+          <span className="text-sm font-semibold text-[--ink]">
+            Now choose the {activity.valuesCount || 5} that fit you best
+          </span>
+        </div>
 
         <div className="grid grid-cols-2 gap-2 mb-3">
           {(activity.valuesOptions || []).map((val) => {
