@@ -29,16 +29,22 @@ export default function SupportClient({
   const [name, setName] = useState("");
   const [relationship, setRelationship] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   async function handleAdd() {
     if (!name.trim() || !relationship.trim()) return;
     setSaving(true);
-    await db.from("support_circle").insert({
+    setSaveError(null);
+    const { error } = await db.from("support_circle").insert({
       user_id: userId,
       name: name.trim(),
       relationship: relationship.trim(),
     });
     setSaving(false);
+    if (error) {
+      setSaveError("Couldn't add them — check your connection and try again.");
+      return;
+    }
     setShowForm(false);
     setName("");
     setRelationship("");
@@ -46,7 +52,12 @@ export default function SupportClient({
   }
 
   async function handleRemove(id: string) {
-    await db.from("support_circle").delete().eq("id", id);
+    const { error } = await db.from("support_circle").delete().eq("id", id);
+    if (error) {
+      setSaveError("Couldn't remove that person — please try again.");
+      return;
+    }
+    setSaveError(null);
     router.refresh();
   }
 
@@ -110,6 +121,9 @@ export default function SupportClient({
             </div>
           )}
 
+          {saveError && (
+            <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>
+          )}
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}

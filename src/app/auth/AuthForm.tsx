@@ -5,6 +5,35 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 
+// Translate raw Supabase auth errors into language a teenager can act on.
+function friendlyAuthError(message: string, mode: "login" | "signup"): string {
+  const m = message.toLowerCase();
+  if (m.includes("email not confirmed")) {
+    return "Your email isn't confirmed yet — check your inbox for the link we sent you (it might be in spam).";
+  }
+  if (m.includes("invalid login credentials")) {
+    return "Incorrect email or password. Please try again.";
+  }
+  if (m.includes("is invalid")) {
+    return "That email address doesn't look right — double-check it?";
+  }
+  if (m.includes("already registered") || m.includes("already been registered")) {
+    return "There's already an account with that email. Try signing in instead.";
+  }
+  if (m.includes("at least") && m.includes("characters")) {
+    return "Your password needs to be at least 8 characters.";
+  }
+  if (m.includes("rate limit") || m.includes("too many")) {
+    return "Too many attempts — give it a minute, then try again.";
+  }
+  if (m.includes("network") || m.includes("fetch")) {
+    return "Couldn't reach the server. Check your connection and try again.";
+  }
+  return mode === "signup"
+    ? "Something went wrong creating your account. Please try again."
+    : "Something went wrong signing you in. Please try again.";
+}
+
 export default function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,6 +46,7 @@ export default function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [resetState, setResetState] = useState<"idle" | "sending" | "sent">("idle");
 
   const supabase = createClient();
 
@@ -33,7 +63,7 @@ export default function AuthForm() {
     setSuccess(null);
 
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -42,14 +72,18 @@ export default function AuthForm() {
         },
       });
       if (error) {
-        setError(error.message);
+        setError(friendlyAuthError(error.message, "signup"));
+      } else if (data.session) {
+        // Email confirmation is disabled — the user already has a session,
+        // so don't tell them to check an inbox that has nothing in it.
+        router.push("/onboarding");
       } else {
         setSuccess("Check your email for a confirmation link. Once confirmed, you can sign in.");
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        setError("Incorrect email or password. Please try again.");
+        setError(friendlyAuthError(error.message, "login"));
       } else {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -69,6 +103,24 @@ export default function AuthForm() {
       }
     }
     setLoading(false);
+  }
+
+  async function handleForgotPassword() {
+    setError(null);
+    if (!email) {
+      setError("Type your email above first, then tap \"Forgot password?\" again.");
+      return;
+    }
+    setResetState("sending");
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
+    if (error) {
+      setResetState("idle");
+      setError(friendlyAuthError(error.message, "login"));
+    } else {
+      setResetState("sent");
+    }
   }
 
   async function handleGoogleSignIn() {
@@ -142,8 +194,17 @@ export default function AuthForm() {
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-sm font-medium text-ink">Password</label>
                   {mode === "login" && (
-                    <button type="button" className="text-xs text-teal hover:text-teal-dark transition-colors">
-                      Forgot password?
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      disabled={resetState !== "idle"}
+                      className="text-xs text-teal hover:text-teal-dark transition-colors disabled:opacity-60"
+                    >
+                      {resetState === "sending"
+                        ? "Sending…"
+                        : resetState === "sent"
+                        ? "Reset link sent ✓"
+                        : "Forgot password?"}
                     </button>
                   )}
                 </div>
@@ -152,8 +213,14 @@ export default function AuthForm() {
                   className="input" required minLength={mode === "signup" ? 8 : undefined}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"} />
               </div>
+              {resetState === "sent" && (
+                <div role="status" className="text-sm text-sage bg-sage/5 border border-sage/20 rounded-lg px-4 py-3">
+                  Password reset link sent to {email}. The link signs you in —
+                  you can then set a new password in Settings.
+                </div>
+              )}
               {error && (
-                <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+                <div role="alert" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
                   {error}
                 </div>
               )}

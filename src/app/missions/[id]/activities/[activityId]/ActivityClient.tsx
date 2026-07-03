@@ -181,11 +181,55 @@ function ConversationalActivity({
   }
   const [expandedTurns, setExpandedTurns] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [aiReflection, setAiReflection] = useState<string | null>(
     existingEntry?.ai_reflection || null
   );
+  const [reflectionFailed, setReflectionFailed] = useState(false);
+  const [restoredDraft, setRestoredDraft] = useState(false);
   const [existingResponse] = useState(existingEntry?.response || "");
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
+
+  // ── Draft persistence ── an activity takes 10-15 minutes; losing answers to
+  // an accidental refresh or app switch is unacceptable. Drafts live in
+  // localStorage per activity and are cleared on successful save.
+  const draftKey = `gw_draft_${mission.id}_${activity.id}`;
+
+  useEffect(() => {
+    if (existingEntry) return; // completed activities don't resume drafts
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (Array.isArray(d.turns) && (d.turns.length > 0 || d.current)) {
+        setTurns(d.turns);
+        setQIdx(Math.min(d.qIdx ?? d.turns.length, questions.length - 1));
+        setCurrent(d.current || "");
+        setRestoredDraft(true);
+      }
+    } catch {
+      // corrupt draft — ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "q" || editing) return;
+    try {
+      localStorage.setItem(
+        draftKey,
+        JSON.stringify({ qIdx, turns, current, ts: Date.now() })
+      );
+    } catch {
+      // storage full/unavailable — non-fatal
+    }
+  }, [qIdx, turns, current, phase, editing, draftKey]);
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(draftKey);
+    } catch {}
+  }
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -268,17 +312,23 @@ function ConversationalActivity({
 
   async function finalise(allTurns: CompletedTurn[]) {
     setSubmitting(true);
+    setSaveError(null);
 
     const finalResponse = buildResponse(allTurns);
 
     let entryId = entryIdRef.current;
     if (entryId) {
-      await db
+      const { error } = await db
         .from("journal_entries")
         .update({ response: finalResponse, updated_at: new Date().toISOString() })
         .eq("id", entryId);
+      if (error) {
+        setSaveError("Couldn't save your answers — your writing is still here. Check your connection and try again.");
+        setSubmitting(false);
+        return;
+      }
     } else {
-      const { data } = await db
+      const { data, error } = await db
         .from("journal_entries")
         .insert({
           user_id: userId,
@@ -290,15 +340,24 @@ function ConversationalActivity({
         })
         .select("id")
         .single();
-      if (data?.id) {
-        entryId = data.id;
-        entryIdRef.current = data.id;
+      if (error || !data?.id) {
+        setSaveError("Couldn't save your answers — your writing is still here. Check your connection and try again.");
+        setSubmitting(false);
+        return;
       }
+      entryId = data.id;
+      entryIdRef.current = data.id;
     }
 
-    // Request AI reflection async (non-blocking)
+    // Saved for real — safe to drop the local draft now.
+    clearDraft();
+
+    // Request AI reflection async (non-blocking, with a timeout so the done
+    // screen never shows an eternal spinner).
     if (finalResponse.length > 20 && entryId) {
       fetchAiReflection(finalResponse, entryId);
+    } else {
+      setReflectionFailed(true);
     }
 
     onComplete(finalResponse);
@@ -307,6 +366,8 @@ function ConversationalActivity({
   }
 
   async function fetchAiReflection(text: string, entryId: string) {
+    // Hard cap: if nothing has arrived after 25s, stop promising one.
+    const timeout = setTimeout(() => setReflectionFailed(true), 25000);
     try {
       const res = await fetch("/api/reflect", {
         method: "POST",
@@ -315,10 +376,19 @@ function ConversationalActivity({
       });
       if (res.ok) {
         const { reflection } = await res.json();
-        if (reflection) setAiReflection(reflection);
+        if (reflection) {
+          setAiReflection(reflection);
+          setReflectionFailed(false);
+        } else {
+          setReflectionFailed(true);
+        }
+      } else {
+        setReflectionFailed(true);
       }
     } catch {
-      // fail silently
+      setReflectionFailed(true);
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
@@ -337,7 +407,9 @@ function ConversationalActivity({
   function startEdit() {
     const saved = turns.length ? buildResponse(turns) : existingResponse;
     prevAnswersRef.current = parsePrevAnswers(saved);
+    clearDraft(); // edit sessions start from the saved entry, not a stale draft
     setEditing(true);
+    setSaveError(null);
     setTurns([]);
     setQIdx(0);
     applyPrefill(0);
@@ -485,13 +557,27 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* Resumed draft notice */}
+            {restoredDraft && (
+              <div
+                role="status"
+                className="mb-3 px-4 py-3 rounded-xl border text-sm text-[--ink] leading-relaxed"
+                style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+              >
+                We saved where you got to last time — you can pick up from
+                question {Math.min(qIdx + 1, questions.length)}.
+              </div>
+            )}
+
             {/* Begin button */}
             <button
               onClick={() => setPhase("q")}
               className="btn btn-primary w-full py-4 text-base rounded-xl mt-2"
               style={{ background: mission.colour }}
             >
-              {usingStarter
+              {restoredDraft
+                ? "Continue where you left off →"
+                : usingStarter
                 ? "Begin →"
                 : questions.length === 1
                 ? "Start writing"
@@ -730,39 +816,57 @@ function ConversationalActivity({
         {/* Fixed input bar */}
         <div className="conv-input-bar">
           <div className="max-w-lg mx-auto">
-            {writingOther && (
-              <textarea
-                ref={textareaRef}
-                className="conv-textarea mb-2"
-                value={current}
-                onChange={(e) => setCurrent(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Write your answer here…"
-                rows={2}
-              />
-            )}
-            <div className="flex items-center gap-3">
-              <p className="flex-1 text-[10px] text-[--ink-muted]/40 leading-tight">
-                {writingOther ? "⌘ Return to advance" : "Pick the one that fits you best"}
-              </p>
-              <button
-                onClick={handleNextQuestion}
-                disabled={!canSubmitCurrent() || submitting}
-                className={cn(
-                  "btn py-2.5 px-5 rounded-xl text-sm transition-all",
-                  canSubmitCurrent()
-                    ? "text-white"
-                    : "bg-[--border] text-[--ink-muted] cursor-not-allowed"
+            {saveError ? (
+              // Save failed — every answer is still in memory (and in the local
+              // draft). Offer a retry instead of pretending it worked.
+              <div role="alert" className="space-y-2">
+                <p className="text-sm text-red-600 leading-relaxed">{saveError}</p>
+                <button
+                  onClick={() => finalise(turns)}
+                  disabled={submitting}
+                  className="btn btn-primary w-full py-3 rounded-xl"
+                  style={{ background: mission.colour }}
+                >
+                  {submitting ? "Retrying…" : "Try saving again"}
+                </button>
+              </div>
+            ) : (
+              <>
+                {writingOther && (
+                  <textarea
+                    ref={textareaRef}
+                    className="conv-textarea mb-2"
+                    value={current}
+                    onChange={(e) => setCurrent(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Write your answer here…"
+                    rows={2}
+                  />
                 )}
-                style={canSubmitCurrent() ? { background: mission.colour } : undefined}
-              >
-                {submitting
-                  ? "Saving…"
-                  : isLastQuestion
-                  ? "Finish ✓"
-                  : "Next →"}
-              </button>
-            </div>
+                <div className="flex items-center gap-3">
+                  <p className="flex-1 text-xs text-[--ink-muted] leading-tight">
+                    {writingOther ? "" : "Pick the one that fits you best"}
+                  </p>
+                  <button
+                    onClick={handleNextQuestion}
+                    disabled={!canSubmitCurrent() || submitting}
+                    className={cn(
+                      "btn py-2.5 px-5 rounded-xl text-sm transition-all",
+                      canSubmitCurrent()
+                        ? "text-white"
+                        : "bg-[--border] text-[--ink-muted] cursor-not-allowed"
+                    )}
+                    style={canSubmitCurrent() ? { background: mission.colour } : undefined}
+                  >
+                    {submitting
+                      ? "Saving…"
+                      : isLastQuestion
+                      ? "Finish ✓"
+                      : "Next →"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -905,16 +1009,28 @@ function ConversationalActivity({
             );
           })()}
 
-          {/* Non-blocking note while the reflection generates */}
+          {/* Non-blocking note while the reflection generates — with an honest
+              fallback once it fails or times out, so no eternal spinner. */}
           {!aiReflection && turns.length > 0 && (
-            <div className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white" data-animate="4">
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin flex-shrink-0" />
+            <div
+              role="status"
+              className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white"
+              data-animate="4"
+            >
+              {reflectionFailed ? (
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
-                  A reflection is being written for you — it&apos;ll appear here and
-                  in your journal. Feel free to carry on in the meantime.
+                  No reflection this time — but your entry is saved in your
+                  journal. ✓
                 </p>
-              </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin flex-shrink-0" />
+                  <p className="text-xs text-[--ink-muted] leading-relaxed">
+                    A reflection is being written for you — it&apos;ll appear here
+                    and in your journal. Feel free to carry on in the meantime.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -956,6 +1072,7 @@ function ValuesPickerActivity({
     typeof window !== "undefined" ? getProcessingStyle() : null
   );
   const [mode, setModeState] = useState<LearningMode>("starter");
+  const [saveError, setSaveError] = useState<string | null>(null);
   useEffect(() => setModeState(getLearningMode()), []);
   function changeMode(m: LearningMode) {
     setModeState(m);
@@ -978,6 +1095,7 @@ function ValuesPickerActivity({
   async function handleSubmit() {
     if (!canSubmit) return;
     setSubmitting(true);
+    setSaveError(null);
 
     const finalResponse = selectedValues
       .map((v) => (valueReasons[v] ? `${v}: ${valueReasons[v]}` : v))
@@ -985,9 +1103,17 @@ function ValuesPickerActivity({
 
     const entryId = entryIdRef.current;
     if (entryId) {
-      await db.from("journal_entries").update({ response: finalResponse }).eq("id", entryId);
+      const { error } = await db
+        .from("journal_entries")
+        .update({ response: finalResponse })
+        .eq("id", entryId);
+      if (error) {
+        setSaveError("Couldn't save your values — check your connection and try again.");
+        setSubmitting(false);
+        return;
+      }
     } else {
-      const { data } = await db
+      const { data, error } = await db
         .from("journal_entries")
         .insert({
           user_id: userId,
@@ -999,7 +1125,12 @@ function ValuesPickerActivity({
         })
         .select("id")
         .single();
-      if (data?.id) entryIdRef.current = data.id;
+      if (error || !data?.id) {
+        setSaveError("Couldn't save your values — check your connection and try again.");
+        setSubmitting(false);
+        return;
+      }
+      entryIdRef.current = data.id;
     }
 
     setSavedResponse(finalResponse);
@@ -1246,12 +1377,17 @@ function ValuesPickerActivity({
           </div>
         )}
 
+        {saveError && (
+          <p role="alert" className="text-sm text-red-600 mb-3 leading-relaxed">
+            {saveError}
+          </p>
+        )}
         <button
           onClick={handleSubmit}
           disabled={!canSubmit || submitting}
           className="btn btn-primary w-full py-4 rounded-xl text-base"
         >
-          {submitting ? "Saving…" : "Save my values"}
+          {submitting ? "Saving…" : saveError ? "Try again" : "Save my values"}
         </button>
       </div>
     </div>
@@ -1280,16 +1416,23 @@ function ChallengeActivity({
   const [submitted, setSubmitted] = useState(!!existingChallenge);
   const [debrief, setDebrief] = useState(existingChallenge?.debrief_response || "");
   const [debriefDone, setDebriefDone] = useState(!!existingChallenge?.completed_at);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const showDebrief = existingChallenge && !existingChallenge.completed_at;
 
   async function acceptChallenge() {
     setSubmitting(true);
-    await db.from("challenges").insert({
+    setSaveError(null);
+    const { error } = await db.from("challenges").insert({
       user_id: userId,
       mission_id: mission.id,
       challenge_text: activity.prompt,
     });
+    if (error) {
+      setSaveError("Couldn't start your challenge — check your connection and try again.");
+      setSubmitting(false);
+      return;
+    }
     onComplete();
     setSubmitted(true);
     setSubmitting(false);
@@ -1298,10 +1441,18 @@ function ChallengeActivity({
   async function submitDebrief() {
     if (!existingChallenge?.id || !debrief.trim()) return;
     setSubmitting(true);
-    await db.from("challenges").update({
+    setSaveError(null);
+    const { error: challengeErr } = await db.from("challenges").update({
       completed_at: new Date().toISOString(),
       debrief_response: debrief,
     }).eq("id", existingChallenge.id);
+    if (challengeErr) {
+      setSaveError("Couldn't save your reflection — your writing is still here. Try again.");
+      setSubmitting(false);
+      return;
+    }
+    // Journal copy is secondary — the debrief is already stored on the
+    // challenge row above, so a failure here shouldn't block the user.
     await db.from("journal_entries").insert({
       user_id: userId,
       mission_id: mission.id,
@@ -1352,12 +1503,15 @@ function ChallengeActivity({
                 onChange={(e) => setDebrief(e.target.value)}
                 placeholder="Be honest. It's okay if you didn't do it."
               />
+              {saveError && (
+                <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>
+              )}
               <button
                 onClick={submitDebrief}
                 disabled={!debrief.trim() || submitting}
                 className="btn btn-primary w-full"
               >
-                {submitting ? "Saving…" : "Save reflection"}
+                {submitting ? "Saving…" : saveError ? "Try again" : "Save reflection"}
               </button>
             </>
           )}
@@ -1399,12 +1553,15 @@ function ChallengeActivity({
         <p className="text-sm text-[--ink-muted] text-center mb-6 leading-relaxed">
           Come back in 7 days to reflect on what happened. That&apos;s where the real learning is.
         </p>
+        {saveError && (
+          <p role="alert" className="text-sm text-red-600 mb-3 text-center">{saveError}</p>
+        )}
         <button
           onClick={acceptChallenge}
           disabled={submitting}
           className="btn btn-primary w-full py-4 rounded-xl text-base"
         >
-          {submitting ? "Starting…" : "Accept this challenge"}
+          {submitting ? "Starting…" : saveError ? "Try again" : "Accept this challenge"}
         </button>
       </div>
     </div>
@@ -1429,26 +1586,33 @@ export default function ActivityClient({
 
   // After any activity type completes, mark mission_progress and advance active_mission if needed
   const markProgress = useCallback(async () => {
-    await db.from("mission_progress").upsert({
-      user_id: userId,
-      mission_id: mission.id,
-      activity_id: activity.id,
-    });
+    try {
+      await db.from("mission_progress").upsert({
+        user_id: userId,
+        mission_id: mission.id,
+        activity_id: activity.id,
+      });
 
-    const totalActivities = mission.activities.filter((a) => !a.locked).length;
-    const { count } = await db
-      .from("mission_progress")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .eq("mission_id", mission.id);
-    const nextMissionId = mission.id + 1;
-    const nextMissionExists = MISSIONS.some((m) => m.id === nextMissionId);
-    if (count !== null && count >= totalActivities && nextMissionExists) {
-      await db
-        .from("users")
-        .update({ active_mission: nextMissionId })
-        .eq("id", userId)
-        .lt("active_mission", nextMissionId);
+      const totalActivities = mission.activities.filter((a) => !a.locked).length;
+      const { count } = await db
+        .from("mission_progress")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("mission_id", mission.id);
+      const nextMissionId = mission.id + 1;
+      const nextMissionExists = MISSIONS.some((m) => m.id === nextMissionId);
+      if (count !== null && count >= totalActivities && nextMissionExists) {
+        await db
+          .from("users")
+          .update({ active_mission: nextMissionId })
+          .eq("id", userId)
+          .lt("active_mission", nextMissionId);
+      }
+    } catch (e) {
+      // The journal entry itself saved; a progress-marking hiccup shouldn't
+      // break the done screen. The upsert retries next time this activity
+      // completes. Logged for diagnosis.
+      console.error("markProgress failed:", e);
     }
   }, [db, userId, mission, activity]);
 

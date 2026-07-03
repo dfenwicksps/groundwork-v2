@@ -60,6 +60,7 @@ export default function RevisitClient({
   const [response, setResponse] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const mission = MISSIONS.find((m) => m.id === entry.mission_id);
   const activityLabel = ACTIVITY_LABELS[entry.activity_id] || entry.activity_id;
@@ -67,8 +68,9 @@ export default function RevisitClient({
   async function handleSubmit() {
     if (!response.trim()) return;
     setSubmitting(true);
+    setSaveError(null);
 
-    await db.from("journal_entries").insert({
+    const { error } = await db.from("journal_entries").insert({
       user_id: userId,
       mission_id: entry.mission_id,
       activity_id: `${entry.activity_id}-revisit`,
@@ -76,6 +78,12 @@ export default function RevisitClient({
       response: response.trim(),
       is_milestone: false,
     });
+
+    if (error) {
+      setSaveError("Couldn't save your reflection — your writing is still here. Try again.");
+      setSubmitting(false);
+      return;
+    }
 
     setDone(true);
     setSubmitting(false);
@@ -200,12 +208,15 @@ export default function RevisitClient({
                 autoFocus
               />
 
+              {saveError && (
+                <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>
+              )}
               <button
                 onClick={handleSubmit}
                 disabled={!response.trim() || submitting}
                 className="btn btn-primary w-full"
               >
-                {submitting ? "Saving…" : "Save this reflection"}
+                {submitting ? "Saving…" : saveError ? "Try again" : "Save this reflection"}
               </button>
 
               <p className="text-xs text-ink-muted text-center mt-3">

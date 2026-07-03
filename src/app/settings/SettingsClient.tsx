@@ -40,13 +40,21 @@ export default function SettingsClient({
   const [name, setName] = useState(displayName);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [selectedValues, setSelectedValues] = useState<string[]>(savedValues);
   const [savingValues, setSavingValues] = useState(false);
   const [savedValues2, setSavedValues2] = useState(false);
+  const [valuesError, setValuesError] = useState<string | null>(null);
   const [editingValues, setEditingValues] = useState(false);
+
+  const [newPassword, setNewPassword] = useState("");
+  const [pwState, setPwState] = useState<"idle" | "saving" | "saved">("idle");
+  const [pwError, setPwError] = useState<string | null>(null);
 
   function toggleValue(val: string) {
     if (selectedValues.includes(val)) {
@@ -58,11 +66,16 @@ export default function SettingsClient({
 
   async function handleSaveValues() {
     setSavingValues(true);
-    await db
+    setValuesError(null);
+    const { error } = await db
       .from("onboarding_results")
       .update({ values: selectedValues })
       .eq("user_id", userId);
     setSavingValues(false);
+    if (error) {
+      setValuesError("Couldn't save your values — please try again.");
+      return;
+    }
     setSavedValues2(true);
     setEditingValues(false);
     setTimeout(() => setSavedValues2(false), 2000);
@@ -71,17 +84,41 @@ export default function SettingsClient({
   function handleCancelValues() {
     setSelectedValues(savedValues);
     setEditingValues(false);
+    setValuesError(null);
   }
 
   async function handleSaveName() {
     setSaving(true);
-    await db
+    setNameError(null);
+    const { error } = await db
       .from("users")
       .update({ display_name: name })
       .eq("id", userId);
     setSaving(false);
+    if (error) {
+      setNameError("Couldn't save your name — please try again.");
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function handleChangePassword() {
+    if (newPassword.length < 8) {
+      setPwError("Your new password needs at least 8 characters.");
+      return;
+    }
+    setPwState("saving");
+    setPwError(null);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      setPwState("idle");
+      setPwError("Couldn't update your password — please try again.");
+      return;
+    }
+    setNewPassword("");
+    setPwState("saved");
+    setTimeout(() => setPwState("idle"), 2500);
   }
 
   async function handleSignOut() {
@@ -91,10 +128,25 @@ export default function SettingsClient({
 
   async function handleDeleteAccount() {
     if (deleteInput !== "delete my account") return;
-    // In production, use a server action with service role key to delete auth user
-    // For now, sign out
-    await supabase.auth.signOut();
-    router.push("/");
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch("/api/delete-account", { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setDeleteError(
+          body?.error || "Something went wrong deleting your account. Please try again."
+        );
+        setDeleting(false);
+        return;
+      }
+      // Account and all data are gone — end the (now-orphaned) session.
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch {
+      setDeleteError("Couldn't reach the server. Check your connection and try again.");
+      setDeleting(false);
+    }
   }
 
   return (
@@ -131,6 +183,9 @@ export default function SettingsClient({
                 {saved ? "Saved ✓" : saving ? "Saving…" : "Save"}
               </button>
             </div>
+            {nameError && (
+              <p role="alert" className="text-xs text-red-600 mt-1.5">{nameError}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-ink mb-1.5">
@@ -142,6 +197,31 @@ export default function SettingsClient({
             <p className="text-xs text-ink-muted mt-1">
               Email cannot be changed here.
             </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-ink mb-1.5">
+              Change password
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New password (8+ characters)"
+                autoComplete="new-password"
+                className="input flex-1"
+              />
+              <button
+                onClick={handleChangePassword}
+                disabled={pwState === "saving" || newPassword.length === 0}
+                className="btn btn-primary whitespace-nowrap"
+              >
+                {pwState === "saved" ? "Updated ✓" : pwState === "saving" ? "Saving…" : "Update"}
+              </button>
+            </div>
+            {pwError && (
+              <p role="alert" className="text-xs text-red-600 mt-1.5">{pwError}</p>
+            )}
           </div>
         </div>
 
@@ -219,6 +299,9 @@ export default function SettingsClient({
                   {savingValues ? "Saving…" : savedValues2 ? "Saved ✓" : "Save values"}
                 </button>
               </div>
+              {valuesError && (
+                <p role="alert" className="text-xs text-red-600 mt-2">{valuesError}</p>
+              )}
             </div>
           )}
         </div>
@@ -272,19 +355,24 @@ export default function SettingsClient({
                   onClick={() => {
                     setShowDeleteConfirm(false);
                     setDeleteInput("");
+                    setDeleteError(null);
                   }}
+                  disabled={deleting}
                   className="btn btn-secondary flex-1"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteAccount}
-                  disabled={deleteInput !== "delete my account"}
+                  disabled={deleteInput !== "delete my account" || deleting}
                   className="btn flex-1 bg-red-600 text-white hover:bg-red-700 disabled:opacity-40"
                 >
-                  Delete permanently
+                  {deleting ? "Deleting…" : "Delete permanently"}
                 </button>
               </div>
+              {deleteError && (
+                <p role="alert" className="text-sm text-red-700 mt-2">{deleteError}</p>
+              )}
             </div>
           )}
         </div>
