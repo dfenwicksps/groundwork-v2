@@ -11,7 +11,7 @@ export default function LandingPage() {
           </div>
           <span
             className="font-semibold text-navy text-lg"
-            style={{ fontFamily: "'Fraunces', serif" }}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             Groundwork
           </span>
@@ -34,7 +34,7 @@ export default function LandingPage() {
         <h1
           className="text-5xl md:text-6xl lg:text-7xl text-navy mb-6 max-w-3xl mx-auto"
           style={{
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 400,
             lineHeight: 1.1,
             letterSpacing: "-0.02em",
@@ -88,7 +88,7 @@ export default function LandingPage() {
         <div className="text-center mb-14">
           <h2
             className="text-3xl md:text-4xl text-navy mb-4"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Four missions. One question each.
           </h2>
@@ -134,7 +134,7 @@ export default function LandingPage() {
               </div>
               <div
                 className="text-xl mb-2"
-                style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
               >
                 {m.title}
               </div>
@@ -185,7 +185,7 @@ export default function LandingPage() {
         <div className="bg-navy rounded-3xl p-12 text-center text-white">
           <h2
             className="text-3xl md:text-4xl mb-4"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontStyle: "italic" }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic" }}
           >
             Ready to do the work?
           </h2>

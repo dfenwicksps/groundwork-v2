@@ -8,7 +8,7 @@ export default function NotFound() {
       </div>
       <h1
         className="text-3xl text-navy mb-3"
-        style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+        style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
       >
         That page isn&apos;t here.
       </h1>

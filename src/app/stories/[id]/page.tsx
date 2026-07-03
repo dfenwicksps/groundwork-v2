@@ -58,7 +58,7 @@ export default async function StoryPage({
         <h1
           className="text-3xl text-navy mb-6"
           style={{
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "var(--font-display)",
             fontWeight: 400,
             lineHeight: 1.2,
           }}

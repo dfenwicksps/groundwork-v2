@@ -624,7 +624,14 @@ function ConversationalActivity({
               </span>
             </div>
             {/* Progress bar */}
-            <div className="h-1 bg-[--border] rounded-full overflow-hidden">
+            <div
+              role="progressbar"
+              aria-label="Activity progress"
+              aria-valuemin={0}
+              aria-valuemax={questions.length}
+              aria-valuenow={qIdx}
+              className="h-1 bg-[--border] rounded-full overflow-hidden"
+            >
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPct}%`, background: mission.colour }}
@@ -730,9 +737,9 @@ function ConversationalActivity({
                   ? "Now — you"
                   : `Question ${qIdx + 1}`}
               </div>
-              <p className="text-[--ink] leading-relaxed text-base">
+              <h2 className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
                 {questions[qIdx]}
-              </p>
+              </h2>
             </div>
 
             {/* Previous answer shown while editing, so the user can adjust it */}

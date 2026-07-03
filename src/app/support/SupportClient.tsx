@@ -70,7 +70,7 @@ export default function SupportClient({
         <div data-animate="1">
           <h1
             className="text-3xl text-navy mb-2"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Your support circle
           </h1>

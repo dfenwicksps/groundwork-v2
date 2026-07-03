@@ -93,7 +93,7 @@ export default function MissionDetailClient({
           <h1
             className="text-3xl text-white mb-2"
             style={{
-              fontFamily: "'Fraunces', serif",
+              fontFamily: "var(--font-display)",
               fontWeight: 400,
               fontStyle: "italic",
             }}

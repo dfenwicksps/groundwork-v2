@@ -140,7 +140,7 @@ export default function SettingsClient({
         <div data-animate="1">
           <h1
             className="text-3xl text-navy"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Settings
           </h1>
@@ -244,7 +244,7 @@ export default function SettingsClient({
             </div>
           ) : (
             <div>
-              <div className="grid grid-cols-3 gap-2 mb-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
                 {ONBOARDING_VALUES.map((val) => {
                   const selected = selectedValues.includes(val);
                   const disabled = !selected && selectedValues.length >= 3;

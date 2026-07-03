@@ -13,7 +13,7 @@ export default function Error({
       </div>
       <h1
         className="text-3xl text-navy mb-3"
-        style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+        style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
       >
         Something went wrong.
       </h1>

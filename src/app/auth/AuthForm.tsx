@@ -149,11 +149,11 @@ export default function AuthForm() {
             <div className="w-8 h-8 bg-navy rounded-lg flex items-center justify-center">
               <span className="text-white text-sm font-semibold">G</span>
             </div>
-            <span className="font-semibold text-navy text-xl" style={{ fontFamily: "'Fraunces', serif" }}>
+            <span className="font-semibold text-navy text-xl" style={{ fontFamily: "var(--font-display)" }}>
               Groundwork
             </span>
           </div>
-          <h1 className="text-2xl text-navy mt-4" style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}>
+          <h1 className="text-2xl text-navy mt-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             {mode === "login" ? "Welcome back" : "Start your journey"}
           </h1>
           <p className="text-sm text-ink-muted mt-1">

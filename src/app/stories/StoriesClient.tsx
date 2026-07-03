@@ -27,7 +27,7 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
         <div data-animate="1" className="mb-6">
           <h1
             className="text-3xl text-navy mb-1"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Stories
           </h1>

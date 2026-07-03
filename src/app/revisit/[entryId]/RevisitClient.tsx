@@ -91,7 +91,7 @@ export default function RevisitClient({
             <div className="text-4xl mb-4">✓</div>
             <h2
               className="text-2xl text-navy mb-3"
-              style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
             >
               Good check-in.
             </h2>
@@ -117,7 +117,7 @@ export default function RevisitClient({
               </div>
               <h1
                 className="text-2xl text-navy mb-2"
-                style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
               >
                 Does this still hold?
               </h1>

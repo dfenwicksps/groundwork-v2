@@ -10,10 +10,21 @@ import { cn } from "@/lib/utils";
 export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
   const [filter, setFilter] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
-  const filtered = filter
+  const byMission = filter
     ? entries.filter((e) => e.mission_id === filter)
     : entries;
+
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? byMission.filter(
+        (e) =>
+          e.response.toLowerCase().includes(q) ||
+          e.prompt.toLowerCase().includes(q) ||
+          getActivityLabel(e.activity_id).toLowerCase().includes(q)
+      )
+    : byMission;
 
   return (
     <AppShell>
@@ -21,7 +32,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
         <div data-animate="1" className="mb-6">
           <h1
             className="text-3xl text-navy mb-1"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Your journal
           </h1>
@@ -29,6 +40,21 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
             {entries.length} entr{entries.length === 1 ? "y" : "ies"} — private
             to you
           </p>
+        </div>
+
+        {/* Search */}
+        <div data-animate="2" className="mb-4">
+          <label htmlFor="journal-search" className="sr-only">
+            Search your journal
+          </label>
+          <input
+            id="journal-search"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search your journal…"
+            className="input"
+          />
         </div>
 
         {/* Filter */}
@@ -73,7 +99,9 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
             className="card p-10 text-center"
           >
             <div className="text-3xl mb-3">📝</div>
-            <p className="text-ink-muted">No entries yet.</p>
+            <p className="text-ink-muted">
+              {q ? `Nothing matches “${search.trim()}”.` : "No entries yet."}
+            </p>
           </div>
         ) : (
           <div className="space-y-3" data-animate="3">

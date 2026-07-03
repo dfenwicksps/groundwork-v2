@@ -175,7 +175,14 @@ export default function OnboardingPage() {
           <span>Getting started</span>
           <span>{step} of 3</span>
         </div>
-        <div className="progress-bar">
+        <div
+          className="progress-bar"
+          role="progressbar"
+          aria-label="Onboarding progress"
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-valuenow={step}
+        >
           <div className="progress-fill" style={{ width: progressWidth }} />
         </div>
       </div>
@@ -187,7 +194,7 @@ export default function OnboardingPage() {
         </div>
         <span
           className="font-semibold text-navy text-lg"
-          style={{ fontFamily: "'Fraunces', serif" }}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           Groundwork
         </span>
@@ -199,7 +206,7 @@ export default function OnboardingPage() {
           <div className="card p-8">
             <h1
               className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
             >
               Let&apos;s start with you.
             </h1>
@@ -334,7 +341,7 @@ export default function OnboardingPage() {
           <div className="card p-8">
             <h1
               className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
             >
               What matters most to you?
             </h1>
@@ -343,7 +350,7 @@ export default function OnboardingPage() {
               the ones you think you should have.
             </p>
 
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
               {ONBOARDING_VALUES.map((label) => {
                 const selected = selectedValues.includes(label);
                 const disabled = !selected && selectedValues.length >= 3;
@@ -419,7 +426,7 @@ export default function OnboardingPage() {
           <div className="card p-8">
             <h1
               className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
             >
               One last thing.
             </h1>

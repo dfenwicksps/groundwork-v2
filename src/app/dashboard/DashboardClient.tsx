@@ -86,7 +86,7 @@ export default function DashboardClient({
           <p className="text-sm text-ink-muted mb-1">{greeting}</p>
           <h1
             className="text-3xl text-navy"
-            style={{ fontFamily: "'Fraunces', serif", fontWeight: 400 }}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             {firstName}.
           </h1>
@@ -121,7 +121,7 @@ export default function DashboardClient({
               <h2
                 className="text-2xl mb-1"
                 style={{
-                  fontFamily: "'Fraunces', serif",
+                  fontFamily: "var(--font-display)",
                   fontWeight: 400,
                   fontStyle: "italic",
                 }}
@@ -320,7 +320,7 @@ export default function DashboardClient({
                   </div>
                   <div
                     className={`text-sm font-semibold mb-0.5 ${isLocked ? "text-ink-muted" : "text-navy"}`}
-                    style={{ fontFamily: "'Fraunces', serif" }}
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {mission.title}
                   </div>
@@ -511,7 +511,7 @@ export default function DashboardClient({
                 <div
                   className="text-2xl font-semibold mb-1"
                   style={{
-                    fontFamily: "'Fraunces', serif",
+                    fontFamily: "var(--font-display)",
                     color: stat.color,
                   }}
                 >

@@ -110,9 +110,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[--surface-muted]">
-      <main className="pb-nav">{children}</main>
+      {/* Keyboard users can jump past the app chrome */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-card focus:text-sm focus:font-medium focus:text-[--navy]"
+      >
+        Skip to content
+      </a>
+      <main id="main-content" className="pb-nav">{children}</main>
 
       <nav
+        aria-label="Primary"
         className="fixed bottom-0 left-0 right-0 z-40 bg-white/96 backdrop-blur-md border-t border-[--border]"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
@@ -124,6 +132,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[60px] transition-all duration-150",
                     active
