@@ -73,7 +73,7 @@ export default function LandingPage() {
 
         {/* Honest disclaimer */}
         <p
-          className="mt-8 text-sm text-ink-muted/70 max-w-md mx-auto"
+          className="mt-8 text-sm text-ink-muted max-w-md mx-auto"
           data-animate="5"
         >
           This isn&apos;t a therapy app. If something feels too heavy to carry alone, please talk to someone you trust.
@@ -202,7 +202,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-surface-border py-8 text-center text-sm text-ink-muted/60 px-6">
+      <footer className="border-t border-surface-border py-8 text-center text-sm text-ink-muted px-6">
         <p>
           Groundwork is not a therapy replacement. If you need support, please
           speak to a trusted adult or call{" "}

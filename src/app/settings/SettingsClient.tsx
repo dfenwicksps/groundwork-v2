@@ -5,21 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
-
-const ALL_VALUES = [
-  "Courage",
-  "Kindness",
-  "Honesty",
-  "Creativity",
-  "Growth",
-  "Family",
-  "Humour",
-  "Compassion",
-  "Curiosity",
-  "Resilience",
-  "Fairness",
-  "Authenticity",
-];
+import { ONBOARDING_VALUES } from "@/lib/missions";
 
 export default function SettingsClient({
   userId,
@@ -34,7 +20,6 @@ export default function SettingsClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = supabase as any;
 
   const [name, setName] = useState(displayName);
@@ -254,13 +239,13 @@ export default function SettingsClient({
                   </span>
                 ))
               ) : (
-                <p className="text-sm text-ink-muted/60 italic">No values selected yet.</p>
+                <p className="text-sm text-ink-muted italic">No values selected yet.</p>
               )}
             </div>
           ) : (
             <div>
               <div className="grid grid-cols-3 gap-2 mb-3">
-                {ALL_VALUES.map((val) => {
+                {ONBOARDING_VALUES.map((val) => {
                   const selected = selectedValues.includes(val);
                   const disabled = !selected && selectedValues.length >= 3;
                   return (
@@ -274,7 +259,7 @@ export default function SettingsClient({
                         selected
                           ? "bg-navy text-white border-navy"
                           : disabled
-                          ? "bg-surface-muted text-ink-muted/50 border-surface-border cursor-not-allowed"
+                          ? "bg-surface-muted text-ink-muted border-surface-border cursor-not-allowed"
                           : "bg-white text-ink border-surface-border hover:border-navy/30"
                       )}
                     >
@@ -378,7 +363,7 @@ export default function SettingsClient({
         </div>
 
         {/* Privacy note */}
-        <div data-animate="6" className="text-xs text-ink-muted/60 text-center pb-4">
+        <div data-animate="6" className="text-xs text-ink-muted text-center pb-4">
           Groundwork is not a therapy replacement. All journal content is
           private and encrypted. We never sell your data.
         </div>

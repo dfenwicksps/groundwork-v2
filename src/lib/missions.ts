@@ -803,3 +803,52 @@ export function getActivity(
   const mission = getMission(missionId);
   return mission?.activities.find((a) => a.id === activityId);
 }
+
+/**
+ * The 12-value subset offered during onboarding (all drawn from VALUES_LIST,
+ * definitions in VALUES_WITH_DEFINITIONS). Single source of truth — the
+ * onboarding flow and the Settings values editor both import this, so the
+ * value the user picks at onboarding is always editable later.
+ */
+export const ONBOARDING_VALUES = [
+  "Courage",
+  "Kindness",
+  "Honesty",
+  "Creativity",
+  "Growth",
+  "Family",
+  "Humour",
+  "Compassion",
+  "Curiosity",
+  "Resilience",
+  "Fairness",
+  "Authenticity",
+] as const;
+
+// Base display labels derived straight from the mission definitions, so they
+// can never drift from the actual activity titles.
+const BASE_ACTIVITY_LABELS: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  for (const m of MISSIONS) {
+    for (const a of m.activities) map[a.id] = a.title;
+  }
+  return map;
+})();
+
+/**
+ * Human-readable label for any activity id, including the derived
+ * `<id>-debrief` (challenge check-ins) and `<id>-revisit` (evaluation cycle)
+ * journal entries. Replaces the hand-maintained label maps that previously
+ * lived in the Dashboard, Journal, and Revisit clients.
+ */
+export function getActivityLabel(activityId: string): string {
+  if (activityId.endsWith("-debrief")) {
+    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-debrief$/, "")];
+    return base ? `${base} — Debrief` : "Challenge Debrief";
+  }
+  if (activityId.endsWith("-revisit")) {
+    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-revisit$/, "")];
+    return base ? `${base} — Revisit` : "Revisit";
+  }
+  return BASE_ACTIVITY_LABELS[activityId] || activityId;
+}

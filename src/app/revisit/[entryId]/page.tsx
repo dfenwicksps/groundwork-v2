@@ -19,7 +19,6 @@ export default async function RevisitPage({
 
   type EntryRow = { id: string; mission_id: number; activity_id: string; prompt: string; response: string; created_at: string };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: entryRaw } = await (supabase as any)
     .from("journal_entries")
     .select("id, mission_id, activity_id, prompt, response, created_at")
@@ -31,7 +30,6 @@ export default async function RevisitPage({
   if (!entry) notFound();
 
   // If already revisited, redirect to journal
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: existing } = await (supabase as any)
     .from("journal_entries")
     .select("id")

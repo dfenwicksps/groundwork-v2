@@ -74,7 +74,6 @@ Return ONLY valid JSON with no other text before or after it:
     // Store reflection alongside the journal entry
     if (reflection && entryId) {
       // Cast needed due to auto-generated types not including ai_reflection in Update
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.from("journal_entries") as any)
         .update({ ai_reflection: reflection })
         .eq("id", entryId)

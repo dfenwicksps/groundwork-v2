@@ -67,7 +67,6 @@ export default async function DashboardPage() {
 
   type RevisitCandidate = { id: string; mission_id: number; activity_id: string; prompt: string; response: string; created_at: string };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: revisitCandidatesRaw } = await (supabase as any)
     .from("journal_entries")
     .select("id, mission_id, activity_id, prompt, response, created_at")
@@ -77,7 +76,6 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: true });
   const revisitCandidates = (revisitCandidatesRaw || []) as RevisitCandidate[];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: existingRevisitsRaw } = await (supabase as any)
     .from("journal_entries")
     .select("activity_id")

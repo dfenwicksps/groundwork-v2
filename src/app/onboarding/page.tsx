@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { type ProcessingStyle, setProcessingStyle, tallyStyle } from "@/lib/processingStyle";
+import { ONBOARDING_VALUES, VALUES_WITH_DEFINITIONS } from "@/lib/missions";
 
 const STYLE_QUESTIONS: {
   id: string;
@@ -67,57 +68,6 @@ const WHY_OPTIONS = [
   },
 ];
 
-const QUICK_VALUES = [
-  {
-    label: "Courage",
-    description: "Acting despite fear, not in the absence of it. Whether it's speaking up in a room that disagrees with you, trying something you might fail at, or letting someone actually see how you feel.",
-  },
-  {
-    label: "Kindness",
-    description: "Choosing warmth and generosity, especially when it costs you something. It shows up in the small moments: the text you didn't have to send, the extra patience, the willingness to put someone else first.",
-  },
-  {
-    label: "Honesty",
-    description: "Telling the truth — to others and to yourself. It's more than not lying. It's the hard feedback you give, the uncomfortable things you admit, and not pretending everything's fine when it isn't.",
-  },
-  {
-    label: "Creativity",
-    description: "Finding new ways to see, solve, and express. You don't just accept the obvious answer — you ask what else is possible, and you're willing to make something imperfect rather than make nothing at all.",
-  },
-  {
-    label: "Growth",
-    description: "The belief that where you are now isn't where you have to stay. You're drawn to discomfort, feedback, and challenge — not because they're fun, but because they're how you actually move forward.",
-  },
-  {
-    label: "Family",
-    description: "The people closest to you — by blood or by bond — are at the centre of what you care about. Their wellbeing matters deeply, and your relationships with them shape a lot of who you are.",
-  },
-  {
-    label: "Humour",
-    description: "Finding the lightness in life, even in difficult moments. You use laughter to connect, to cope, and to keep perspective — and you believe that not taking everything too seriously is a kind of wisdom.",
-  },
-  {
-    label: "Compassion",
-    description: "Feeling what others feel, and being moved to do something about it. Not sympathy from a distance — a genuine pull toward people who are struggling, and the impulse to actually help.",
-  },
-  {
-    label: "Curiosity",
-    description: "A genuine hunger to understand — people, ideas, how things work, why the world is the way it is. You ask questions not to seem smart, but because you actually want to know the answers.",
-  },
-  {
-    label: "Resilience",
-    description: "Getting back up — not because the hard thing didn't hurt, but because you don't let it define you. You bend, you feel it fully, and then you find a way through. Again and again.",
-  },
-  {
-    label: "Fairness",
-    description: "The conviction that everyone deserves to be treated with equal dignity. When you see unfairness, it bothers you — and you believe it's worth speaking up, even when it isn't your fight.",
-  },
-  {
-    label: "Authenticity",
-    description: "Showing up as yourself, not a version shaped by what others expect. It means saying what you actually think, living by what you actually believe, and refusing to perform a role that isn't yours.",
-  },
-];
-
 export const dynamic = 'force-dynamic';
 
 export default function OnboardingPage() {
@@ -125,6 +75,7 @@ export default function OnboardingPage() {
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
 
   // Step 1
   const [name, setName] = useState("");
@@ -147,11 +98,11 @@ export default function OnboardingPage() {
     }
   }
 
-  const hoveredValueData = QUICK_VALUES.find((v) => v.label === hoveredValue);
+  const hoveredValueDefinition = hoveredValue ? VALUES_WITH_DEFINITIONS[hoveredValue] : null;
 
   async function handleFinish(skip: boolean = false) {
     setLoading(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setFinishError(null);
     const db = createClient() as any;
     const { data: { user } } = await db.auth.getUser();
     if (!user) {
@@ -184,9 +135,8 @@ export default function OnboardingPage() {
 
     if (userErr) {
       setLoading(false);
-      alert(
-        "Something went wrong saving your profile. Please try again.\n\n" +
-          userErr.message
+      setFinishError(
+        "Something went wrong saving your profile — check your connection and try again."
       );
       return;
     }
@@ -366,6 +316,14 @@ export default function OnboardingPage() {
             >
               Next
             </button>
+            {/* Tell the user WHY Next is disabled instead of leaving them guessing */}
+            {(!whyHere || Object.keys(styleAnswers).length < STYLE_QUESTIONS.length) && (
+              <p className="text-xs text-ink-muted text-center mt-2">
+                {!whyHere
+                  ? "Choose what brings you here to continue."
+                  : `Answer ${STYLE_QUESTIONS.length - Object.keys(styleAnswers).length} more question${STYLE_QUESTIONS.length - Object.keys(styleAnswers).length === 1 ? "" : "s"} above to continue.`}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -386,7 +344,7 @@ export default function OnboardingPage() {
             </p>
 
             <div className="grid grid-cols-3 gap-2 mb-3">
-              {QUICK_VALUES.map(({ label }) => {
+              {ONBOARDING_VALUES.map((label) => {
                 const selected = selectedValues.includes(label);
                 const disabled = !selected && selectedValues.length >= 3;
                 return (
@@ -402,7 +360,7 @@ export default function OnboardingPage() {
                       selected
                         ? "bg-navy text-white border-navy"
                         : disabled
-                        ? "bg-surface-muted text-ink-muted/50 border-surface-border cursor-not-allowed"
+                        ? "bg-surface-muted text-ink-muted border-surface-border cursor-not-allowed"
                         : "bg-white text-ink border-surface-border hover:border-navy/30"
                     )}
                   >
@@ -414,13 +372,13 @@ export default function OnboardingPage() {
 
             {/* Tooltip / description area — fixed height prevents layout shift */}
             <div className="mb-4 h-[5.5rem] flex items-start">
-              {hoveredValueData ? (
+              {hoveredValue && hoveredValueDefinition ? (
                 <div className="w-full rounded-xl bg-teal/5 border border-teal/20 px-4 py-3 text-sm text-ink-muted">
-                  <span className="font-semibold text-ink">{hoveredValueData.label}: </span>
-                  {hoveredValueData.description}
+                  <span className="font-semibold text-ink">{hoveredValue}: </span>
+                  {hoveredValueDefinition}
                 </div>
               ) : (
-                <p className="text-xs text-ink-muted/50 px-1 pt-1">Hover over a value to learn more</p>
+                <p className="text-xs text-ink-muted px-1 pt-1">Hover over a value to learn more</p>
               )}
             </div>
 
@@ -510,12 +468,17 @@ export default function OnboardingPage() {
             </div>
 
             <div className="flex flex-col gap-3 mt-6">
+              {finishError && (
+                <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+                  {finishError}
+                </p>
+              )}
               <button
                 onClick={() => handleFinish(false)}
                 disabled={loading}
                 className="btn btn-primary w-full"
               >
-                {loading ? "Setting up your account…" : "Start Mission 1"}
+                {loading ? "Setting up your account…" : finishError ? "Try again" : "Start Mission 1"}
               </button>
               <button
                 onClick={() => handleFinish(true)}
@@ -526,7 +489,7 @@ export default function OnboardingPage() {
               </button>
             </div>
 
-            <p className="text-xs text-ink-muted/60 text-center mt-4">
+            <p className="text-xs text-ink-muted text-center mt-4">
               If you ever need more support, Kids Helpline is available 24/7
               on 1800 55 1800.
             </p>

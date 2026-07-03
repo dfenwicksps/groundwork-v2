@@ -93,7 +93,7 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
                         height="14"
                         viewBox="0 0 14 14"
                         fill="none"
-                        className="text-ink-muted/40 flex-shrink-0 mt-1"
+                        className="text-ink-muted flex-shrink-0 mt-1"
                       >
                         <path
                           d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"

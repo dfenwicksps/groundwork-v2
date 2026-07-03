@@ -48,13 +48,14 @@ export default function AuthForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent">("idle");
 
-  const supabase = createClient();
+  // Stable client instance so the mount-only session check has honest deps.
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.push("/dashboard");
     });
-  }, []);
+  }, [supabase, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -87,7 +88,6 @@ export default function AuthForm() {
       } else {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const { data } = await (supabase as any)
             .from("users")
             .select("onboarding_complete")

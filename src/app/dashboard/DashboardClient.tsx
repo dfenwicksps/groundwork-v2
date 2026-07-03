@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatRelativeDate, truncate, cn } from "@/lib/utils";
 import type {
   UserProfile,
@@ -56,29 +56,6 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   2: "purpose-challenge",
   3: "connection-challenge",
   4: "meaning-challenge",
-};
-
-const MISSION_ACTIVITY_LABELS: Record<string, string> = {
-  "strengths-mapping": "Strengths Mapping",
-  "values-clarifier": "Values Clarifier",
-  "mask-check": "The Mask Check",
-  "identity-letter": "Identity Letter",
-  "weekly-challenge": "Weekly Challenge",
-  "what-matters": "What Matters",
-  "contribution-map": "The Contribution Map",
-  "the-other-side": "The Other Side",
-  "commitment-statement": "Commitment Statement",
-  "purpose-challenge": "Weekly Challenge",
-  belonging: "Where You Belong",
-  "fitting-in-vs-belonging": "Fitting In vs. Belonging",
-  "across-the-gap": "Across the Gap",
-  "people-who-shaped-you": "The People Who Shaped You",
-  "connection-challenge": "Weekly Challenge",
-  "future-self": "Future Self",
-  "digital-self": "Digital Self",
-  "the-through-line": "The Through-Line",
-  "meaning-letter": "A Life Worth Building",
-  "meaning-challenge": "Weekly Challenge",
 };
 
 export default function DashboardClient({
@@ -203,12 +180,12 @@ export default function DashboardClient({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-ink mb-1">
-                  {MISSION_ACTIVITY_LABELS[revisitEntry.activity_id] || revisitEntry.activity_id}
+                  {getActivityLabel(revisitEntry.activity_id)}
                 </p>
                 <p className="text-xs text-ink-muted mb-2">
                   Written {formatRelativeDate(revisitEntry.created_at)} · Does it still feel true?
                 </p>
-                <p className="text-xs text-ink-muted/70 italic line-clamp-2">
+                <p className="text-xs text-ink-muted italic line-clamp-2">
                   &ldquo;{truncate(revisitEntry.response, 100)}&rdquo;
                 </p>
               </div>
@@ -217,7 +194,7 @@ export default function DashboardClient({
                 height="14"
                 viewBox="0 0 14 14"
                 fill="none"
-                className="text-ink-muted/40 group-hover:text-ink-muted flex-shrink-0 mt-1 transition-colors"
+                className="text-ink-muted group-hover:text-ink-muted flex-shrink-0 mt-1 transition-colors"
               >
                 <path
                   d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
@@ -249,7 +226,7 @@ export default function DashboardClient({
                   Your next step is here. No pressure on timing.
                 </p>
                 {nudgeActivity.sentenceStarter && (
-                  <p className="text-xs text-ink-muted/60 italic">
+                  <p className="text-xs text-ink-muted italic">
                     Try starting with: &ldquo;{nudgeActivity.sentenceStarter}&rdquo;
                   </p>
                 )}
@@ -291,7 +268,7 @@ export default function DashboardClient({
                 </div>
                 <Link
                   href={`/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`}
-                  className="flex-shrink-0 bg-gold/10 text-gold hover:bg-gold/20 transition-colors px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap"
+                  className="flex-shrink-0 bg-gold/10 text-gold-text hover:bg-gold/20 transition-colors px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap"
                 >
                   Check in
                 </Link>
@@ -338,19 +315,19 @@ export default function DashboardClient({
                       </span>
                     )}
                     {isLocked && (
-                      <span className="text-xs text-ink-muted/50">Next</span>
+                      <span className="text-xs text-ink-muted">Next</span>
                     )}
                   </div>
                   <div
-                    className={`text-sm font-semibold mb-0.5 ${isLocked ? "text-ink-muted/50" : "text-navy"}`}
+                    className={`text-sm font-semibold mb-0.5 ${isLocked ? "text-ink-muted" : "text-navy"}`}
                     style={{ fontFamily: "'Fraunces', serif" }}
                   >
                     {mission.title}
                   </div>
-                  <div className={`text-xs mb-0.5 ${isLocked ? "text-ink-muted/40" : "text-ink-muted/70"}`}>
+                  <div className={`text-xs mb-0.5 ${isLocked ? "text-ink-muted" : "text-ink-muted"}`}>
                     {mission.phaseLabel}
                   </div>
-                  <div className={`text-xs mb-3 line-clamp-1 ${isLocked ? "text-ink-muted/40" : "text-ink-muted"}`} style={{ fontStyle: "italic" }}>
+                  <div className={`text-xs mb-3 line-clamp-1 ${isLocked ? "text-ink-muted" : "text-ink-muted"}`} style={{ fontStyle: "italic" }}>
                     {mission.question}
                   </div>
                   {!isLocked && (
@@ -403,11 +380,11 @@ export default function DashboardClient({
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-ink truncate">
                         {entry.activity_id
-                          ? MISSION_ACTIVITY_LABELS[entry.activity_id] ||
+                          ? getActivityLabel(entry.activity_id) ||
                             entry.activity_id
                           : "Reflection"}
                         {entry.is_milestone && (
-                          <span className="ml-2 text-xs text-gold bg-gold/10 px-1.5 py-0.5 rounded">
+                          <span className="ml-2 text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded">
                             ★ Milestone
                           </span>
                         )}
@@ -424,7 +401,7 @@ export default function DashboardClient({
                     height="14"
                     viewBox="0 0 14 14"
                     fill="none"
-                    className="text-ink-muted/40 group-hover:text-ink-muted flex-shrink-0 ml-3 transition-colors"
+                    className="text-ink-muted group-hover:text-ink-muted flex-shrink-0 ml-3 transition-colors"
                   >
                     <path
                       d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"

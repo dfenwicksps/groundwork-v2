@@ -43,7 +43,6 @@ export default function MissionDetailClient({
   // record of what the user wrote. RLS scopes the delete to the user's rows.
   async function restartMission() {
     setRestarting(true);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = createClient() as any;
     await db
       .from("mission_progress")
@@ -190,7 +189,7 @@ export default function MissionDetailClient({
                           </div>
                           <svg
                             width="14" height="14" viewBox="0 0 14 14" fill="none"
-                            className="text-ink-muted/40 flex-shrink-0"
+                            className="text-ink-muted flex-shrink-0"
                           >
                             <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
@@ -250,7 +249,7 @@ export default function MissionDetailClient({
                                 {activity.title}
                               </span>
                               {activity.isMilestone && (
-                                <span className="text-xs text-gold bg-gold/10 px-1.5 py-0.5 rounded font-medium">
+                                <span className="text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded font-medium">
                                   ★ Milestone
                                 </span>
                               )}
@@ -258,12 +257,12 @@ export default function MissionDetailClient({
                             <div className="flex items-center gap-2 mt-0.5">
                               <span className="text-xs text-ink-muted">{activity.subtitle}</span>
                               {activity.timeEstimate && !completed && (
-                                <span className="text-xs text-ink-muted/50">· {activity.timeEstimate}</span>
+                                <span className="text-xs text-ink-muted">· {activity.timeEstimate}</span>
                               )}
                             </div>
                           </div>
 
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted/40 flex-shrink-0">
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
                             <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </Link>
@@ -310,7 +309,7 @@ export default function MissionDetailClient({
                       <div className="text-sm font-medium text-ink truncate">{story.title}</div>
                       <div className="text-xs text-ink-muted mt-0.5 truncate">{story.teaser}</div>
                     </div>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted/40 flex-shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
                       <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>

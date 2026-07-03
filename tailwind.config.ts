@@ -23,6 +23,9 @@ const config: Config = {
           DEFAULT: "#C8982A",
           light: "#d4a93e",
           dark: "#a67d20",
+          // For text on light backgrounds — 5.05:1 on white (AA pass);
+          // the DEFAULT gold is decorative-only at 2.6:1.
+          text: "#8A6A1D",
         },
         sage: {
           DEFAULT: "#4A7C59",

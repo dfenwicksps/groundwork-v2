@@ -82,7 +82,6 @@ function ConversationalActivity({
   pairedStory?: { id: string; title: string; teaser: string } | null;
   onComplete: (response: string) => void;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
 
   // Questions: use scaffolding steps if available, else single prompt
@@ -453,7 +452,7 @@ function ConversationalActivity({
                   {mission.phaseLabel}
                 </span>
                 {activity.isMilestone && (
-                  <span className="text-xs text-[--gold] bg-[rgba(200,152,42,0.1)] px-2.5 py-1 rounded-full font-semibold">
+                  <span className="text-xs text-[--gold-text] bg-[rgba(200,152,42,0.1)] px-2.5 py-1 rounded-full font-semibold">
                     ★ Milestone
                   </span>
                 )}
@@ -468,7 +467,7 @@ function ConversationalActivity({
                 <p className="text-sm text-[--ink-muted]">{activity.subtitle}</p>
               )}
               {activity.timeEstimate && (
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-[--ink-muted]/70">
+                <div className="flex items-center gap-1.5 mt-2 text-xs text-[--ink-muted]">
                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                     <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2" />
                     <path d="M6 3.5V6l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
@@ -505,7 +504,7 @@ function ConversationalActivity({
             {/* Warm-up */}
             {activity.warmUp && (
               <div className="question-card mb-5">
-                <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
+                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
                   Before you start
                 </div>
                 <p className="text-[--ink] leading-relaxed">{activity.warmUp}</p>
@@ -523,13 +522,13 @@ function ConversationalActivity({
                   📖
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                  <div className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
                     Read first
                   </div>
                   <div className="text-sm font-medium text-[--ink] truncate">{pairedStory.title}</div>
                   <div className="text-xs text-[--ink-muted] mt-0.5 truncate">{pairedStory.teaser}</div>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[--ink-muted]/40 flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[--ink-muted] flex-shrink-0">
                   <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
@@ -545,7 +544,7 @@ function ConversationalActivity({
                   {questions.map((q, i) => (
                     <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
                       <span
-                        className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold text-white mt-0.5"
+                        className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5"
                         style={{ background: `${mission.colour}60` }}
                       >
                         {i + 1}
@@ -583,7 +582,7 @@ function ConversationalActivity({
                 ? "Start writing"
                 : "Begin →"}
             </button>
-            <p className="text-[10px] text-[--ink-muted]/50 text-center mt-3 leading-relaxed">
+            <p className="text-[11px] text-[--ink-muted] text-center mt-3 leading-relaxed">
               All entries are private. Only you can see this.
             </p>
           </div>
@@ -660,7 +659,7 @@ function ConversationalActivity({
                   className="w-full flex items-start gap-2.5 text-left"
                 >
                   <span
-                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white mt-0.5"
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5"
                     style={{ background: "var(--sage)" }}
                   >
                     ✓
@@ -685,7 +684,7 @@ function ConversationalActivity({
                     height="14"
                     viewBox="0 0 14 14"
                     fill="none"
-                    className={cn("flex-shrink-0 mt-0.5 text-[--ink-muted]/40 transition-transform", expandedTurns.has(i) && "rotate-180")}
+                    className={cn("flex-shrink-0 mt-0.5 text-[--ink-muted] transition-transform", expandedTurns.has(i) && "rotate-180")}
                   >
                     <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -710,7 +709,7 @@ function ConversationalActivity({
                 }}
               >
                 <div
-                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest mb-2"
+                  className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
                   style={{ color: mission.colour }}
                 >
                   <span aria-hidden>✦</span> Picture this
@@ -724,7 +723,7 @@ function ConversationalActivity({
             {/* Current question */}
             <div data-animate="2" className="question-card">
               <div
-                className="text-[10px] font-bold uppercase tracking-widest mb-3"
+                className="text-[11px] font-bold uppercase tracking-widest mb-3"
                 style={{ color: mission.colour }}
               >
                 {activity.scenarios?.[qIdx]
@@ -739,7 +738,7 @@ function ConversationalActivity({
             {/* Previous answer shown while editing, so the user can adjust it */}
             {editing && prevAnswersRef.current[qIdx] && (
               <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border]">
-                <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
+                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
                   Previously you {usingStarter ? "chose" : "wrote"}
                 </div>
                 <p className="text-sm text-[--ink-muted] italic leading-relaxed whitespace-pre-wrap">
@@ -984,7 +983,7 @@ function ConversationalActivity({
                 style={{ background: "rgba(46,125,140,0.04)", borderColor: "rgba(46,125,140,0.2)" }}
                 data-animate="4"
               >
-                <div className="text-[10px] font-bold text-[--teal] mb-3 uppercase tracking-widest">
+                <div className="text-[11px] font-bold text-[--teal] mb-3 uppercase tracking-widest">
                   Something to sit with
                 </div>
                 {parsed.type === "tricheck" ? (
@@ -995,7 +994,7 @@ function ConversationalActivity({
                       { label: "Who gets it", q: parsed.tricheck.collective },
                     ] as const).map(({ label, q }) => (
                       <div key={label} className="flex gap-3">
-                        <span className="text-[9px] font-bold text-[--teal]/50 uppercase tracking-wide w-20 flex-shrink-0 pt-0.5 leading-tight">
+                        <span className="text-[11px] font-bold text-[--teal]/50 uppercase tracking-wide w-20 flex-shrink-0 pt-0.5 leading-tight">
                           {label}
                         </span>
                         <p className="text-sm text-[--ink] leading-relaxed">{q}</p>
@@ -1054,7 +1053,6 @@ function ValuesPickerActivity({
   existingEntry: JournalEntry | null;
   onComplete: (response: string) => void;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
 
@@ -1299,7 +1297,7 @@ function ValuesPickerActivity({
             <div className="card p-4 space-y-3">
               {activity.scenarios.map((s, i) => (
                 <div key={i} className="flex gap-3">
-                  <span className="text-[--ink-muted]/40 text-sm font-semibold flex-shrink-0">
+                  <span className="text-[--ink-muted] text-sm font-semibold flex-shrink-0">
                     {i + 1}.
                   </span>
                   <p className="text-sm text-[--ink] leading-relaxed">{s}</p>
@@ -1353,7 +1351,7 @@ function ValuesPickerActivity({
               {VALUES_WITH_DEFINITIONS[hoveredValue] || ""}
             </div>
           ) : (
-            <p className="text-xs text-[--ink-muted]/40 px-1 pt-1">Tap a value to select it · hover to see the definition</p>
+            <p className="text-xs text-[--ink-muted] px-1 pt-1">Tap a value to select it · hover to see the definition</p>
           )}
         </div>
 
@@ -1409,7 +1407,6 @@ function ChallengeActivity({
   existingChallenge: Challenge | null;
   onComplete: () => void;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
 
   const [submitting, setSubmitting] = useState(false);
@@ -1483,7 +1480,7 @@ function ChallengeActivity({
         {header}
         <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
           <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "var(--gold)" }}>
-            <p className="text-xs font-semibold text-[--gold] mb-2 uppercase tracking-wide">Check in</p>
+            <p className="text-xs font-semibold text-[--gold-text] mb-2 uppercase tracking-wide">Check in</p>
             <p className="text-[--ink] text-sm leading-relaxed">{existingChallenge?.challenge_text}</p>
           </div>
           {debriefDone ? (
@@ -1579,7 +1576,6 @@ export default function ActivityClient({
   existingChallenge,
   pairedStory,
 }: Props) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
 
   const [completed, setCompleted] = useState(isCompleted);

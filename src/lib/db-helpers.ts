@@ -8,11 +8,9 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClient = SupabaseClient<any>;
 
 export function dbFrom(client: AnyClient, table: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (client as any).from(table);
 }
 
@@ -22,7 +20,6 @@ export async function dbUpdate(
   values: Record<string, unknown>,
   filters: Record<string, unknown>
 ): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (client as any).from(table).update(values);
   for (const [col, val] of Object.entries(filters)) {
     query = query.eq(col, val);
@@ -35,7 +32,6 @@ export async function dbInsert(
   table: string,
   values: Record<string, unknown>
 ): Promise<string | null> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (client as any)
     .from(table)
     .insert(values)
@@ -50,6 +46,5 @@ export async function dbUpsert(
   table: string,
   values: Record<string, unknown>
 ): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (client as any).from(table).upsert(values);
 }

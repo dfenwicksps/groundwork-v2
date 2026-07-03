@@ -1,37 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatDate, isWithin24Hours, truncate, parseReflection } from "@/lib/utils";
 import type { JournalEntry } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
-
-const ACTIVITY_LABELS: Record<string, string> = {
-  "strengths-mapping": "Strengths Mapping",
-  "values-clarifier": "Values Clarifier",
-  "mask-check": "The Mask Check",
-  "identity-letter": "Identity Letter",
-  "weekly-challenge": "Weekly Challenge",
-  "weekly-challenge-debrief": "Challenge Debrief",
-  "what-matters": "What Matters",
-  "contribution-map": "The Contribution Map",
-  "the-other-side": "The Other Side",
-  "commitment-statement": "Commitment Statement",
-  "purpose-challenge": "Weekly Challenge",
-  belonging: "Where You Belong",
-  "fitting-in-vs-belonging": "Fitting In vs. Belonging",
-  "across-the-gap": "Across the Gap",
-  "people-who-shaped-you": "The People Who Shaped You",
-  "connection-challenge": "Weekly Challenge",
-  "connection-challenge-debrief": "Challenge Debrief",
-  "future-self": "Future Self",
-  "digital-self": "Digital Self",
-  "the-through-line": "The Through-Line",
-  "meaning-letter": "A Life Worth Building",
-  "meaning-challenge": "Weekly Challenge",
-  "meaning-challenge-debrief": "Challenge Debrief",
-};
 
 export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
   const [filter, setFilter] = useState<number | null>(null);
@@ -108,7 +82,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
               const isOpen = expanded === entry.id;
               const canEdit = isWithin24Hours(entry.created_at);
               const label =
-                ACTIVITY_LABELS[entry.activity_id] || entry.activity_id;
+                getActivityLabel(entry.activity_id);
 
               return (
                 <div key={entry.id} className="card overflow-hidden">
@@ -130,7 +104,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                               {label}
                             </span>
                             {entry.is_milestone && (
-                              <span className="text-xs text-gold bg-gold/10 px-1.5 py-0.5 rounded font-medium">
+                              <span className="text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded font-medium">
                                 ★ Milestone
                               </span>
                             )}
@@ -140,7 +114,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                             {mission?.title || "Unknown mission"}
                           </div>
                           {!isOpen && (
-                            <p className="text-xs text-ink-muted/80 mt-1.5 line-clamp-2">
+                            <p className="text-xs text-ink-muted mt-1.5 line-clamp-2">
                               {truncate(entry.response, 120)}
                             </p>
                           )}
@@ -152,7 +126,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                         viewBox="0 0 14 14"
                         fill="none"
                         className={cn(
-                          "flex-shrink-0 mt-1 text-ink-muted/40 transition-transform",
+                          "flex-shrink-0 mt-1 text-ink-muted transition-transform",
                           isOpen && "rotate-90"
                         )}
                       >
@@ -198,7 +172,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                                   { label: "Who gets it",      q: parsed.tricheck.collective },
                                 ] as const).map(({ label, q }) => (
                                   <div key={label} className="flex gap-3">
-                                    <span className="text-[10px] font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
+                                    <span className="text-[11px] font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
                                       {label}
                                     </span>
                                     <p className="text-sm text-ink leading-relaxed">{q}</p>
@@ -213,7 +187,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                       })()}
 
                       {!canEdit && (
-                        <p className="text-xs text-ink-muted/60 mt-3">
+                        <p className="text-xs text-ink-muted mt-3">
                           Entries are read-only after 24 hours.
                         </p>
                       )}

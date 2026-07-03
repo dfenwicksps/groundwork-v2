@@ -4,32 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatDate, truncate } from "@/lib/utils";
 import AppShell from "@/components/layout/AppShell";
-
-const ACTIVITY_LABELS: Record<string, string> = {
-  "strengths-mapping": "Strengths Mapping",
-  "values-clarifier": "Values Clarifier",
-  "mask-check": "The Mask Check",
-  "identity-letter": "Identity Letter",
-  "weekly-challenge": "Weekly Challenge",
-  "what-matters": "What Matters",
-  "contribution-map": "The Contribution Map",
-  "the-other-side": "The Other Side",
-  "commitment-statement": "Commitment Statement",
-  "purpose-challenge": "Weekly Challenge",
-  belonging: "Where You Belong",
-  "fitting-in-vs-belonging": "Fitting In vs. Belonging",
-  "across-the-gap": "Across the Gap",
-  "people-who-shaped-you": "The People Who Shaped You",
-  "connection-challenge": "Weekly Challenge",
-  "future-self": "Future Self",
-  "digital-self": "Digital Self",
-  "the-through-line": "The Through-Line",
-  "meaning-letter": "A Life Worth Building",
-  "meaning-challenge": "Weekly Challenge",
-};
 
 const REVISIT_PROMPTS = [
   "Does this still feel true? Has anything happened in the last couple of weeks that tested it?",
@@ -53,7 +30,6 @@ export default function RevisitClient({
   entry: OriginalEntry;
   userId: string;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = createClient() as any;
   const router = useRouter();
 
@@ -63,7 +39,7 @@ export default function RevisitClient({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const mission = MISSIONS.find((m) => m.id === entry.mission_id);
-  const activityLabel = ACTIVITY_LABELS[entry.activity_id] || entry.activity_id;
+  const activityLabel = getActivityLabel(entry.activity_id);
 
   async function handleSubmit() {
     if (!response.trim()) return;

@@ -22,7 +22,6 @@ export default function SupportClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = supabase as any;
 
   const [showForm, setShowForm] = useState(false);
@@ -30,6 +29,7 @@ export default function SupportClient({
   const [relationship, setRelationship] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [confirmingRemove, setConfirmingRemove] = useState<string | null>(null);
 
   async function handleAdd() {
     if (!name.trim() || !relationship.trim()) return;
@@ -55,9 +55,11 @@ export default function SupportClient({
     const { error } = await db.from("support_circle").delete().eq("id", id);
     if (error) {
       setSaveError("Couldn't remove that person — please try again.");
+      setConfirmingRemove(null);
       return;
     }
     setSaveError(null);
+    setConfirmingRemove(null);
     router.refresh();
   }
 
@@ -95,20 +97,37 @@ export default function SupportClient({
                       {contact.relationship}
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleRemove(contact.id)}
-                    className="text-xs text-ink-muted/50 hover:text-red-400 transition-colors p-1"
-                    aria-label="Remove"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path
-                        d="M3 3l8 8M11 3l-8 8"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </button>
+                  {confirmingRemove === contact.id ? (
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => setConfirmingRemove(null)}
+                        className="text-xs text-ink-muted hover:text-ink px-2 py-1.5 rounded-lg transition-colors"
+                      >
+                        Keep
+                      </button>
+                      <button
+                        onClick={() => handleRemove(contact.id)}
+                        className="text-xs text-red-600 font-medium px-2 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+                      >
+                        Remove {contact.name}?
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmingRemove(contact.id)}
+                      className="text-xs text-ink-muted hover:text-red-400 transition-colors p-2"
+                      aria-label={`Remove ${contact.name}`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                        <path
+                          d="M3 3l8 8M11 3l-8 8"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
