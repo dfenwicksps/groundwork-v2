@@ -79,7 +79,7 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
                 <div className="flex items-start gap-4">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm font-semibold"
-                    style={{ background: mission?.colour || "#1B3A5C" }}
+                    style={{ background: mission?.colour || "#4F46E5" }}
                   >
                     {mission?.id}
                   </div>

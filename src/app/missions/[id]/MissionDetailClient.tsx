@@ -171,14 +171,15 @@ export default function MissionDetailClient({
                           style={{ borderColor: `${mission.colour}40`, background: `${mission.colour}06` }}
                         >
                           <div
-                            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs"
-                            style={{ background: `${mission.colour}18` }}
+                            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                            style={{ background: mission.colour }}
+                            aria-hidden
                           >
                             📖
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold uppercase tracking-wide mb-0.5" style={{ color: mission.colour }}>
-                              Read first
+                            <div className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                              True story · goes with the next step
                             </div>
                             <div className="text-sm font-medium text-ink truncate">
                               {story.title}
@@ -249,7 +250,7 @@ export default function MissionDetailClient({
                                 {activity.title}
                               </span>
                               {activity.isMilestone && (
-                                <span className="text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded font-medium">
+                                <span className="text-xs text-coral bg-coral/10 px-1.5 py-0.5 rounded font-medium">
                                   ★ Milestone
                                 </span>
                               )}

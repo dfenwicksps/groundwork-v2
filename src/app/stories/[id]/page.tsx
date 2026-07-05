@@ -49,7 +49,7 @@ export default async function StoryPage({
         {/* Mission tag */}
         <div
           className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full text-white mb-4"
-          style={{ background: mission?.colour || "#1B3A5C" }}
+          style={{ background: mission?.colour || "#4F46E5" }}
         >
           {mission?.subtitle} — {mission?.title}
         </div>
@@ -85,7 +85,7 @@ export default async function StoryPage({
           <div
             className="rounded-xl p-6 mb-6 border-l-4"
             style={{
-              borderLeftColor: mission?.colour || "#1B3A5C",
+              borderLeftColor: mission?.colour || "#4F46E5",
               background: "#FAFAF8",
               borderTop: "1px solid #E8E8E4",
               borderRight: "1px solid #E8E8E4",

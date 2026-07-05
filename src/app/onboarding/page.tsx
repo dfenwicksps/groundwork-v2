@@ -168,7 +168,7 @@ export default function OnboardingPage() {
   const progressWidth = `${(step / 3) * 100}%`;
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
       {/* Progress */}
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between text-xs text-ink-muted mb-2">

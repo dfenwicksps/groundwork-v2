@@ -10,36 +10,41 @@ const config: Config = {
     extend: {
       colors: {
         navy: {
-          DEFAULT: "#1B3A5C",
-          light: "#234b75",
-          dark: "#122840",
+          DEFAULT: "#4338CA",
+          light: "#4F46E5",
+          dark: "#3730A3",
         },
         teal: {
-          DEFAULT: "#2E7D8C",
-          light: "#3a9aad",
-          dark: "#236070",
+          DEFAULT: "#0E7490",
+          light: "#0891B2",
+          dark: "#155E75",
         },
         gold: {
-          DEFAULT: "#C8982A",
-          light: "#d4a93e",
-          dark: "#a67d20",
-          // For text on light backgrounds — 5.05:1 on white (AA pass);
-          // the DEFAULT gold is decorative-only at 2.6:1.
-          text: "#8A6A1D",
+          DEFAULT: "#F59E0B",
+          light: "#FBbf24",
+          dark: "#D97706",
+          // For text on light backgrounds — 5.0:1 on white (AA pass);
+          // the DEFAULT gold is a fill colour, pair it with dark text.
+          text: "#92610C",
         },
         sage: {
-          DEFAULT: "#4A7C59",
-          light: "#5a9470",
-          dark: "#3a6045",
+          DEFAULT: "#15803D",
+          light: "#16A34A",
+          dark: "#166534",
+        },
+        coral: {
+          DEFAULT: "#E11D48",
+          light: "#F43F5E",
+          dark: "#BE123C",
         },
         surface: {
           DEFAULT: "#FFFFFF",
-          muted: "#F8F8F6",
-          border: "#E8E8E4",
+          muted: "#FAF5EC",
+          border: "#EBE2D2",
         },
         ink: {
           DEFAULT: "#1A1A1A",
-          muted: "#666666",
+          muted: "#63605A",
           faint: "#999999",
         },
       },

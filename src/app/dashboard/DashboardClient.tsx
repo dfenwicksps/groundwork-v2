@@ -25,7 +25,6 @@ type NudgeActivity = {
   missionId: number;
   activityId: string;
   title: string;
-  sentenceStarter?: string;
 };
 
 interface Props {
@@ -173,7 +172,7 @@ export default function DashboardClient({
                 "card p-5 flex items-start gap-4 hover:shadow-card transition-all group",
                 "border-l-4"
               )}
-              style={{ borderLeftColor: "#4A7C59" }}
+              style={{ borderLeftColor: "#15803D" }}
             >
               <div className="w-9 h-9 rounded-xl bg-sage/10 flex items-center justify-center text-lg flex-shrink-0">
                 ↩
@@ -225,11 +224,6 @@ export default function DashboardClient({
                 <p className="text-xs text-ink-muted mb-2">
                   Your next step is here. No pressure on timing.
                 </p>
-                {nudgeActivity.sentenceStarter && (
-                  <p className="text-xs text-ink-muted italic">
-                    Try starting with: &ldquo;{nudgeActivity.sentenceStarter}&rdquo;
-                  </p>
-                )}
               </div>
               <svg
                 width="14"
@@ -256,7 +250,7 @@ export default function DashboardClient({
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
               This week&apos;s challenge
             </h2>
-            <div className="card p-5 border-l-4" style={{ borderLeftColor: "#C8982A" }}>
+            <div className="card p-5 border-l-4" style={{ borderLeftColor: "#F59E0B" }}>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-ink mb-1">
@@ -374,7 +368,7 @@ export default function DashboardClient({
                       style={{
                         background:
                           MISSIONS.find((m) => m.id === entry.mission_id)
-                            ?.colour || "#1B3A5C",
+                            ?.colour || "#4F46E5",
                       }}
                     />
                     <div className="min-w-0">
@@ -485,14 +479,14 @@ export default function DashboardClient({
               {
                 label: "Activities done",
                 value: totalCompleted,
-                color: "#1B3A5C",
+                color: "#4F46E5",
               },
               {
                 label: "Missions started",
                 value: MISSIONS.filter((m) =>
                   progress.some((p) => p.mission_id === m.id)
                 ).length,
-                color: "#2E7D8C",
+                color: "#0E7490",
               },
               {
                 label: "Days active",
@@ -504,7 +498,7 @@ export default function DashboardClient({
                       (1000 * 60 * 60 * 24)
                   )
                 ),
-                color: "#4A7C59",
+                color: "#15803D",
               },
             ].map((stat) => (
               <div key={stat.label} className="card p-4 text-center">

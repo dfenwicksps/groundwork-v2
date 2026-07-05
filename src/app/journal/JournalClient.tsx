@@ -124,7 +124,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                       <div className="flex items-start gap-3 min-w-0">
                         <div
                           className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                          style={{ background: mission?.colour || "#1B3A5C" }}
+                          style={{ background: mission?.colour || "#4F46E5" }}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -132,7 +132,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                               {label}
                             </span>
                             {entry.is_milestone && (
-                              <span className="text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded font-medium">
+                              <span className="text-xs text-coral bg-coral/10 px-1.5 py-0.5 rounded font-medium">
                                 ★ Milestone
                               </span>
                             )}

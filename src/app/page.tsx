@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F8F8F6]">
+    <div className="min-h-screen bg-surface-muted">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export default function LandingPage() {
           data-animate="2"
         >
           Figure out who you are.{" "}
-          <span style={{ fontStyle: "italic", color: "#2E7D8C" }}>
+          <span style={{ fontStyle: "italic", color: "#0E7490" }}>
             Build a life that matters.
           </span>
         </h1>
@@ -103,25 +103,25 @@ export default function LandingPage() {
               n: "01",
               title: "Identity",
               q: "Who am I becoming?",
-              col: "#1B3A5C",
+              col: "#4F46E5",
             },
             {
               n: "02",
               title: "Purpose",
               q: "What do I care about?",
-              col: "#2E7D8C",
+              col: "#0E7490",
             },
             {
               n: "03",
               title: "Connection",
               q: "Where do I belong?",
-              col: "#4A7C59",
+              col: "#15803D",
             },
             {
               n: "04",
               title: "Meaning",
               q: "What kind of life do I want?",
-              col: "#C8982A",
+              col: "#C2410C",
             },
           ].map((m) => (
             <div

@@ -18,6 +18,9 @@ interface Props {
   existingEntry: JournalEntry | null;
   existingChallenge: Challenge | null;
   pairedStory?: { id: string; title: string; teaser: string } | null;
+  /** Strengths + values from earlier Mission 1 steps, surfaced in the Mask
+      Check ("test your compass") and Identity Letter ("write from it"). */
+  compass?: { strengths: string[]; values: string[] } | null;
 }
 
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
@@ -73,6 +76,7 @@ function ConversationalActivity({
   userId,
   existingEntry,
   pairedStory,
+  compass,
   onComplete,
 }: {
   mission: Mission;
@@ -80,6 +84,7 @@ function ConversationalActivity({
   userId: string;
   existingEntry: JournalEntry | null;
   pairedStory?: { id: string; title: string; teaser: string } | null;
+  compass?: { strengths: string[]; values: string[] } | null;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
@@ -114,10 +119,30 @@ function ConversationalActivity({
   const writingOther = !usingStarter || selectedOption === OTHER_OPTION;
 
   function changeMode(m: LearningMode) {
+    if (m === mode) return;
     setModeState(m);
     setLearningMode(m);
-    setSelectedOption(null);
-    setCurrent("");
+    if (m === "advanced") {
+      // Starter picks become editable text the user can extend or replace.
+      if (selectedOption && selectedOption !== OTHER_OPTION) {
+        setCurrent(selectedOption);
+      }
+      setSelectedOption(null);
+      setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 100);
+    } else {
+      // Back to Starter: re-select the matching option, or keep custom text
+      // under "Something else" so nothing the user wrote is lost.
+      const opts = activity.starterOptions?.[qIdx];
+      const trimmed = current.trim();
+      if (opts?.includes(trimmed)) {
+        setSelectedOption(trimmed);
+        setCurrent("");
+      } else if (trimmed && opts) {
+        setSelectedOption(OTHER_OPTION);
+      } else {
+        setSelectedOption(null);
+      }
+    }
   }
 
   function pickOption(opt: string) {
@@ -265,17 +290,6 @@ function ConversationalActivity({
       setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 200);
     }
   }, [qIdx, phase, writingOther]);
-
-  function applySentenceStarter(starter: string) {
-    const next = current ? `${current}\n\n${starter}` : starter;
-    setCurrent(next);
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        textareaRef.current.setSelectionRange(next.length, next.length);
-      }
-    }, 0);
-  }
 
   function canSubmitCurrent() {
     if (usingStarter) {
@@ -452,7 +466,7 @@ function ConversationalActivity({
                   {mission.phaseLabel}
                 </span>
                 {activity.isMilestone && (
-                  <span className="text-xs text-[--gold-text] bg-[rgba(200,152,42,0.1)] px-2.5 py-1 rounded-full font-semibold">
+                  <span className="text-xs text-[--coral] bg-[rgba(225,29,72,0.08)] px-2.5 py-1 rounded-full font-semibold">
                     ★ Milestone
                   </span>
                 )}
@@ -488,8 +502,8 @@ function ConversationalActivity({
                 </div>
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
                   {mode === "starter"
-                    ? "Starter — pick the answer that fits you best. Quick and easy, no writing needed."
-                    : "Advanced — write your own reflection, in your own words."}
+                    ? "Starter — read a quick scenario, then pick the answer that fits you best. No writing needed."
+                    : "Advanced — write it your way. Anything you pick in Starter turns into text you can edit, extend, or replace."}
                 </p>
               </div>
             )}
@@ -499,6 +513,49 @@ function ConversationalActivity({
               <p className="text-[--ink-muted] text-sm leading-relaxed mb-5">
                 {activity.intro}
               </p>
+            )}
+
+            {/* Inner compass — strengths + values from earlier steps */}
+            {compass && (compass.strengths.length > 0 || compass.values.length > 0) && (
+              <div
+                className="rounded-2xl p-4 mb-5 bg-white border-2"
+                style={{ borderColor: `${mission.colour}35` }}
+              >
+                <div
+                  className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3"
+                  style={{ color: mission.colour }}
+                >
+                  <span aria-hidden>🧭</span> Your inner compass so far
+                </div>
+                {compass.values.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2.5">
+                    {compass.values.map((v) => (
+                      <span
+                        key={v}
+                        className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                        style={{ background: mission.colour }}
+                      >
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {compass.strengths.length > 0 && (
+                  <ul className="space-y-1 mb-2.5">
+                    {compass.strengths.slice(0, 4).map((st, i) => (
+                      <li key={i} className="text-xs text-[--ink] leading-relaxed flex gap-1.5">
+                        <span aria-hidden style={{ color: mission.colour }}>▸</span>
+                        <span className="italic">{st}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p className="text-xs text-[--ink-muted] leading-relaxed">
+                  {activity.id === "mask-check"
+                    ? "These are the strengths and values you mapped. This step tests them: which ones make it into every room — and which get hidden?"
+                    : "Everything you've mapped so far. Your letter gets to say what it all adds up to."}
+                </p>
+              </div>
             )}
 
             {/* Warm-up */}
@@ -511,25 +568,37 @@ function ConversationalActivity({
               </div>
             )}
 
-            {/* Paired story */}
+            {/* Paired story — redesigned as an inviting, unmissable step */}
             {pairedStory && (
               <Link
                 href={`/stories/${pairedStory.id}`}
-                className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-dashed mb-5 transition-all hover:border-solid"
-                style={{ borderColor: `${mission.colour}40`, background: `${mission.colour}06` }}
+                className="flex items-center gap-3.5 p-4 rounded-2xl mb-5 transition-transform hover:scale-[1.01]"
+                style={{
+                  background: `${mission.colour}12`,
+                  border: `2px solid ${mission.colour}45`,
+                }}
               >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-sm" style={{ background: `${mission.colour}18` }}>
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
+                  style={{ background: mission.colour }}
+                  aria-hidden
+                >
                   📖
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
-                    Read first
+                  <div
+                    className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
+                    style={{ color: mission.colour }}
+                  >
+                    True story · 2-min read
                   </div>
-                  <div className="text-sm font-medium text-[--ink] truncate">{pairedStory.title}</div>
-                  <div className="text-xs text-[--ink-muted] mt-0.5 truncate">{pairedStory.teaser}</div>
+                  <div className="text-sm font-semibold text-[--ink]">{pairedStory.title}</div>
+                  <div className="text-xs text-[--ink-muted] mt-0.5">
+                    Someone&apos;s been where you&apos;re about to go — their story sets this up.
+                  </div>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-[--ink-muted] flex-shrink-0">
-                  <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="flex-shrink-0" style={{ color: mission.colour }} aria-hidden>
+                  <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
             )}
@@ -796,25 +865,6 @@ function ConversationalActivity({
               </div>
             )}
 
-            {/* Advanced mode: sentence starters */}
-            {!usingStarter && activity.sentenceStarters && activity.sentenceStarters.length > 0 && (
-              <div data-animate="3">
-                <p className="text-xs text-[--ink-muted] mb-2 px-0.5">Try starting with:</p>
-                <div className="flex flex-wrap gap-2">
-                  {activity.sentenceStarters.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => applySentenceStarter(s)}
-                      className="starter-chip"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div ref={bottomRef} />
           </div>
         </div>
@@ -903,6 +953,58 @@ function ConversationalActivity({
               That&apos;s one more thing you know about yourself.
             </p>
           </div>
+
+          {/* Compass check results — the Mask Check tested the strengths and
+              values from earlier steps; show them so the Identity Letter has
+              a clear purpose. */}
+          {compass && activity.id === "mask-check" &&
+            (compass.strengths.length > 0 || compass.values.length > 0) && (
+            <div
+              className="rounded-2xl p-4 mb-5 bg-white border-2"
+              style={{ borderColor: `${mission.colour}35` }}
+              data-animate="2"
+            >
+              <div
+                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3"
+                style={{ color: mission.colour }}
+              >
+                <span aria-hidden>🧭</span> Compass check: complete
+              </div>
+              {compass.values.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2.5">
+                  {compass.values.map((v) => (
+                    <span
+                      key={v}
+                      className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                      style={{ background: mission.colour }}
+                    >
+                      {v}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-[--ink-muted] leading-relaxed">
+                These strengths and values are what your masks have been
+                protecting. Keep them in sight — the Identity Letter is where
+                you finally say them out loud, to the one reader who&apos;s safe.
+              </p>
+            </div>
+          )}
+
+          {/* What you just discovered — closes the loop and hands over to
+              the next step */}
+          {activity.wrapUp && (
+            <div
+              className="rounded-2xl p-5 mb-5 text-white"
+              style={{ background: mission.colour }}
+              data-animate="2"
+            >
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+                ✨ What you just discovered
+              </div>
+              <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
+            </div>
+          )}
 
           {/* Summary of turns (when coming from conversation) */}
           {turns.length > 0 && (
@@ -1195,6 +1297,17 @@ function ValuesPickerActivity({
               Your values are in.
             </h2>
           </div>
+          {activity.wrapUp && (
+            <div
+              className="rounded-2xl p-5 mb-5 text-white"
+              style={{ background: mission.colour }}
+            >
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+                ✨ What you just discovered
+              </div>
+              <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
+            </div>
+          )}
           <div className="card p-5 mb-5 space-y-3">
             {lines.map((line, i) => (
               <div key={i} className="text-sm">
@@ -1533,9 +1646,20 @@ function ChallengeActivity({
           <h2 className="text-xl text-[--navy] mb-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             Challenge accepted.
           </h2>
-          <div className="card p-5 mb-6 text-left">
-            <p className="text-sm text-[--ink] leading-relaxed">{activity.prompt}</p>
+          <div className="card p-5 mb-5 text-left">
+            <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">{activity.prompt}</p>
           </div>
+          {activity.wrapUp && (
+            <div
+              className="rounded-2xl p-5 mb-5 text-left text-white"
+              style={{ background: mission.colour }}
+            >
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+                ✨ What this step does
+              </div>
+              <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
+            </div>
+          )}
           <p className="text-sm text-[--ink-muted] mb-6">Come back in a week to reflect.</p>
           <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
         </div>
@@ -1547,12 +1671,15 @@ function ChallengeActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
       <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
-        <div className="rounded-2xl p-6 mb-6 text-white text-center" style={{ background: "var(--gold)" }}>
-          <div className="text-3xl mb-3">🎯</div>
+        <div
+          className="rounded-2xl p-6 mb-6 text-center"
+          style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
+        >
+          <div className="text-3xl mb-3" aria-hidden>🎯</div>
           <p className="text-xl mb-3" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic" }}>
             Your challenge this week
           </p>
-          <p className="text-white/90 leading-relaxed">{activity.prompt}</p>
+          <p className="leading-relaxed text-left whitespace-pre-line text-sm font-medium">{activity.prompt}</p>
         </div>
         <p className="text-sm text-[--ink-muted] text-center mb-6 leading-relaxed">
           Come back in 7 days to reflect on what happened. That&apos;s where the real learning is.
@@ -1582,6 +1709,7 @@ export default function ActivityClient({
   existingEntry,
   existingChallenge,
   pairedStory,
+  compass,
 }: Props) {
   const db = createClient() as any;
 
@@ -1673,6 +1801,7 @@ export default function ActivityClient({
       userId={userId}
       existingEntry={completed ? existingEntry : null}
       pairedStory={pairedStory}
+      compass={compass}
       onComplete={() => handleComplete()}
     />
   );

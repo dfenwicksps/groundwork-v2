@@ -133,7 +133,7 @@ export default function AuthForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4">
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-60">

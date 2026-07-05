@@ -130,7 +130,6 @@ export default async function DashboardPage() {
           missionId: profile.active_mission,
           activityId: next.id,
           title: next.title,
-          sentenceStarter: next.sentenceStarters?.[0],
         };
       }
     }
