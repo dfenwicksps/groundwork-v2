@@ -12,6 +12,9 @@ create table if not exists public.strength_profiles (
   updated_at timestamptz default now() not null
 );
 
+-- Raw per-scenario picks so a retake can pre-fill previous answers
+alter table public.strength_profiles add column if not exists answers jsonb;
+
 alter table public.strength_profiles enable row level security;
 
 drop policy if exists "Users can manage own strength profile" on public.strength_profiles;

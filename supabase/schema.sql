@@ -94,6 +94,7 @@ create table if not exists public.strength_profiles (
   user_id uuid references public.users(id) on delete cascade primary key,
   scores jsonb not null,       -- { "creativity": 4, "kindness": 2, ... } (all 24)
   ranking text[] not null,      -- ["kindness","creativity", ...] high -> low (24)
+  answers jsonb,                -- raw picks { most: [...], least: [...] } for retake prefill
   taken_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );

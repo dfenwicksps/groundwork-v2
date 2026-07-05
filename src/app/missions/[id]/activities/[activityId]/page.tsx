@@ -110,6 +110,26 @@ export default async function ActivityPage({
     }
   }
 
+  // Saved VIA profile — lets a retake pre-fill the user's previous answers.
+  let strengthProfile: {
+    ranking: string[];
+    answers: { most: (string | null)[]; least: (string | null)[] } | null;
+  } | null = null;
+  if (activity.type === "strengths_assessment") {
+    const { data: spRaw } = await supabase
+      .from("strength_profiles")
+      .select("ranking, answers")
+      .eq("user_id", user.id)
+      .single();
+    const sp = spRaw as {
+      ranking: string[];
+      answers: { most: (string | null)[]; least: (string | null)[] } | null;
+    } | null;
+    if (sp?.ranking?.length) {
+      strengthProfile = { ranking: sp.ranking, answers: sp.answers ?? null };
+    }
+  }
+
   return (
     <ActivityClient
       mission={mission}
@@ -120,6 +140,7 @@ export default async function ActivityPage({
       existingChallenge={existingChallenge || null}
       pairedStory={pairedStory}
       compass={compass}
+      strengthProfile={strengthProfile}
     />
   );
 }

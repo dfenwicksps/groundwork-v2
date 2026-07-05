@@ -28,6 +28,12 @@ interface Props {
   /** Strengths + values from earlier Mission 1 steps, surfaced in the Mask
       Check ("test your compass") and Identity Letter ("write from it"). */
   compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
+  /** Saved VIA profile for the strengths assessment: previous ranking + raw
+      picks, so a retake pre-fills the user's answers for editing. */
+  strengthProfile?: {
+    ranking: string[];
+    answers: { most: (string | null)[]; least: (string | null)[] } | null;
+  } | null;
 }
 
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
@@ -1767,12 +1773,17 @@ function StrengthsAssessmentActivity({
   activity,
   userId,
   alreadyDone,
+  profile,
   onComplete,
 }: {
   mission: Mission;
   activity: Activity;
   userId: string;
   alreadyDone: boolean;
+  profile?: {
+    ranking: string[];
+    answers: { most: (string | null)[]; least: (string | null)[] } | null;
+  } | null;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
@@ -1782,15 +1793,21 @@ function StrengthsAssessmentActivity({
     alreadyDone ? "done" : "intro"
   );
   const [idx, setIdx] = useState(0);
-  const [most, setMost] = useState<(string | null)[]>(
-    () => scenarios.map(() => null)
+  // Pre-fill from the saved profile so a retake means editing previous
+  // answers, not starting over. A fresh start only happens when there is no
+  // saved profile (first run, or after the user resets the mission and the
+  // profile is retaken from the intro).
+  const [most, setMost] = useState<(string | null)[]>(() =>
+    scenarios.map((_, i) => profile?.answers?.most?.[i] ?? null)
   );
-  const [least, setLeast] = useState<(string | null)[]>(
-    () => scenarios.map(() => null)
+  const [least, setLeast] = useState<(string | null)[]>(() =>
+    scenarios.map((_, i) => profile?.answers?.least?.[i] ?? null)
   );
   const [submitting, setSubmitting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [result, setResult] = useState<string[] | null>(null); // ranking
+  const [result, setResult] = useState<string[] | null>(
+    profile?.ranking?.length ? profile.ranking : null
+  ); // ranking
 
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -1826,6 +1843,7 @@ function StrengthsAssessmentActivity({
         user_id: userId,
         scores,
         ranking,
+        answers: { most, least },
         taken_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
@@ -1939,7 +1957,8 @@ function StrengthsAssessmentActivity({
                 Your signature strengths
               </h2>
               <p className="text-sm text-[--ink-muted]">
-                The five that come most naturally to you, out of all 24.
+                The five that come most naturally to you, out of all 24. Retaking
+                starts from your previous answers — nothing is lost.
               </p>
             </div>
 
@@ -1976,10 +1995,25 @@ function StrengthsAssessmentActivity({
 
             <Link
               href="/me"
-              className="btn btn-secondary w-full py-3 rounded-xl mb-5 flex items-center justify-center gap-2"
+              className="btn btn-secondary w-full py-3 rounded-xl mb-3 flex items-center justify-center gap-2"
             >
               See all 24, ranked →
             </Link>
+
+            {/* Retake = edit previous answers, never a blank slate */}
+            <button
+              onClick={() => {
+                setSaveError(null);
+                setIdx(0);
+                setPhase("q");
+              }}
+              className="w-full flex items-center justify-center gap-2 text-sm font-medium text-[--teal] mb-5 py-2.5 rounded-xl border border-[--border] bg-white hover:bg-[--surface-muted] transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Review &amp; edit my answers
+            </button>
 
             {activity.wrapUp && (
               <div
@@ -2146,6 +2180,7 @@ export default function ActivityClient({
   existingChallenge,
   pairedStory,
   compass,
+  strengthProfile,
 }: Props) {
   const db = createClient() as any;
 
@@ -2210,7 +2245,10 @@ export default function ActivityClient({
         mission={mission}
         activity={activity}
         userId={userId}
-        alreadyDone={completed && !!existingEntry}
+        alreadyDone={!!strengthProfile?.ranking?.length && completed}
+        // After "Restart this mission" (completed=false) the assessment starts
+        // from scratch; a plain revisit/retake pre-fills previous answers.
+        profile={completed ? strengthProfile : null}
         onComplete={() => handleComplete()}
       />
     );
