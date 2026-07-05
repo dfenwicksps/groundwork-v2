@@ -1,6 +1,11 @@
 export interface Activity {
   id: string;
-  type: "journal" | "values_picker" | "challenge" | "milestone_letter";
+  type:
+    | "journal"
+    | "values_picker"
+    | "challenge"
+    | "milestone_letter"
+    | "strengths_assessment";
   title: string;
   subtitle: string;
   prompt: string;
@@ -8,6 +13,13 @@ export interface Activity {
   isMilestone?: boolean;
   isChallenge?: boolean;
   challengeDebriefDays?: number;
+  /**
+   * When set, this step cites the user's previously-diagnosed strengths and/or
+   * values, so the server injects their actual VIA signature strengths / chosen
+   * values into the activity (rendered as a compass card + inline reminder).
+   */
+  referencesStrengths?: boolean;
+  referencesValues?: boolean;
   valuesOptions?: string[];
   valuesCount?: number;
   locked?: boolean;
@@ -160,63 +172,19 @@ export const MISSIONS: Mission[] = [
       {
         id: "strengths-mapping",
         wrapUp:
-          "You just named the roles you naturally fall into and the things that energise you \u2014 that's your strengths, mapped from real moments instead of guesses. They're one half of your inner compass. Next up: the other half \u2014 the values underneath why those moments feel right.",
-        type: "journal",
+          "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and the app will point back to them from here on. Next: the other half — the values underneath why those strengths matter to you.",
+        type: "strengths_assessment",
         title: "Strengths Mapping",
         subtitle: "Step 1 of 5 · Inner compass",
         intro:
-          "Here's the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you're naturally good at) and values (what actually matters to you). This step maps the first half. Nobody can list their strengths cold — it feels like bragging, or your mind goes blank — so instead you'll walk through a few everyday situations and notice how you'd react. That reaction is the clue.",
+          "Here’s the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you’re naturally good at) and values (what actually matters to you). This step maps the first half. Psychologists have found that everyone’s character is a mix of the same 24 strengths — you just have more of some than others. Nobody can rank their own cold, so instead you’ll react to 12 quick everyday situations. Your reactions do the ranking for you.",
         warmUp:
-          "There's no right answer to any of this, and nobody else will see it. You're just noticing patterns in how you already are.",
+          "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 5 minutes.",
         prompt:
-          "Think about a moment recently when you felt genuinely good at something. What were you doing, and what made it feel natural?",
-        secondaryPrompt:
-          "Try to be specific — not 'I'm good at sport' but what exactly were you doing, and what about it felt right?",
-        scenarios: [
-          "A teacher splits the class into groups for a big project. Within five minutes everyone's fallen into a role without being told to — one person's organising, one's throwing out ideas, one's keeping everyone calm, one's quietly getting the actual work done.",
-          "It's the weekend and you've got a few free hours with nothing you have to do. You end up doing something and afterwards you feel more energised than when you started — not drained, not bored. Could be making something, fixing something, gaming, helping someone, going somewhere, figuring something out.",
-          "A friend messages you the night before something stressful — an exam, a tryout, a performance, a hard conversation. They're panicking. You're the one they came to.",
-          "Someone who's known you for years is asked what you're just naturally good at. They answer straight away, without having to stop and think.",
-        ],
-        scaffoldingSteps: [
-          "In a situation like that, which person do you usually become — and what do you end up actually doing? Describe it like it's a normal Tuesday for you.",
-          "What was the thing you did, and what was it about it that left you feeling good rather than tired?",
-          "What do you actually do for them — make a plan, calm them down, distract them, hype them up, just listen? What does your instinct in that moment say you're good at?",
-          "What do you think they'd say — and is it something you'd find hard to claim about yourself? Looking back at the situations above, what keeps showing up?",
-        ],
-        starterOptions: [
-          [
-            "The organiser — I sort out who's doing what",
-            "The ideas person — I get everyone thinking",
-            "The calm one — I keep the group steady",
-            "The doer — I quietly get the actual work done",
-            "The motivator — I keep everyone's energy up",
-          ],
-          [
-            "Making, building, or fixing something",
-            "Helping someone work through a problem",
-            "Competing, training, or playing",
-            "Creating — art, music, writing, video, design",
-            "Figuring out how something works",
-          ],
-          [
-            "Help them make a plan and break it down",
-            "Calm them down and steady their nerves",
-            "Distract them and lighten the mood",
-            "Hype them up and remind them they've got this",
-            "Just listen — let them get it all out",
-          ],
-          [
-            "I'm dependable — people know they can count on me",
-            "I'm creative — I see things others don't",
-            "I'm steady — I keep my head when things get tense",
-            "I'm driven — I push through and get things done",
-            "I'm a connector — I bring people together",
-          ],
-        ],
+          "React to 12 everyday situations to discover your top character strengths — the ones that come most naturally to you.",
         whyItMatters:
-          "Research on identity development shows that people who can articulate their strengths — not just their roles or achievements — make more confident decisions and navigate uncertainty better. This isn't about ego. It's about building a clear inner compass. The act of naming a strength in your own words activates it as part of your identity, not just a skill you happen to have.",
-        timeEstimate: "About 10 minutes",
+          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by.",
+        timeEstimate: "About 5 minutes",
       },
       {
         id: "values-clarifier",
@@ -245,6 +213,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "mask-check",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
         type: "journal",
@@ -307,6 +277,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "identity-letter",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "That letter is the truest snapshot of you that exists anywhere \u2014 compass, masks and all. Nobody can mark it, judge it, or take it. Future-you will read it on a day they need it. One thing left: living one small piece of it out loud.",
         type: "milestone_letter",
@@ -370,6 +342,7 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "weekly-challenge",
+        referencesStrengths: true,
         wrapUp:
           "Accepting is the whole step \u2014 you've just turned self-knowledge into an experiment. Whatever happens this week is data, not a grade. Come back in a few days and tell yourself the truth about how it went.",
         type: "challenge",
@@ -462,6 +435,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "contribution-map",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer'. Next: discovering you're not the only one who cares.",
         scenarios: [
@@ -581,6 +556,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "commitment-statement",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "You put it in writing: what you stand for and why it's yours. That's a commitment, not a contract \u2014 it's allowed to grow and change with you. Last step: acting on it once, in the real world, this week.",
         scenarios: [
@@ -642,6 +619,7 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "purpose-challenge",
+        referencesStrengths: true,
         wrapUp:
           "Challenge accepted. Purpose only becomes real when it costs you a little effort \u2014 this week you'll find out what one small act in its direction feels like.",
         type: "challenge",
@@ -913,6 +891,7 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "connection-challenge",
+        referencesStrengths: true,
         wrapUp:
           "Reaching toward someone first is how belonging actually gets built \u2014 nobody drifts into it. Whatever happens this week, you'll learn something about connection you can't learn by waiting.",
         type: "challenge",
@@ -1063,6 +1042,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "the-through-line",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "That thread \u2014 who you are, what you care about, where you belong \u2014 is the closest thing to a compass heading anyone ever gets. Now write it down properly: your milestone letter to the person you're becoming.",
         scenarios: [
@@ -1122,6 +1103,8 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "meaning-letter",
+        referencesStrengths: true,
+        referencesValues: true,
         wrapUp:
           "That letter holds the whole journey in one place, written by the only real expert on you. It's not a plan \u2014 it's a direction. One last thing: live one deliberate day of it.",
         scenarios: [
@@ -1182,6 +1165,7 @@ export const MISSIONS: Mission[] = [
       },
       {
         id: "meaning-challenge",
+        referencesStrengths: true,
         wrapUp:
           "One deliberate choice, made on purpose, is what all four missions look like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
         type: "challenge",

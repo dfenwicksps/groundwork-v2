@@ -8,6 +8,13 @@ import { type ProcessingStyle, getProcessingStyle } from "@/lib/processingStyle"
 import { type LearningMode, getLearningMode, setLearningMode } from "@/lib/learningMode";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
+import {
+  STRENGTH_SCENARIOS,
+  scoreAssessment,
+  topStrengths,
+  strengthName,
+  STRENGTH_BY_KEY,
+} from "@/lib/strengths";
 import type { JournalEntry, Challenge } from "@/types/database";
 
 interface Props {
@@ -20,7 +27,7 @@ interface Props {
   pairedStory?: { id: string; title: string; teaser: string } | null;
   /** Strengths + values from earlier Mission 1 steps, surfaced in the Mask
       Check ("test your compass") and Identity Letter ("write from it"). */
-  compass?: { strengths: string[]; values: string[] } | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
 }
 
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
@@ -84,7 +91,7 @@ function ConversationalActivity({
   userId: string;
   existingEntry: JournalEntry | null;
   pairedStory?: { id: string; title: string; teaser: string } | null;
-  compass?: { strengths: string[]; values: string[] } | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
@@ -515,7 +522,8 @@ function ConversationalActivity({
               </p>
             )}
 
-            {/* Inner compass — strengths + values from earlier steps */}
+            {/* Inner compass — the user's own signature strengths + chosen
+                values, injected wherever a step references them. */}
             {compass && (compass.strengths.length > 0 || compass.values.length > 0) && (
               <div
                 className="rounded-2xl p-4 mb-5 bg-white border-2"
@@ -527,33 +535,46 @@ function ConversationalActivity({
                 >
                   <span aria-hidden>🧭</span> Your inner compass so far
                 </div>
-                {compass.values.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-2.5">
-                    {compass.values.map((v) => (
-                      <span
-                        key={v}
-                        className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
-                        style={{ background: mission.colour }}
-                      >
-                        {v}
-                      </span>
-                    ))}
+                {compass.strengths.length > 0 && (
+                  <div className="mb-3">
+                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                      Your signature strengths
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {compass.strengths.map((st) => (
+                        <span
+                          key={st}
+                          className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                          style={{ background: mission.colour }}
+                        >
+                          {st}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {compass.strengths.length > 0 && (
-                  <ul className="space-y-1 mb-2.5">
-                    {compass.strengths.slice(0, 4).map((st, i) => (
-                      <li key={i} className="text-xs text-[--ink] leading-relaxed flex gap-1.5">
-                        <span aria-hidden style={{ color: mission.colour }}>▸</span>
-                        <span className="italic">{st}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {compass.values.length > 0 && (
+                  <div className="mb-3">
+                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                      Your values
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {compass.values.map((v) => (
+                        <span
+                          key={v}
+                          className="px-2.5 py-1 rounded-full text-xs font-semibold border"
+                          style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                        >
+                          {v}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
                   {activity.id === "mask-check"
                     ? "These are the strengths and values you mapped. This step tests them: which ones make it into every room — and which get hidden?"
-                    : "Everything you've mapped so far. Your letter gets to say what it all adds up to."}
+                    : "Everything you've mapped so far. This step builds directly on it."}
                 </p>
               </div>
             )}
@@ -809,6 +830,15 @@ function ConversationalActivity({
               <h2 className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
                 {questions[qIdx]}
               </h2>
+              {/* The user's own diagnosed data appears inline with the question */}
+              {compass && compass.strengths.length > 0 && (
+                <p className="text-xs text-[--ink-muted] mt-2.5 leading-relaxed">
+                  <span className="font-semibold" style={{ color: mission.colour }}>
+                    Your signature strengths:
+                  </span>{" "}
+                  {compass.strengths.join(" · ")}
+                </p>
+              )}
             </div>
 
             {/* Previous answer shown while editing, so the user can adjust it */}
@@ -970,19 +1000,26 @@ function ConversationalActivity({
               >
                 <span aria-hidden>🧭</span> Compass check: complete
               </div>
-              {compass.values.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-2.5">
-                  {compass.values.map((v) => (
-                    <span
-                      key={v}
-                      className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
-                      style={{ background: mission.colour }}
-                    >
-                      {v}
-                    </span>
-                  ))}
-                </div>
-              )}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {compass.strengths.map((st) => (
+                  <span
+                    key={st}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                    style={{ background: mission.colour }}
+                  >
+                    {st}
+                  </span>
+                ))}
+                {compass.values.map((v) => (
+                  <span
+                    key={v}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold border"
+                    style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                  >
+                    {v}
+                  </span>
+                ))}
+              </div>
               <p className="text-xs text-[--ink-muted] leading-relaxed">
                 These strengths and values are what your masks have been
                 protecting. Keep them in sight — the Identity Letter is where
@@ -1519,12 +1556,14 @@ function ChallengeActivity({
   activity,
   userId,
   existingChallenge,
+  compass,
   onComplete,
 }: {
   mission: Mission;
   activity: Activity;
   userId: string;
   existingChallenge: Challenge | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
@@ -1681,6 +1720,26 @@ function ChallengeActivity({
           </p>
           <p className="leading-relaxed text-left whitespace-pre-line text-sm font-medium">{activity.prompt}</p>
         </div>
+        {/* Growth-edge nudge — one of the user's lower-ranked strengths */}
+        {compass && compass.growthEdges.length > 0 && (
+          <div
+            className="rounded-2xl p-4 mb-5 bg-white border-2"
+            style={{ borderColor: `${mission.colour}35` }}
+          >
+            <div
+              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
+              style={{ color: mission.colour }}
+            >
+              <span aria-hidden>🌱</span> A growth edge to try
+            </div>
+            <p className="text-sm text-[--ink] leading-relaxed">
+              Bonus: this week, try leaning on{" "}
+              <span className="font-semibold">{compass.growthEdges[0]}</span> — one of
+              your lower-ranked strengths. Growth often lives in the ones that don&apos;t
+              come naturally yet.
+            </p>
+          </div>
+        )}
         <p className="text-sm text-[--ink-muted] text-center mb-6 leading-relaxed">
           Come back in 7 days to reflect on what happened. That&apos;s where the real learning is.
         </p>
@@ -1700,6 +1759,383 @@ function ChallengeActivity({
 }
 
 // ─── Main exported component ──────────────────────────────────────────────────
+
+// ─── VIA-24 strengths assessment ──────────────────────────────────────────────
+
+function StrengthsAssessmentActivity({
+  mission,
+  activity,
+  userId,
+  alreadyDone,
+  onComplete,
+}: {
+  mission: Mission;
+  activity: Activity;
+  userId: string;
+  alreadyDone: boolean;
+  onComplete: (response: string) => void;
+}) {
+  const db = createClient() as any;
+  const scenarios = STRENGTH_SCENARIOS;
+
+  const [phase, setPhase] = useState<"intro" | "q" | "done">(
+    alreadyDone ? "done" : "intro"
+  );
+  const [idx, setIdx] = useState(0);
+  const [most, setMost] = useState<(string | null)[]>(
+    () => scenarios.map(() => null)
+  );
+  const [least, setLeast] = useState<(string | null)[]>(
+    () => scenarios.map(() => null)
+  );
+  const [submitting, setSubmitting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [result, setResult] = useState<string[] | null>(null); // ranking
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (phase === "q") scrollRef.current?.scrollTo({ top: 0 });
+  }, [idx, phase]);
+
+  const cur = scenarios[idx];
+  const canNext = !!most[idx]; // "most" required; "least" optional
+  const isLast = idx === scenarios.length - 1;
+  const progressPct = Math.round((idx / scenarios.length) * 100);
+
+  function choose(kind: "most" | "least", strength: string) {
+    if (kind === "most") {
+      setMost((m) => m.map((v, i) => (i === idx ? (v === strength ? null : strength) : v)));
+      // can't be both most and least
+      setLeast((l) => l.map((v, i) => (i === idx && v === strength ? null : v)));
+    } else {
+      setLeast((l) => l.map((v, i) => (i === idx ? (v === strength ? null : strength) : v)));
+      setMost((m) => m.map((v, i) => (i === idx && v === strength ? null : v)));
+    }
+  }
+
+  async function finish() {
+    setSubmitting(true);
+    setSaveError(null);
+    const mostKeys = most.filter(Boolean) as string[];
+    const leastKeys = least.filter(Boolean) as string[];
+    const { scores, ranking } = scoreAssessment(mostKeys, leastKeys);
+    const top5 = topStrengths(ranking, 5);
+
+    const { error } = await db.from("strength_profiles").upsert(
+      {
+        user_id: userId,
+        scores,
+        ranking,
+        taken_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+    if (error) {
+      setSaveError("Couldn't save your results — check your connection and try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    // Journal record so the Journal + compass have a human-readable trace.
+    const summary = `My top 5 signature strengths: ${top5
+      .map((k) => strengthName(k))
+      .join(", ")}.`;
+    await db.from("journal_entries").insert({
+      user_id: userId,
+      mission_id: mission.id,
+      activity_id: activity.id,
+      prompt: "Strengths Mapping — your VIA character strengths",
+      response: summary,
+      is_milestone: false,
+    });
+
+    setResult(ranking);
+    setSubmitting(false);
+    setPhase("done");
+    onComplete(summary);
+  }
+
+  const header = (label: string) => (
+    <div className="activity-header">
+      <div className="max-w-lg mx-auto flex items-center gap-3">
+        <Link
+          href={`/missions/${mission.id}`}
+          className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+        <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
+      </div>
+    </div>
+  );
+
+  // ── Intro ──
+  if (phase === "intro") {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+        {header(mission.title)}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-lg mx-auto px-5 pt-8 pb-24" data-animate="1">
+            <div className="mb-6">
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ background: `${mission.colour}18`, color: mission.colour }}
+              >
+                {mission.phaseLabel}
+              </span>
+              <h1
+                className="text-[1.75rem] leading-tight text-[--navy] mt-3 mb-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+              >
+                {activity.title}
+              </h1>
+              <p className="text-sm text-[--ink-muted]">{activity.subtitle}</p>
+            </div>
+            {activity.intro && (
+              <p className="text-[--ink-muted] text-sm leading-relaxed mb-5">{activity.intro}</p>
+            )}
+            {activity.warmUp && (
+              <div className="question-card mb-5">
+                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
+                  How it works
+                </div>
+                <p className="text-[--ink] leading-relaxed">{activity.warmUp}</p>
+              </div>
+            )}
+            <button
+              onClick={() => setPhase("q")}
+              className="btn btn-primary w-full py-4 text-base rounded-xl"
+              style={{ background: mission.colour }}
+            >
+              Start — 12 quick situations →
+            </button>
+            <p className="text-[11px] text-[--ink-muted]/70 text-center mt-3 leading-relaxed">
+              An indicative snapshot to surface your signature strengths — private to you.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Done ──
+  if (phase === "done") {
+    const ranking = result;
+    const top5 = ranking ? topStrengths(ranking, 5) : [];
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+        {header(activity.title)}
+        <div className="flex-1 overflow-y-auto pb-nav">
+          <div className="max-w-lg mx-auto px-5 pt-8">
+            <div className="text-center mb-6" data-animate="1">
+              <div className="text-4xl mb-3" aria-hidden>🧭</div>
+              <h2
+                className="text-2xl text-[--navy] mb-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+              >
+                Your signature strengths
+              </h2>
+              <p className="text-sm text-[--ink-muted]">
+                The five that come most naturally to you, out of all 24.
+              </p>
+            </div>
+
+            {top5.length > 0 ? (
+              <div className="space-y-2 mb-5" data-animate="2">
+                {top5.map((k, i) => {
+                  const s = STRENGTH_BY_KEY[k];
+                  return (
+                    <div
+                      key={k}
+                      className="card p-4 flex items-center gap-3"
+                      style={{ borderLeft: `4px solid ${mission.colour}` }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
+                        style={{ background: mission.colour }}
+                      >
+                        {i + 1}
+                      </div>
+                      <div className="text-xl" aria-hidden>{s?.emoji}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[--ink]">{s?.name}</div>
+                        <div className="text-xs text-[--ink-muted] leading-snug">{s?.short}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-[--ink-muted] text-center mb-5">
+                Your profile is saved.
+              </p>
+            )}
+
+            <Link
+              href="/me"
+              className="btn btn-secondary w-full py-3 rounded-xl mb-5 flex items-center justify-center gap-2"
+            >
+              See all 24, ranked →
+            </Link>
+
+            {activity.wrapUp && (
+              <div
+                className="rounded-2xl p-5 mb-5 text-white"
+                style={{ background: mission.colour }}
+                data-animate="3"
+              >
+                <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+                  ✨ What you just discovered
+                </div>
+                <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
+              </div>
+            )}
+
+            <div className="flex gap-3 pb-8">
+              <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">
+                Back to mission
+              </Link>
+              <Link
+                href={`/missions/${mission.id}/activities/values-clarifier`}
+                className="btn btn-primary flex-1 py-3 rounded-xl"
+                style={{ background: "var(--navy)" }}
+              >
+                Next step →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Question flow ──
+  return (
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
+      <div className="activity-header">
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center gap-3 mb-2">
+            <button
+              onClick={() => (idx > 0 ? setIdx(idx - 1) : setPhase("intro"))}
+              className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <span className="flex-1 text-sm font-medium text-[--ink] truncate">{activity.title}</span>
+            <span className="text-xs text-[--ink-muted] flex-shrink-0">
+              {idx + 1} of {scenarios.length}
+            </span>
+          </div>
+          <div
+            role="progressbar"
+            aria-label="Assessment progress"
+            aria-valuemin={0}
+            aria-valuemax={scenarios.length}
+            aria-valuenow={idx}
+            className="h-1 bg-[--border] rounded-full overflow-hidden"
+          >
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${progressPct}%`, background: mission.colour }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingBottom: "calc(6rem + env(safe-area-inset-bottom, 0px))" }}>
+        <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
+          <div
+            className="rounded-2xl p-4 border"
+            style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+            data-animate="1"
+          >
+            <div
+              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
+              style={{ color: mission.colour }}
+            >
+              <span aria-hidden>✦</span> Picture this
+            </div>
+            <p className="text-[--ink] leading-relaxed text-[0.95rem]">{cur.scenario}</p>
+          </div>
+
+          <div data-animate="2">
+            <p className="text-xs font-semibold text-[--ink] mb-2 px-0.5">
+              Tap the one MOST like you:
+            </p>
+            <div className="space-y-2">
+              {cur.options.map((o) => {
+                const isMost = most[idx] === o.strength;
+                const isLeast = least[idx] === o.strength;
+                return (
+                  <div key={o.strength} className="flex items-stretch gap-2">
+                    <button
+                      type="button"
+                      onClick={() => choose("most", o.strength)}
+                      className={cn(
+                        "flex-1 text-left px-4 py-3 rounded-xl border text-sm leading-relaxed transition-all",
+                        isMost ? "text-white" : "bg-white text-[--ink] border-[--border] hover:border-[rgba(0,0,0,0.18)]"
+                      )}
+                      style={isMost ? { background: mission.colour, borderColor: mission.colour } : undefined}
+                    >
+                      {o.text}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => choose("least", o.strength)}
+                      aria-label={`Least like me: ${o.text}`}
+                      title="Least like me"
+                      className={cn(
+                        "w-11 flex-shrink-0 rounded-xl border text-xs font-semibold transition-all",
+                        isLeast
+                          ? "bg-[--ink-muted] text-white border-[--ink-muted]"
+                          : "bg-white text-[--ink-muted] border-[--border] hover:border-[--ink-muted]"
+                      )}
+                    >
+                      Least
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[11px] text-[--ink-muted] mt-2 px-0.5 leading-relaxed">
+              Optional: tap <span className="font-semibold">Least</span> on the one that&apos;s least like you — it sharpens your results.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="conv-input-bar">
+        <div className="max-w-lg mx-auto">
+          {saveError && (
+            <p role="alert" className="text-sm text-red-600 mb-2 leading-relaxed">{saveError}</p>
+          )}
+          <button
+            onClick={() => (isLast ? finish() : setIdx(idx + 1))}
+            disabled={!canNext || submitting}
+            className={cn(
+              "btn w-full py-3 rounded-xl text-sm transition-all",
+              canNext ? "text-white" : "bg-[--border] text-[--ink-muted] cursor-not-allowed"
+            )}
+            style={canNext ? { background: mission.colour } : undefined}
+          >
+            {submitting
+              ? "Working out your strengths…"
+              : isLast
+              ? saveError
+                ? "Try again"
+                : "See my strengths ✨"
+              : "Next →"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ActivityClient({
   mission,
@@ -1767,6 +2203,19 @@ export default function ActivityClient({
     );
   }
 
+  // VIA strengths assessment
+  if (activity.type === "strengths_assessment") {
+    return (
+      <StrengthsAssessmentActivity
+        mission={mission}
+        activity={activity}
+        userId={userId}
+        alreadyDone={completed && !!existingEntry}
+        onComplete={() => handleComplete()}
+      />
+    );
+  }
+
   // Values picker
   if (activity.type === "values_picker") {
     return (
@@ -1788,6 +2237,7 @@ export default function ActivityClient({
         activity={activity}
         userId={userId}
         existingChallenge={existingChallenge}
+        compass={compass}
         onComplete={handleComplete}
       />
     );

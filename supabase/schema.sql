@@ -89,6 +89,15 @@ create table if not exists public.stories (
   tags text[] not null default '{}'
 );
 
+-- VIA-24 character strengths profile (one row per user; retake overwrites)
+create table if not exists public.strength_profiles (
+  user_id uuid references public.users(id) on delete cascade primary key,
+  scores jsonb not null,       -- { "creativity": 4, "kindness": 2, ... } (all 24)
+  ranking text[] not null,      -- ["kindness","creativity", ...] high -> low (24)
+  taken_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
 
 -- ============================================================
 -- ROW LEVEL SECURITY
@@ -101,6 +110,7 @@ alter table public.challenges enable row level security;
 alter table public.support_circle enable row level security;
 alter table public.mission_progress enable row level security;
 alter table public.stories enable row level security;
+alter table public.strength_profiles enable row level security;
 
 -- users: own row only
 create policy "Users can view own profile"
@@ -150,6 +160,12 @@ create policy "Stories are publicly readable"
   on public.stories for select
   to authenticated
   using (true);
+
+-- strength_profiles: own row only
+create policy "Users can manage own strength profile"
+  on public.strength_profiles for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 
 -- ============================================================

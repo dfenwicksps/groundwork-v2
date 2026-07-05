@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
+import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -67,54 +68,46 @@ export default async function ActivityPage({
     }
   }
 
-  // Inner compass — surface the user's strengths + values from the first two
-  // Mission 1 steps inside the Mask Check (which tests them) and the Identity
-  // Letter (which is written from them).
-  let compass: { strengths: string[]; values: string[] } | null = null;
-  if (
-    missionId === 1 &&
-    (params.activityId === "mask-check" || params.activityId === "identity-letter")
-  ) {
-    const { data: compassRaw } = await supabase
-      .from("journal_entries")
-      .select("activity_id, response")
-      .eq("user_id", user.id)
-      .eq("mission_id", 1)
-      .in("activity_id", ["strengths-mapping", "values-clarifier"])
-      .order("created_at", { ascending: false });
-    const rows = (compassRaw || []) as { activity_id: string; response: string }[];
-    const strengthsRow = rows.find((r) => r.activity_id === "strengths-mapping");
-    const valuesRow = rows.find((r) => r.activity_id === "values-clarifier");
-
-    const strengths: string[] = [];
-    if (strengthsRow) {
-      const qs = getActivity(1, "strengths-mapping")?.scaffoldingSteps || [];
-      if (qs.length > 1) {
-        qs.forEach((q, i) => {
-          const header = `${i + 1}. ${q}`;
-          const start = strengthsRow.response.indexOf(header);
-          if (start === -1) return;
-          const from = start + header.length;
-          let end = strengthsRow.response.length;
-          if (i + 1 < qs.length) {
-            const n = strengthsRow.response.indexOf(`${i + 2}. ${qs[i + 1]}`, from);
-            if (n !== -1) end = n;
-          }
-          const ans = strengthsRow.response.slice(from, end).trim();
-          if (ans) strengths.push(ans.length > 90 ? `${ans.slice(0, 87)}…` : ans);
-        });
-      } else if (strengthsRow.response.trim()) {
-        strengths.push(strengthsRow.response.trim().slice(0, 90));
-      }
+  // Inner compass — inject the user's own VIA signature strengths (top-5),
+  // growth edges (bottom-5), and chosen values into any step that references
+  // them. Driven by the activity's referencesStrengths / referencesValues flags
+  // so it works across all four missions.
+  let compass: { strengths: string[]; values: string[]; growthEdges: string[] } | null = null;
+  if (activity.referencesStrengths || activity.referencesValues) {
+    let strengths: string[] = [];
+    let growthEdges: string[] = [];
+    if (activity.referencesStrengths) {
+      const { data: profileRaw } = await supabase
+        .from("strength_profiles")
+        .select("ranking")
+        .eq("user_id", user.id)
+        .single();
+      const ranking = (profileRaw as { ranking: string[] } | null)?.ranking || [];
+      strengths = topStrengths(ranking, 5).map(strengthName);
+      growthEdges = bottomStrengths(ranking, 5).map(strengthName);
     }
-    const values: string[] = valuesRow
-      ? valuesRow.response
-          .split("\n")
-          .map((l) => l.split(":")[0].trim())
-          .filter(Boolean)
-          .slice(0, 5)
-      : [];
-    if (strengths.length || values.length) compass = { strengths, values };
+
+    let values: string[] = [];
+    if (activity.referencesValues) {
+      const { data: valuesRaw } = await supabase
+        .from("journal_entries")
+        .select("response")
+        .eq("user_id", user.id)
+        .eq("activity_id", "values-clarifier")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      const resp = (valuesRaw as { response: string } | null)?.response || "";
+      values = resp
+        .split("\n")
+        .map((l) => l.split(":")[0].trim())
+        .filter(Boolean)
+        .slice(0, 5);
+    }
+
+    if (strengths.length || values.length || growthEdges.length) {
+      compass = { strengths, values, growthEdges };
+    }
   }
 
   return (
