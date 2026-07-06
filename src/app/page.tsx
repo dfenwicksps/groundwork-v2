@@ -77,6 +77,10 @@ export default function LandingPage() {
           data-animate="5"
         >
           This isn&apos;t a therapy app. If something feels too heavy to carry alone, please talk to someone you trust.
+          <br />
+          <span className="text-ink-muted/80">
+            Built on the VIA character strengths framework and social-emotional learning research.
+          </span>
         </p>
       </section>
 

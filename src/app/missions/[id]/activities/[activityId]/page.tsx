@@ -72,7 +72,12 @@ export default async function ActivityPage({
   // growth edges (bottom-5), and chosen values into any step that references
   // them. Driven by the activity's referencesStrengths / referencesValues flags
   // so it works across all four missions.
-  let compass: { strengths: string[]; values: string[]; growthEdges: string[] } | null = null;
+  let compass: {
+    strengths: string[];
+    values: string[];
+    growthEdges: string[];
+    moralStyle?: string | null;
+  } | null = null;
   if (activity.referencesStrengths || activity.referencesValues) {
     let strengths: string[] = [];
     let growthEdges: string[] = [];
@@ -105,8 +110,19 @@ export default async function ActivityPage({
         .slice(0, 5);
     }
 
-    if (strengths.length || values.length || growthEdges.length) {
-      compass = { strengths, values, growthEdges };
+    // The commitment statement also cites how the user tends to decide.
+    let moralStyle: string | null = null;
+    if (params.activityId === "commitment-statement") {
+      const { data: moralRaw } = await supabase
+        .from("moral_profiles")
+        .select("primary_style")
+        .eq("user_id", user.id)
+        .single();
+      moralStyle = (moralRaw as { primary_style: string } | null)?.primary_style ?? null;
+    }
+
+    if (strengths.length || values.length || growthEdges.length || moralStyle) {
+      compass = { strengths, values, growthEdges, moralStyle };
     }
   }
 

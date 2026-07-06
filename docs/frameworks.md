@@ -145,4 +145,20 @@ Underpinning research:
 | Dan McAdams (narrative identity) | People Who Shaped You `whyItMatters`, `missions.ts` |
 | Possible selves (Markus & Nurius) | Future Self `whyItMatters`, `missions.ts` |
 
-_Last updated: 2026-06-30._
+## 5. Social-Emotional Learning (CASEL) mapping
+
+Groundwork's activities map onto the five CASEL SEL competencies:
+
+| CASEL competency | Where Groundwork develops it |
+| --- | --- |
+| **Self-awareness** | VIA strengths assessment, Values Clarifier, Mask Check, moral compass, journal + AI reflections |
+| **Self-management** | Weekly challenges, strength-in-action practice loop, WOOP-style goals with if-then plans, draft/revisit cycle |
+| **Social awareness** | Mission 3 (belonging, fitting-in vs belonging, bridging differences), empathy/compassion boosts, stories library |
+| **Relationship skills** | Support circle + conversation scaffolds, connection challenge, vulnerability boost |
+| **Responsible decision-making** | Moral compass dilemmas (care/fairness/loyalty/principle styles with overuse warnings), prudence/judgment strengths content |
+
+The VIA classification (positive psychology) supplies the *what* of character;
+the CASEL frame describes the *how* of the skills being practised. Together they
+ground the app's claim to be a character-education and SEL-aligned platform.
+
+_Last updated: 2026-07-06._

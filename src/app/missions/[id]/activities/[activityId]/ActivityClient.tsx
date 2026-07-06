@@ -27,7 +27,7 @@ interface Props {
   pairedStory?: { id: string; title: string; teaser: string } | null;
   /** Strengths + values from earlier Mission 1 steps, surfaced in the Mask
       Check ("test your compass") and Identity Letter ("write from it"). */
-  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
   /** Saved VIA profile for the strengths assessment: previous ranking + raw
       picks, so a retake pre-fills the user's answers for editing. */
   strengthProfile?: {
@@ -97,7 +97,7 @@ function ConversationalActivity({
   userId: string;
   existingEntry: JournalEntry | null;
   pairedStory?: { id: string; title: string; teaser: string } | null;
-  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
@@ -575,6 +575,19 @@ function ConversationalActivity({
                         </span>
                       ))}
                     </div>
+                  </div>
+                )}
+                {compass.moralStyle && (
+                  <div className="mb-3">
+                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                      How you decide
+                    </div>
+                    <span
+                      className="px-2.5 py-1 rounded-full text-xs font-semibold border inline-block capitalize"
+                      style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                    >
+                      {compass.moralStyle}-led
+                    </span>
                   </div>
                 )}
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
@@ -1569,7 +1582,7 @@ function ChallengeActivity({
   activity: Activity;
   userId: string;
   existingChallenge: Challenge | null;
-  compass?: { strengths: string[]; values: string[]; growthEdges: string[] } | null;
+  compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
@@ -1738,12 +1751,15 @@ function ChallengeActivity({
             >
               <span aria-hidden>🌱</span> A growth edge to try
             </div>
-            <p className="text-sm text-[--ink] leading-relaxed">
+            <p className="text-sm text-[--ink] leading-relaxed mb-2">
               Bonus: this week, try leaning on{" "}
               <span className="font-semibold">{compass.growthEdges[0]}</span> — one of
               your lower-ranked strengths. Growth often lives in the ones that don&apos;t
               come naturally yet.
             </p>
+            <Link href="/me#boosts" className="text-xs text-[--teal] hover:underline">
+              How to build it → your Me page
+            </Link>
           </div>
         )}
         <p className="text-sm text-[--ink-muted] text-center mb-6 leading-relaxed">

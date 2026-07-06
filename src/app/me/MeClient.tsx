@@ -5,6 +5,11 @@ import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 import { STRENGTH_BY_KEY, type Virtue } from "@/lib/strengths";
+import PathwaysSection from "./PathwaysSection";
+import MoralSection from "./MoralSection";
+import PracticeSection from "./PracticeSection";
+import GoalsSection from "./GoalsSection";
+import BoostsSection from "./BoostsSection";
 
 // Virtue accent colours (from the bright palette)
 const VIRTUE_COLOUR: Record<Virtue, string> = {
@@ -16,16 +21,42 @@ const VIRTUE_COLOUR: Record<Virtue, string> = {
   Transcendence: "#92610C",
 };
 
+interface PracticeEntry {
+  id: string;
+  strength_key: string;
+  action: string;
+  started_at: string;
+  completed_at: string | null;
+  reflection: string | null;
+}
+
 export default function MeClient({
+  userId,
   displayName,
   ranking,
   scores,
   values,
+  moralProfile,
+  goals,
+  activePractice,
+  recentPractices,
+  commitmentExcerpt,
 }: {
+  userId: string;
   displayName: string;
   ranking: string[] | null;
   scores: Record<string, number>;
   values: string[];
+  moralProfile: {
+    primary_style: string;
+    secondary_style: string | null;
+    style_scores: Record<string, number>;
+  } | null;
+  
+  goals: any[];
+  activePractice: PracticeEntry | null;
+  recentPractices: PracticeEntry[];
+  commitmentExcerpt: string | null;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -54,6 +85,28 @@ export default function MeClient({
             {firstName}.
           </h1>
         </div>
+
+        {/* Purpose profile — the one-line "who I am" artefact */}
+        {hasProfile && (
+          <div
+            data-animate="1"
+            className="rounded-2xl p-4 text-white"
+            style={{ background: "var(--navy)" }}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+              Your profile in one line
+            </div>
+            <p className="text-sm leading-relaxed">
+              Leads with <span className="font-semibold">{STRENGTH_BY_KEY[top5[0]]?.name}</span>
+              {values[0] && (
+                <> · stands for <span className="font-semibold">{values[0]}</span></>
+              )}
+              {commitmentExcerpt && (
+                <> · committed to <span className="italic">&ldquo;{commitmentExcerpt}…&rdquo;</span></>
+              )}
+            </p>
+          </div>
+        )}
 
         {!hasProfile ? (
           <div className="card p-8 text-center" data-animate="2">
@@ -123,7 +176,8 @@ export default function MeClient({
               </h2>
               <p className="text-xs text-ink-muted mb-3">
                 Your lower-ranked strengths — not weaknesses, just the ones that don&apos;t
-                come as naturally yet. Worth leaning into.
+                come as naturally yet. Practise one in{" "}
+                <span className="font-medium">Strength in action</span> below.
               </p>
               <div className="flex flex-wrap gap-2">
                 {bottom5.map((k) => {
@@ -206,6 +260,29 @@ export default function MeClient({
                 Retake the strengths assessment
               </Link>
             </div>
+          </>
+        )}
+
+        {/* Pathways / moral compass / practice / goals — only meaningful once
+            a strengths profile exists */}
+        {hasProfile && (
+          <>
+            <PathwaysSection top5={top5} values={values} />
+            <MoralSection userId={userId} profile={moralProfile} />
+            <PracticeSection
+              userId={userId}
+              growthEdges={bottom5}
+              top5={top5}
+              active={activePractice}
+              recent={recentPractices}
+            />
+            <GoalsSection
+              userId={userId}
+              goals={goals}
+              values={values}
+              topStrengthKeys={top5}
+            />
+            <BoostsSection />
           </>
         )}
 

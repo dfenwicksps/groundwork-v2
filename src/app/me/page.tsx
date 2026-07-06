@@ -11,42 +11,88 @@ export default async function MePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: profile } = await supabase
-    .from("users")
-    .select("display_name")
-    .eq("id", user.id)
-    .single();
+  const db = supabase as any;
 
-  const { data: strengthRow } = await supabase
-    .from("strength_profiles")
-    .select("ranking, scores, updated_at")
-    .eq("user_id", user.id)
-    .single();
+  const [
+    { data: profile },
+    { data: strengthRow },
+    { data: valuesRow },
+    { data: moralRow },
+    { data: goalsRaw },
+    { data: practiceRaw },
+    { data: commitmentRow },
+  ] = await Promise.all([
+    db.from("users").select("display_name").eq("id", user.id).single(),
+    db
+      .from("strength_profiles")
+      .select("ranking, scores")
+      .eq("user_id", user.id)
+      .single(),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", "values-clarifier")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    db
+      .from("moral_profiles")
+      .select("primary_style, secondary_style, style_scores")
+      .eq("user_id", user.id)
+      .single(),
+    db
+      .from("goals")
+      .select("*")
+      .eq("user_id", user.id)
+      .neq("status", "archived")
+      .order("created_at", { ascending: false }),
+    db
+      .from("practice_log")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("started_at", { ascending: false })
+      .limit(6),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", "commitment-statement")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+  ]);
 
-  const { data: valuesRow } = await supabase
-    .from("journal_entries")
-    .select("response")
-    .eq("user_id", user.id)
-    .eq("activity_id", "values-clarifier")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  const ranking =
-    (strengthRow as { ranking: string[] } | null)?.ranking ?? null;
-  const scores =
-    (strengthRow as { scores: Record<string, number> } | null)?.scores ?? {};
-  const values = ((valuesRow as { response: string } | null)?.response || "")
+  const ranking: string[] | null = strengthRow?.ranking ?? null;
+  const scores: Record<string, number> = strengthRow?.scores ?? {};
+  const values = ((valuesRow?.response as string) || "")
     .split("\n")
-    .map((l) => l.split(":")[0].trim())
+    .map((l: string) => l.split(":")[0].trim())
     .filter(Boolean);
+
+  const practices = (practiceRaw || []) as {
+    id: string;
+    strength_key: string;
+    action: string;
+    started_at: string;
+    completed_at: string | null;
+    reflection: string | null;
+  }[];
+  const activePractice = practices.find((p) => !p.completed_at) || null;
+  const recentPractices = practices.filter((p) => p.completed_at).slice(0, 3);
 
   return (
     <MeClient
-      displayName={(profile as { display_name: string } | null)?.display_name || ""}
+      userId={user.id}
+      displayName={profile?.display_name || ""}
       ranking={ranking}
       scores={scores}
       values={values}
+      moralProfile={moralRow ?? null}
+      goals={goalsRaw || []}
+      activePractice={activePractice}
+      recentPractices={recentPractices}
+      commitmentExcerpt={((commitmentRow?.response as string) || "").slice(0, 140) || null}
     />
   );
 }

@@ -10,6 +10,7 @@ const PROTECTED_PATHS = [
   "/settings",
   "/onboarding",
   "/revisit",
+  "/me",
 ];
 
 export async function middleware(request: NextRequest) {

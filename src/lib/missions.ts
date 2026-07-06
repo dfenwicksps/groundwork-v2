@@ -1095,7 +1095,7 @@ export const MISSIONS: Mission[] = [
           "What's the most important thing you learned about yourself in Mission 1 — something about your inner compass that still feels true?",
           "What's the most honest thing you discovered about what you care about and want to contribute in Mission 2?",
           "What did Mission 3 tell you about the relationships and communities that matter most to you?",
-          "If you put all three together — who you are, what you care about, where you belong — what kind of life does that combination point toward? Not a career. A way of being.",
+          "If you put all three together — who you are, what you care about, where you belong — what kind of life does that combination point toward? Not just a career — a way of being. (Though your strengths do point at careers too — check your Me page.)",
         ],
         whyItMatters:
           "Integration — the third phase of identity development — isn't about having everything figured out. It's about finding the through-line: the thread that connects your values, your purpose, and your relationships into something coherent. Psychologists find that this coherence is what separates people who feel like they're drifting from people who feel like they're building something — even when their external circumstances look similar. The thread doesn't have to be obvious. But naming it tends to make it real.",
