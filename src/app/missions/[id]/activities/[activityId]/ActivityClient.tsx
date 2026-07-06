@@ -1838,19 +1838,31 @@ function StrengthsAssessmentActivity({
     const { scores, ranking } = scoreAssessment(mostKeys, leastKeys);
     const top5 = topStrengths(ranking, 5);
 
-    const { error } = await db.from("strength_profiles").upsert(
-      {
-        user_id: userId,
-        scores,
-        ranking,
-        answers: { most, least },
-        taken_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
+    const basePayload = {
+      user_id: userId,
+      scores,
+      ranking,
+      taken_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    let { error } = await db.from("strength_profiles").upsert(
+      { ...basePayload, answers: { most, least } },
       { onConflict: "user_id" }
     );
+    // The answers column is a retake-prefill nice-to-have. If the database
+    // hasn't been migrated to include it yet, don't block the user's results —
+    // save the essential profile without it.
+    if (error && /answers/i.test(error.message || "")) {
+      ({ error } = await db
+        .from("strength_profiles")
+        .upsert(basePayload, { onConflict: "user_id" }));
+    }
     if (error) {
-      setSaveError("Couldn't save your results — check your connection and try again.");
+      setSaveError(
+        /find the table|does not exist|schema cache/i.test(error.message || "")
+          ? "The strengths database isn't set up yet — this needs a quick fix on our side, not yours."
+          : "Couldn't save your results — check your connection and try again."
+      );
       setSubmitting(false);
       return;
     }
