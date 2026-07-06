@@ -24,7 +24,7 @@ interface Props {
   isCompleted: boolean;
   existingEntry: JournalEntry | null;
   existingChallenge: Challenge | null;
-  pairedStory?: { id: string; title: string; teaser: string } | null;
+  pairedStory?: { id: string; title: string; teaser: string; context: string; turning_point: string } | null;
   /** Strengths + values from earlier Mission 1 steps, surfaced in the Mask
       Check ("test your compass") and Identity Letter ("write from it"). */
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
@@ -88,6 +88,7 @@ function ConversationalActivity({
   activity,
   userId,
   existingEntry,
+  previousResponse,
   pairedStory,
   compass,
   onComplete,
@@ -96,7 +97,10 @@ function ConversationalActivity({
   activity: Activity;
   userId: string;
   existingEntry: JournalEntry | null;
-  pairedStory?: { id: string; title: string; teaser: string } | null;
+  /** Latest saved response even when the step isn't marked complete (e.g.
+      after a mission restart) — shown as a reference, never auto-filled. */
+  previousResponse?: string | null;
+  pairedStory?: { id: string; title: string; teaser: string; context: string; turning_point: string } | null;
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
   onComplete: (response: string) => void;
 }) {
@@ -231,6 +235,16 @@ function ConversationalActivity({
   // an accidental refresh or app switch is unacceptable. Drafts live in
   // localStorage per activity and are cleared on successful save.
   const draftKey = `gw_draft_${mission.id}_${activity.id}`;
+
+  const [storyOpen, setStoryOpen] = useState(false);
+
+  // Make previous answers visible for reference on fresh runs too (post-restart)
+  useEffect(() => {
+    if (prevAnswersRef.current.length === 0 && previousResponse) {
+      prevAnswersRef.current = parsePrevAnswers(previousResponse);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (existingEntry) return; // completed activities don't resume drafts
@@ -608,39 +622,67 @@ function ConversationalActivity({
               </div>
             )}
 
-            {/* Paired story — redesigned as an inviting, unmissable step */}
+            {/* True story — read inline, inside the activity */}
             {pairedStory && (
-              <Link
-                href={`/stories/${pairedStory.id}`}
-                className="flex items-center gap-3.5 p-4 rounded-2xl mb-5 transition-transform hover:scale-[1.01]"
-                style={{
-                  background: `${mission.colour}12`,
-                  border: `2px solid ${mission.colour}45`,
-                }}
+              <div
+                className="rounded-2xl mb-5 overflow-hidden"
+                style={{ border: `2px solid ${mission.colour}45`, background: `${mission.colour}0E` }}
               >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
-                  style={{ background: mission.colour }}
-                  aria-hidden
+                <button
+                  type="button"
+                  onClick={() => setStoryOpen((v) => !v)}
+                  aria-expanded={storyOpen}
+                  className="w-full flex items-center gap-3.5 p-4 text-left"
                 >
-                  📖
-                </div>
-                <div className="flex-1 min-w-0">
                   <div
-                    className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
-                    style={{ color: mission.colour }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
+                    style={{ background: mission.colour }}
+                    aria-hidden
                   >
-                    True story · 2-min read
+                    📖
                   </div>
-                  <div className="text-sm font-semibold text-[--ink]">{pairedStory.title}</div>
-                  <div className="text-xs text-[--ink-muted] mt-0.5">
-                    Someone&apos;s been where you&apos;re about to go — their story sets this up.
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
+                      style={{ color: mission.colour }}
+                    >
+                      True story · 2-min read
+                    </div>
+                    <div className="text-sm font-semibold text-[--ink]">{pairedStory.title}</div>
+                    <div className="text-xs text-[--ink-muted] mt-0.5">
+                      {storyOpen ? "Someone's been where you're about to go." : "Tap to read it right here — it sets up this activity."}
+                    </div>
                   </div>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="flex-shrink-0" style={{ color: mission.colour }} aria-hidden>
-                  <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
+                  <svg
+                    width="16" height="16" viewBox="0 0 14 14" fill="none"
+                    className={cn("flex-shrink-0 transition-transform", storyOpen && "rotate-90")}
+                    style={{ color: mission.colour }} aria-hidden
+                  >
+                    <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                {storyOpen && (
+                  <div className="px-4 pb-4 space-y-3">
+                    <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">
+                      {pairedStory.context}
+                    </p>
+                    <div
+                      className="rounded-xl px-4 py-3 bg-white border"
+                      style={{ borderColor: `${mission.colour}35` }}
+                    >
+                      <div
+                        className="text-[11px] font-bold uppercase tracking-widest mb-1"
+                        style={{ color: mission.colour }}
+                      >
+                        The turning point
+                      </div>
+                      <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">
+                        {pairedStory.turning_point}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* What's coming */}
@@ -860,11 +902,12 @@ function ConversationalActivity({
               )}
             </div>
 
-            {/* Previous answer shown while editing, so the user can adjust it */}
-            {editing && prevAnswersRef.current[qIdx] && (
+            {/* Previous answer — shown while editing AND on fresh re-runs, so
+                the user can always see what they said last time */}
+            {prevAnswersRef.current[qIdx] && (
               <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border]">
                 <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
-                  Previously you {usingStarter ? "chose" : "wrote"}
+                  {editing ? "Previously you " + (usingStarter ? "chose" : "wrote") : "Last time you said"}
                 </div>
                 <p className="text-sm text-[--ink-muted] italic leading-relaxed whitespace-pre-wrap">
                   &ldquo;{prevAnswersRef.current[qIdx]}&rdquo;
@@ -1103,15 +1146,26 @@ function ConversationalActivity({
                   <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
-            ) : (
-              <Link
-                href={`/missions/${mission.id}`}
-                className="btn btn-primary w-full py-3.5 rounded-xl"
-                style={{ background: mission.colour }}
-              >
-                Back to mission
-              </Link>
-            )}
+            ) : (() => {
+              const nm = MISSIONS.find((m) => m.id === mission.id + 1) || null;
+              return nm ? (
+                <Link
+                  href={`/missions/${nm.id}`}
+                  className="btn btn-primary w-full py-3.5 rounded-xl"
+                  style={{ background: nm.colour }}
+                >
+                  Next: Mission {nm.id} — {nm.title} →
+                </Link>
+              ) : (
+                <Link
+                  href="/me"
+                  className="btn btn-primary w-full py-3.5 rounded-xl"
+                  style={{ background: mission.colour }}
+                >
+                  See everything you&apos;ve discovered →
+                </Link>
+              );
+            })()}
             <div className="flex gap-3">
               <Link
                 href={`/missions/${mission.id}`}
@@ -1383,9 +1437,22 @@ function ValuesPickerActivity({
             </svg>
             Edit my values
           </button>
+          {(() => {
+            const idx = mission.activities.findIndex((a) => a.id === activity.id);
+            const next = mission.activities.slice(idx + 1).find((a) => !a.locked) || null;
+            return next ? (
+              <Link
+                href={`/missions/${mission.id}/activities/${next.id}`}
+                className="btn btn-primary w-full py-3.5 rounded-xl mb-3 flex items-center justify-center gap-2"
+                style={{ background: mission.colour }}
+              >
+                Next: {next.title} →
+              </Link>
+            ) : null;
+          })()}
           <div className="flex gap-3">
             <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">Back to mission</Link>
-            <Link href="/dashboard" className="btn btn-primary flex-1 py-3 rounded-xl">Dashboard</Link>
+            <Link href="/dashboard" className="btn btn-secondary flex-1 py-3 rounded-xl">Dashboard</Link>
           </div>
         </div>
       </div>
@@ -1575,6 +1642,7 @@ function ChallengeActivity({
   activity,
   userId,
   existingChallenge,
+  isCompleted,
   compass,
   onComplete,
 }: {
@@ -1582,10 +1650,22 @@ function ChallengeActivity({
   activity: Activity;
   userId: string;
   existingChallenge: Challenge | null;
+  isCompleted: boolean;
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
+
+  // Healing: after "Restart this mission" the challenge row survives but the
+  // progress row is deleted — and the accept button (the only progress-marking
+  // path) is unreachable. If a challenge exists but the step isn't marked
+  // complete, mark it on sight so missions can reach 100%.
+  useEffect(() => {
+    if (existingChallenge && !isCompleted) onComplete();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const nextMission = MISSIONS.find((m) => m.id === mission.id + 1) || null;
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingChallenge);
@@ -1665,7 +1745,24 @@ function ChallengeActivity({
             <div className="text-center py-10">
               <div className="text-4xl mb-4">✓</div>
               <p className="font-medium text-[--navy] mb-6">Reflection saved.</p>
-              <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+              <div className="space-y-3 max-w-xs mx-auto">
+                {nextMission ? (
+                  <Link
+                    href={`/missions/${nextMission.id}`}
+                    className="btn btn-primary w-full py-3 rounded-xl"
+                    style={{ background: nextMission.colour }}
+                  >
+                    Next: Mission {nextMission.id} — {nextMission.title} →
+                  </Link>
+                ) : (
+                  <Link href="/me" className="btn btn-primary w-full py-3 rounded-xl">
+                    See everything you&apos;ve discovered →
+                  </Link>
+                )}
+                <Link href="/dashboard" className="btn btn-secondary w-full py-3 rounded-xl">
+                  Dashboard
+                </Link>
+              </div>
             </div>
           ) : (
             <>
@@ -1719,7 +1816,24 @@ function ChallengeActivity({
             </div>
           )}
           <p className="text-sm text-[--ink-muted] mb-6">Come back in a week to reflect.</p>
-          <Link href="/dashboard" className="btn btn-primary">Back to dashboard</Link>
+          <div className="space-y-3">
+            {nextMission ? (
+              <Link
+                href={`/missions/${nextMission.id}`}
+                className="btn btn-primary w-full py-3.5 rounded-xl"
+                style={{ background: nextMission.colour }}
+              >
+                Next: Mission {nextMission.id} — {nextMission.title} →
+              </Link>
+            ) : (
+              <Link href="/me" className="btn btn-primary w-full py-3.5 rounded-xl">
+                See everything you&apos;ve discovered →
+              </Link>
+            )}
+            <Link href="/dashboard" className="btn btn-secondary w-full py-3 rounded-xl">
+              Dashboard
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -2217,11 +2331,17 @@ export default function ActivityClient({
   // After any activity type completes, mark mission_progress and advance active_mission if needed
   const markProgress = useCallback(async () => {
     try {
-      await db.from("mission_progress").upsert({
-        user_id: userId,
-        mission_id: mission.id,
-        activity_id: activity.id,
-      });
+      // onConflict must target the unique(user_id, mission_id, activity_id)
+      // constraint — without it the upsert conflicts on the PK and re-completing
+      // an activity silently failed, leaving missions stuck at 4/5.
+      await db.from("mission_progress").upsert(
+        {
+          user_id: userId,
+          mission_id: mission.id,
+          activity_id: activity.id,
+        },
+        { onConflict: "user_id,mission_id,activity_id", ignoreDuplicates: true }
+      );
 
       const totalActivities = mission.activities.filter((a) => !a.locked).length;
       const { count } = await db
@@ -2303,6 +2423,7 @@ export default function ActivityClient({
         activity={activity}
         userId={userId}
         existingChallenge={existingChallenge}
+        isCompleted={completed}
         compass={compass}
         onComplete={handleComplete}
       />
@@ -2316,6 +2437,7 @@ export default function ActivityClient({
       activity={activity}
       userId={userId}
       existingEntry={completed ? existingEntry : null}
+      previousResponse={existingEntry?.response ?? null}
       pairedStory={pairedStory}
       compass={compass}
       onComplete={() => handleComplete()}

@@ -56,13 +56,25 @@ export default async function ActivityPage({
   const existingChallenge = _existingChallenge as import("@/types/database").Challenge | null;
 
   // Fetch paired story if this activity has one
-  let pairedStory: { id: string; title: string; teaser: string } | null = null;
+  let pairedStory: {
+    id: string;
+    title: string;
+    teaser: string;
+    context: string;
+    turning_point: string;
+  } | null = null;
   if (activity.storyBefore !== undefined) {
     const { data: missionStories } = await supabase
       .from("stories")
-      .select("id, title, teaser")
+      .select("id, title, teaser, context, turning_point")
       .eq("mission_id", missionId);
-    const storiesArr = missionStories as Array<{ id: string; title: string; teaser: string }> | null;
+    const storiesArr = missionStories as Array<{
+      id: string;
+      title: string;
+      teaser: string;
+      context: string;
+      turning_point: string;
+    }> | null;
     if (storiesArr && storiesArr[activity.storyBefore]) {
       pairedStory = storiesArr[activity.storyBefore];
     }
