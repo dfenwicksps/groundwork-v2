@@ -10,6 +10,10 @@ import MoralSection from "./MoralSection";
 import PracticeSection from "./PracticeSection";
 import GoalsSection from "./GoalsSection";
 import BoostsSection from "./BoostsSection";
+import HabitsSection from "./HabitsSection";
+import FocusSection from "./FocusSection";
+import JourneyStrip from "./JourneyStrip";
+import type { HabitAnswer, HabitResult } from "@/lib/habits";
 
 // Virtue accent colours (from the bright palette)
 const VIRTUE_COLOUR: Record<Virtue, string> = {
@@ -41,6 +45,9 @@ export default function MeClient({
   activePractice,
   recentPractices,
   commitmentExcerpt,
+  habitSaved,
+  focusKeys,
+  supportCount,
 }: {
   userId: string;
   displayName: string;
@@ -57,6 +64,9 @@ export default function MeClient({
   activePractice: PracticeEntry | null;
   recentPractices: PracticeEntry[];
   commitmentExcerpt: string | null;
+  habitSaved: { answers: Record<string, HabitAnswer>; result: HabitResult } | null;
+  focusKeys: string[];
+  supportCount: number;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -106,6 +116,20 @@ export default function MeClient({
               )}
             </p>
           </div>
+        )}
+
+        {/* The staged student journey: Discover → … → Launch */}
+        {hasProfile && (
+          <JourneyStrip
+            hasProfile={hasProfile}
+            hasValues={values.length > 0}
+            hasHabits={!!habitSaved}
+            hasMoral={!!moralProfile}
+            hasFocus={focusKeys.length > 0}
+            hasPractice={!!activePractice || recentPractices.length > 0}
+            hasSupport={supportCount > 0}
+            hasGoals={goals.length > 0}
+          />
         )}
 
         {!hasProfile ? (
@@ -267,8 +291,16 @@ export default function MeClient({
             a strengths profile exists */}
         {hasProfile && (
           <>
-            <PathwaysSection top5={top5} values={values} />
             <MoralSection userId={userId} profile={moralProfile} />
+            <HabitsSection userId={userId} saved={habitSaved} />
+            <FocusSection
+              userId={userId}
+              focusKeys={focusKeys}
+              suggestedQualities={Array.from(
+                new Set((habitSaved?.result.grows || []).map((g) => g.quality))
+              )}
+              hasGoals={goals.length > 0}
+            />
             <PracticeSection
               userId={userId}
               growthEdges={bottom5}
@@ -276,12 +308,17 @@ export default function MeClient({
               active={activePractice}
               recent={recentPractices}
             />
-            <GoalsSection
-              userId={userId}
-              goals={goals}
-              values={values}
-              topStrengthKeys={top5}
-            />
+            <div id="pathways">
+              <PathwaysSection top5={top5} values={values} />
+            </div>
+            <div id="goals">
+              <GoalsSection
+                userId={userId}
+                goals={goals}
+                values={values}
+                topStrengthKeys={top5}
+              />
+            </div>
             <BoostsSection />
           </>
         )}

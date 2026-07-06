@@ -97,7 +97,8 @@ export default function LandingPage() {
             Four missions. One question each.
           </h2>
           <p className="text-ink-muted max-w-lg mx-auto">
-            You move through each mission at your own pace — about 15 minutes a week. Reflective activities, real stories, and one challenge to try in the world.
+            You move through each mission at your own pace — about 15 minutes a week. Reflective activities, real stories, and one challenge to try in the world. Together they help you answer four big questions:{" "}
+            <span className="italic text-navy">Who am I? What do I stand for? Who am I becoming? How can I contribute?</span>
           </p>
         </div>
 

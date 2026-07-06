@@ -1232,7 +1232,15 @@ const BASE_ACTIVITY_LABELS: Record<string, string> = (() => {
  * journal entries. Replaces the hand-maintained label maps that previously
  * lived in the Dashboard, Journal, and Revisit clients.
  */
+const SPECIAL_LABELS: Record<string, string> = {
+  "habit-check": "Habit Check",
+  "focus-qualities": "My Focus Qualities",
+  "strength-practice": "Strength in Action",
+  "goal-checkin": "Goal Check-in",
+};
+
 export function getActivityLabel(activityId: string): string {
+  if (SPECIAL_LABELS[activityId]) return SPECIAL_LABELS[activityId];
   if (activityId.endsWith("-debrief")) {
     const base = BASE_ACTIVITY_LABELS[activityId.replace(/-debrief$/, "")];
     return base ? `${base} — Debrief` : "Challenge Debrief";

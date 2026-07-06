@@ -10,6 +10,8 @@ export interface Boost {
   emoji: string;
   /** What it actually is — myth-busting, teen-voiced */
   what: string;
+  /** One-line "what it means in practice" (used in the growth plan) */
+  inPractice: string;
   /** One concrete exercise to build it this week */
   exercise: string;
 }
@@ -17,6 +19,7 @@ export interface Boost {
 export const BOOSTS: Boost[] = [
   {
     key: "courage",
+    inPractice: "Doing what is right even when it feels uncomfortable.",
     name: "Courage",
     emoji: "🦁",
     what: "Courage isn't the absence of fear — it's acting while the fear is still there. People who look fearless are usually just practised: they've done the scary thing enough times that their body trusts them to survive it.",
@@ -24,6 +27,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "vulnerability",
+    inPractice: "Being honest about feelings, mistakes, needs and hopes.",
     name: "Vulnerability",
     emoji: "🫶",
     what: "Vulnerability is letting yourself be seen without armour — saying the true thing when you can't control how it lands. It feels like weakness from the inside and looks like courage from the outside. It's also the only door to being genuinely known.",
@@ -31,6 +35,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "resilience",
+    inPractice: "Recovering after setbacks and continuing with purpose.",
     name: "Resilience",
     emoji: "🧗",
     what: "Resilience isn't bouncing back instantly or pretending it doesn't hurt. It's feeling the hit fully, and then finding the next move anyway. It's a skill you build from evidence — every hard thing you've already survived is proof in the bank.",
@@ -38,6 +43,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "self-belief",
+    inPractice: "Trusting that you have something valuable to offer.",
     name: "Self-belief",
     emoji: "🌟",
     what: "Confidence isn't a personality type — it follows evidence. People who believe in themselves are usually just people who keep track of their own wins while everyone else forgets theirs.",
@@ -45,6 +51,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "self-efficacy",
+    inPractice: "Believing your actions can make a difference.",
     name: "Self-efficacy",
     emoji: "💪",
     what: "Self-efficacy is the belief that your actions actually change outcomes — that effort in means results out. Psychologists find it's built mostly one way: mastery experiences. Small, real wins at things that used to be hard.",
@@ -52,6 +59,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "empathy",
+    inPractice: "Understanding how others may feel.",
     name: "Empathy",
     emoji: "🫂",
     what: "Empathy is feeling with someone — not fixing them, not relating everything back to your own story. Most people listen to reply. Empathy is listening to understand, and letting the other person feel understood before anything else happens.",
@@ -59,6 +67,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "compassion",
+    inPractice: "Caring about another person's struggle — and acting on it.",
     name: "Compassion",
     emoji: "💗",
     what: "Compassion is empathy plus action — being moved by someone's struggle and doing something about it. And it includes you: self-compassion isn't letting yourself off the hook, it's talking to yourself like someone worth helping.",
@@ -66,6 +75,7 @@ export const BOOSTS: Boost[] = [
   },
   {
     key: "kindness",
+    inPractice: "Taking action to support, include or encourage others.",
     name: "Kindness",
     emoji: "🤝",
     what: "Kindness is deliberate warmth — strongest when it costs you something and nobody's watching. Research is blunt about this one: doing kind things reliably raises the mood of the person doing them, not just the receiver.",

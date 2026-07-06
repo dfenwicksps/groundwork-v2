@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
+import { responseToHabits } from "@/lib/habits";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,9 @@ export default async function MePage() {
     { data: goalsRaw },
     { data: practiceRaw },
     { data: commitmentRow },
+    { data: habitRow },
+    { data: focusRow },
+    { count: supportCount },
   ] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id).single(),
     db
@@ -61,6 +65,26 @@ export default async function MePage() {
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", "habit-check")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", "focus-qualities")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    db
+      .from("support_circle")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id),
   ]);
 
   const ranking: string[] | null = strengthRow?.ranking ?? null;
@@ -81,6 +105,16 @@ export default async function MePage() {
   const activePractice = practices.find((p) => !p.completed_at) || null;
   const recentPractices = practices.filter((p) => p.completed_at).slice(0, 3);
 
+  const habitSaved = habitRow?.response
+    ? responseToHabits(habitRow.response as string)
+    : null;
+  const focusKeys = (((focusRow?.response as string) || "")
+    .split("\n")
+    .find((l: string) => l.startsWith("keys:")) || "")
+    .replace("keys:", "")
+    .split(",")
+    .filter(Boolean);
+
   return (
     <MeClient
       userId={user.id}
@@ -93,6 +127,9 @@ export default async function MePage() {
       activePractice={activePractice}
       recentPractices={recentPractices}
       commitmentExcerpt={((commitmentRow?.response as string) || "").slice(0, 140) || null}
+      habitSaved={habitSaved}
+      focusKeys={focusKeys}
+      supportCount={supportCount ?? 0}
     />
   );
 }

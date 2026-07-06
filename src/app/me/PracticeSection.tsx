@@ -97,7 +97,7 @@ export default function PracticeSection({
   }
 
   return (
-    <div data-animate="4">
+    <div data-animate="4" id="practice">
       <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
         Strength in action
       </h2>

@@ -25,8 +25,9 @@ export default function PathwaysSection({
         Where your strengths could take you
       </h2>
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
-        Directions your profile points toward — not predictions, just places worth
-        exploring. Built from your actual strengths and values.
+        Your strengths, values and character profile suggest you may find meaning
+        in pathways where you can… (never &ldquo;you should become this&rdquo; —
+        these are open doors, not directions.)
       </p>
       <div className="space-y-2">
         {suggestions.map(({ cluster, fromStrengths, fromValues }) => {
