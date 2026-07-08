@@ -160,6 +160,9 @@ export default function PracticeSection({
                 >
                   <span aria-hidden>{s.emoji}</span>
                   {s.name}
+                  <span className={selected === k ? "text-white/70 font-normal" : "text-ink-muted font-normal"}>
+                    · {s.plain}
+                  </span>
                   {isGrowth && selected !== k && (
                     <span className="text-[10px] text-sage font-semibold">🌱</span>
                   )}

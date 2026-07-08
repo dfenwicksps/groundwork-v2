@@ -19,7 +19,7 @@ export default async function MePage() {
     { data: strengthRow },
     { data: valuesRow },
     { data: moralRow },
-    { data: goalsRaw },
+    { data: goalsRaw, error: goalsError },
     { data: practiceRaw },
     { data: commitmentRow },
     { data: habitRow },
@@ -130,6 +130,13 @@ export default async function MePage() {
       habitSaved={habitSaved}
       focusKeys={focusKeys}
       supportCount={supportCount ?? 0}
+      // If the goals table errors, the 003 migration hasn't run — the moral
+      // compass, practice loop and goals need it, so we hide those rather than
+      // let students hit save-time errors that read as "the app is broken".
+      featuresReady={
+        !goalsError ||
+        !/find the table|does not exist|schema cache/i.test(goalsError.message || "")
+      }
     />
   );
 }

@@ -48,6 +48,7 @@ export default function MeClient({
   habitSaved,
   focusKeys,
   supportCount,
+  featuresReady,
 }: {
   userId: string;
   displayName: string;
@@ -67,6 +68,7 @@ export default function MeClient({
   habitSaved: { answers: Record<string, HabitAnswer>; result: HabitResult } | null;
   focusKeys: string[];
   supportCount: number;
+  featuresReady: boolean;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -214,6 +216,7 @@ export default function MeClient({
                     >
                       <span aria-hidden>{s.emoji}</span>
                       {s.name}
+                      <span className="text-ink-muted font-normal">· {s.plain}</span>
                     </span>
                   );
                 })}
@@ -256,7 +259,10 @@ export default function MeClient({
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="text-sm text-ink truncate">{s.name}</span>
+                            <span className="text-sm text-ink truncate">
+                              {s.name}{" "}
+                              <span className="text-ink-muted">· {s.plain}</span>
+                            </span>
                             <span className="text-[10px] text-ink-muted flex-shrink-0">
                               {s.virtue}
                             </span>
@@ -291,7 +297,7 @@ export default function MeClient({
             a strengths profile exists */}
         {hasProfile && (
           <>
-            <MoralSection userId={userId} profile={moralProfile} />
+            {/* Reflect + Grow (no migration needed — these use journal entries) */}
             <HabitsSection userId={userId} saved={habitSaved} />
             <FocusSection
               userId={userId}
@@ -301,24 +307,45 @@ export default function MeClient({
               )}
               hasGoals={goals.length > 0}
             />
-            <PracticeSection
-              userId={userId}
-              growthEdges={bottom5}
-              top5={top5}
-              active={activePractice}
-              recent={recentPractices}
-            />
+            {featuresReady && (
+              <MoralSection userId={userId} profile={moralProfile} />
+            )}
+            {featuresReady && (
+              <PracticeSection
+                userId={userId}
+                growthEdges={bottom5}
+                top5={top5}
+                active={activePractice}
+                recent={recentPractices}
+              />
+            )}
             <div id="pathways">
               <PathwaysSection top5={top5} values={values} />
             </div>
-            <div id="goals">
-              <GoalsSection
-                userId={userId}
-                goals={goals}
-                values={values}
-                topStrengthKeys={top5}
-              />
-            </div>
+            {featuresReady && (
+              <div id="goals">
+                <GoalsSection
+                  userId={userId}
+                  goals={goals}
+                  values={values}
+                  topStrengthKeys={top5}
+                />
+              </div>
+            )}
+            {!featuresReady && (
+              <div data-animate="5" className="card p-5 flex items-center gap-4">
+                <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
+                <div>
+                  <p className="text-sm text-ink font-medium mb-0.5">
+                    More tools land here soon
+                  </p>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    Your moral compass, weekly practice and goal-setting are being
+                    switched on — check back shortly.
+                  </p>
+                </div>
+              </div>
+            )}
             <BoostsSection />
           </>
         )}

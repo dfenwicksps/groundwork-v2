@@ -18,6 +18,8 @@ export interface CharacterStrength {
   virtue: Virtue;
   /** Teen-friendly one-line definition */
   short: string;
+  /** 1-3 word plain-English gloss, shown next to hard names (e.g. Prudence) */
+  plain: string;
   emoji: string;
 }
 
@@ -33,35 +35,35 @@ export const VIRTUE_ORDER: Virtue[] = [
 // Canonical order — also used to break score ties deterministically.
 export const VIA_STRENGTHS: CharacterStrength[] = [
   // Wisdom & Knowledge
-  { key: "creativity", name: "Creativity", virtue: "Wisdom", emoji: "💡", short: "Coming up with new, original ways to do things or see things." },
-  { key: "curiosity", name: "Curiosity", virtue: "Wisdom", emoji: "🔍", short: "Wanting to explore, ask questions, and find out how things work." },
-  { key: "judgment", name: "Judgment", virtue: "Wisdom", emoji: "⚖️", short: "Thinking things through from all sides before deciding." },
-  { key: "love-of-learning", name: "Love of Learning", virtue: "Wisdom", emoji: "📚", short: "Genuinely enjoying getting better at things and learning new stuff." },
-  { key: "perspective", name: "Perspective", virtue: "Wisdom", emoji: "🧭", short: "Seeing the bigger picture and giving advice that actually helps." },
+  { key: "creativity", name: "Creativity", virtue: "Wisdom", plain: "new ideas", emoji: "💡", short: "Coming up with new, original ways to do things or see things." },
+  { key: "curiosity", name: "Curiosity", virtue: "Wisdom", plain: "wanting to know", emoji: "🔍", short: "Wanting to explore, ask questions, and find out how things work." },
+  { key: "judgment", name: "Judgment", virtue: "Wisdom", plain: "clear thinking", emoji: "⚖️", short: "Thinking things through from all sides before deciding." },
+  { key: "love-of-learning", name: "Love of Learning", virtue: "Wisdom", plain: "loves learning", emoji: "📚", short: "Genuinely enjoying getting better at things and learning new stuff." },
+  { key: "perspective", name: "Perspective", virtue: "Wisdom", plain: "wise advice", emoji: "🧭", short: "Seeing the bigger picture and giving advice that actually helps." },
   // Courage
-  { key: "bravery", name: "Bravery", virtue: "Courage", emoji: "🦁", short: "Doing the right or hard thing even when it's scary." },
-  { key: "perseverance", name: "Perseverance", virtue: "Courage", emoji: "🧗", short: "Finishing what you start, even when it gets boring or hard." },
-  { key: "honesty", name: "Honesty", virtue: "Courage", emoji: "🎯", short: "Being real — telling the truth and living as your true self." },
-  { key: "zest", name: "Zest", virtue: "Courage", emoji: "⚡", short: "Bringing energy and excitement to life; doing things wholeheartedly." },
+  { key: "bravery", name: "Bravery", virtue: "Courage", plain: "facing fear", emoji: "🦁", short: "Doing the right or hard thing even when it's scary." },
+  { key: "perseverance", name: "Perseverance", virtue: "Courage", plain: "not giving up", emoji: "🧗", short: "Finishing what you start, even when it gets boring or hard." },
+  { key: "honesty", name: "Honesty", virtue: "Courage", plain: "being real", emoji: "🎯", short: "Being real — telling the truth and living as your true self." },
+  { key: "zest", name: "Zest", virtue: "Courage", plain: "energy for life", emoji: "⚡", short: "Bringing energy and excitement to life; doing things wholeheartedly." },
   // Humanity
-  { key: "love", name: "Love", virtue: "Humanity", emoji: "❤️", short: "Valuing close relationships and letting people be close to you." },
-  { key: "kindness", name: "Kindness", virtue: "Humanity", emoji: "🤝", short: "Helping and looking after others, even when nobody asked." },
-  { key: "social-intelligence", name: "Social Intelligence", virtue: "Humanity", emoji: "🫂", short: "Reading how people feel and knowing what to do in the moment." },
+  { key: "love", name: "Love", virtue: "Humanity", plain: "close bonds", emoji: "❤️", short: "Valuing close relationships and letting people be close to you." },
+  { key: "kindness", name: "Kindness", virtue: "Humanity", plain: "helping others", emoji: "🤝", short: "Helping and looking after others, even when nobody asked." },
+  { key: "social-intelligence", name: "Social Intelligence", virtue: "Humanity", plain: "reading people", emoji: "🫂", short: "Reading how people feel and knowing what to do in the moment." },
   // Justice
-  { key: "teamwork", name: "Teamwork", virtue: "Justice", emoji: "🧩", short: "Pulling your weight for the group and being loyal to it." },
-  { key: "fairness", name: "Fairness", virtue: "Justice", emoji: "⚱️", short: "Treating everyone equally and giving people a fair go." },
-  { key: "leadership", name: "Leadership", virtue: "Justice", emoji: "🚩", short: "Helping a group get organised and get things done together." },
+  { key: "teamwork", name: "Teamwork", virtue: "Justice", plain: "team player", emoji: "🧩", short: "Pulling your weight for the group and being loyal to it." },
+  { key: "fairness", name: "Fairness", virtue: "Justice", plain: "treating people equally", emoji: "⚱️", short: "Treating everyone equally and giving people a fair go." },
+  { key: "leadership", name: "Leadership", virtue: "Justice", plain: "leading others", emoji: "🚩", short: "Helping a group get organised and get things done together." },
   // Temperance
-  { key: "forgiveness", name: "Forgiveness", virtue: "Temperance", emoji: "🕊️", short: "Letting go of grudges and giving people second chances." },
-  { key: "humility", name: "Humility", virtue: "Temperance", emoji: "🌱", short: "Letting your actions speak; not needing to be the centre of attention." },
-  { key: "prudence", name: "Prudence", virtue: "Temperance", emoji: "🛡️", short: "Thinking before you act; not doing things you'll regret." },
-  { key: "self-regulation", name: "Self-Regulation", virtue: "Temperance", emoji: "🧘", short: "Managing your feelings, habits, and impulses." },
+  { key: "forgiveness", name: "Forgiveness", virtue: "Temperance", plain: "letting go", emoji: "🕊️", short: "Letting go of grudges and giving people second chances." },
+  { key: "humility", name: "Humility", virtue: "Temperance", plain: "modesty", emoji: "🌱", short: "Letting your actions speak; not needing to be the centre of attention." },
+  { key: "prudence", name: "Prudence", virtue: "Temperance", plain: "careful choices", emoji: "🛡️", short: "Thinking before you act; not doing things you'll regret." },
+  { key: "self-regulation", name: "Self-Regulation", virtue: "Temperance", plain: "self-control", emoji: "🧘", short: "Managing your feelings, habits, and impulses." },
   // Transcendence
-  { key: "appreciation", name: "Appreciation of Beauty", virtue: "Transcendence", emoji: "🌅", short: "Noticing and being moved by beauty, skill, and excellence around you." },
-  { key: "gratitude", name: "Gratitude", virtue: "Transcendence", emoji: "🙏", short: "Noticing the good things and being thankful for them." },
-  { key: "hope", name: "Hope", virtue: "Transcendence", emoji: "🌈", short: "Expecting the best and believing you can make it happen." },
-  { key: "humor", name: "Humour", virtue: "Transcendence", emoji: "😄", short: "Bringing lightness and laughter; helping people smile." },
-  { key: "spirituality", name: "Spirituality", virtue: "Transcendence", emoji: "✨", short: "Having beliefs about meaning and purpose that give life shape." },
+  { key: "appreciation", name: "Appreciation of Beauty", virtue: "Transcendence", plain: "noticing beauty", emoji: "🌅", short: "Noticing and being moved by beauty, skill, and excellence around you." },
+  { key: "gratitude", name: "Gratitude", virtue: "Transcendence", plain: "being thankful", emoji: "🙏", short: "Noticing the good things and being thankful for them." },
+  { key: "hope", name: "Hope", virtue: "Transcendence", plain: "staying positive", emoji: "🌈", short: "Expecting the best and believing you can make it happen." },
+  { key: "humor", name: "Humour", virtue: "Transcendence", plain: "making people laugh", emoji: "😄", short: "Bringing lightness and laughter; helping people smile." },
+  { key: "spirituality", name: "Spirituality", virtue: "Transcendence", plain: "meaning & purpose", emoji: "✨", short: "Having beliefs about meaning and purpose that give life shape." },
 ];
 
 export const STRENGTH_BY_KEY: Record<string, CharacterStrength> = Object.fromEntries(
