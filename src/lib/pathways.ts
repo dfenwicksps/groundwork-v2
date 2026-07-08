@@ -13,6 +13,8 @@ export interface CareerCluster {
   blurb: string;
   roles: string[];
   subjects: string[];
+  /** Realistic post-school routes into this cluster (AU context) */
+  nextSteps: string[];
 }
 
 export const CLUSTERS: CareerCluster[] = [
@@ -23,6 +25,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Making things people watch, read, hear, and feel.",
     roles: ["Designer", "Filmmaker / editor", "Writer or journalist", "Musician / producer", "Content creator"],
     subjects: ["Art & Design", "Media", "English", "Music", "Drama"],
+    nextSteps: [
+      "University: creative arts, design, communications or film degrees",
+      "TAFE/VET: diplomas in graphic design, screen & media, or music",
+      "Build a portfolio now \u2014 it opens more doors here than your ATAR",
+      "Freelance and self-taught routes are genuinely viable",
+    ],
   },
   {
     key: "tech",
@@ -31,6 +39,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Building the software, games, and systems the world runs on.",
     roles: ["Software developer", "Game designer", "Cybersecurity analyst", "Data scientist", "AI engineer"],
     subjects: ["Digital Technologies", "Maths", "Physics"],
+    nextSteps: [
+      "University: computer science, software engineering, IT or data science",
+      "TAFE/VET: diplomas in IT, cybersecurity or web development",
+      "Bootcamps + certifications (AWS, Google) are fast entry routes",
+      "Start shipping small projects and a GitHub now",
+    ],
   },
   {
     key: "stem",
@@ -39,6 +53,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Asking hard questions and finding real answers.",
     roles: ["Researcher", "Lab scientist", "Environmental scientist", "Engineer", "Data analyst"],
     subjects: ["Biology", "Chemistry", "Physics", "Maths"],
+    nextSteps: [
+      "University: science, engineering or environmental science (research needs a degree)",
+      "Keep maths and at least one lab science through Year 12",
+      "Cadetships and research internships open doors early",
+      "Look into scholarships \u2014 STEM has a lot of them",
+    ],
   },
   {
     key: "helping",
@@ -47,6 +67,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Careers where someone's day is genuinely better because you showed up.",
     roles: ["Doctor / nurse", "Psychologist", "Physiotherapist", "Social worker", "Paramedic"],
     subjects: ["Biology", "Psychology", "Health & PE"],
+    nextSteps: [
+      "University: nursing, psychology, physiotherapy, social work or medicine",
+      "TAFE/VET: diploma of nursing, community services or aged care",
+      "Volunteering and a first-aid cert build real experience now",
+      "Some roles are graduate-entry only \u2014 plan the degree path early",
+    ],
   },
   {
     key: "teaching",
@@ -55,6 +81,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Helping people grow — in classrooms, on fields, everywhere.",
     roles: ["Teacher", "Sports coach", "Youth worker", "Trainer", "Learning designer"],
     subjects: ["English", "Psychology", "plus whatever you'd love to teach"],
+    nextSteps: [
+      "University: education degrees (early years / primary / secondary)",
+      "TAFE/VET: certificates in education support or sport coaching",
+      "Tutoring, coaching or youth work now is direct experience",
+      "A degree in your favourite subject can lead to teaching it",
+    ],
   },
   {
     key: "justice",
@@ -63,6 +95,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Standing up for people and making the rules fairer.",
     roles: ["Lawyer", "Policy advisor", "Investigative journalist", "Advocate", "HR specialist"],
     subjects: ["Legal Studies", "English", "Modern History"],
+    nextSteps: [
+      "University: law, criminology, politics or journalism",
+      "Law is often a double degree \u2014 worth planning early",
+      "Debating, SRC and volunteering strengthen your application",
+      "Paralegal and policy roles can start without a full law degree",
+    ],
   },
   {
     key: "business",
@@ -71,6 +109,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Spotting opportunities and building things that work.",
     roles: ["Founder / entrepreneur", "Manager", "Marketer", "Analyst", "Product manager"],
     subjects: ["Business", "Economics", "Maths"],
+    nextSteps: [
+      "University: business, commerce, economics or marketing",
+      "TAFE/VET: diplomas in business, marketing or project management",
+      "Traineeships and school-based apprenticeships in business admin",
+      "You can also just start something small and learn by doing",
+    ],
   },
   {
     key: "community",
@@ -79,6 +123,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Work that holds communities together when it matters most.",
     roles: ["Emergency services", "Not-for-profit worker", "Local government", "Defence", "Community organiser"],
     subjects: ["Humanities", "Health", "Legal Studies"],
+    nextSteps: [
+      "Direct entry: Defence (ADF), Police, Fire or Ambulance",
+      "University: social work, criminology, paramedicine or nursing",
+      "TAFE/VET: community services or emergency response",
+      "Volunteering (SES, surf life saving) is a real head start",
+    ],
   },
   {
     key: "nature",
@@ -87,6 +137,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Protecting and working with the natural world.",
     roles: ["Conservationist", "Marine biologist", "Agricultural scientist", "Park ranger", "Outdoor educator"],
     subjects: ["Biology", "Geography", "Agricultural Science"],
+    nextSteps: [
+      "University: environmental science, marine biology, agriculture or geography",
+      "TAFE/VET: conservation & land management, or outdoor recreation",
+      "Ranger traineeships and field volunteering build experience",
+      "Gap-year conservation programs are a common first step",
+    ],
   },
   {
     key: "performance",
@@ -95,6 +151,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Discipline, pressure, and getting better in public.",
     roles: ["Athlete", "Physiotherapist", "Strength & conditioning coach", "Events manager", "Performer"],
     subjects: ["Health & PE", "Biology", "Business"],
+    nextSteps: [
+      "University: exercise science, sports science or physiotherapy",
+      "TAFE/VET: certificate or diploma in sport & recreation, or fitness (PT)",
+      "Coaching and officiating accreditations you can start now",
+      "Elite pathways run alongside study \u2014 you rarely have to choose",
+    ],
   },
   {
     key: "making",
@@ -103,6 +165,12 @@ export const CLUSTERS: CareerCluster[] = [
     blurb: "Turning ideas into physical things that last.",
     roles: ["Engineer", "Builder / trades", "Product designer", "Architect", "Chef"],
     subjects: ["Design & Technology", "Maths", "Physics"],
+    nextSteps: [
+      "Apprenticeships: trades (carpentry, electrical, plumbing) or chef",
+      "University: engineering, architecture or industrial design",
+      "TAFE/VET: building, construction or design diplomas",
+      "School-based apprenticeships can start in Year 11 or 12",
+    ],
   },
 ];
 

@@ -62,44 +62,74 @@ export default function PathwaysSection({
                   <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
-              {isOpen && (
-                <div className="px-4 pb-4 border-t border-surface-border pt-3 space-y-3">
-                  <p className="text-xs text-ink leading-relaxed">
-                    <span className="font-semibold text-teal">Why it fits you: </span>
-                    {fromStrengths.length > 0 && (
-                      <>your strength{fromStrengths.length > 1 ? "s" : ""} in{" "}
-                      <span className="font-medium">{fromStrengths.join(", ")}</span></>
-                    )}
-                    {fromStrengths.length > 0 && fromValues.length > 0 && " — and "}
-                    {fromValues.length > 0 && (
-                      <>valuing <span className="font-medium">{fromValues.join(", ")}</span></>
-                    )}
-                    {" "}point here.
-                  </p>
-                  <div>
-                    <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-                      Example paths
+              {isOpen && (() => {
+                const nextStepsBlock = (
+                  <div
+                    className="rounded-xl px-3.5 py-3 border"
+                    style={{ background: "rgba(67,56,202,0.04)", borderColor: "rgba(67,56,202,0.15)" }}
+                  >
+                    <div
+                      className="text-[11px] font-bold uppercase tracking-wider mb-1.5"
+                      style={{ color: "var(--navy)" }}
+                    >
+                      🎓 First steps after school
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {cluster.roles.map((r) => (
-                        <span key={r} className="px-2.5 py-1 rounded-full text-xs bg-surface-muted border border-surface-border text-ink">
-                          {r}
-                        </span>
+                    <ul className="space-y-1">
+                      {cluster.nextSteps.map((n, i) => (
+                        <li key={i} className="text-xs text-ink leading-relaxed flex gap-1.5">
+                          <span aria-hidden style={{ color: "var(--navy)" }}>›</span>
+                          <span>{n}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-                      Subjects that feed it
+                );
+                return (
+                  <div className="px-4 pb-4 border-t border-surface-border pt-3 space-y-3">
+                    {/* Seniors care most about concrete routes — surface first */}
+                    {yearLevel === "senior" && nextStepsBlock}
+                    <p className="text-xs text-ink leading-relaxed">
+                      <span className="font-semibold text-teal">Why it fits you: </span>
+                      {fromStrengths.length > 0 && (
+                        <>your strength{fromStrengths.length > 1 ? "s" : ""} in{" "}
+                        <span className="font-medium">{fromStrengths.join(", ")}</span></>
+                      )}
+                      {fromStrengths.length > 0 && fromValues.length > 0 && " — and "}
+                      {fromValues.length > 0 && (
+                        <>valuing <span className="font-medium">{fromValues.join(", ")}</span></>
+                      )}
+                      {" "}point here.
+                    </p>
+                    <div>
+                      <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                        Example paths
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {cluster.roles.map((r) => (
+                          <span key={r} className="px-2.5 py-1 rounded-full text-xs bg-surface-muted border border-surface-border text-ink">
+                            {r}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-xs text-ink-muted">{cluster.subjects.join(" · ")}</p>
+                    <div>
+                      <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                        Subjects that feed it
+                      </div>
+                      <p className="text-xs text-ink-muted">{cluster.subjects.join(" · ")}</p>
+                    </div>
+                    {yearLevel !== "senior" && nextStepsBlock}
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           );
         })}
       </div>
+      <p className="text-[11px] text-ink-muted mt-3 leading-relaxed">
+        Indicative and Australia-focused — a careers adviser can help you with the
+        specifics (subjects, ATAR, entry requirements) for your state.
+      </p>
     </div>
   );
 }
