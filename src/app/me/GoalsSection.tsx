@@ -45,6 +45,7 @@ export default function GoalsSection({
   const db = createClient() as any;
 
   const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [domain, setDomain] = useState<Goal["domain"]>(
     yearLevel === "senior" ? "future" : "school"
   );
@@ -59,27 +60,45 @@ export default function GoalsSection({
   const [finishNote, setFinishNote] = useState("");
 
   const active = goals.filter((g) => g.status === "active");
+  const done = goals.filter((g) => g.status === "done");
   const doneCount = goals.filter((g) => g.status === "done").length;
 
   function resetForm() {
     setWish(""); setOutcome(""); setObstacle(""); setPlan("");
-    setLinkedValue(null); setDomain("school"); setError(null);
+    setLinkedValue(null); setDomain("school"); setError(null); setEditingId(null);
   }
 
-  async function create() {
+  function startEdit(g: Goal) {
+    setEditingId(g.id);
+    setDomain(g.domain);
+    setWish(g.wish);
+    setOutcome(g.outcome || "");
+    setObstacle(g.obstacle || "");
+    setPlan(g.plan || "");
+    setLinkedValue(g.linked_value);
+    setError(null);
+    setCreating(true);
+  }
+
+  async function save() {
     if (!wish.trim() || !plan.trim()) return;
     setBusy(true);
     setError(null);
-    const { error: err } = await db.from("goals").insert({
-      user_id: userId,
+    const payload = {
       domain,
       wish: wish.trim(),
       outcome: outcome.trim() || null,
       obstacle: obstacle.trim() || null,
       plan: plan.trim(),
       linked_value: linkedValue,
-      linked_strength: topStrengthKeys[0] || null,
-    });
+    };
+    const { error: err } = editingId
+      ? await db.from("goals").update(payload).eq("id", editingId)
+      : await db.from("goals").insert({
+          user_id: userId,
+          ...payload,
+          linked_strength: topStrengthKeys[0] || null,
+        });
     setBusy(false);
     if (err) {
       setError(
@@ -91,6 +110,16 @@ export default function GoalsSection({
     }
     setCreating(false);
     resetForm();
+    router.refresh();
+  }
+
+  async function reopen(g: Goal) {
+    setBusy(true);
+    await db
+      .from("goals")
+      .update({ status: "active", completed_at: null })
+      .eq("id", g.id);
+    setBusy(false);
     router.refresh();
   }
 
@@ -170,19 +199,49 @@ export default function GoalsSection({
                   </div>
                 </div>
               ) : (
-                <button
-                  onClick={() => setFinishing(g.id)}
-                  className="text-xs text-teal hover:underline"
-                >
-                  Check in on this goal
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setFinishing(g.id)}
+                    className="text-xs text-teal hover:underline"
+                  >
+                    Check in on this goal
+                  </button>
+                  <button
+                    onClick={() => startEdit(g)}
+                    className="text-xs text-ink-muted hover:text-ink transition-colors"
+                  >
+                    Edit
+                  </button>
+                </div>
               )}
             </div>
           ))}
         </div>
       )}
 
-      {/* Create */}
+      {/* Done goals */}
+      {done.length > 0 && (
+        <div className="space-y-1.5 mb-3">
+          {done.map((g) => (
+            <div
+              key={g.id}
+              className="flex items-center gap-2 text-xs text-ink-muted bg-white border border-surface-border rounded-xl px-3 py-2"
+            >
+              <span aria-hidden className="text-sage">✓</span>
+              <span className="flex-1 line-through truncate">{g.wish}</span>
+              <button
+                onClick={() => reopen(g)}
+                disabled={busy}
+                className="text-teal hover:underline flex-shrink-0"
+              >
+                Reopen
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Create / edit */}
       {creating ? (
         <div className="card p-5 space-y-3">
           <div>
@@ -259,11 +318,11 @@ export default function GoalsSection({
               Cancel
             </button>
             <button
-              onClick={create}
+              onClick={save}
               disabled={!wish.trim() || !plan.trim() || busy}
               className="btn btn-primary flex-[2] py-2.5 rounded-xl text-sm"
             >
-              {busy ? "Saving…" : "Set this goal"}
+              {busy ? "Saving…" : editingId ? "Save changes" : "Set this goal"}
             </button>
           </div>
           {(!wish.trim() || !plan.trim()) && (

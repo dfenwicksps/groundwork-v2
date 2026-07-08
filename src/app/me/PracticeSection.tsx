@@ -42,6 +42,8 @@ export default function PracticeSection({
   const [reflection, setReflection] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
 
   const suggested = [...growthEdges.slice(0, 3), ...top5.slice(0, 2)];
   const allKeys = Object.keys(STRENGTH_BY_KEY);
@@ -66,6 +68,23 @@ export default function PracticeSection({
     }
     setChoosing(false);
     setSelected(null);
+    router.refresh();
+  }
+
+  async function saveEdit(id: string) {
+    setBusy(true);
+    setError(null);
+    const { error: err } = await db
+      .from("practice_log")
+      .update({ reflection: editText.trim() })
+      .eq("id", id);
+    setBusy(false);
+    if (err) {
+      setError("Couldn't save your edit — your writing is still here. Try again.");
+      return;
+    }
+    setEditId(null);
+    setEditText("");
     router.refresh();
   }
 
@@ -226,18 +245,54 @@ export default function PracticeSection({
             Practice log
           </div>
           <div className="space-y-1.5">
-            {recent.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 text-xs text-ink-muted">
-                <span aria-hidden>{STRENGTH_BY_KEY[p.strength_key]?.emoji}</span>
-                <span className="font-medium text-ink">
-                  {STRENGTH_BY_KEY[p.strength_key]?.name || p.strength_key}
-                </span>
-                <span className="truncate flex-1 italic">
-                  {p.reflection ? `“${p.reflection}”` : ""}
-                </span>
-                <span aria-hidden className="text-sage">✓</span>
-              </div>
-            ))}
+            {recent.map((p) =>
+              editId === p.id ? (
+                <div key={p.id} className="bg-white border border-surface-border rounded-xl p-3">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-ink mb-2">
+                    <span aria-hidden>{STRENGTH_BY_KEY[p.strength_key]?.emoji}</span>
+                    {STRENGTH_BY_KEY[p.strength_key]?.name || p.strength_key}
+                  </div>
+                  <textarea
+                    className="conv-textarea mb-2"
+                    rows={2}
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                  />
+                  {error && <p role="alert" className="text-xs text-red-600 mb-2">{error}</p>}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setEditId(null); setEditText(""); setError(null); }}
+                      className="btn btn-secondary flex-1 py-2 rounded-xl text-xs"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => saveEdit(p.id)}
+                      disabled={busy}
+                      className="btn btn-primary flex-1 py-2 rounded-xl text-xs"
+                    >
+                      {busy ? "Savingâ¦" : "Save"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div key={p.id} className="flex items-center gap-2 text-xs text-ink-muted">
+                  <span aria-hidden>{STRENGTH_BY_KEY[p.strength_key]?.emoji}</span>
+                  <span className="font-medium text-ink">
+                    {STRENGTH_BY_KEY[p.strength_key]?.name || p.strength_key}
+                  </span>
+                  <span className="truncate flex-1 italic">
+                    {p.reflection ? `“${p.reflection}”` : ""}
+                  </span>
+                  <button
+                    onClick={() => { setEditId(p.id); setEditText(p.reflection || ""); }}
+                    className="text-teal hover:underline flex-shrink-0"
+                  >
+                    Edit
+                  </button>
+                </div>
+              )
+            )}
           </div>
         </div>
       )}

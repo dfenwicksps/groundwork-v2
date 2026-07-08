@@ -14,11 +14,15 @@ interface Profile {
   primary_style: string;
   secondary_style: string | null;
   style_scores: Record<string, number>;
+  /** Raw per-question picks, so a retake pre-fills previous answers. */
+  answers: MoralStyle[] | null;
 }
 
 /**
  * Moral compass — 8 quick dilemmas diagnosing how the user tends to decide
- * (care-led / fairness-led / loyalty-led / principle-led).
+ * (care-led / fairness-led / loyalty-led / principle-led). Answers are saved
+ * and fully editable: retaking pre-fills previous picks and you can move
+ * back/forward to change any one.
  */
 export default function MoralSection({
   userId,
@@ -32,7 +36,11 @@ export default function MoralSection({
 
   const [taking, setTaking] = useState(false);
   const [idx, setIdx] = useState(0);
-  const [picks, setPicks] = useState<MoralStyle[]>([]);
+  const [answers, setAnswers] = useState<(MoralStyle | null)[]>(() =>
+    profile?.answers && profile.answers.length === MORAL_SCENARIOS.length
+      ? [...profile.answers]
+      : MORAL_SCENARIOS.map(() => null)
+  );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [local, setLocal] = useState<Profile | null>(profile);
@@ -41,27 +49,37 @@ export default function MoralSection({
   const secondaryInfo =
     local?.secondary_style ? MORAL_STYLES[local.secondary_style as MoralStyle] : null;
 
-  async function pick(style: MoralStyle) {
-    const next = [...picks, style];
-    if (idx + 1 < MORAL_SCENARIOS.length) {
-      setPicks(next);
-      setIdx(idx + 1);
-      return;
-    }
-    // Last one — score and save
+  const isLast = idx === MORAL_SCENARIOS.length - 1;
+  const canAdvance = answers[idx] != null;
+
+  function choose(style: MoralStyle) {
+    setAnswers((a) => a.map((v, i) => (i === idx ? style : v)));
+  }
+
+  async function finish() {
+    if (answers.some((a) => a == null)) return;
     setSaving(true);
     setSaveError(null);
-    const result = scoreMoral(next);
-    const { error } = await db.from("moral_profiles").upsert(
-      {
-        user_id: userId,
-        style_scores: result.scores,
-        primary_style: result.primary,
-        secondary_style: result.secondary,
-        taken_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" }
-    );
+    const picks = answers as MoralStyle[];
+    const result = scoreMoral(picks);
+    const base = {
+      user_id: userId,
+      style_scores: result.scores,
+      primary_style: result.primary,
+      secondary_style: result.secondary,
+      taken_at: new Date().toISOString(),
+    };
+    let { error } = await db
+      .from("moral_profiles")
+      .upsert({ ...base, answers: picks }, { onConflict: "user_id" });
+    // The answers column (for retake prefill) is optional — if the database
+    // hasn't been migrated for it yet, save the result without it rather than
+    // blocking the user.
+    if (error && /answers/i.test(error.message || "")) {
+      ({ error } = await db
+        .from("moral_profiles")
+        .upsert(base, { onConflict: "user_id" }));
+    }
     setSaving(false);
     if (error) {
       setSaveError(
@@ -69,17 +87,16 @@ export default function MoralSection({
           ? "The moral compass database isn't set up yet — a quick fix is needed on our side, not yours."
           : "Couldn't save — check your connection and try again."
       );
-      setPicks(next.slice(0, -1)); // let them re-tap the last answer to retry
       return;
     }
     setLocal({
       primary_style: result.primary,
       secondary_style: result.secondary,
       style_scores: result.scores,
+      answers: picks,
     });
     setTaking(false);
     setIdx(0);
-    setPicks([]);
     router.refresh();
   }
 
@@ -102,28 +119,38 @@ export default function MoralSection({
             <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>
           )}
           <div className="space-y-2">
-            {sc.options.map((o) => (
-              <button
-                key={o.style}
-                onClick={() => pick(o.style)}
-                disabled={saving}
-                className="w-full text-left px-4 py-3 rounded-xl border border-surface-border bg-white text-sm text-ink leading-relaxed hover:border-navy/30 transition-all disabled:opacity-50"
-              >
-                {o.text}
-              </button>
-            ))}
+            {sc.options.map((o) => {
+              const sel = answers[idx] === o.style;
+              return (
+                <button
+                  key={o.style}
+                  onClick={() => choose(o.style)}
+                  className={`w-full text-left px-4 py-3 rounded-xl border text-sm leading-relaxed transition-all ${
+                    sel
+                      ? "bg-navy text-white border-navy"
+                      : "bg-white text-ink border-surface-border hover:border-navy/30"
+                  }`}
+                >
+                  {o.text}
+                </button>
+              );
+            })}
           </div>
-          <button
-            onClick={() => {
-              setTaking(false);
-              setIdx(0);
-              setPicks([]);
-              setSaveError(null);
-            }}
-            className="text-xs text-ink-muted hover:text-ink mt-3 transition-colors"
-          >
-            Cancel
-          </button>
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              onClick={() => (idx > 0 ? setIdx(idx - 1) : setTaking(false))}
+              className="btn btn-secondary py-2 px-4 rounded-xl text-sm"
+            >
+              {idx > 0 ? "Back" : "Cancel"}
+            </button>
+            <button
+              onClick={() => (isLast ? finish() : setIdx(idx + 1))}
+              disabled={!canAdvance || saving}
+              className="btn btn-primary flex-1 py-2 rounded-xl text-sm"
+            >
+              {saving ? "Saving…" : isLast ? "See my result" : "Next →"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -147,7 +174,10 @@ export default function MoralSection({
             </p>
           </div>
           <button
-            onClick={() => setTaking(true)}
+            onClick={() => {
+              setIdx(0);
+              setTaking(true);
+            }}
             className="btn btn-primary text-sm py-2 px-4 flex-shrink-0"
           >
             Start
@@ -187,10 +217,13 @@ export default function MoralSection({
           </p>
         </div>
         <button
-          onClick={() => setTaking(true)}
+          onClick={() => {
+            setIdx(0);
+            setTaking(true);
+          }}
           className="text-xs text-teal hover:underline"
         >
-          Retake the dilemmas
+          {local.answers ? "Review & edit my answers" : "Retake the dilemmas"}
         </button>
       </div>
     </div>

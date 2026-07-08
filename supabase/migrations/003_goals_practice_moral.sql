@@ -41,6 +41,9 @@ create table if not exists public.moral_profiles (
   taken_at timestamptz default now() not null
 );
 
+-- raw per-question picks so a retake pre-fills previous answers
+alter table public.moral_profiles add column if not exists answers jsonb;
+
 alter table public.goals enable row level security;
 alter table public.practice_log enable row level security;
 alter table public.moral_profiles enable row level security;

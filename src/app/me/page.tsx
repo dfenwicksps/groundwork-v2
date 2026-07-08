@@ -44,7 +44,7 @@ export default async function MePage() {
       .single(),
     db
       .from("moral_profiles")
-      .select("primary_style, secondary_style, style_scores")
+      .select("primary_style, secondary_style, style_scores, answers")
       .eq("user_id", user.id)
       .single(),
     db

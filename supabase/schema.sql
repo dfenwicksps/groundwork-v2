@@ -123,6 +123,7 @@ create table if not exists public.moral_profiles (
   style_scores jsonb not null,
   primary_style text not null,
   secondary_style text,
+  answers jsonb,
   taken_at timestamptz default now() not null
 );
 

@@ -15,6 +15,7 @@ import FocusSection from "./FocusSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
 import type { YearLevel } from "@/lib/yearLevel";
+import type { MoralStyle } from "@/lib/moral";
 
 // Virtue accent colours (from the bright palette)
 const VIRTUE_COLOUR: Record<Virtue, string> = {
@@ -61,6 +62,7 @@ export default function MeClient({
     primary_style: string;
     secondary_style: string | null;
     style_scores: Record<string, number>;
+    answers: MoralStyle[] | null;
   } | null;
   
   goals: any[];
