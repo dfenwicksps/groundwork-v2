@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
@@ -87,6 +87,55 @@ export default function MeClient({
     : 0;
   const range = Math.max(1, maxScore - minScore);
 
+  // #4: the Me page was a 13-section scroll — split into journey-aligned tabs.
+  // Default tab follows year level (seniors → Future, juniors → Grow).
+  type MeTab = "profile" | "reflect" | "grow" | "future";
+  const defaultTab: MeTab =
+    yearLevel === "senior" ? "future" : yearLevel === "junior" ? "grow" : "profile";
+  const [tab, setTab] = useState<MeTab>(defaultTab);
+
+  // Cross-links (journey strip, "#boosts" from a challenge, "attach a goal")
+  // use #anchors — map each to the tab that holds it, then scroll after switch.
+  useEffect(() => {
+    const HASH_TAB: Record<string, MeTab> = {
+      habits: "reflect", moral: "reflect",
+      focus: "grow", practice: "grow", boosts: "grow",
+      pathways: "future", goals: "future",
+    };
+    const apply = () => {
+      const h = window.location.hash.replace("#", "");
+      if (HASH_TAB[h]) {
+        setTab(HASH_TAB[h]);
+        setTimeout(
+          () => document.getElementById(h)?.scrollIntoView({ behavior: "smooth" }),
+          80
+        );
+      }
+    };
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+  }, []);
+
+  const TABS: { key: MeTab; label: string; emoji: string }[] = [
+    { key: "profile", label: "Profile", emoji: "🧭" },
+    { key: "reflect", label: "Reflect", emoji: "🪞" },
+    { key: "grow", label: "Grow", emoji: "🌱" },
+    { key: "future", label: "Future", emoji: "🚀" },
+  ];
+
+  const soonNote = (
+    <div className="card p-5 flex items-center gap-4">
+      <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
+      <div>
+        <p className="text-sm text-ink font-medium mb-0.5">More tools land here soon</p>
+        <p className="text-xs text-ink-muted leading-relaxed">
+          This one is being switched on — check back shortly.
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <AppShell>
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
@@ -101,8 +150,36 @@ export default function MeClient({
           </h1>
         </div>
 
-        {/* Purpose profile — the one-line "who I am" artefact */}
+        {/* Tab bar — journey-aligned, only when there's a profile */}
         {hasProfile && (
+          <div
+            className="sticky top-0 z-20 -mx-4 px-4 py-2"
+            style={{ background: "rgba(250,245,236,0.95)", backdropFilter: "blur(6px)" }}
+          >
+            <div className="flex gap-1.5" role="tablist">
+              {TABS.map((t) => (
+                <button
+                  key={t.key}
+                  role="tab"
+                  aria-selected={tab === t.key}
+                  onClick={() => setTab(t.key)}
+                  className={cn(
+                    "flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all",
+                    tab === t.key
+                      ? "bg-navy text-white"
+                      : "bg-white text-ink-muted border border-surface-border"
+                  )}
+                >
+                  <span className="text-base" aria-hidden>{t.emoji}</span>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Purpose profile — the one-line "who I am" artefact */}
+        {hasProfile && tab === "profile" && (
           <div
             data-animate="1"
             className="rounded-2xl p-4 text-white"
@@ -124,7 +201,7 @@ export default function MeClient({
         )}
 
         {/* The staged student journey: Discover → … → Launch */}
-        {hasProfile && (
+        {hasProfile && tab === "profile" && (
           <JourneyStrip
             hasProfile={hasProfile}
             hasValues={values.length > 0}
@@ -157,7 +234,7 @@ export default function MeClient({
               Start Strengths Mapping
             </Link>
           </div>
-        ) : (
+        ) : tab === "profile" ? (
           <>
             {/* Signature strengths */}
             <div data-animate="2">
@@ -205,8 +282,10 @@ export default function MeClient({
               </h2>
               <p className="text-xs text-ink-muted mb-3">
                 Your lower-ranked strengths — not weaknesses, just the ones that don&apos;t
-                come as naturally yet. Practise one in{" "}
-                <span className="font-medium">Strength in action</span> below.
+                come as naturally yet.{" "}
+                <a href="#practice" className="font-medium text-teal hover:underline">
+                  Practise one →
+                </a>
               </p>
               <div className="flex flex-wrap gap-2">
                 {bottom5.map((k) => {
@@ -294,88 +373,69 @@ export default function MeClient({
               </Link>
             </div>
           </>
+        ) : null}
+
+        {/* Reflect — how I decide + my current patterns */}
+        {hasProfile && tab === "reflect" && (
+          <>
+            <HabitsSection userId={userId} saved={habitSaved} />
+            {featuresReady ? (
+              <MoralSection userId={userId} profile={moralProfile} />
+            ) : (
+              soonNote
+            )}
+          </>
         )}
 
-        {/* Character-building + application sections, ordered by year level:
-            seniors see pathways + goals first; juniors get character-building
-            first and careers de-emphasised; middle keeps the natural
-            Reflect → Grow → Practise → Connect → Launch flow. */}
-        {hasProfile &&
-          (() => {
-            const nodes: Record<string, React.ReactNode> = {
-              habits: <HabitsSection key="habits" userId={userId} saved={habitSaved} />,
-              focus: (
-                <FocusSection
-                  key="focus"
+        {/* Grow — choose qualities + practise them */}
+        {hasProfile && tab === "grow" && (
+          <>
+            <FocusSection
+              userId={userId}
+              focusKeys={focusKeys}
+              suggestedQualities={Array.from(
+                new Set((habitSaved?.result.grows || []).map((g) => g.quality))
+              )}
+              hasGoals={goals.length > 0}
+            />
+            {featuresReady && (
+              <PracticeSection
+                userId={userId}
+                growthEdges={bottom5}
+                top5={top5}
+                active={activePractice}
+                recent={recentPractices}
+              />
+            )}
+            <BoostsSection />
+            {!featuresReady && soonNote}
+          </>
+        )}
+
+        {/* Future — pathways + goals */}
+        {hasProfile && tab === "future" && (
+          <>
+            <div id="pathways">
+              <PathwaysSection top5={top5} values={values} yearLevel={yearLevel} />
+            </div>
+            {featuresReady ? (
+              <div id="goals">
+                <GoalsSection
                   userId={userId}
-                  focusKeys={focusKeys}
-                  suggestedQualities={Array.from(
-                    new Set((habitSaved?.result.grows || []).map((g) => g.quality))
-                  )}
-                  hasGoals={goals.length > 0}
+                  goals={goals}
+                  values={values}
+                  topStrengthKeys={top5}
+                  yearLevel={yearLevel}
                 />
-              ),
-              moral: <MoralSection key="moral" userId={userId} profile={moralProfile} />,
-              practice: (
-                <PracticeSection
-                  key="practice"
-                  userId={userId}
-                  growthEdges={bottom5}
-                  top5={top5}
-                  active={activePractice}
-                  recent={recentPractices}
-                />
-              ),
-              pathways: (
-                <div id="pathways" key="pathways">
-                  <PathwaysSection top5={top5} values={values} yearLevel={yearLevel} />
-                </div>
-              ),
-              goals: (
-                <div id="goals" key="goals">
-                  <GoalsSection
-                    userId={userId}
-                    goals={goals}
-                    values={values}
-                    topStrengthKeys={top5}
-                    yearLevel={yearLevel}
-                  />
-                </div>
-              ),
-              boosts: <BoostsSection key="boosts" />,
-            };
-            const needs003 = new Set(["moral", "practice", "goals"]);
-            const orders: Record<string, string[]> = {
-              senior: ["pathways", "goals", "focus", "practice", "moral", "habits", "boosts"],
-              middle: ["habits", "focus", "moral", "practice", "pathways", "goals", "boosts"],
-              junior: ["habits", "focus", "practice", "moral", "boosts", "pathways", "goals"],
-            };
-            const order = (orders[yearLevel] || orders.middle).filter(
-              (k) => featuresReady || !needs003.has(k)
-            );
-            return (
-              <>
-                {order.map((k) => nodes[k])}
-                {!featuresReady && (
-                  <div data-animate="5" className="card p-5 flex items-center gap-4">
-                    <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
-                    <div>
-                      <p className="text-sm text-ink font-medium mb-0.5">
-                        More tools land here soon
-                      </p>
-                      <p className="text-xs text-ink-muted leading-relaxed">
-                        Your moral compass, weekly practice and goal-setting are being
-                        switched on — check back shortly.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </>
-            );
-          })()}
+              </div>
+            ) : (
+              soonNote
+            )}
+          </>
+        )}
 
         {/* Values */}
-        {values.length > 0 && (
+        {values.length > 0 && tab === "profile" && (
           <div data-animate="5">
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
               Your chosen values

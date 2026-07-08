@@ -29,9 +29,9 @@ export default function PathwaysSection({
       </h2>
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
         {yearLevel === "junior"
-          ? "No rush at all â this is just a peek at where your strengths could lead one day. These are open doors, never “you should become this.”"
+          ? "No rush at all — this is just a peek at where your strengths could lead one day. These are open doors, never “you should become this.”"
           : yearLevel === "senior"
-          ? "You're close to choosing your next step â here's where your profile points. Open doors to explore, never “you should become this.”"
+          ? "You're close to choosing your next step — here's where your profile points. Open doors to explore, never “you should become this.”"
           : "Your strengths, values and character profile suggest you may find meaning in pathways where you can… (open doors, never “you should become this.”)"}
       </p>
       <div className="space-y-2">
