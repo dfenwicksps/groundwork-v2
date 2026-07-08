@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { strengthName } from "@/lib/strengths";
+import type { YearLevel } from "@/lib/yearLevel";
 
 interface Goal {
   id: string;
@@ -32,17 +33,21 @@ export default function GoalsSection({
   goals,
   values,
   topStrengthKeys,
+  yearLevel,
 }: {
   userId: string;
   goals: Goal[];
   values: string[];
   topStrengthKeys: string[];
+  yearLevel: YearLevel;
 }) {
   const router = useRouter();
   const db = createClient() as any;
 
   const [creating, setCreating] = useState(false);
-  const [domain, setDomain] = useState<Goal["domain"]>("school");
+  const [domain, setDomain] = useState<Goal["domain"]>(
+    yearLevel === "senior" ? "future" : "school"
+  );
   const [wish, setWish] = useState("");
   const [outcome, setOutcome] = useState("");
   const [obstacle, setObstacle] = useState("");

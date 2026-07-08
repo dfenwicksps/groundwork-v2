@@ -14,6 +14,7 @@ import HabitsSection from "./HabitsSection";
 import FocusSection from "./FocusSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
+import type { YearLevel } from "@/lib/yearLevel";
 
 // Virtue accent colours (from the bright palette)
 const VIRTUE_COLOUR: Record<Virtue, string> = {
@@ -49,6 +50,7 @@ export default function MeClient({
   focusKeys,
   supportCount,
   featuresReady,
+  yearLevel,
 }: {
   userId: string;
   displayName: string;
@@ -69,6 +71,7 @@ export default function MeClient({
   focusKeys: string[];
   supportCount: number;
   featuresReady: boolean;
+  yearLevel: YearLevel;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -293,62 +296,83 @@ export default function MeClient({
           </>
         )}
 
-        {/* Pathways / moral compass / practice / goals — only meaningful once
-            a strengths profile exists */}
-        {hasProfile && (
-          <>
-            {/* Reflect + Grow (no migration needed — these use journal entries) */}
-            <HabitsSection userId={userId} saved={habitSaved} />
-            <FocusSection
-              userId={userId}
-              focusKeys={focusKeys}
-              suggestedQualities={Array.from(
-                new Set((habitSaved?.result.grows || []).map((g) => g.quality))
-              )}
-              hasGoals={goals.length > 0}
-            />
-            {featuresReady && (
-              <MoralSection userId={userId} profile={moralProfile} />
-            )}
-            {featuresReady && (
-              <PracticeSection
-                userId={userId}
-                growthEdges={bottom5}
-                top5={top5}
-                active={activePractice}
-                recent={recentPractices}
-              />
-            )}
-            <div id="pathways">
-              <PathwaysSection top5={top5} values={values} />
-            </div>
-            {featuresReady && (
-              <div id="goals">
-                <GoalsSection
+        {/* Character-building + application sections, ordered by year level:
+            seniors see pathways + goals first; juniors get character-building
+            first and careers de-emphasised; middle keeps the natural
+            Reflect → Grow → Practise → Connect → Launch flow. */}
+        {hasProfile &&
+          (() => {
+            const nodes: Record<string, React.ReactNode> = {
+              habits: <HabitsSection key="habits" userId={userId} saved={habitSaved} />,
+              focus: (
+                <FocusSection
+                  key="focus"
                   userId={userId}
-                  goals={goals}
-                  values={values}
-                  topStrengthKeys={top5}
+                  focusKeys={focusKeys}
+                  suggestedQualities={Array.from(
+                    new Set((habitSaved?.result.grows || []).map((g) => g.quality))
+                  )}
+                  hasGoals={goals.length > 0}
                 />
-              </div>
-            )}
-            {!featuresReady && (
-              <div data-animate="5" className="card p-5 flex items-center gap-4">
-                <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
-                <div>
-                  <p className="text-sm text-ink font-medium mb-0.5">
-                    More tools land here soon
-                  </p>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    Your moral compass, weekly practice and goal-setting are being
-                    switched on — check back shortly.
-                  </p>
+              ),
+              moral: <MoralSection key="moral" userId={userId} profile={moralProfile} />,
+              practice: (
+                <PracticeSection
+                  key="practice"
+                  userId={userId}
+                  growthEdges={bottom5}
+                  top5={top5}
+                  active={activePractice}
+                  recent={recentPractices}
+                />
+              ),
+              pathways: (
+                <div id="pathways" key="pathways">
+                  <PathwaysSection top5={top5} values={values} yearLevel={yearLevel} />
                 </div>
-              </div>
-            )}
-            <BoostsSection />
-          </>
-        )}
+              ),
+              goals: (
+                <div id="goals" key="goals">
+                  <GoalsSection
+                    userId={userId}
+                    goals={goals}
+                    values={values}
+                    topStrengthKeys={top5}
+                    yearLevel={yearLevel}
+                  />
+                </div>
+              ),
+              boosts: <BoostsSection key="boosts" />,
+            };
+            const needs003 = new Set(["moral", "practice", "goals"]);
+            const orders: Record<string, string[]> = {
+              senior: ["pathways", "goals", "focus", "practice", "moral", "habits", "boosts"],
+              middle: ["habits", "focus", "moral", "practice", "pathways", "goals", "boosts"],
+              junior: ["habits", "focus", "practice", "moral", "boosts", "pathways", "goals"],
+            };
+            const order = (orders[yearLevel] || orders.middle).filter(
+              (k) => featuresReady || !needs003.has(k)
+            );
+            return (
+              <>
+                {order.map((k) => nodes[k])}
+                {!featuresReady && (
+                  <div data-animate="5" className="card p-5 flex items-center gap-4">
+                    <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
+                    <div>
+                      <p className="text-sm text-ink font-medium mb-0.5">
+                        More tools land here soon
+                      </p>
+                      <p className="text-xs text-ink-muted leading-relaxed">
+                        Your moral compass, weekly practice and goal-setting are being
+                        switched on — check back shortly.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
         {/* Values */}
         {values.length > 0 && (

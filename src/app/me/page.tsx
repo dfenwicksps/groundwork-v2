@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
 import { responseToHabits } from "@/lib/habits";
+import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 
 export const dynamic = "force-dynamic";
 
@@ -130,6 +132,7 @@ export default async function MePage() {
       habitSaved={habitSaved}
       focusKeys={focusKeys}
       supportCount={supportCount ?? 0}
+      yearLevel={parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle"}
       // If the goals table errors, the 003 migration hasn't run — the moral
       // compass, practice loop and goals need it, so we hide those rather than
       // let students hit save-time errors that read as "the app is broken".

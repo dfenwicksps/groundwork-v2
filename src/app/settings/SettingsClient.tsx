@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 import { ONBOARDING_VALUES } from "@/lib/missions";
+import { YEAR_OPTIONS, getYearLevelCookie, setYearLevelCookie, type YearLevel } from "@/lib/yearLevel";
 
 export default function SettingsClient({
   userId,
@@ -36,6 +37,10 @@ export default function SettingsClient({
   const [savedValues2, setSavedValues2] = useState(false);
   const [valuesError, setValuesError] = useState<string | null>(null);
   const [editingValues, setEditingValues] = useState(false);
+
+  const [yearLevel, setYearLevelState] = useState<YearLevel | null>(null);
+  const [yearSaved, setYearSaved] = useState(false);
+  useEffect(() => setYearLevelState(getYearLevelCookie()), []);
 
   const [newPassword, setNewPassword] = useState("");
   const [pwState, setPwState] = useState<"idle" | "saving" | "saved">("idle");
@@ -288,6 +293,41 @@ export default function SettingsClient({
                 <p role="alert" className="text-xs text-red-600 mt-2">{valuesError}</p>
               )}
             </div>
+          )}
+        </div>
+
+        {/* Year level — tunes what the app emphasises */}
+        <div data-animate="3" className="card p-6">
+          <h2 className="font-semibold text-ink mb-1">Year level</h2>
+          <p className="text-sm text-ink-muted mb-4">
+            We tailor what we show you — e.g. Year 12 sees career pathways and goals first.
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {YEAR_OPTIONS.map((y) => (
+              <button
+                key={y.key}
+                type="button"
+                onClick={() => {
+                  setYearLevelState(y.key);
+                  setYearLevelCookie(y.key);
+                  setYearSaved(true);
+                  setTimeout(() => setYearSaved(false), 2000);
+                }}
+                className={cn(
+                  "p-3 rounded-xl border text-center transition-all",
+                  yearLevel === y.key
+                    ? "border-teal bg-teal/5 ring-1 ring-teal"
+                    : "border-surface-border bg-white hover:border-teal/40"
+                )}
+                style={{ borderWidth: "1.5px" }}
+              >
+                <div className="text-sm font-semibold text-ink">{y.label}</div>
+                <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+              </button>
+            ))}
+          </div>
+          {yearSaved && (
+            <p className="text-xs text-sage mt-2">Saved ✓ — reopen your Me page to see the new order.</p>
           )}
         </div>
 

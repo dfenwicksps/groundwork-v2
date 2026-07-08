@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { type ProcessingStyle, setProcessingStyle, tallyStyle } from "@/lib/processingStyle";
 import { ONBOARDING_VALUES, VALUES_WITH_DEFINITIONS } from "@/lib/missions";
+import { YEAR_OPTIONS, setYearLevelCookie, type YearLevel } from "@/lib/yearLevel";
 
 const STYLE_QUESTIONS: {
   id: string;
@@ -79,6 +80,7 @@ export default function OnboardingPage() {
 
   // Step 1
   const [name, setName] = useState("");
+  const [yearLevel, setYearLevel] = useState<YearLevel | null>(null);
   const [whyHere, setWhyHere] = useState("");
   const [styleAnswers, setStyleAnswers] = useState<Record<string, ProcessingStyle>>({});
 
@@ -215,6 +217,37 @@ export default function OnboardingPage() {
             </p>
 
             <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-ink mb-2">
+                  What year are you in?
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {YEAR_OPTIONS.map((y) => (
+                    <button
+                      key={y.key}
+                      type="button"
+                      onClick={() => {
+                        setYearLevel(y.key);
+                        setYearLevelCookie(y.key);
+                      }}
+                      className={cn(
+                        "p-3 rounded-xl border text-center transition-all",
+                        yearLevel === y.key
+                          ? "border-teal bg-teal/5 ring-1 ring-teal"
+                          : "border-surface-border bg-white hover:border-teal/40"
+                      )}
+                      style={{ borderWidth: "1.5px" }}
+                    >
+                      <div className="text-sm font-semibold text-ink">{y.label}</div>
+                      <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-ink-muted mt-1.5">
+                  We&apos;ll tailor what we show you — you can change this later.
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-ink mb-1.5">
                   What should we call you?

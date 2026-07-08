@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { suggestPathways } from "@/lib/pathways";
+import type { YearLevel } from "@/lib/yearLevel";
 
 /**
  * "Where your strengths could take you" — career clusters computed from the
@@ -11,9 +12,11 @@ import { suggestPathways } from "@/lib/pathways";
 export default function PathwaysSection({
   top5,
   values,
+  yearLevel,
 }: {
   top5: string[];
   values: string[];
+  yearLevel: YearLevel;
 }) {
   const [open, setOpen] = useState<string | null>(null);
   const suggestions = suggestPathways(top5, values, 3);
@@ -25,9 +28,11 @@ export default function PathwaysSection({
         Where your strengths could take you
       </h2>
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
-        Your strengths, values and character profile suggest you may find meaning
-        in pathways where you can… (never &ldquo;you should become this&rdquo; —
-        these are open doors, not directions.)
+        {yearLevel === "junior"
+          ? "No rush at all â this is just a peek at where your strengths could lead one day. These are open doors, never “you should become this.”"
+          : yearLevel === "senior"
+          ? "You're close to choosing your next step â here's where your profile points. Open doors to explore, never “you should become this.”"
+          : "Your strengths, values and character profile suggest you may find meaning in pathways where you can… (open doors, never “you should become this.”)"}
       </p>
       <div className="space-y-2">
         {suggestions.map(({ cluster, fromStrengths, fromValues }) => {
