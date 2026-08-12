@@ -16,6 +16,7 @@ This repo contains the full MVP foundation:
 - ✅ Missions 2–4 (first activity each, additional activities locked)
 - ✅ Journal view — filterable, expandable, read-only after 24h
 - ✅ AI reflection layer (Anthropic Claude) — fails silently if unavailable
+- ✅ The Standard — three recurring outward-facing questions, answered again and again, with full history
 - ✅ Stories library (8 seeded stories, 2 per mission)
 - ✅ Support Circle page with conversation scaffolds
 - ✅ Settings page
@@ -53,6 +54,12 @@ This repo contains the full MVP foundation:
 This creates all tables, sets up Row Level Security, creates the user auto-creation trigger, and seeds the 8 stories.
 
 **Verify:** After running, go to **Table Editor** and check that `stories` has 8 rows.
+
+**Already have a database from an earlier version?** `schema.sql` is kept current, but an
+existing project also needs the files in `supabase/migrations/` run in order (`002`, `003`,
+`004`, …). Each one is idempotent, so running them again is safe. Features whose migration
+hasn't been run show a "being switched on shortly" note rather than erroring — so if a
+section of the **Me** page says that, a migration is outstanding.
 
 ---
 

@@ -21,6 +21,7 @@ export default function JourneyStrip({
   hasValues,
   hasHabits,
   hasMoral,
+  hasStandard,
   hasFocus,
   hasPractice,
   hasSupport,
@@ -30,6 +31,7 @@ export default function JourneyStrip({
   hasValues: boolean;
   hasHabits: boolean;
   hasMoral: boolean;
+  hasStandard: boolean;
   hasFocus: boolean;
   hasPractice: boolean;
   hasSupport: boolean;
@@ -37,7 +39,7 @@ export default function JourneyStrip({
 }) {
   const stages: Stage[] = [
     { key: "discover", label: "Discover", emoji: "🔍", done: hasProfile && hasValues, href: "/missions/1", outcome: "I know my strengths and values" },
-    { key: "reflect", label: "Reflect", emoji: "🪞", done: hasHabits || hasMoral, href: "#habits", outcome: "I see how my choices shape my character" },
+    { key: "reflect", label: "Reflect", emoji: "🪞", done: hasHabits || hasMoral || hasStandard, href: "#standard", outcome: "I see how my choices shape my character" },
     { key: "grow", label: "Grow", emoji: "🌱", done: hasFocus, href: "#focus", outcome: "I've chosen qualities to develop" },
     { key: "practise", label: "Practise", emoji: "💪", done: hasPractice, href: "#practice", outcome: "I'm turning qualities into actions" },
     { key: "connect", label: "Connect", emoji: "🧭", done: hasProfile && hasValues, href: "#pathways", outcome: "I see where my identity could take me" },

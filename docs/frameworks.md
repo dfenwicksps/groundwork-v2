@@ -111,6 +111,47 @@ Underpinning research:
   Writing to your future self builds continuity between present and future selves
   ("identity coherence"), which correlates with life satisfaction and better decisions.
 
+### Across all missions — The Standard (recurring outward check-in)
+
+Every other instrument in the app looks *inward* (what my strengths are, how I decide,
+what my patterns look like) and is answered **once**. The Standard looks *outward* and is
+answered **repeatedly**: three fixed questions about what the student is contributing to
+the rooms they're in.
+
+1. How am I making others feel safer and stronger?
+2. How am I adding more value than I am consuming?
+3. How am I being someone people can trust?
+
+Underpinning research:
+
+- **William Damon — contribution-based purpose.** Purpose becomes durable when it is
+  framed as "something specific I contribute," not "I want to help people." These
+  questions force the specific version by asking for a real person and a real moment.
+- **Prosocial behaviour and adolescent wellbeing** _(implied)_ — acts of contribution
+  predict wellbeing more reliably than acts of self-focused achievement; the check-in
+  asks students to notice contributions they'd otherwise not register.
+- **Trustworthiness as behavioural consistency** _(implied)_ — the third question
+  deliberately defines trust as word-matching-action when unobserved, and as being the
+  same person across rooms, which links it back to the Mask Check's self-monitoring gap.
+- **Expressive writing / self-authorship (McAdams)** — because every check-in is kept and
+  the previous answer is shown while writing the next, the student reads their own
+  development back over months. The history *is* the intervention.
+
+Design constraints that follow from the research:
+
+- **No score and no streak** — consistent with the practice log's "a record, not a
+  scoreboard" stance. Scoring character invites impression management, which is exactly
+  what the questions are trying to defeat.
+- **Each question carries a counterweight** (`harder` in
+  [`src/lib/standard.ts`](../src/lib/standard.ts)) surfaced only once the student starts
+  writing — "who feels *less* safe around me?" — so the exercise stays a mirror rather
+  than becoming self-congratulation.
+
+- **Where:** [`src/lib/standard.ts`](../src/lib/standard.ts) (questions, parsing, cadence),
+  [`src/app/me/StandardSection.tsx`](../src/app/me/StandardSection.tsx) (UI + history),
+  `standard_checkins` table in
+  [`supabase/migrations/004_standard_checkins.sql`](../supabase/migrations/004_standard_checkins.sql).
+
 ---
 
 ## 3. How the frameworks shape the product
@@ -144,6 +185,7 @@ Underpinning research:
 | Bridging/bonding _(implied)_ | Across the Gap `whyItMatters`, `missions.ts` |
 | Dan McAdams (narrative identity) | People Who Shaped You `whyItMatters`, `missions.ts` |
 | Possible selves (Markus & Nurius) | Future Self `whyItMatters`, `missions.ts` |
+| Contribution-based purpose / prosocial behaviour _(implied)_ | `standard.ts`, `StandardSection.tsx` |
 
 ## 5. Social-Emotional Learning (CASEL) mapping
 
@@ -153,12 +195,12 @@ Groundwork's activities map onto the five CASEL SEL competencies:
 | --- | --- |
 | **Self-awareness** | VIA strengths assessment, Values Clarifier, Mask Check, moral compass, journal + AI reflections |
 | **Self-management** | Weekly challenges, strength-in-action practice loop, WOOP-style goals with if-then plans, draft/revisit cycle |
-| **Social awareness** | Mission 3 (belonging, fitting-in vs belonging, bridging differences), empathy/compassion boosts, stories library |
-| **Relationship skills** | Support circle + conversation scaffolds, connection challenge, vulnerability boost |
+| **Social awareness** | Mission 3 (belonging, fitting-in vs belonging, bridging differences), empathy/compassion boosts, stories library, The Standard (questions 1 and 2 — impact on others, contribution vs consumption) |
+| **Relationship skills** | Support circle + conversation scaffolds, connection challenge, vulnerability boost, The Standard (question 3 — trustworthiness as consistency) |
 | **Responsible decision-making** | Moral compass dilemmas (care/fairness/loyalty/principle styles with overuse warnings), prudence/judgment strengths content |
 
 The VIA classification (positive psychology) supplies the *what* of character;
 the CASEL frame describes the *how* of the skills being practised. Together they
 ground the app's claim to be a character-education and SEL-aligned platform.
 
-_Last updated: 2026-07-06._
+_Last updated: 2026-08-12._

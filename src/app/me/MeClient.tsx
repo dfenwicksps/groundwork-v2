@@ -12,10 +12,12 @@ import GoalsSection from "./GoalsSection";
 import BoostsSection from "./BoostsSection";
 import HabitsSection from "./HabitsSection";
 import FocusSection from "./FocusSection";
+import StandardSection from "./StandardSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
 import type { YearLevel } from "@/lib/yearLevel";
 import type { MoralStyle } from "@/lib/moral";
+import type { StandardCheckin } from "@/lib/standard";
 
 // Virtue accent colours (from the bright palette)
 const VIRTUE_COLOUR: Record<Virtue, string> = {
@@ -49,6 +51,8 @@ export default function MeClient({
   commitmentExcerpt,
   habitSaved,
   focusKeys,
+  standardCheckins,
+  standardReady,
   supportCount,
   featuresReady,
   yearLevel,
@@ -71,6 +75,8 @@ export default function MeClient({
   commitmentExcerpt: string | null;
   habitSaved: { answers: Record<string, HabitAnswer>; result: HabitResult } | null;
   focusKeys: string[];
+  standardCheckins: StandardCheckin[];
+  standardReady: boolean;
   supportCount: number;
   featuresReady: boolean;
   yearLevel: YearLevel;
@@ -100,7 +106,7 @@ export default function MeClient({
   // use #anchors — map each to the tab that holds it, then scroll after switch.
   useEffect(() => {
     const HASH_TAB: Record<string, MeTab> = {
-      habits: "reflect", moral: "reflect",
+      habits: "reflect", moral: "reflect", standard: "reflect",
       focus: "grow", practice: "grow", boosts: "grow",
       pathways: "future", goals: "future",
     };
@@ -209,6 +215,7 @@ export default function MeClient({
             hasValues={values.length > 0}
             hasHabits={!!habitSaved}
             hasMoral={!!moralProfile}
+            hasStandard={standardCheckins.length > 0}
             hasFocus={focusKeys.length > 0}
             hasPractice={!!activePractice || recentPractices.length > 0}
             hasSupport={supportCount > 0}
@@ -380,6 +387,12 @@ export default function MeClient({
         {/* Reflect — how I decide + my current patterns */}
         {hasProfile && tab === "reflect" && (
           <>
+            {/* The recurring loop leads — the two below it are done once. */}
+            <StandardSection
+              userId={userId}
+              checkins={standardCheckins}
+              ready={standardReady}
+            />
             <HabitsSection userId={userId} saved={habitSaved} />
             {featuresReady ? (
               <MoralSection userId={userId} profile={moralProfile} />
