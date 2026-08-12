@@ -129,16 +129,35 @@ create table if not exists public.moral_profiles (
 
 -- The Standard — recurring three-question check-in (one row per check-in;
 -- history is the point, so nothing is overwritten)
+-- Also holds the program's weekly five: `set` discriminates the question set
+-- ('standard' = the three-part test, 'weekly' = the weekly five).
 create table if not exists public.standard_checkins (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.users(id) on delete cascade not null,
-  answers jsonb not null default '{}'::jsonb,  -- keyed by 'safer' | 'value' | 'trust'
+  answers jsonb not null default '{}'::jsonb,  -- keyed by question key
+  set text not null default 'standard',
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
 
-create index if not exists standard_checkins_user_created_idx
-  on public.standard_checkins (user_id, created_at desc);
+create index if not exists standard_checkins_user_set_created_idx
+  on public.standard_checkins (user_id, set, created_at desc);
+
+-- The 10-Week Character Program — one row per user per week they've started
+create table if not exists public.program_progress (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.users(id) on delete cascade not null,
+  week int not null check (week between 1 and 10),
+  days jsonb not null default '[]'::jsonb,  -- ticked day/session indices
+  commitment text,                          -- the week's own promise or hill
+  reflection text,
+  started_at timestamptz default now() not null,
+  completed_at timestamptz,
+  unique (user_id, week)
+);
+
+create index if not exists program_progress_user_week_idx
+  on public.program_progress (user_id, week);
 
 -- VIA-24 character strengths profile (one row per user; retake overwrites)
 create table if not exists public.strength_profiles (
@@ -167,6 +186,7 @@ alter table public.goals enable row level security;
 alter table public.practice_log enable row level security;
 alter table public.moral_profiles enable row level security;
 alter table public.standard_checkins enable row level security;
+alter table public.program_progress enable row level security;
 
 -- users: own row only
 create policy "Users can view own profile"
@@ -239,6 +259,11 @@ create policy "Users can manage own moral profile"
 -- standard_checkins: own rows only
 create policy "Users can manage own standard checkins"
   on public.standard_checkins for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- program_progress: own rows only
+create policy "Users can manage own program progress"
+  on public.program_progress for all
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 

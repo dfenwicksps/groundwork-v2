@@ -4,6 +4,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
 import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
+import { responseToCode, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export default async function MePage() {
     { data: habitRow },
     { data: focusRow },
     { data: standardRaw, error: standardError },
+    { data: codeRow },
     { count: supportCount },
   ] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id).single(),
@@ -89,8 +91,17 @@ export default async function MePage() {
       .from("standard_checkins")
       .select("id, answers, created_at, updated_at")
       .eq("user_id", user.id)
+      .eq("set", "standard")
       .order("created_at", { ascending: false })
       .limit(12),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", CHARACTER_CODE_ACTIVITY_ID)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
     db
       .from("support_circle")
       .select("id", { count: "exact", head: true })
@@ -147,6 +158,7 @@ export default async function MePage() {
       habitSaved={habitSaved}
       focusKeys={focusKeys}
       standardCheckins={standardCheckins}
+      characterCode={responseToCode(codeRow?.response as string | undefined)}
       // The Standard ships in migration 004 — same graceful degradation as
       // featuresReady below, so students on an un-migrated database see
       // "coming soon" rather than a save-time error.

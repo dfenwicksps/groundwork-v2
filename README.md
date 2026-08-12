@@ -17,6 +17,7 @@ This repo contains the full MVP foundation:
 - ✅ Journal view — filterable, expandable, read-only after 24h
 - ✅ AI reflection layer (Anthropic Claude) — fails silently if unavailable
 - ✅ The Standard — three recurring outward-facing questions, answered again and again, with full history
+- ✅ 10-Week Character Program — a weekly cadence with lived challenges, non-streak trackers, the weekly five, and the Character Code capstone
 - ✅ Stories library (8 seeded stories, 2 per mission)
 - ✅ Support Circle page with conversation scaffolds
 - ✅ Settings page

@@ -154,6 +154,78 @@ Design constraints that follow from the research:
 
 ---
 
+## 2b. The 10-Week Character Program
+
+The missions are a **library** — self-paced content explored in any order. The program is a
+**cadence**: ten weeks, one focus each, each ending in a challenge that has to be lived
+rather than written about. It exists because habit formation needs repetition over time,
+which self-paced content cannot supply.
+
+The loop it encodes: **identity is the starting point, character is the practice,
+contribution is the evidence.** Work out who you want to be → name what that person values
+→ practise behaviours consistent with those values → reflect on your impact on others →
+repeat until the behaviour is simply who you are.
+
+| Week | Focus | Reuses |
+| --- | --- | --- |
+| 1 | Who am I becoming? (identity is explored, not assigned) | Strengths Mapping |
+| 2 | What do I stand for? (values → observable behaviours) | Values Clarifier |
+| 3 | Am I a contributor? (surplus value) | The Standard, Q2 |
+| 4 | Can people trust me? (reliability, integrity) | The Standard, Q3 |
+| 5 | Do I do hard things? (the path of resistance) | Strength in action |
+| 6 | What guides my choices? (moral wisdom over rule-following) | Moral Compass |
+| 7 | Can I manage myself? (self-control via identity) | — |
+| 8 | Who is shaping me? (character develops socially) | Support Circle |
+| 9 | Do I leave room for inner work? | The Digital Self |
+| 10 | What will my character code be? (integration) | — |
+
+Where a week's inner work already has a tool, the week **links to it** rather than
+duplicating it — the program supplies the sequence and the challenge, not a second copy of
+the strengths assessment.
+
+Underpinning research and design constraints:
+
+- **Identity-based habit change** _(implied)_ — week 7 deliberately converts self-control
+  from a willpower problem into an identity statement ("I'm the kind of person who…"),
+  because willpower depletes and self-concept does not.
+- **Implementation intentions** _(implied)_ — weeks 4 and 5 require the student to name
+  their own promise or "hill" *before* any tracking appears; an unnamed commitment can't
+  be kept or measured, so the tracker stays hidden until they've written it.
+- **Contribution without recognition** — week 3's challenge explicitly forbids posting or
+  mentioning the act, on the grounds that contribution exchanged for credit is trade.
+- **Non-streak tracking** — the 7-day grid is a record, never a run to break, matching the
+  practice log. A week can still be completed with gaps in it.
+- **Solitude and reflection** — week 9 treats boredom as the mechanism rather than the
+  failure state.
+
+The capstone is the **Character Code**: 5–7 commitments written in the present tense as
+things the student *does*. It's stored as a milestone journal entry (so earlier versions
+remain readable as history) and surfaces on the Profile tab as their strongest single
+statement of identity.
+
+### The weekly five
+
+The whole program compressed into five questions to return to every week, for as long as
+they use the app — the part that outlives the ten weeks:
+
+1. **Identity** — Who am I becoming?
+2. **Values** — What do I stand for?
+3. **Discipline** — What hard thing am I willing to do because it matters?
+4. **Contribution** — What am I giving rather than merely consuming?
+5. **Impact** — Are people safer, stronger or better because I am in their lives?
+
+The Standard's three-part test lives inside these: contribution is question 4, impact is
+question 5, and trust runs through question 2. The two are deliberately different speeds —
+the weekly five is quick and cumulative, The Standard is slower and harder, with its
+counterweight questions.
+
+- **Where:** [`src/lib/program.ts`](../src/lib/program.ts) (weeks, weekly five, progress,
+  Character Code), [`src/app/program/`](../src/app/program) (overview, week detail,
+  tracker, code builder), `program_progress` +
+  [`supabase/migrations/005_program.sql`](../supabase/migrations/005_program.sql).
+
+---
+
 ## 3. How the frameworks shape the product
 
 - **Sequencing** — missions follow the Erikson/Marcia arc: explore the self before
@@ -186,6 +258,7 @@ Design constraints that follow from the research:
 | Dan McAdams (narrative identity) | People Who Shaped You `whyItMatters`, `missions.ts` |
 | Possible selves (Markus & Nurius) | Future Self `whyItMatters`, `missions.ts` |
 | Contribution-based purpose / prosocial behaviour _(implied)_ | `standard.ts`, `StandardSection.tsx` |
+| Identity-based habit change / implementation intentions _(implied)_ | `program.ts` (weeks 4, 5, 7), `program/[week]/WeekClient.tsx` |
 
 ## 5. Social-Emotional Learning (CASEL) mapping
 
@@ -194,7 +267,7 @@ Groundwork's activities map onto the five CASEL SEL competencies:
 | CASEL competency | Where Groundwork develops it |
 | --- | --- |
 | **Self-awareness** | VIA strengths assessment, Values Clarifier, Mask Check, moral compass, journal + AI reflections |
-| **Self-management** | Weekly challenges, strength-in-action practice loop, WOOP-style goals with if-then plans, draft/revisit cycle |
+| **Self-management** | Weekly challenges, strength-in-action practice loop, WOOP-style goals with if-then plans, draft/revisit cycle, the 10-week program (weeks 4, 5, 7, 9 — promise-keeping, the hill, identity statements, screen-free reflection) |
 | **Social awareness** | Mission 3 (belonging, fitting-in vs belonging, bridging differences), empathy/compassion boosts, stories library, The Standard (questions 1 and 2 — impact on others, contribution vs consumption) |
 | **Relationship skills** | Support circle + conversation scaffolds, connection challenge, vulnerability boost, The Standard (question 3 — trustworthiness as consistency) |
 | **Responsible decision-making** | Moral compass dilemmas (care/fairness/loyalty/principle styles with overuse warnings), prudence/judgment strengths content |

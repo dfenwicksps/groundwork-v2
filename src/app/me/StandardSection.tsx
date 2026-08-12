@@ -70,6 +70,7 @@ export default function StandardSection({
     const { error: err } = await db.from("standard_checkins").insert({
       user_id: userId,
       answers,
+      set: "standard",
     });
     if (err) {
       setBusy(false);

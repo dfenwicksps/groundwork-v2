@@ -53,6 +53,7 @@ export default function MeClient({
   focusKeys,
   standardCheckins,
   standardReady,
+  characterCode,
   supportCount,
   featuresReady,
   yearLevel,
@@ -77,6 +78,7 @@ export default function MeClient({
   focusKeys: string[];
   standardCheckins: StandardCheckin[];
   standardReady: boolean;
+  characterCode: string[];
   supportCount: number;
   featuresReady: boolean;
   yearLevel: YearLevel;
@@ -205,6 +207,34 @@ export default function MeClient({
                 <> · committed to <span className="italic">&ldquo;{commitmentExcerpt}…&rdquo;</span></>
               )}
             </p>
+          </div>
+        )}
+
+        {/* Character Code — the program's week-10 artefact, the strongest
+            single statement of identity the student has made */}
+        {hasProfile && tab === "profile" && characterCode.length > 0 && (
+          <div data-animate="2">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              My Character Code
+            </h2>
+            <div className="card p-5">
+              <ol className="space-y-2.5">
+                {characterCode.map((c, i) => (
+                  <li key={i} className="text-sm text-ink leading-relaxed flex gap-2.5">
+                    <span className="text-ink-muted flex-shrink-0 tabular-nums">
+                      {i + 1}.
+                    </span>
+                    {c}
+                  </li>
+                ))}
+              </ol>
+              <Link
+                href="/program/10"
+                className="text-xs text-teal hover:underline mt-3 inline-block"
+              >
+                Revisit it →
+              </Link>
+            </div>
           </div>
         )}
 
@@ -399,6 +429,13 @@ export default function MeClient({
             ) : (
               soonNote
             )}
+            <p className="text-xs text-ink-muted leading-relaxed pt-2 border-t border-surface-border">
+              These are the slow ones. The quick weekly version lives in{" "}
+              <Link href="/program#weekly" className="text-teal hover:underline">
+                the weekly five
+              </Link>
+              .
+            </p>
           </>
         )}
 

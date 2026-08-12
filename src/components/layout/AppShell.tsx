@@ -58,6 +58,37 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/program",
+    label: "Program",
+    match: (p: string) => p.startsWith("/program"),
+    icon: (active: boolean) => (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect
+          x="3.5"
+          y="4.5"
+          width="15"
+          height="14"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth={active ? "2" : "1.6"}
+        />
+        <path
+          d="M3.5 8.5h15M7 3.5v2M15 3.5v2"
+          stroke="currentColor"
+          strokeWidth={active ? "2" : "1.6"}
+          strokeLinecap="round"
+        />
+        <path
+          d="M7.5 12.5l1.5 1.5 3-3"
+          stroke="currentColor"
+          strokeWidth={active ? "2" : "1.6"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
     href: "/journal",
     label: "Journal",
     match: (p: string) => p.startsWith("/journal") || p.startsWith("/revisit"),
@@ -134,7 +165,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[60px] transition-all duration-150",
+                    "flex flex-col items-center gap-1 px-2 py-2 rounded-2xl min-w-[54px] transition-all duration-150",
                     active
                       ? "text-[--teal]"
                       : "text-[--ink-muted] hover:text-[--ink]"
