@@ -17,6 +17,7 @@ This repo contains the full MVP foundation:
 - ✅ Journal view — filterable, expandable, read-only after 24h
 - ✅ AI reflection layer (Anthropic Claude) — fails silently if unavailable
 - ✅ The Standard — three recurring outward-facing questions, answered again and again, with full history
+- ✅ Longitudinal revisits — reopen a milestone months later and read the whole arc; repeatable, spaced, self-comparison only
 - ✅ Quick / Extended / Open scaffolding on every open prompt — sentence-starters and a "stuck? try this" affordance throughout
 - ✅ 10-Week Character Program — a weekly cadence with lived challenges, non-streak trackers, the weekly five, and the Character Code capstone
 - ✅ Stories library (8 seeded stories, 2 per mission)
@@ -59,7 +60,7 @@ This creates all tables, sets up Row Level Security, creates the user auto-creat
 
 **Already have a database from an earlier version?** `schema.sql` is kept current, but an
 existing project also needs the files in `supabase/migrations/` run in order (`002`, `003`,
-`004`, …). Each one is idempotent, so running them again is safe. Features whose migration
+`004`, `005`, `006`, …). Each one is idempotent, so running them again is safe. Features whose migration
 hasn't been run show a "being switched on shortly" note rather than erroring — so if a
 section of the **Me** page says that, a migration is outstanding.
 

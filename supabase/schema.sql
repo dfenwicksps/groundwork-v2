@@ -43,9 +43,15 @@ create table if not exists public.journal_entries (
   response text not null default '',
   ai_reflection text,
   is_milestone boolean default false not null,
+  -- When set, this entry is a revisit looking back at another entry. Lets one
+  -- entry be revisited repeatedly over months, forming a readable chain.
+  revisit_of uuid references public.journal_entries(id) on delete cascade,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
+
+create index if not exists journal_entries_revisit_of_idx
+  on public.journal_entries (revisit_of, created_at);
 
 -- Weekly challenges
 create table if not exists public.challenges (

@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatDate, isWithin24Hours, truncate, parseReflection } from "@/lib/utils";
 import type { JournalEntry } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
+import {
+  revisitEligibility,
+  agoLabel,
+  isRevisitEntry,
+  type RevisitEntry,
+} from "@/lib/revisit";
 
 export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
   const [filter, setFilter] = useState<number | null>(null);
@@ -15,6 +22,17 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
   const byMission = filter
     ? entries.filter((e) => e.mission_id === filter)
     : entries;
+
+  // Revisits keyed by the entry they look back at, so a card can show how many
+  // times it has been reopened without another query.
+  const revisitsByParent = new Map<string, JournalEntry[]>();
+  for (const e of entries) {
+    const parent = (e as JournalEntry & { revisit_of?: string | null }).revisit_of;
+    if (!parent) continue;
+    const list = revisitsByParent.get(parent) || [];
+    list.push(e);
+    revisitsByParent.set(parent, list);
+  }
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -136,6 +154,12 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                                 ★ Milestone
                               </span>
                             )}
+                            {(revisitsByParent.get(entry.id)?.length ?? 0) > 0 && (
+                              <span className="text-xs text-teal bg-teal/10 px-1.5 py-0.5 rounded font-medium">
+                                ↻ Revisited{" "}
+                                {revisitsByParent.get(entry.id)!.length}×
+                              </span>
+                            )}
                           </div>
                           <div className="text-xs text-ink-muted mt-0.5">
                             {formatDate(entry.created_at)} ·{" "}
@@ -209,6 +233,45 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                               </div>
                             ) : (
                               <p className="text-sm text-ink">{parsed.text}</p>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Revisiting your own past writing is the one comparison
+                          this app makes — against yourself, never anyone else. */}
+                      {!isRevisitEntry(entry.activity_id) && (() => {
+                        const mine = revisitsByParent.get(entry.id) || [];
+                        const chain = {
+                          original: entry as unknown as RevisitEntry,
+                          revisits: mine as unknown as RevisitEntry[],
+                        };
+                        const el = revisitEligibility(chain);
+                        return (
+                          <div className="mt-4 pt-3 border-t border-surface-border">
+                            {el.ok ? (
+                              <Link
+                                href={`/revisit/${entry.id}`}
+                                className="btn btn-secondary w-full py-2.5 rounded-xl text-sm"
+                              >
+                                {mine.length === 0
+                                  ? "Revisit this →"
+                                  : "Look at this again →"}
+                              </Link>
+                            ) : (
+                              <p className="text-xs text-ink-muted leading-relaxed">
+                                You can revisit this in {el.waitDays}{" "}
+                                {el.waitDays === 1 ? "day" : "days"} — last looked
+                                at it {agoLabel(el.sinceDays)}.
+                              </p>
+                            )}
+                            {mine.length > 0 && (
+                              <Link
+                                href={`/revisit/${entry.id}`}
+                                className="block text-xs text-teal hover:underline text-center mt-2"
+                              >
+                                Read the whole thread ({mine.length + 1} entries)
+                              </Link>
                             )}
                           </div>
                         );

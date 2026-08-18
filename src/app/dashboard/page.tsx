@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
+import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS } from "@/lib/missions";
 import DashboardClient from "./DashboardClient";
 
@@ -60,39 +61,70 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .order("added_at", { ascending: true });
 
-  // Find the oldest journal entry eligible for a revisit prompt:
-  // missions 1–2, written 14+ days ago, not itself a revisit/debrief
+  // Pick an entry worth reopening. Milestones first — they're the writing with
+  // the most distance in it — then anything else old enough. Eligibility runs
+  // from the most recent look at a chain, so an entry can come round again
+  // months later rather than being spent after one revisit.
   const revisitCutoff = new Date();
-  revisitCutoff.setDate(revisitCutoff.getDate() - 14);
+  revisitCutoff.setDate(revisitCutoff.getDate() - MIN_DAYS_BETWEEN_REVISITS);
 
-  type RevisitCandidate = { id: string; mission_id: number; activity_id: string; prompt: string; response: string; created_at: string };
+  type RevisitCandidate = {
+    id: string;
+    mission_id: number;
+    activity_id: string;
+    prompt: string;
+    response: string;
+    created_at: string;
+    is_milestone?: boolean;
+    revisit_of?: string | null;
+  };
 
   const { data: revisitCandidatesRaw } = await (supabase as any)
     .from("journal_entries")
-    .select("id, mission_id, activity_id, prompt, response, created_at")
+    .select("id, mission_id, activity_id, prompt, response, created_at, is_milestone")
     .eq("user_id", user.id)
-    .in("mission_id", [1, 2])
     .lt("created_at", revisitCutoff.toISOString())
     .order("created_at", { ascending: true });
   const revisitCandidates = (revisitCandidatesRaw || []) as RevisitCandidate[];
 
-  const { data: existingRevisitsRaw } = await (supabase as any)
+  // Every revisit, keyed by the entry it looks back at. Falls back to the old
+  // naming convention when migration 006 hasn't run yet.
+  const { data: existingRevisitsRaw, error: revisitLinkError } = await (supabase as any)
     .from("journal_entries")
-    .select("activity_id")
+    .select("activity_id, revisit_of, created_at")
     .eq("user_id", user.id)
     .like("activity_id", "%-revisit");
-  const existingRevisits = (existingRevisitsRaw || []) as { activity_id: string }[];
+  const existingRevisits = (existingRevisitsRaw || []) as {
+    activity_id: string;
+    revisit_of?: string | null;
+    created_at: string;
+  }[];
+  const linksUnavailable = !!revisitLinkError;
 
-  const revisitedIds = new Set(
-    existingRevisits.map((r) => r.activity_id.replace(/-revisit$/, ""))
-  );
+  const lastLookByParent = new Map<string, string>();
+  const revisitedActivityIds = new Set<string>();
+  for (const r of existingRevisits) {
+    revisitedActivityIds.add(r.activity_id.replace(/-revisit$/, ""));
+    if (!r.revisit_of) continue;
+    const prev = lastLookByParent.get(r.revisit_of);
+    if (!prev || new Date(r.created_at) > new Date(prev)) {
+      lastLookByParent.set(r.revisit_of, r.created_at);
+    }
+  }
 
-  const revisitEntry = revisitCandidates.find(
-    (e) =>
-      !e.activity_id.endsWith("-revisit") &&
-      !e.activity_id.endsWith("-debrief") &&
-      !revisitedIds.has(e.activity_id)
-  ) || null;
+  const eligible = revisitCandidates.filter((e) => {
+    if (e.activity_id.endsWith("-revisit")) return false;
+    if (e.activity_id.endsWith("-debrief")) return false;
+    // Without the link column we can't tell chains apart, so keep the old
+    // once-only behaviour rather than nagging about an entry already revisited.
+    if (linksUnavailable) return !revisitedActivityIds.has(e.activity_id);
+    const lastLook = lastLookByParent.get(e.id);
+    const from = lastLook || e.created_at;
+    return daysBetween(from, new Date()) >= MIN_DAYS_BETWEEN_REVISITS;
+  });
+
+  const revisitEntry =
+    eligible.find((e) => e.is_milestone) || eligible[0] || null;
 
   // Compute nudge eligibility — only when no revisit card is already showing.
   // Triggers when: last activity completion was 10+ days ago, OR account is

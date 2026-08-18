@@ -268,6 +268,44 @@ the Character Code, Goals, the practice log, and Revisit.
 
 ---
 
+## 2d. Longitudinal revisits
+
+The most defensible intervention in the app: no comparison to other people, no score, no
+advice. A student reads what they wrote months ago and answers one question — *has this
+changed?* Growth becomes something they observe in their own words rather than something
+the app asserts about them.
+
+The mechanism is a **chain**. Each revisit is a journal entry linked to its original by
+`revisit_of`, so a milestone written at 14 can be reopened at 15 and again at 16 and read
+as a single arc. Earlier, a revisit was linked only by naming convention
+(`{activity_id}-revisit`), which allowed exactly one revisit per activity and conflated two
+attempts at the same activity — the chain replaces both limits.
+
+Design rules:
+
+- **Spacing is the mechanism, not an obstacle.** Revisits are 14 days apart minimum,
+  measured from the *most recent* look rather than the original — otherwise a year-old
+  milestone could be revisited twice in an afternoon. Nothing much changes in a week, and
+  answering "same as before" repeatedly teaches a student the question is empty.
+- **"Nothing has changed" is an acceptable answer**, and is named as one in the hints. An
+  exercise that only accepts growth teaches students to invent it.
+- **The original is shown whole, never truncated** — a comparison you can't fully read
+  isn't a comparison.
+- **The questions change with the distance.** At two weeks: "has anything tested it?" At a
+  year: "does it sound like you, or someone you used to be?" Asking a 14-year-old how
+  they've grown in a fortnight invites performance.
+- **Student-initiated, not only nudged.** Any milestone can be reopened from the journal;
+  the dashboard still offers one, now preferring milestones and re-offering a chain once
+  it's eligible again.
+
+- **Where:** [`src/lib/revisit.ts`](../src/lib/revisit.ts) (chain, eligibility, time-scaled
+  prompts), [`src/app/revisit/[entryId]/`](../src/app/revisit) (the arc + new reflection),
+  the journal's revisit action, and
+  [`supabase/migrations/006_revisits.sql`](../supabase/migrations/006_revisits.sql), which
+  backfills existing convention-linked revisits so no history is lost.
+
+---
+
 ## 3. How the frameworks shape the product
 
 - **Sequencing** — missions follow the Erikson/Marcia arc: explore the self before
