@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import BuildStamp from "@/components/BuildStamp";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
@@ -406,6 +407,7 @@ export default function SettingsClient({
         <div data-animate="6" className="text-xs text-ink-muted text-center pb-4">
           Groundwork is not a therapy replacement. All journal content is
           private and encrypted. We never sell your data.
+          <BuildStamp className="mt-3" />
         </div>
       </div>
     </AppShell>

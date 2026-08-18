@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BuildStamp from "@/components/BuildStamp";
 
 export default function LandingPage() {
   return (
@@ -219,6 +220,7 @@ export default function LandingPage() {
           </a>
           .
         </p>
+        <BuildStamp className="mt-4" />
       </footer>
     </div>
   );
