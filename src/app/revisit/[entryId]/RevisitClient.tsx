@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatDate, truncate } from "@/lib/utils";
 import AppShell from "@/components/layout/AppShell";
+import ScaffoldedInput from "@/components/ScaffoldedInput";
 
 const REVISIT_PROMPTS = [
   "Does this still feel true? Has anything happened in the last couple of weeks that tested it?",
@@ -175,14 +176,32 @@ export default function RevisitClient({
 
             {/* Reflection textarea */}
             <div data-animate="2">
-              <textarea
-                className="journal-textarea mb-3"
-                rows={7}
-                value={response}
-                onChange={(e) => setResponse(e.target.value)}
-                placeholder="Write whatever feels honest right now. There's no wrong answer."
-                autoFocus
-              />
+              <div className="mb-3">
+                <ScaffoldedInput
+                  value={response}
+                  onChange={setResponse}
+                  scaffold={{
+                    quick: [
+                      "I'd answer this completely differently now",
+                      "Mostly the same, but I'd say it more clearly",
+                      "I can't believe I wrote that",
+                      "Still true — it's just more obvious to me now",
+                    ],
+                    stems: [
+                      "Reading this back, what stands out is",
+                      "What's changed since then is",
+                      "What I'd tell the version of me who wrote this is",
+                    ],
+                    stuck: [
+                      "You're comparing two versions of yourself — what moved?",
+                      "Is there anything you'd defend, and anything you'd take back?",
+                      "What did past you not know yet?",
+                    ],
+                  }}
+                  placeholder="Write whatever feels honest right now. There's no wrong answer."
+                  rows={7}
+                />
+              </div>
 
               {saveError && (
                 <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>

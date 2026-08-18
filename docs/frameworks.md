@@ -226,6 +226,48 @@ counterweight questions.
 
 ---
 
+## 2c. Scaffolding: Quick / Extended / Open
+
+Every open prompt in the app is tiered. The tiers differ by **how much structure the
+student gets**, not by how much they are expected to write:
+
+| Tier | What the student sees | For |
+| --- | --- | --- |
+| **Quick** | Tap a complete answer someone else has worded | The blank page is the barrier |
+| **Extended** | Finish a half-written sentence | Knows roughly what they think, can't start the sentence |
+| **Open** | A blank box | Already fluent in writing about themselves |
+
+Extended is the rung that was missing and the one most students need — Quick can be
+answered without thinking, and Open assumes you already know how to begin a sentence about
+yourself. This matters most at 14, where non-completion is rarely unwillingness.
+
+Design rules the implementation holds to:
+
+- **The tier is a floor, never a ceiling.** A tapped Quick answer lands in the same
+  editable textarea as everything else, so a student who taps can keep typing.
+- **Nothing is ever destroyed by tapping.** Options and stems *insert* into what's already
+  written (`insertText`) — tapping a second option after typing appends rather than
+  overwriting the first attempt.
+- **One switcher per page, not per box.** The tier lives in shared state broadcast on a
+  custom event, so the five boxes of the weekly five move together.
+- **"Stuck? Try this" appears at every tier, including Open** — hints are angles *into* the
+  question, never answers to it. A hint that hands over an answer removes the thinking the
+  question exists to cause.
+- **The choice persists** across sessions, and migrates anyone who had already chosen under
+  the old two-mode Starter/Advanced system (`starter → quick`, `advanced → open`).
+
+Coverage: all 14 reflective mission activities across Missions 1–4 (56 steps), The
+Standard, the weekly five, all 10 program week reflections, the week 4 and 5 commitments,
+the Character Code, Goals, the practice log, and Revisit.
+
+- **Where:** [`src/lib/scaffold.ts`](../src/lib/scaffold.ts) (tiers, persistence, insert
+  semantics), [`src/components/ScaffoldedInput.tsx`](../src/components/ScaffoldedInput.tsx)
+  (the shared input + switcher), [`src/lib/missionScaffolds.ts`](../src/lib/missionScaffolds.ts)
+  (mission stems and hints), with the newer surfaces' scaffolds beside their own content in
+  `standard.ts` and `program.ts`.
+
+---
+
 ## 3. How the frameworks shape the product
 
 - **Sequencing** — missions follow the Erikson/Marcia arc: explore the self before

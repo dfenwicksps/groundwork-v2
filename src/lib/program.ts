@@ -466,3 +466,329 @@ export function responseToCode(response: string | null | undefined): string[] {
     .map((l) => l.replace(/^\s*\d+[.)]\s*/, "").trim())
     .filter(Boolean);
 }
+
+// ─── Scaffolds ────────────────────────────────────────────────────────────────
+// Kept as lookup maps rather than fields on the week objects, so the content
+// above stays readable as content and the scaffolding stays readable as
+// scaffolding. See src/lib/scaffold.ts for what the three tiers mean.
+
+import type { Scaffold } from "./scaffold";
+
+/** The weekly five — the prompts a student answers most often, so scaffolded hardest. */
+export const WEEKLY_SCAFFOLDS: Record<Strand, Scaffold> = {
+  identity: {
+    quick: [
+      "Closer to the person I want to be",
+      "Drifted a bit this week, honestly",
+      "Same as last week — no real movement",
+      "Better in one area, worse in another",
+    ],
+    stems: [
+      "This week moved me towards",
+      "The version of me that showed up most was",
+      "One thing I'd want different next week is",
+    ],
+    stuck: [
+      "Compare this week to the same week a month ago, not to some ideal version of you.",
+      "Direction matters more than distance — which way were you pointing?",
+      "If a friend described you this week in one word, what would it be?",
+    ],
+  },
+  values: {
+    quick: [
+      "I told the truth when a lie was easier",
+      "I stayed loyal to someone when it cost me",
+      "I backed down when I shouldn't have",
+      "Nothing really tested me this week",
+    ],
+    stems: [
+      "The value I actually held to was",
+      "Holding it cost me",
+      "Somewhere I let a value slide was",
+    ],
+    stuck: [
+      "A value you were never tested on this week is just a preference.",
+      "Think of a moment you felt uncomfortable — that's usually a value being pushed.",
+      "What did you refuse to do this week, and why?",
+    ],
+  },
+  discipline: {
+    quick: [
+      "I trained when I didn't want to",
+      "I studied instead of scrolling",
+      "I had the conversation I'd been avoiding",
+      "I picked comfort most days, honestly",
+    ],
+    stems: [
+      "The hard thing I did anyway was",
+      "Comfort was arguing that",
+      "The day I nearly didn't was",
+    ],
+    stuck: [
+      "It only counts if you didn't feel like it at the time.",
+      "What did you avoid this week? That's usually the real answer.",
+      "Small and done beats big and imagined.",
+    ],
+  },
+  contribution: {
+    quick: [
+      "I cleaned up something I didn't mess up",
+      "I helped someone catch up quietly",
+      "I organised something nobody asked me to",
+      "I took more than I gave this week",
+    ],
+    stems: [
+      "What I put in this week was",
+      "Nobody noticed that I",
+      "The room I took the most from was",
+    ],
+    stuck: [
+      "If you told someone about it, it was trade, not contribution.",
+      "Who did the invisible work in your house this week?",
+      "What needed doing that you walked past?",
+    ],
+  },
+  impact: {
+    quick: [
+      "Someone told me I'd helped them",
+      "I was there when someone needed it",
+      "I made someone's week harder",
+      "I'm not sure I registered either way",
+    ],
+    stems: [
+      "The person I most affected this week was",
+      "They'd probably say I was",
+      "Someone who's worse off for me being around is",
+    ],
+    stuck: [
+      "Answer about one named person, not people in general.",
+      "Ask someone directly — it's less weird than it sounds.",
+      "Being neutral is also an answer worth writing down.",
+    ],
+  },
+};
+
+/** End-of-week reflections, one per week. */
+export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
+  1: {
+    quick: [
+      "Picking five was harder than I expected",
+      "I noticed I chose qualities I don't actually have yet",
+      "Most of mine were about how I treat people",
+      "I copied a couple from someone I admire",
+    ],
+    stems: [
+      "The quality I most want people to use about me is",
+      "The one I'd struggle to justify right now is",
+      "Choosing these made me realise",
+    ],
+    stuck: [
+      "Look at your five. Which one would someone who knows you dispute?",
+      "Did you pick qualities you have, or qualities you want? Both are fine — but which?",
+      "Was there one you nearly wrote down and didn't? Why not?",
+    ],
+  },
+  2: {
+    quick: [
+      "Writing the behaviour was much harder than naming the value",
+      "One of my values had no behaviour I could point to",
+      "I realised two of mine were basically the same thing",
+      "These are genuinely mine, not borrowed",
+    ],
+    stems: [
+      "The value I found hardest to attach a behaviour to was",
+      "That probably means",
+      "The one I'd actually defend is",
+    ],
+    stuck: [
+      "If someone watched you for a week, which value would they spot without being told?",
+      "A value you can't name a behaviour for isn't a value yet.",
+      "Which of yours has cost you something recently?",
+    ],
+  },
+  3: {
+    quick: [
+      "Not telling anyone was the hardest part",
+      "I noticed how much I usually want credit",
+      "Some days I couldn't find anything to do",
+      "It got easier to spot things by the end",
+    ],
+    stems: [
+      "The contribution nobody noticed was",
+      "Not saying anything about it felt",
+      "By the end of the week I started noticing",
+    ],
+    stuck: [
+      "Did you nearly mention one of them to someone? What stopped you?",
+      "Which room did you find easiest to contribute to, and which hardest?",
+      "Was it the doing or the silence that was difficult?",
+    ],
+  },
+  4: {
+    quick: [
+      "I kept it most days but not all",
+      "Keeping it was easy — remembering wasn't",
+      "I picked something too ambitious",
+      "Nobody noticed, which was the point",
+    ],
+    stems: [
+      "The day I nearly broke it was",
+      "What made keeping it hard was",
+      "What this tells me about my word is",
+    ],
+    stuck: [
+      "On the days you kept it, what made it possible? Repeat that.",
+      "Was the promise too big, or was the problem remembering it?",
+      "If someone else had been relying on this promise, would you have kept it more?",
+    ],
+  },
+  5: {
+    quick: [
+      "Four sessions was harder than I thought",
+      "The first one was the hardest to start",
+      "I enjoyed it more than I expected",
+      "I only managed a couple, honestly",
+    ],
+    stems: [
+      "The session I nearly skipped was",
+      "What got me started anyway was",
+      "The hill got easier when",
+    ],
+    stuck: [
+      "What was the actual barrier — time, energy, or not wanting to be bad at it?",
+      "Did the hard part change across the week?",
+      "Would you pick the same hill again?",
+    ],
+  },
+  6: {
+    quick: [
+      "The three questions made decisions slower but clearer",
+      "I noticed how often I decide on instinct",
+      "Some situations didn't fit the questions",
+      "The 'who could be harmed' one changed my answer most",
+    ],
+    stems: [
+      "The dilemma that stuck with me was",
+      "Running it through the questions changed",
+      "Where I found the questions didn't help was",
+    ],
+    stuck: [
+      "Which of the three questions did you skip most often?",
+      "Was there a situation where the right answer was obvious but hard?",
+      "Did any of your answers surprise you?",
+    ],
+  },
+  7: {
+    quick: [
+      "Saying them as facts felt uncomfortable",
+      "One of mine is clearly aspirational",
+      "This felt more useful than goal-setting",
+      "I'm not sure I believe them yet",
+    ],
+    stems: [
+      "The statement I found hardest to write was",
+      "Saying it like a fact rather than a goal felt",
+      "The one I'd most like to be true is",
+    ],
+    stuck: [
+      "Which of your three would someone who knows you agree with already?",
+      "Identity beats willpower — which of these could replace a rule you keep breaking?",
+      "Is there one you avoided writing?",
+    ],
+  },
+  8: {
+    quick: [
+      "I hadn't realised how much time I spend with people who drain me",
+      "Reaching out to the adults was awkward",
+      "My three peers were obvious immediately",
+      "I couldn't think of two adults",
+    ],
+    stems: [
+      "The person who lifts me most is",
+      "The time I spent deliberately this week was",
+      "What I noticed about who I'm around is",
+    ],
+    stuck: [
+      "Who do you feel better after seeing, and who do you feel worse after?",
+      "Deliberate time is different from accidental time — which was yours?",
+      "If you couldn't name two adults, what does that tell you?",
+    ],
+  },
+  9: {
+    quick: [
+      "The first ten minutes were unbearable",
+      "I had thoughts I'd been avoiding",
+      "It was easier than I expected",
+      "I only managed one properly",
+    ],
+    stems: [
+      "What came up when the noise stopped was",
+      "The hardest part of being unstimulated was",
+      "What I noticed about whose ideas I've been having is",
+    ],
+    stuck: [
+      "Something usually surfaces around minute twelve. What surfaced for you?",
+      "Were the thoughts yours, or things you'd absorbed from a feed?",
+      "Did you reach for your phone? What was the pull?",
+    ],
+  },
+  10: {
+    quick: [],
+    stems: [],
+    stuck: [
+      "Look back at your week 1 five qualities. How much has changed?",
+      "Each commitment should be something you could be held to next month.",
+      "Present tense, not future — 'I do', not 'I will try to'.",
+    ],
+  },
+};
+
+/** Weeks 4 and 5 ask the student to name their own promise or hill first. */
+export const WEEK_COMMITMENT_SCAFFOLDS: Record<number, Scaffold> = {
+  4: {
+    quick: [
+      "Make my bed every morning",
+      "Be out the door by 7:40 with my bag packed",
+      "Twenty minutes of study before any screen",
+      "Message one person back properly each day",
+    ],
+    stems: ["Every day this week I will", "I'll know I kept it because"],
+    stuck: [
+      "Small and kept beats ambitious and dropped.",
+      "Could you tell at the end of a day whether you'd done it? If not, it's too vague.",
+      "Pick something that only depends on you.",
+    ],
+  },
+  5: {
+    quick: [
+      "Get properly fit — three runs a week",
+      "Learn a song on an instrument I've neglected",
+      "Catch up the subject I've fallen behind in",
+      "Volunteer somewhere regularly",
+    ],
+    stems: ["My hill is", "One session of work on it looks like"],
+    stuck: [
+      "Pick something that matters to you, not something that sounds impressive.",
+      "Define one session concretely — 'do some study' isn't a session.",
+      "What have you been avoiding because you'd be bad at it at first?",
+    ],
+  },
+};
+
+/** The week 10 capstone — commitments in the present tense. */
+export const CHARACTER_CODE_SCAFFOLD: Scaffold = {
+  quick: [
+    "I keep my word, including the small promises.",
+    "I leave rooms better than I found them.",
+    "I say the true thing kindly, rather than the easy thing.",
+    "I do the hard rep on the days I don't feel like it.",
+    "I don't laugh at things that make someone smaller.",
+    "I ask for help before it becomes a crisis.",
+  ],
+  stems: ["I am someone who", "I don't", "When it's hard, I"],
+  stuck: [
+    "Write what you do, not what you'd like to be.",
+    "Pull one straight from your week 2 values and their behaviours.",
+    "If you couldn't be held to it, it's a wish rather than a commitment.",
+  ],
+};
