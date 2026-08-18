@@ -10,9 +10,12 @@ import {
   DAY_LABELS,
   PROGRAM_WEEKS,
   isWeekComplete,
+  WEEK_REFLECTION_SCAFFOLDS,
+  WEEK_COMMITMENT_SCAFFOLDS,
   type ProgramWeek,
   type WeekProgress,
 } from "@/lib/program";
+import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
 /**
  * One week of the program: the question to sit with, the existing tool that
@@ -200,12 +203,12 @@ export default function WeekClient({
                 <p className="text-xs font-medium text-ink mb-1.5">
                   {week.challenge.commitmentPrompt}
                 </p>
-                <textarea
-                  className="conv-textarea"
-                  rows={2}
+                <ScaffoldedInput
                   value={commitment}
-                  onChange={(e) => setCommitment(e.target.value)}
+                  onChange={setCommitment}
+                  scaffold={WEEK_COMMITMENT_SCAFFOLDS[week.week]}
                   placeholder="Specific beats ambitious."
+                  rows={2}
                 />
                 <button
                   onClick={() => persist({ commitment: commitment.trim() || null })}
@@ -296,15 +299,16 @@ export default function WeekClient({
               End of the week
             </h2>
             <div className="card p-5">
-              <p className="text-xs text-ink-muted mb-2.5 leading-relaxed">
+              <p className="text-xs text-ink-muted mb-3 leading-relaxed">
                 What actually happened? What surprised you? Honest beats tidy.
               </p>
-              <textarea
-                className="conv-textarea"
-                rows={4}
+              <TierSwitcher className="mb-4" />
+              <ScaffoldedInput
                 value={reflection}
-                onChange={(e) => setReflection(e.target.value)}
+                onChange={setReflection}
+                scaffold={WEEK_REFLECTION_SCAFFOLDS[week.week]}
                 placeholder="What did doing this for a week teach you about yourself?"
+                rows={4}
               />
               {error && (
                 <p role="alert" className="text-sm text-red-600 mt-2">

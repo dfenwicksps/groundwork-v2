@@ -15,6 +15,7 @@ import {
   type StandardCheckin,
   type StandardKey,
 } from "@/lib/standard";
+import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
 /**
  * The Standard — three questions the student holds themselves to, answered
@@ -39,7 +40,6 @@ export default function StandardSection({
 
   const [writing, setWriting] = useState(false);
   const [drafts, setDrafts] = useState<StandardAnswers>({});
-  const [showExamples, setShowExamples] = useState<StandardKey | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -161,6 +161,8 @@ export default function StandardSection({
             weak honest answer is worth more to you than a strong invented one.
           </p>
 
+          <TierSwitcher className="mb-5" />
+
           <div className="space-y-6">
             {STANDARD_QUESTIONS.map((q) => {
               const last = latest?.answers[q.key];
@@ -190,44 +192,15 @@ export default function StandardSection({
                     </div>
                   )}
 
-                  <textarea
-                    className="conv-textarea"
-                    rows={3}
+                  <ScaffoldedInput
                     value={drafts[q.key] || ""}
-                    onChange={(e) =>
-                      setDrafts((prev) => ({ ...prev, [q.key]: e.target.value }))
+                    onChange={(v) =>
+                      setDrafts((prev) => ({ ...prev, [q.key]: v }))
                     }
+                    scaffold={{ quick: q.examples, stems: q.stems, stuck: q.stuck }}
                     placeholder={q.placeholder}
+                    rows={3}
                   />
-
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowExamples(showExamples === q.key ? null : q.key)
-                      }
-                      className="text-[11px] text-teal hover:underline"
-                      aria-expanded={showExamples === q.key}
-                    >
-                      {showExamples === q.key ? "Hide examples" : "Stuck? See examples"}
-                    </button>
-                  </div>
-
-                  {showExamples === q.key && (
-                    <ul className="mt-2 space-y-1 pl-1">
-                      {q.examples.map((ex) => (
-                        <li
-                          key={ex}
-                          className="text-[11px] text-ink-muted leading-relaxed flex gap-1.5"
-                        >
-                          <span className="text-ink-faint flex-shrink-0" aria-hidden>
-                            ·
-                          </span>
-                          {ex}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
 
                   {/* The counterweight — only once they've started, so it reads as
                       a deepening question rather than an accusation. */}

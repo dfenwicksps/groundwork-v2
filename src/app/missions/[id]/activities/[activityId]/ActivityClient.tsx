@@ -5,7 +5,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { cn, parseReflection } from "@/lib/utils";
 import { type ProcessingStyle, getProcessingStyle } from "@/lib/processingStyle";
-import { type LearningMode, getLearningMode, setLearningMode } from "@/lib/learningMode";
+import {
+  TIERS,
+  readTier,
+  writeTier,
+  insertText,
+  type Tier,
+} from "@/lib/scaffold";
+import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import {
@@ -45,8 +52,8 @@ function ModeToggle({
   onChange,
   accent,
 }: {
-  mode: LearningMode;
-  onChange: (m: LearningMode) => void;
+  mode: Tier;
+  onChange: (m: Tier) => void;
   accent: string;
 }) {
   return (
@@ -55,7 +62,7 @@ function ModeToggle({
       role="group"
       aria-label="Answer mode"
     >
-      {(["starter", "advanced"] as const).map((m) => (
+      {TIERS.map(({ key: m, label }) => (
         <button
           key={m}
           type="button"
@@ -67,9 +74,43 @@ function ModeToggle({
           )}
           style={mode === m ? { background: accent } : undefined}
         >
-          {m === "starter" ? "Starter" : "Advanced"}
+          {label}
         </button>
       ))}
+    </div>
+  );
+}
+
+/**
+ * "Stuck? Try this" — angles into the question rather than answers to it,
+ * offered at every tier including Open. Keyed by step so it re-collapses when
+ * the student moves on.
+ */
+function StuckHints({ hints }: { hints: string[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[--teal] hover:underline"
+      >
+        <span aria-hidden>💡</span>
+        {open ? "Hide these" : "Stuck? Try this"}
+      </button>
+      {open && (
+        <ul className="mt-2 space-y-1.5 rounded-xl bg-[--surface-muted] border border-[--border] p-3">
+          {hints.map((h) => (
+            <li key={h} className="text-xs text-[--ink-muted] leading-relaxed flex gap-2">
+              <span className="text-[--ink-faint] flex-shrink-0" aria-hidden>
+                —
+              </span>
+              {h}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
@@ -120,9 +161,9 @@ function ConversationalActivity({
   const [phase, setPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
   );
-  const [mode, setModeState] = useState<LearningMode>("starter");
+  const [mode, setModeState] = useState<Tier>("quick");
   // Read the saved preference after mount to avoid a hydration mismatch.
-  useEffect(() => setModeState(getLearningMode()), []);
+  useEffect(() => setModeState(readTier()), []);
   const [qIdx, setQIdx] = useState(0);
   const [turns, setTurns] = useState<CompletedTurn[]>([]);
   const [current, setCurrent] = useState("");
@@ -130,16 +171,18 @@ function ConversationalActivity({
   const [editing, setEditing] = useState(false);
   const prevAnswersRef = useRef<string[]>([]);
 
-  // Starter mode uses multiple-choice when the current step has options.
+  // Quick tier uses multiple-choice when the current step has options.
   const stepOptions = activity.starterOptions?.[qIdx];
-  const usingStarter = mode === "starter" && !!stepOptions;
+  const usingStarter = mode === "quick" && !!stepOptions;
+  // Extended offers half-written sentences; "stuck" hints show at every tier.
+  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions);
   const writingOther = !usingStarter || selectedOption === OTHER_OPTION;
 
-  function changeMode(m: LearningMode) {
+  function changeMode(m: Tier) {
     if (m === mode) return;
     setModeState(m);
-    setLearningMode(m);
-    if (m === "advanced") {
+    writeTier(m);
+    if (m !== "quick") {
       // Starter picks become editable text the user can extend or replace.
       if (selectedOption && selectedOption !== OTHER_OPTION) {
         setCurrent(selectedOption);
@@ -204,7 +247,7 @@ function ConversationalActivity({
   function applyPrefill(idx: number) {
     const prev = prevAnswersRef.current[idx] || "";
     const opts = activity.starterOptions?.[idx];
-    if (mode === "starter" && opts) {
+    if (mode === "quick" && opts) {
       if (opts.includes(prev)) {
         setSelectedOption(prev);
         setCurrent("");
@@ -528,9 +571,7 @@ function ConversationalActivity({
                   <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
                 </div>
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
-                  {mode === "starter"
-                    ? "Starter — read a quick scenario, then pick the answer that fits you best. No writing needed."
-                    : "Advanced — write it your way. Anything you pick in Starter turns into text you can edit, extend, or replace."}
+                  {TIERS.find((t) => t.key === mode)?.blurb}
                 </p>
               </div>
             )}
@@ -957,6 +998,42 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* Extended tier — a half-written sentence to finish. The middle
+                rung most students actually need: Quick can be answered without
+                thinking, Open assumes you know how to begin. */}
+            {mode === "extended" && !!stepScaffold.stems?.length && (
+              <div data-animate="3" className="space-y-1.5">
+                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest">
+                  Start with one of these
+                </div>
+                {stepScaffold.stems.map((stem) => (
+                  <button
+                    key={stem}
+                    type="button"
+                    onClick={() => {
+                      setCurrent((c) => insertText(c, stem.trimEnd() + " "));
+                      requestAnimationFrame(() => {
+                        const el = textareaRef.current;
+                        if (!el) return;
+                        el.focus();
+                        el.setSelectionRange(el.value.length, el.value.length);
+                      });
+                    }}
+                    className="w-full text-left px-4 py-3 rounded-xl border border-[--border] bg-white text-sm leading-relaxed hover:border-[rgba(0,0,0,0.18)] transition-all"
+                  >
+                    <span className="text-[--ink]">
+                      {stem.trimEnd()}
+                      <span className="text-[--ink-muted] opacity-60"> …</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {!!stepScaffold.stuck?.length && (
+              <StuckHints key={qIdx} hints={stepScaffold.stuck} />
+            )}
+
             <div ref={bottomRef} />
           </div>
         </div>
@@ -1288,12 +1365,12 @@ function ValuesPickerActivity({
   const [style] = useState<ProcessingStyle | null>(() =>
     typeof window !== "undefined" ? getProcessingStyle() : null
   );
-  const [mode, setModeState] = useState<LearningMode>("starter");
+  const [mode, setModeState] = useState<Tier>("quick");
   const [saveError, setSaveError] = useState<string | null>(null);
-  useEffect(() => setModeState(getLearningMode()), []);
-  function changeMode(m: LearningMode) {
+  useEffect(() => setModeState(readTier()), []);
+  function changeMode(m: Tier) {
     setModeState(m);
-    setLearningMode(m);
+    writeTier(m);
   }
 
   function toggleValue(val: string) {
@@ -1489,9 +1566,9 @@ function ValuesPickerActivity({
             <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
           </div>
           <p className="text-xs text-[--ink-muted] leading-relaxed">
-            {mode === "starter"
-              ? "Starter — just choose your values. That's all you need to do."
-              : "Advanced — choose your values, then add why each one matters."}
+            {mode === "quick"
+              ? "Quick — just choose your values. That's all you need to do."
+              : "Choose your values, then add why each one matters."}
           </p>
         </div>
 
@@ -1598,7 +1675,7 @@ function ValuesPickerActivity({
           )}
         </div>
 
-        {mode === "advanced" && selectedValues.length > 0 && (
+        {mode !== "quick" && selectedValues.length > 0 && (
           <div className="space-y-4 mb-6">
             <p className="text-sm font-medium text-[--ink]">
               Why does each one matter to you? (optional)

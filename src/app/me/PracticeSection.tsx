@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { STRENGTH_ACTIONS } from "@/lib/boosts";
+import ScaffoldedInput from "@/components/ScaffoldedInput";
 
 interface PracticeEntry {
   id: string;
@@ -141,13 +142,32 @@ export default function PracticeSection({
           </div>
           <p className="text-sm text-ink leading-relaxed mb-4">{active.action}</p>
           <p className="text-xs font-medium text-ink mb-2">How&apos;s it going? Check in:</p>
-          <textarea
-            className="conv-textarea mb-3"
-            rows={3}
-            value={reflection}
-            onChange={(e) => setReflection(e.target.value)}
-            placeholder="What did you try? What happened? Honest counts more than impressive."
-          />
+          <div className="mb-3">
+            <ScaffoldedInput
+              value={reflection}
+              onChange={setReflection}
+              scaffold={{
+                quick: [
+                  "Tried it once and it felt awkward",
+                  "Did it a few times — getting easier",
+                  "Forgot about it until now",
+                  "Did it, and someone noticed",
+                ],
+                stems: [
+                  "What I tried was",
+                  "What happened was",
+                  "Next time I'd",
+                ],
+                stuck: [
+                  "One specific moment beats a general summary.",
+                  "Awkward is normal early on — say so if it was.",
+                  "Did using this strength cost you anything?",
+                ],
+              }}
+              placeholder="What did you try? What happened? Honest counts more than impressive."
+              rows={3}
+            />
+          </div>
           {error && <p role="alert" className="text-sm text-red-600 mb-2">{error}</p>}
           <button
             onClick={checkIn}

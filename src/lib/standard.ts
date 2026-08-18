@@ -24,6 +24,13 @@ export interface StandardQuestion {
    */
   harder: string;
   placeholder: string;
+  /**
+   * Extended tier — half-written sentences the student finishes. `examples`
+   * above serve as the Quick tier, so only these two are new.
+   */
+  stems: string[];
+  /** "Stuck? try this" — angles into the question, never answers to it. */
+  stuck: string[];
 }
 
 export const STANDARD_QUESTIONS: StandardQuestion[] = [
@@ -44,6 +51,17 @@ export const STANDARD_QUESTIONS: StandardQuestion[] = [
       "Now the harder half: who feels less safe around me? Everyone has someone. Naming them honestly is the whole point of this question.",
     placeholder:
       "Think of one real person and one real moment this week. What did you actually do?",
+    stems: [
+      "The person I actually helped this week was",
+      "I could tell they felt steadier afterwards because",
+      "A moment I could have stepped in and didn't was",
+      "The person who probably finds me hard work is",
+    ],
+    stuck: [
+      "Scroll back through this week's messages. Who did you reply to properly, and who did you leave on read?",
+      "Safer isn't the same as nice. Who have you told a hard truth to lately, and how did you do it?",
+      "Stronger means they needed you less afterwards, not more. Did anything you did make someone more dependent on you?",
+    ],
   },
   {
     key: "value",
@@ -62,6 +80,17 @@ export const STANDARD_QUESTIONS: StandardQuestion[] = [
       "And the other side: where am I coasting? Which room am I currently taking more from than I put in?",
     placeholder:
       "Pick one room you're in. What did you put in this week, and what did you take out?",
+    stems: [
+      "The room I take the most from is",
+      "Something I did that nobody had to ask me to do was",
+      "If I'm honest, the effort I left for someone else was",
+      "One thing I could start putting in is",
+    ],
+    stuck: [
+      "Think about the last group thing you were part of. Who set it up, and who just turned up?",
+      "Consuming isn't only stuff — attention, time and energy count too.",
+      "What gets done for you at home that you have never once done yourself?",
+    ],
   },
   {
     key: "trust",
@@ -80,6 +109,17 @@ export const STANDARD_QUESTIONS: StandardQuestion[] = [
       "The honest check: where did my word and my actions come apart recently? Small gaps count — they're the ones that add up.",
     placeholder:
       "Where did you keep your word this week? Where did it slip? Both are worth writing.",
+    stems: [
+      "A small promise I kept this week was",
+      "Somewhere I said one thing and did another was",
+      "The person most likely to rely on me is",
+      "If someone checked whether I'd done what I said, they'd find",
+    ],
+    stuck: [
+      "Trust is built in the boring promises, not the dramatic ones. What was your most boring promise this week?",
+      "Think of something you said you'd do and didn't. What happened to the other person because of it?",
+      "Are you the same person in the group chat as you are face to face?",
+    ],
   },
 ];
 

@@ -8,7 +8,9 @@ import {
   CODE_MAX,
   codeToResponse,
   CHARACTER_CODE_ACTIVITY_ID,
+  CHARACTER_CODE_SCAFFOLD,
 } from "@/lib/program";
+import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
 const STARTERS = [
   "I keep my word, including the small promises.",
@@ -124,19 +126,22 @@ export default function CharacterCodeBuilder({
         things you hope to become.
       </p>
       <div className="card p-5">
+        <TierSwitcher className="mb-4" />
         <div className="space-y-2">
           {lines.map((l, i) => (
             <div key={i} className="flex items-start gap-2">
               <span className="text-sm text-ink-muted tabular-nums pt-3 flex-shrink-0 w-4">
                 {i + 1}.
               </span>
-              <textarea
-                className="conv-textarea"
-                rows={2}
-                value={l}
-                onChange={(e) => setLine(i, e.target.value)}
-                placeholder={STARTERS[i] || "One more commitment…"}
-              />
+              <div className="flex-1">
+                <ScaffoldedInput
+                  value={l}
+                  onChange={(v) => setLine(i, v)}
+                  scaffold={CHARACTER_CODE_SCAFFOLD}
+                  placeholder={STARTERS[i] || "One more commitment…"}
+                  rows={2}
+                />
+              </div>
             </div>
           ))}
         </div>

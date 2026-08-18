@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { strengthName } from "@/lib/strengths";
 import type { YearLevel } from "@/lib/yearLevel";
+import ScaffoldedInput from "@/components/ScaffoldedInput";
 
 interface Goal {
   id: string;
@@ -182,13 +183,31 @@ export default function GoalsSection({
               )}
               {finishing === g.id ? (
                 <div className="pt-2 border-t border-surface-border mt-1">
-                  <textarea
-                    className="conv-textarea mb-2"
-                    rows={2}
-                    value={finishNote}
-                    onChange={(e) => setFinishNote(e.target.value)}
-                    placeholder="How did it go? (optional — saved to your journal)"
-                  />
+                  <div className="mb-2">
+                    <ScaffoldedInput
+                      value={finishNote}
+                      onChange={setFinishNote}
+                      scaffold={{
+                        quick: [
+                          "Did it, and it was easier than I expected",
+                          "Did it, but it took longer than planned",
+                          "Half did it — got distracted partway",
+                          "Didn't manage it this time",
+                        ],
+                        stems: [
+                          "What actually happened was",
+                          "The part that worked was",
+                          "What got in the way was",
+                        ],
+                        stuck: [
+                          "What would you do differently if you set the same goal again?",
+                          "Did it turn out to be the right goal?",
+                        ],
+                      }}
+                      placeholder="How did it go? (optional — saved to your journal)"
+                      rows={2}
+                    />
+                  </div>
                   <div className="flex gap-2">
                     <button onClick={() => setFinishing(null)} className="btn btn-secondary flex-1 py-2 rounded-xl text-xs">
                       Not yet

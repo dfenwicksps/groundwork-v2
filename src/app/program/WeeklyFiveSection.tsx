@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { formatRelativeDate } from "@/lib/utils";
-import { WEEKLY_FIVE, type Strand } from "@/lib/program";
+import { WEEKLY_FIVE, WEEKLY_SCAFFOLDS, type Strand } from "@/lib/program";
+import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
 export interface WeeklyCheckin {
   id: string;
@@ -92,10 +93,11 @@ export default function WeeklyFiveSection({
           This week&apos;s five
         </h2>
         <div className="card p-5">
-          <p className="text-xs text-ink-muted mb-5 leading-relaxed">
+          <p className="text-xs text-ink-muted mb-4 leading-relaxed">
             Five questions, five honest lines. This is the part you keep doing
             after the ten weeks are over.
           </p>
+          <TierSwitcher className="mb-5" />
           <div className="space-y-5">
             {WEEKLY_FIVE.map((q) => {
               const last = latest?.answers[q.key];
@@ -119,14 +121,12 @@ export default function WeeklyFiveSection({
                       Last week: &ldquo;{last}&rdquo;
                     </p>
                   )}
-                  <textarea
-                    className="conv-textarea"
-                    rows={2}
+                  <ScaffoldedInput
                     value={drafts[q.key] || ""}
-                    onChange={(e) =>
-                      setDrafts((p) => ({ ...p, [q.key]: e.target.value }))
-                    }
+                    onChange={(v) => setDrafts((p) => ({ ...p, [q.key]: v }))}
+                    scaffold={WEEKLY_SCAFFOLDS[q.key]}
                     placeholder={q.placeholder}
+                    rows={2}
                   />
                 </div>
               );
