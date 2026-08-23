@@ -336,6 +336,13 @@ moving between the two tracks met the identical headline twice with different co
 under each. The new wording is also more honest about what the mission does: strengths,
 values, the mask, the letter. Descriptive rather than aspirational.
 
+Weeks 4 and 5 also take their **examples** from year level, because register matters most
+where the student writes their own commitment: an 18-year-old offered "make my bed every
+morning" reads the whole exercise as written for children, and a 14-year-old offered "be on
+time to every shift" has no shift. Only the tap-examples change — the sentence-starters,
+the hints and the challenge itself are identical at every age
+(`commitmentScaffold` in [`src/lib/program.ts`](../src/lib/program.ts)).
+
 - **Where:** [`src/lib/spine.ts`](../src/lib/spine.ts) (the rule),
   [`src/app/dashboard/page.tsx`](../src/app/dashboard/page.tsx) (year level + program state),
   and `DashboardClient` (ordering).

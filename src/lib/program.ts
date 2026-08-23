@@ -473,6 +473,7 @@ export function responseToCode(response: string | null | undefined): string[] {
 // scaffolding. See src/lib/scaffold.ts for what the three tiers mean.
 
 import type { Scaffold } from "./scaffold";
+import type { YearLevel } from "./yearLevel";
 
 /** The weekly five — the prompts a student answers most often, so scaffolded hardest. */
 export const WEEKLY_SCAFFOLDS: Record<Strand, Scaffold> = {
@@ -743,15 +744,48 @@ export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
   },
 };
 
-/** Weeks 4 and 5 ask the student to name their own promise or hill first. */
-export const WEEK_COMMITMENT_SCAFFOLDS: Record<number, Scaffold> = {
+/**
+ * Weeks 4 and 5 ask the student to name their own promise or hill first.
+ *
+ * The examples are year-aware because this is where register matters most: a
+ * promise is meant to be small, boring and yours, so an 18-year-old offered
+ * "make my bed every morning" reads the whole exercise as written for children
+ * — and a 14-year-old offered "be on time to every shift" has no shift.
+ * Everything else about the week is identical.
+ */
+const COMMITMENT_QUICK: Record<number, Record<"younger" | "senior", string[]>> = {
   4: {
-    quick: [
+    younger: [
       "Make my bed every morning",
       "Be out the door by 7:40 with my bag packed",
       "Twenty minutes of study before any screen",
       "Message one person back properly each day",
     ],
+    senior: [
+      "On time to every class and shift, no exceptions",
+      "Do the reading before the class, not after it",
+      "Reply properly to messages the same day",
+      "Phone charging outside my room overnight",
+    ],
+  },
+  5: {
+    younger: [
+      "Get properly fit — three runs a week",
+      "Learn a song on an instrument I've neglected",
+      "Catch up the subject I've fallen behind in",
+      "Volunteer somewhere regularly",
+    ],
+    senior: [
+      "Get properly fit before the year runs away from me",
+      "Rebuild the subject I've quietly given up on",
+      "Learn the thing I keep saying I'll learn after exams",
+      "Volunteer or work somewhere that isn't about me",
+    ],
+  },
+};
+
+const COMMITMENT_REST: Record<number, Omit<Scaffold, "quick">> = {
+  4: {
     stems: ["Every day this week I will", "I'll know I kept it because"],
     stuck: [
       "Small and kept beats ambitious and dropped.",
@@ -760,12 +794,6 @@ export const WEEK_COMMITMENT_SCAFFOLDS: Record<number, Scaffold> = {
     ],
   },
   5: {
-    quick: [
-      "Get properly fit — three runs a week",
-      "Learn a song on an instrument I've neglected",
-      "Catch up the subject I've fallen behind in",
-      "Volunteer somewhere regularly",
-    ],
     stems: ["My hill is", "One session of work on it looks like"],
     stuck: [
       "Pick something that matters to you, not something that sounds impressive.",
@@ -774,6 +802,19 @@ export const WEEK_COMMITMENT_SCAFFOLDS: Record<number, Scaffold> = {
     ],
   },
 };
+
+export function commitmentScaffold(
+  week: number,
+  year: YearLevel = "middle"
+): Scaffold | undefined {
+  const rest = COMMITMENT_REST[week];
+  if (!rest) return undefined;
+  const quick = COMMITMENT_QUICK[week];
+  return {
+    ...rest,
+    quick: quick ? quick[year === "senior" ? "senior" : "younger"] : undefined,
+  };
+}
 
 /** The week 10 capstone — commitments in the present tense. */
 export const CHARACTER_CODE_SCAFFOLD: Scaffold = {

@@ -11,10 +11,11 @@ import {
   PROGRAM_WEEKS,
   isWeekComplete,
   WEEK_REFLECTION_SCAFFOLDS,
-  WEEK_COMMITMENT_SCAFFOLDS,
+  commitmentScaffold,
   type ProgramWeek,
   type WeekProgress,
 } from "@/lib/program";
+import type { YearLevel } from "@/lib/yearLevel";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
 /**
@@ -28,10 +29,13 @@ export default function WeekClient({
   week,
   progress,
   savedCode,
+  yearLevel,
   ready,
 }: {
   userId: string;
   week: ProgramWeek;
+  /** Only affects the register of the commitment examples — see program.ts */
+  yearLevel: YearLevel;
   progress: WeekProgress | null;
   savedCode: string[];
   ready: boolean;
@@ -206,7 +210,7 @@ export default function WeekClient({
                 <ScaffoldedInput
                   value={commitment}
                   onChange={setCommitment}
-                  scaffold={WEEK_COMMITMENT_SCAFFOLDS[week.week]}
+                  scaffold={commitmentScaffold(week.week, yearLevel)}
                   placeholder="Specific beats ambitious."
                   rows={2}
                 />

@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import WeekClient from "./WeekClient";
@@ -8,6 +9,7 @@ import {
   CHARACTER_CODE_ACTIVITY_ID,
   type WeekProgress,
 } from "@/lib/program";
+import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,7 @@ export default async function WeekPage({
   if (!user) redirect("/auth");
 
   const db = supabase as any;
+  const yearLevel = parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle";
 
   const [{ data: row, error: progressError }, { data: codeRow }] =
     await Promise.all([
@@ -72,6 +75,7 @@ export default async function WeekPage({
       week={week}
       progress={progress}
       savedCode={responseToCode(codeRow?.response as string | undefined)}
+      yearLevel={yearLevel}
       ready={ready}
     />
   );
