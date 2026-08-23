@@ -177,14 +177,14 @@ export const MISSIONS: Mission[] = [
         title: "Strengths Mapping",
         subtitle: "Step 1 of 5 · Inner compass",
         intro:
-          "Here’s the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you’re naturally good at) and values (what actually matters to you). This step maps the first half. Psychologists have found that everyone’s character is a mix of the same 24 strengths — you just have more of some than others. Nobody can rank their own cold, so instead you’ll react to 12 quick everyday situations. Your reactions do the ranking for you.",
+          "Here’s the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you’re naturally good at) and values (what actually matters to you). This step maps the first half. Psychologists have found that everyone’s character is a mix of the same 24 strengths — you just have more of some than others. Nobody can rank their own cold, so instead you’ll react to 18 quick everyday situations. Your reactions do the ranking for you.",
         warmUp:
-          "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 5 minutes.",
+          "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 6 minutes.",
         prompt:
-          "React to 12 everyday situations to discover your top character strengths — the ones that come most naturally to you.",
+          "React to 18 everyday situations to discover your top character strengths — the ones that come most naturally to you.",
         whyItMatters:
-          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by.",
-        timeEstimate: "About 5 minutes",
+          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
+        timeEstimate: "About 6 minutes",
       },
       {
         id: "values-clarifier",

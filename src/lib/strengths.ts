@@ -75,8 +75,13 @@ export function strengthName(key: string): string {
 }
 
 // ─── The 12-scenario assessment ───────────────────────────────────────────────
-// Each scenario has 4 options mapped to 4 distinct strengths. Across all 12,
-// every strength appears exactly twice (12 × 4 = 48 slots ÷ 24 = 2 each).
+// Each scenario has 4 options mapped to 4 distinct strengths. Across all 18,
+// every strength appears exactly three times (18 × 4 = 72 slots ÷ 24 = 3 each).
+//
+// Three appearances rather than two is a measurement decision, not padding. At
+// two, a strength could only score in {-2,0,2,4}, most strengths scored exactly
+// 0, and the ranking was decided largely by the tie-break rather than by the
+// student's answers — see TIEBREAK_ORDER below.
 
 export interface StrengthScenario {
   scenario: string;
@@ -116,12 +121,12 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
   },
   {
     scenario:
-      "You get away with something — a teacher forgot to collect the homework you didn't do. What actually happens in your head?",
+      "You get away with something — nobody checked the work you didn't do. What actually happens in your head?",
     options: [
       { text: "I'd probably own up anyway — feels wrong not to", strength: "honesty" },
       { text: "I think ahead about how this could bite me later", strength: "prudence" },
-      { text: "I feel weirdly grateful and don't push my luck", strength: "gratitude" },
-      { text: "I quietly get the work done anyway", strength: "self-regulation" },
+      { text: "It's not fair on everyone who did the work", strength: "fairness" },
+      { text: "I quietly get it done anyway", strength: "self-regulation" },
     ],
   },
   {
@@ -129,14 +134,14 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       "Someone in your group did something that really annoyed you last week. Today they act like nothing happened. You're most likely to…",
     options: [
       { text: "Let it go — holding grudges isn't worth it", strength: "forgiveness" },
-      { text: "Keep the team working smoothly despite it", strength: "teamwork" },
-      { text: "Stay calm and not let it get to me", strength: "self-regulation" },
-      { text: "Try to understand why they did it", strength: "judgment" },
+      { text: "Keep the group working smoothly despite it", strength: "teamwork" },
+      { text: "Accept I might have read it wrong", strength: "humility" },
+      { text: "Try to work out why they did it", strength: "judgment" },
     ],
   },
   {
     scenario:
-      "A new kid joins and clearly knows no one. Across the week, what's the move that feels most like you?",
+      "Someone new joins your group and clearly knows nobody. Across the week, what's the move that feels most like you?",
     options: [
       { text: "Go over and make them feel welcome", strength: "kindness" },
       { text: "Read whether they want space or company first", strength: "social-intelligence" },
@@ -156,7 +161,7 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
   },
   {
     scenario:
-      "You watch someone do something incredible — a performance, a play, a piece of art, a comeback. What's your reaction?",
+      "You watch someone do something incredible — a performance, a game, a piece of art, a comeback. What's your reaction?",
     options: [
       { text: "I get chills — real skill and beauty move me", strength: "appreciation" },
       { text: "I want to learn how they did it", strength: "love-of-learning" },
@@ -179,7 +184,7 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       "You've set yourself a goal that's going to take months of unglamorous effort. Be honest about what you're like…",
     options: [
       { text: "I keep showing up long after the excitement fades", strength: "perseverance" },
-      { text: "I forgive my own slip-ups and just keep going", strength: "forgiveness" },
+      { text: "I keep the habit even when the motivation dies", strength: "self-regulation" },
       { text: "I stay positive that it'll work out", strength: "hope" },
       { text: "I don't need credit — I just want it done well", strength: "humility" },
     ],
@@ -204,16 +209,95 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "I try to see it from the other person's angle", strength: "perspective" },
     ],
   },
+  {
+    scenario:
+      "You and someone close to you have properly fallen out. A week has gone by. What's your instinct?",
+    options: [
+      { text: "Let it go and move on — I don't hold on to things", strength: "forgiveness" },
+      { text: "Say plainly what actually bothered me", strength: "honesty" },
+      { text: "Work out what they were really upset about underneath", strength: "social-intelligence" },
+      { text: "Go to them, because the relationship matters more than being right", strength: "love" },
+    ],
+  },
+  {
+    scenario:
+      "Something you'd been looking forward to falls through at the last minute. What's the honest reaction?",
+    options: [
+      { text: "I notice what I've still got going for me", strength: "gratitude" },
+      { text: "I back myself that the next thing will work out", strength: "hope" },
+      { text: "I end up finding it funny and making a joke of it", strength: "humor" },
+      { text: "I throw myself straight into the next thing", strength: "zest" },
+    ],
+  },
+  {
+    scenario:
+      "You hit something you genuinely don't understand — a subject, a skill, a problem that won't budge. What's your move?",
+    options: [
+      { text: "Stay with it because I want to actually understand it", strength: "love-of-learning" },
+      { text: "Follow the parts that interest me, even off-topic", strength: "curiosity" },
+      { text: "Break it down and check where my thinking went wrong", strength: "judgment" },
+      { text: "Keep chipping away until it gives", strength: "perseverance" },
+    ],
+  },
+  {
+    scenario:
+      "Your group is organising something and it's all a bit loose — half-decided, nobody committing. Where do you naturally land?",
+    options: [
+      { text: "Doing my bit properly so the whole thing works", strength: "teamwork" },
+      { text: "Getting people organised and moving", strength: "leadership" },
+      { text: "Checking nobody's quietly being left out", strength: "kindness" },
+      { text: "Thinking ahead to what could go wrong", strength: "prudence" },
+    ],
+  },
+  {
+    scenario:
+      "You get an hour completely to yourself, no phone, nothing you have to do. Where does your head actually go?",
+    options: [
+      { text: "Zooming out — what actually matters here", strength: "perspective" },
+      { text: "Bigger questions about meaning and where I fit", strength: "spirituality" },
+      { text: "Noticing things I usually walk straight past", strength: "appreciation" },
+      { text: "Ideas start turning up and I want to make something", strength: "creativity" },
+    ],
+  },
+  {
+    scenario:
+      "Someone has let you down badly, and now they're asking for another chance. What do you do?",
+    options: [
+      { text: "Give them the second chance — people get things wrong", strength: "forgiveness" },
+      { text: "Remember the times they came through for me", strength: "gratitude" },
+      { text: "Tell them straight how it landed, even though it's awkward", strength: "bravery" },
+      { text: "Sit with it rather than react while I'm still angry", strength: "self-regulation" },
+    ],
+  },
 ];
 
-// Sanity guard (dev only): every strength should appear exactly twice.
+// Sanity guard (dev only): every strength should appear exactly three times.
 if (process.env.NODE_ENV !== "production") {
   const counts: Record<string, number> = {};
   for (const sc of STRENGTH_SCENARIOS)
     for (const o of sc.options) counts[o.strength] = (counts[o.strength] || 0) + 1;
-  const off = VIA_STRENGTHS.filter((s) => counts[s.key] !== 2).map((s) => s.key);
+  const off = VIA_STRENGTHS.filter((s) => counts[s.key] !== 3).map((s) => s.key);
   if (off.length) console.warn("[strengths] uneven scenario coverage:", off, counts);
 }
+
+// ─── Tie-breaking ─────────────────────────────────────────────────────────────
+// Ties are inevitable: 18 scenarios yield 18 "most" picks for 24 strengths, so
+// some strengths are never chosen and score equally. What matters is that the
+// tie-break isn't systematically unfair.
+//
+// Breaking ties by VIA_STRENGTHS order looked neutral but wasn't: that array is
+// grouped by virtue, so every Wisdom strength outranked every Transcendence one
+// on a tie. Measured on random answers, Bravery reached the top five 47% of the
+// time and Hope 5% — the ranking was reporting array position, not character.
+//
+// This order interleaves the six virtues instead, so no virtue is advantaged.
+// It stays fixed, so a given set of answers always produces the same ranking.
+const TIEBREAK_ORDER: string[] = [
+  "creativity", "bravery", "love", "teamwork", "forgiveness", "appreciation",
+  "curiosity", "perseverance", "kindness", "fairness", "humility", "gratitude",
+  "judgment", "honesty", "social-intelligence", "leadership", "prudence", "hope",
+  "love-of-learning", "zest", "perspective", "self-regulation", "humor", "spirituality",
+];
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
@@ -224,18 +308,37 @@ export interface StrengthResult {
 
 /**
  * Score = (2 × times chosen "most like me") − (1 × times chosen "least like me").
- * Ranked high→low; ties broken by canonical VIA order so results are stable.
+ * Ranked high→low; ties broken by TIEBREAK_ORDER, which interleaves the six
+ * virtues so no virtue is systematically favoured, and is fixed so the same
+ * answers always give the same ranking.
  */
 export function scoreAssessment(most: string[], least: string[]): StrengthResult {
   const scores: Record<string, number> = {};
-  for (const s of VIA_STRENGTHS) scores[s.key] = 0;
-  for (const k of most) if (k in scores) scores[k] += 2;
-  for (const k of least) if (k in scores) scores[k] -= 1;
+  const mostCount: Record<string, number> = {};
+  const leastCount: Record<string, number> = {};
+  for (const s of VIA_STRENGTHS) {
+    scores[s.key] = 0;
+    mostCount[s.key] = 0;
+    leastCount[s.key] = 0;
+  }
+  for (const k of most) if (k in scores) { scores[k] += 2; mostCount[k] += 1; }
+  for (const k of least) if (k in scores) { scores[k] -= 1; leastCount[k] += 1; }
 
-  const order = new Map(VIA_STRENGTHS.map((s, i) => [s.key, i]));
+  const order = new Map(TIEBREAK_ORDER.map((k, i) => [k, i]));
   const ranking = [...VIA_STRENGTHS.map((s) => s.key)].sort((a, b) => {
-    const diff = scores[b] - scores[a];
-    return diff !== 0 ? diff : (order.get(a)! - order.get(b)!);
+    // 1. Score.
+    const byScore = scores[b] - scores[a];
+    if (byScore !== 0) return byScore;
+    // 2. Equal scores can hide different histories — "never picked" and "picked
+    //    once but rejected twice" both land on 0. Prefer the one the student
+    //    actually chose, then the one they rejected less. This is real evidence,
+    //    so it is used before falling back to a fixed order.
+    const byMost = mostCount[b] - mostCount[a];
+    if (byMost !== 0) return byMost;
+    const byLeast = leastCount[a] - leastCount[b];
+    if (byLeast !== 0) return byLeast;
+    // 3. No evidence either way — a fixed, virtue-interleaved order.
+    return order.get(a)! - order.get(b)!;
   });
   return { scores, ranking };
 }
