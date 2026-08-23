@@ -11,6 +11,7 @@ import type {
   SupportContact,
 } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
+import type { Spine } from "@/lib/spine";
 
 type RevisitEntry = {
   id: string;
@@ -35,7 +36,19 @@ interface Props {
   supportCircle: SupportContact[];
   revisitEntry: RevisitEntry | null;
   nudgeActivity: NudgeActivity | null;
+  spine: Spine;
+  programWeek: ProgramWeekCard;
 }
+
+type ProgramWeekCard = {
+  week: number;
+  title: string;
+  challenge: string;
+  emoji: string;
+  started: boolean;
+  weeksDone: number;
+  allDone: boolean;
+};
 
 function getMissionProgress(
   missionId: number,
@@ -65,6 +78,8 @@ export default function DashboardClient({
   supportCircle,
   revisitEntry,
   nudgeActivity,
+  spine,
+  programWeek,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -75,6 +90,77 @@ export default function DashboardClient({
   const activeMissionProgress = getMissionProgress(profile.active_mission, progress);
 
   const totalCompleted = progress.length;
+
+  // The program's "this week" — the dashboard previously never mentioned the
+  // program at all, so a student who didn't tap its nav icon never met it.
+  const programCard = (
+    <div data-animate="2">
+      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        {programWeek.allDone
+          ? "The weekly five"
+          : programWeek.started
+            ? "Carry on with"
+            : "This week"}
+      </h2>
+      <Link
+        href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
+        className="block rounded-2xl p-5 text-white"
+        style={{ background: "var(--navy)" }}
+      >
+        <div
+          className="text-[11px] font-bold uppercase tracking-widest mb-1"
+          style={{ color: "var(--gold)" }}
+        >
+          {programWeek.allDone
+            ? "All ten weeks done"
+            : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}
+        </div>
+        <p
+          className="text-xl mb-2"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+        >
+          {programWeek.allDone ? "Keep the weekly five going" : programWeek.title}
+        </p>
+        <p className="text-sm leading-relaxed opacity-90">
+          {programWeek.allDone ? spine.programBlurb : programWeek.challenge}
+        </p>
+      </Link>
+      {!programWeek.started && !programWeek.allDone && (
+        <p className="text-xs text-ink-muted leading-relaxed mt-2">
+          {spine.programBlurb}
+        </p>
+      )}
+    </div>
+  );
+
+  // Year 12s arrive with questions about next year; the character program is
+  // not the answer to those, so the near-future work is offered above it.
+  const futureCard = spine.futureFirst ? (
+    <div data-animate="2">
+      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        Next year
+      </h2>
+      <Link
+        href="/me?tab=future"
+        className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
+      >
+        <span className="text-2xl flex-shrink-0" aria-hidden>
+          🧭
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold text-ink">
+            Pathways and goals
+          </div>
+          <p className="text-xs text-ink-muted leading-relaxed">
+            Where your strengths point, and the first concrete steps after school.
+          </p>
+        </div>
+        <span className="text-ink-muted flex-shrink-0" aria-hidden>
+          →
+        </span>
+      </Link>
+    </div>
+  ) : null;
 
   return (
     <AppShell>
@@ -90,6 +176,10 @@ export default function DashboardClient({
             {firstName}.
           </h1>
         </div>
+
+        {/* The spine decides what leads. Juniors get the week first; everyone
+            else gets their mission, with the program offered below. */}
+        {spine.lead === "program" && programCard}
 
         {/* Active Mission Card */}
         <div data-animate="2">
@@ -269,6 +359,13 @@ export default function DashboardClient({
               </div>
             </div>
           </div>
+        )}
+
+        {spine.lead !== "program" && (
+          <>
+            {futureCard}
+            {programCard}
+          </>
         )}
 
         {/* Mission Map */}

@@ -158,7 +158,7 @@ export const MISSIONS: Mission[] = [
     id: 1,
     title: "Identity",
     subtitle: "Mission 1",
-    question: "Who am I becoming?",
+    question: "What am I actually like?",
     phase: "exploration",
     phaseLabel: "Phase 1 — Exploration",
     phaseDescription:

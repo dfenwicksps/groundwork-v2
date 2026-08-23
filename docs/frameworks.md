@@ -31,7 +31,7 @@ this progression, adding a final **integration** phase:
 
 | Mission | Theme | Question | Phase |
 | --- | --- | --- | --- |
-| 1 | Identity | Who am I becoming? | Exploration |
+| 1 | Identity | What am I actually like? | Exploration |
 | 2 | Purpose | What do I care about? | Commitment |
 | 3 | Connection | Where do I belong? | Commitment |
 | 4 | Meaning | What kind of life do I want? | Integration |
@@ -61,7 +61,7 @@ Each mission's activities draw on a specific body of research, captured in the
 `whyItMatters` field of the relevant activity in
 [`src/lib/missions.ts`](../src/lib/missions.ts).
 
-### Mission 1 — Identity ("Who am I becoming?")
+### Mission 1 — Identity ("What am I actually like?")
 
 The app frames identity in **three layers**, used as its own integrating scaffold (the
 "Integrated Identity Framework"):
@@ -303,6 +303,42 @@ Design rules:
   the journal's revisit action, and
   [`supabase/migrations/006_revisits.sql`](../supabase/migrations/006_revisits.sql), which
   backfills existing convention-linked revisits so no history is lost.
+
+---
+
+## 2e. The spine — one path, chosen by year level
+
+Groundwork carries two bodies of work: the **Missions** (a library, explored in any order)
+and the **10-Week Program** (a cadence, walked in sequence). Presented as peers they
+compete — two tracks both saying "start here", with nothing telling a student which is
+theirs. The dashboard previously never mentioned the Program at all, so a student who
+didn't tap its nav icon never met it.
+
+The spine picks which track leads, using the year level captured at onboarding. It never
+hides anything — both stay fully reachable from the nav. It only decides what the dashboard
+offers first, because the first card is the only one some students read.
+
+| Year level | Leads with | Then |
+| --- | --- | --- |
+| Junior (7–9) | **This week** (program) | Mission, mission map |
+| Middle (10–11) | Mission | This week, mission map |
+| Senior (12) | Mission | **Next year** (pathways/goals), then this week |
+
+The reasoning is developmental rather than cosmetic. At 14 the program's concreteness is
+the point — "do one unnoticed thing a day" lands in a way that "examine the gap between
+your inner and public self" does not. At 18 the near-future work is what the student
+actually arrived with, and a ten-week character cadence is not the answer to "what do I do
+next year"; it's offered below, not as the on-ramp.
+
+Mission 1's question was also renamed from *"Who am I becoming?"* to **"What am I actually
+like?"** — it previously collided word-for-word with the Program's week 1, so a student
+moving between the two tracks met the identical headline twice with different content
+under each. The new wording is also more honest about what the mission does: strengths,
+values, the mask, the letter. Descriptive rather than aspirational.
+
+- **Where:** [`src/lib/spine.ts`](../src/lib/spine.ts) (the rule),
+  [`src/app/dashboard/page.tsx`](../src/app/dashboard/page.tsx) (year level + program state),
+  and `DashboardClient` (ordering).
 
 ---
 

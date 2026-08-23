@@ -1,5 +1,9 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createServerClient } from "@/lib/supabase-server";
+import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { spineFor } from "@/lib/spine";
+import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS } from "@/lib/missions";
 import DashboardClient from "./DashboardClient";
@@ -167,6 +171,45 @@ export default async function DashboardPage() {
     }
   }
 
+  // ── The spine ──
+  // Which track leads is a function of year level, not of what happens to be
+  // furthest along. See src/lib/spine.ts.
+  const yearLevel = parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle";
+  const spine = spineFor(yearLevel);
+
+  // Program state for the "this week" card. Absent table (migration 005 not
+  // run) degrades to offering week 1 rather than erroring.
+  const { data: programRaw } = await (supabase as any)
+    .from("program_progress")
+    .select("week, days, commitment, reflection, completed_at, started_at")
+    .eq("user_id", user.id);
+
+  const programProgress: Record<number, WeekProgress> = {};
+  for (const row of (programRaw || []) as any[]) {
+    programProgress[row.week] = {
+      week: row.week,
+      days: parseDays(row.days),
+      commitment: row.commitment ?? null,
+      reflection: row.reflection ?? null,
+      completed_at: row.completed_at ?? null,
+      started_at: row.started_at,
+    };
+  }
+  const weekNumber = currentWeek(programProgress);
+  const weeksDone = PROGRAM_WEEKS.filter((w) =>
+    isWeekComplete(w, programProgress[w.week])
+  ).length;
+  const programWeek = {
+    week: weekNumber,
+    title: PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.title ?? "",
+    challenge:
+      PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.challenge.title ?? "",
+    emoji: PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.emoji ?? "🧭",
+    started: !!programProgress[weekNumber],
+    weeksDone,
+    allDone: weeksDone === PROGRAM_WEEKS.length,
+  };
+
   return (
     <DashboardClient
       profile={profile}
@@ -176,6 +219,8 @@ export default async function DashboardPage() {
       supportCircle={supportCircle || []}
       revisitEntry={revisitEntry || null}
       nudgeActivity={nudgeActivity}
+      spine={spine}
+      programWeek={programWeek}
     />
   );
 }
