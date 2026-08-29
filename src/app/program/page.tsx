@@ -1,6 +1,9 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import ProgramClient from "./ProgramClient";
+import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { spineFor } from "@/lib/spine";
 import { parseDays, type WeekProgress, type Strand } from "@/lib/program";
 import type { WeeklyCheckin } from "./WeeklyFiveSection";
 
@@ -14,6 +17,7 @@ export default async function ProgramPage() {
   if (!user) redirect("/auth");
 
   const db = supabase as any;
+  const spine = spineFor(parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle");
 
   const [{ data: progressRaw, error: progressError }, { data: weeklyRaw }] =
     await Promise.all([
@@ -60,6 +64,7 @@ export default async function ProgramPage() {
       userId={user.id}
       progress={progress}
       weekly={weekly}
+      spine={spine}
       ready={ready}
     />
   );

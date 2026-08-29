@@ -11,6 +11,7 @@ import type {
   SupportContact,
 } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
+import { TrackBadge } from "@/components/TrackBanner";
 import type { Spine } from "@/lib/spine";
 
 type RevisitEntry = {
@@ -95,13 +96,16 @@ export default function DashboardClient({
   // program at all, so a student who didn't tap its nav icon never met it.
   const programCard = (
     <div data-animate="2">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-        {programWeek.allDone
-          ? "The weekly five"
-          : programWeek.started
-            ? "Carry on with"
-            : "This week"}
-      </h2>
+      <div className="flex items-baseline gap-2 flex-wrap mb-3">
+        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+          {programWeek.allDone
+            ? "The weekly five"
+            : programWeek.started
+              ? "Carry on with"
+              : "This week"}
+        </h2>
+        <TrackBadge lead={spine.lead === "program"} />
+      </div>
       <Link
         href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
         className="block rounded-2xl p-5 text-white"
@@ -183,6 +187,14 @@ export default function DashboardClient({
 
         {/* Active Mission Card */}
         <div data-animate="2">
+          {/* Both cards carry the same marker, so "which one first?" is answered
+              on the dashboard rather than only once you're inside a track. */}
+          <div className="flex items-baseline gap-2 flex-wrap mb-3">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+              Your mission
+            </h2>
+            <TrackBadge lead={spine.lead !== "program"} />
+          </div>
           <div
             className="rounded-2xl p-6 text-white relative overflow-hidden"
             style={{ background: activeMission.colour }}

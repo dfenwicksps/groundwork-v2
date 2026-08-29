@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import TrackBanner from "@/components/TrackBanner";
+import type { Spine } from "@/lib/spine";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -27,7 +29,8 @@ export default function MissionDetailClient({
   userId,
   completedActivities,
   stories,
-}: Props) {
+  spine,
+}: Props & { spine: Spine }) {
   const router = useRouter();
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [restarting, setRestarting] = useState(false);
@@ -126,11 +129,13 @@ export default function MissionDetailClient({
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-8">
+        <TrackBanner track="missions" spine={spine} />
+
         {/* Journey — activities with stories woven in */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-              Your journey
+              The steps
             </h2>
             {stories.length > 0 && (
               <Link href="/stories" className="text-xs text-teal hover:underline">

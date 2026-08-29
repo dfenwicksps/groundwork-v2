@@ -1,4 +1,7 @@
 import { redirect, notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { spineFor } from "@/lib/spine";
 import { createServerClient } from "@/lib/supabase-server";
 import { getMission } from "@/lib/missions";
 import MissionDetailClient from "./MissionDetailClient";
@@ -39,6 +42,7 @@ export default async function MissionPage({
       mission={mission}
       userId={user.id}
       completedActivities={completedActivities}
+      spine={spineFor(parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle")}
       stories={stories || []}
     />
   );

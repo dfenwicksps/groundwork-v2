@@ -3,6 +3,8 @@
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import WeeklyFiveSection, { type WeeklyCheckin } from "./WeeklyFiveSection";
+import TrackBanner from "@/components/TrackBanner";
+import type { Spine } from "@/lib/spine";
 import {
   PROGRAM_WEEKS,
   isWeekComplete,
@@ -19,9 +21,11 @@ export default function ProgramClient({
   userId,
   progress,
   weekly,
+  spine,
   ready,
 }: {
   userId: string;
+  spine: Spine;
   progress: Record<number, WeekProgress>;
   weekly: WeeklyCheckin[];
   ready: boolean;
@@ -50,6 +54,8 @@ export default function ProgramClient({
             and one thing to actually do.
           </p>
         </div>
+
+        <TrackBanner track="program" spine={spine} />
 
         {!ready && (
           <div className="card p-5 flex items-center gap-4" data-animate="2">

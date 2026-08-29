@@ -30,7 +30,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/missions/1",
-    label: "Journey",
+    label: "Missions",
     match: (p: string) => p.startsWith("/missions"),
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -59,7 +59,7 @@ const NAV_ITEMS = [
   },
   {
     href: "/program",
-    label: "Program",
+    label: "This Week",
     match: (p: string) => p.startsWith("/program"),
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none">

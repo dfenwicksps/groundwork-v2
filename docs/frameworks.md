@@ -343,9 +343,36 @@ time to every shift" has no shift. Only the tap-examples change — the sentence
 the hints and the challenge itself are identical at every age
 (`commitmentScaffold` in [`src/lib/program.ts`](../src/lib/program.ts)).
 
+### Saying it out loud
+
+Ordering alone turned out not to be enough. A student reading the dashboard top to bottom
+still saw two equally weighted cards, and the nav offered **Journey** and **Program** — two
+abstractions that name neither the work nor the order — with neither page mentioning the
+other. The spine's decision existed but was never stated anywhere a student could read it.
+
+Three changes make it legible:
+
+1. **The nav says what the thing is.** *Journey → Missions*, *Program → This week*. One
+   names a body of work; the other names a cadence. "Journey" and "Program" could each have
+   been either.
+2. **Every landing point carries the same marker.** `TrackBadge` renders **Start here**
+   (sage) on the track the spine leads with, and **Anytime** on the other. It appears on the
+   dashboard's two cards and at the top of `/program` and `/missions/[id]`, so the answer to
+   "which first?" is the same wherever a student meets it.
+3. **Each track describes the other.** `TrackBanner` sits at the top of both track pages: a
+   one-line description of where you are, then a divider link to the other track with its
+   own one-liner — prefixed **"Start with "** when the track you're on isn't the lead. A
+   student who lands on missions first is told, in place, that this week comes first for
+   them; nothing stops them carrying on.
+
+Nothing is gated. The badge reports a recommendation, and the link to the other track is
+always live — a junior who wants Mission 3 today can have it.
+
 - **Where:** [`src/lib/spine.ts`](../src/lib/spine.ts) (the rule),
+  [`src/components/TrackBanner.tsx`](../src/components/TrackBanner.tsx) (banner + badge),
+  [`src/components/layout/AppShell.tsx`](../src/components/layout/AppShell.tsx) (nav labels),
   [`src/app/dashboard/page.tsx`](../src/app/dashboard/page.tsx) (year level + program state),
-  and `DashboardClient` (ordering).
+  and `DashboardClient` (ordering + badges).
 
 ---
 
