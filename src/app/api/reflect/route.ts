@@ -15,6 +15,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Respect the opt-out promised in the privacy policy: when this is off,
+    // nothing the user wrote leaves our database.
+    const { data: prefs } = await (supabase as any)
+      .from("users")
+      .select("ai_reflections_enabled")
+      .eq("id", user.id)
+      .single();
+    if (prefs && prefs.ai_reflections_enabled === false) {
+      return NextResponse.json({ reflection: null });
+    }
+
     const { text, entryId } = await request.json();
 
     if (!text || text.trim().length < 10) {

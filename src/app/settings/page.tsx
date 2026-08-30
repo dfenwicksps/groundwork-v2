@@ -14,7 +14,10 @@ export default async function SettingsPage() {
     .select("*")
     .eq("id", user.id)
     .single();
-  const profile = _raw as { display_name: string | null } | null;
+  const profile = _raw as {
+    display_name: string | null;
+    ai_reflections_enabled: boolean | null;
+  } | null;
 
   const { data: onboarding } = await supabase
     .from("onboarding_results")
@@ -29,6 +32,7 @@ export default async function SettingsPage() {
       email={user.email || ""}
       displayName={profile?.display_name || ""}
       savedValues={savedValues}
+      aiReflectionsEnabled={profile?.ai_reflections_enabled ?? true}
     />
   );
 }

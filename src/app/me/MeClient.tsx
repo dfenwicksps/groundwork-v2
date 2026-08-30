@@ -351,7 +351,7 @@ export default function MeClient({
                 className="flex items-center gap-2 text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3 w-full"
                 aria-expanded={showAll}
               >
-                <svg
+                <svg aria-hidden="true"
                   width="12"
                   height="12"
                   viewBox="0 0 12 12"

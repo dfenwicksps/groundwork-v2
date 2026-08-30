@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -82,25 +82,53 @@ export default function OnboardingPage() {
   const [name, setName] = useState("");
   const [yearLevel, setYearLevel] = useState<YearLevel | null>(null);
   const [whyHere, setWhyHere] = useState("");
+
+  // Step 2 — how you like to work
   const [styleAnswers, setStyleAnswers] = useState<Record<string, ProcessingStyle>>({});
 
-  // Step 2
+  // Step 3 — values
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
+  const [openValue, setOpenValue] = useState<string | null>(null);
+  const [blockedValue, setBlockedValue] = useState<string | null>(null);
+  const blockedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Step 3
+  // Step 4 — a trusted person
   const [supportName, setSupportName] = useState("");
   const [supportRelationship, setSupportRelationship] = useState("");
+
+  // Carry the name from signup so nobody types it twice. Still editable, which
+  // quietly makes the point that you can go by whatever you like here.
+  useEffect(() => {
+    createClient()
+      .auth.getUser()
+      .then(({ data: { user } }) => {
+        const fromSignup =
+          (user?.user_metadata?.full_name as string | undefined) ??
+          (user?.user_metadata?.name as string | undefined);
+        if (fromSignup) setName(fromSignup.split(" ")[0]);
+      });
+  }, []);
+
+  useEffect(() => () => {
+    if (blockedTimer.current) clearTimeout(blockedTimer.current);
+  }, []);
 
   function toggleValue(val: string) {
     if (selectedValues.includes(val)) {
       setSelectedValues(selectedValues.filter((v) => v !== val));
-    } else if (selectedValues.length < 3) {
-      setSelectedValues([...selectedValues, val]);
+      return;
     }
+    if (selectedValues.length >= 3) {
+      // Say why nothing happened, rather than leaving a dead-looking button.
+      setBlockedValue(val);
+      if (blockedTimer.current) clearTimeout(blockedTimer.current);
+      blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
+      return;
+    }
+    setSelectedValues([...selectedValues, val]);
   }
 
-  const hoveredValueDefinition = hoveredValue ? VALUES_WITH_DEFINITIONS[hoveredValue] : null;
+  const openValueDefinition = openValue ? VALUES_WITH_DEFINITIONS[openValue] : null;
 
   async function handleFinish(skip: boolean = false) {
     setLoading(true);
@@ -167,7 +195,8 @@ export default function OnboardingPage() {
     router.push("/dashboard");
   }
 
-  const progressWidth = `${(step / 3) * 100}%`;
+  const TOTAL_STEPS = 4;
+  const progressWidth = `${(step / TOTAL_STEPS) * 100}%`;
 
   return (
     <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
@@ -175,14 +204,14 @@ export default function OnboardingPage() {
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between text-xs text-ink-muted mb-2">
           <span>Getting started</span>
-          <span>{step} of 3</span>
+          <span>{step} of {TOTAL_STEPS}</span>
         </div>
         <div
           className="progress-bar"
           role="progressbar"
           aria-label="Onboarding progress"
           aria-valuemin={1}
-          aria-valuemax={3}
+          aria-valuemax={TOTAL_STEPS}
           aria-valuenow={step}
         >
           <div className="progress-fill" style={{ width: progressWidth }} />
@@ -213,7 +242,8 @@ export default function OnboardingPage() {
               Let&apos;s start with you.
             </h1>
             <p className="text-ink-muted text-sm mb-6">
-              Just a couple of quick things before we get into it.
+              Three questions here, then three quick ones about how you like to
+              work, then values and one optional detail. Four short screens.
             </p>
 
             <div className="space-y-5">
@@ -230,6 +260,7 @@ export default function OnboardingPage() {
                         setYearLevel(y.key);
                         setYearLevelCookie(y.key);
                       }}
+                      aria-pressed={yearLevel === y.key}
                       className={cn(
                         "p-3 rounded-xl border text-center transition-all",
                         yearLevel === y.key
@@ -238,7 +269,10 @@ export default function OnboardingPage() {
                       )}
                       style={{ borderWidth: "1.5px" }}
                     >
-                      <div className="text-sm font-semibold text-ink">{y.label}</div>
+                      <div className="text-sm font-semibold text-ink">
+                        {yearLevel === y.key && <span aria-hidden>✓ </span>}
+                        {y.label}
+                      </div>
                       <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
                     </button>
                   ))}
@@ -259,6 +293,9 @@ export default function OnboardingPage() {
                   placeholder="Your first name"
                   className="input"
                 />
+                <p className="text-[11px] text-ink-muted mt-1.5">
+                  A nickname is fine — this is just what the app calls you.
+                </p>
               </div>
 
               <div>
@@ -271,6 +308,7 @@ export default function OnboardingPage() {
                       key={opt.value}
                       type="button"
                       onClick={() => setWhyHere(opt.value)}
+                      aria-pressed={whyHere === opt.value}
                       className={cn(
                         "w-full text-left p-4 rounded-xl border-1.5 transition-all",
                         "flex items-center gap-3",
@@ -291,7 +329,7 @@ export default function OnboardingPage() {
                       </div>
                       {whyHere === opt.value && (
                         <div className="ml-auto w-4 h-4 rounded-full bg-teal flex items-center justify-center flex-shrink-0">
-                          <svg
+                          <svg aria-hidden="true"
                             width="8"
                             height="8"
                             viewBox="0 0 8 8"
@@ -313,63 +351,104 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            {/* Style detection questions — appear after "why here" is chosen */}
-            {whyHere && (
-              <div className="space-y-5 pt-2 border-t border-surface-border mt-2">
-                <p className="text-xs text-ink-muted pt-3">
-                  Two more quick ones — helps us tailor how things are presented.
-                </p>
-                {STYLE_QUESTIONS.map((q) => (
-                  <div key={q.id}>
-                    <label className="block text-sm font-medium text-ink mb-2">
-                      {q.question}
-                    </label>
-                    <div className="space-y-2">
-                      {q.options.map((opt) => (
-                        <button
-                          key={opt.style}
-                          type="button"
-                          onClick={() =>
-                            setStyleAnswers((prev) => ({ ...prev, [q.id]: opt.style }))
-                          }
-                          className={cn(
-                            "w-full text-left px-4 py-3 rounded-xl border transition-all text-sm",
-                            styleAnswers[q.id] === opt.style
-                              ? "border-teal bg-teal/5 ring-1 ring-teal text-ink"
-                              : "border-surface-border bg-white text-ink-muted hover:border-teal/40"
-                          )}
-                          style={{ borderWidth: "1.5px" }}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <button
               onClick={() => setStep(2)}
-              disabled={!whyHere || Object.keys(styleAnswers).length < STYLE_QUESTIONS.length}
+              disabled={!whyHere}
               className="btn btn-primary w-full mt-6"
             >
               Next
             </button>
-            {/* Tell the user WHY Next is disabled instead of leaving them guessing */}
-            {(!whyHere || Object.keys(styleAnswers).length < STYLE_QUESTIONS.length) && (
+            {!whyHere && (
               <p className="text-xs text-ink-muted text-center mt-2">
-                {!whyHere
-                  ? "Choose what brings you here to continue."
-                  : `Answer ${STYLE_QUESTIONS.length - Object.keys(styleAnswers).length} more question${STYLE_QUESTIONS.length - Object.keys(styleAnswers).length === 1 ? "" : "s"} above to continue.`}
+                Choose what brings you here to continue.
               </p>
             )}
           </div>
         </div>
       )}
 
-      {/* Step 2 */}
+      {/* Step 2 — how you like to work. Its own screen: it was three questions
+          appearing unannounced under a heading that promised "a couple". */}
       {step === 2 && (
+        <div className="w-full max-w-md animate-fade-up">
+          <div className="card p-8">
+            <h1
+              className="text-2xl text-navy mb-2"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+            >
+              Three quick ones.
+            </h1>
+            <p className="text-ink-muted text-sm mb-6">
+              These change how much guidance each activity gives you — never what
+              the activities are. You can change it later in settings.
+            </p>
+
+            <div className="space-y-5">
+              {STYLE_QUESTIONS.map((q) => (
+                <fieldset key={q.id}>
+                  <legend className="block text-sm font-medium text-ink mb-2">
+                    {q.question}
+                  </legend>
+                  <div className="space-y-2">
+                    {q.options.map((opt) => {
+                      const selected = styleAnswers[q.id] === opt.style;
+                      return (
+                        <button
+                          key={opt.style}
+                          type="button"
+                          onClick={() =>
+                            setStyleAnswers((prev) => ({ ...prev, [q.id]: opt.style }))
+                          }
+                          aria-pressed={selected}
+                          className={cn(
+                            "w-full text-left px-4 py-3 rounded-xl border transition-all text-sm",
+                            "flex items-start gap-2.5",
+                            selected
+                              ? "border-teal bg-teal/5 ring-1 ring-teal text-ink"
+                              : "border-surface-border bg-white text-ink-muted hover:border-teal/40"
+                          )}
+                          style={{ borderWidth: "1.5px" }}
+                        >
+                          <span
+                            aria-hidden
+                            className={cn(
+                              "w-4 h-4 rounded-full border flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5",
+                              selected
+                                ? "bg-teal border-teal text-white"
+                                : "border-surface-border text-transparent"
+                            )}
+                          >
+                            ✓
+                          </span>
+                          <span>{opt.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ))}
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setStep(1)} className="btn btn-secondary flex-1">
+                Back
+              </button>
+              <button
+                onClick={() => setStep(3)}
+                disabled={Object.keys(styleAnswers).length < STYLE_QUESTIONS.length}
+                className="btn btn-primary flex-[2]"
+              >
+                {Object.keys(styleAnswers).length < STYLE_QUESTIONS.length
+                  ? `${Object.keys(styleAnswers).length} of ${STYLE_QUESTIONS.length} answered`
+                  : "Next"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3 — values */}
+      {step === 3 && (
         <div className="w-full max-w-md animate-fade-up">
           <div className="card p-8">
             <h1
@@ -380,45 +459,75 @@ export default function OnboardingPage() {
             </h1>
             <p className="text-ink-muted text-sm mb-6">
               Choose 3 values that feel genuinely true for you right now — not
-              the ones you think you should have.
+              the ones you think you should have. Tap the{" "}
+              <span className="font-medium">i</span> on any value to read what it
+              means.
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
               {ONBOARDING_VALUES.map((label) => {
                 const selected = selectedValues.includes(label);
-                const disabled = !selected && selectedValues.length >= 3;
+                const atLimit = !selected && selectedValues.length >= 3;
+                const nudging = blockedValue === label;
+                const expanded = openValue === label;
                 return (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => toggleValue(label)}
-                    onMouseEnter={() => setHoveredValue(label)}
-                    onMouseLeave={() => setHoveredValue(null)}
-                    disabled={disabled}
-                    className={cn(
-                      "p-3 rounded-xl text-sm font-medium transition-all border",
-                      selected
-                        ? "bg-navy text-white border-navy"
-                        : disabled
-                        ? "bg-surface-muted text-ink-muted border-surface-border cursor-not-allowed"
-                        : "bg-white text-ink border-surface-border hover:border-navy/30"
-                    )}
-                  >
-                    {label}
-                  </button>
+                  <div key={label} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => toggleValue(label)}
+                      aria-pressed={selected}
+                      className={cn(
+                        "w-full h-full p-3 pr-7 rounded-xl text-sm font-medium transition-all border text-left",
+                        nudging && "animate-nudge",
+                        selected
+                          ? "bg-navy text-white border-navy"
+                          : atLimit
+                          ? "bg-white text-ink-muted border-surface-border hover:border-navy/20"
+                          : "bg-white text-ink border-surface-border hover:border-navy/30"
+                      )}
+                    >
+                      {/* Selection is marked by a tick as well as by colour. */}
+                      {selected && <span aria-hidden className="mr-1">✓</span>}
+                      {label}
+                    </button>
+                    {/* Reading a definition must not cost you a selection, so
+                        the info affordance is its own control. */}
+                    <button
+                      type="button"
+                      onClick={() => setOpenValue(expanded ? null : label)}
+                      aria-expanded={expanded}
+                      aria-label={`What ${label} means`}
+                      className={cn(
+                        "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
+                        "text-[11px] font-semibold leading-none",
+                        "flex items-center justify-center transition-colors",
+                        selected
+                          ? "border-white/50 text-white/90 hover:bg-white/20"
+                          : "border-ink-muted/35 text-ink-muted hover:border-navy hover:text-navy"
+                      )}
+                    >
+                      i
+                    </button>
+                  </div>
                 );
               })}
             </div>
 
-            {/* Tooltip / description area — fixed height prevents layout shift */}
-            <div className="mb-4 h-[5.5rem] flex items-start">
-              {hoveredValue && hoveredValueDefinition ? (
+            {/* Definition / feedback area — fixed height prevents layout shift */}
+            <div className="mb-4 min-h-[5.5rem] flex items-start">
+              {blockedValue ? (
+                <div role="status" className="w-full rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-ink">
+                  You&apos;ve got three. Tap one of them to swap it out first.
+                </div>
+              ) : openValue && openValueDefinition ? (
                 <div className="w-full rounded-xl bg-teal/5 border border-teal/20 px-4 py-3 text-sm text-ink-muted">
-                  <span className="font-semibold text-ink">{hoveredValue}: </span>
-                  {hoveredValueDefinition}
+                  <span className="font-semibold text-ink">{openValue}: </span>
+                  {openValueDefinition}
                 </div>
               ) : (
-                <p className="text-xs text-ink-muted px-1 pt-1">Hover over a value to learn more</p>
+                <p className="text-xs text-ink-muted px-1 pt-1">
+                  Not sure what one means? Tap its <span className="font-medium">i</span>.
+                </p>
               )}
             </div>
 
@@ -436,13 +545,13 @@ export default function OnboardingPage() {
 
             <div className="flex gap-3">
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="btn btn-secondary flex-1"
               >
                 Back
               </button>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 disabled={selectedValues.length < 3}
                 className="btn btn-primary flex-[2]"
               >
@@ -453,8 +562,8 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/* Step 3 */}
-      {step === 3 && (
+      {/* Step 4 — a trusted person */}
+      {step === 4 && (
         <div className="w-full max-w-md animate-fade-up">
           <div className="card p-8">
             <h1
@@ -467,9 +576,13 @@ export default function OnboardingPage() {
               Groundwork works best alongside real people. If you have someone you could talk to when things get heavy — a parent, a coach, an older sibling, anyone — it&apos;s worth keeping them in mind.
             </p>
 
-            <div className="bg-surface-muted rounded-xl p-4 mb-6 border border-surface-border">
+            <div className="bg-surface-muted rounded-xl p-4 mb-6 border border-surface-border space-y-2">
+              <p className="text-sm text-ink font-medium">
+                We never contact them. This stays between you and the app.
+              </p>
               <p className="text-sm text-ink-muted">
-                This is completely optional — it just gives you someone to think of if you ever need it. You can add or change this any time.
+                It&apos;s completely optional — just a name to think of if you
+                ever need it. You can add or change this any time.
               </p>
             </div>
 
@@ -520,13 +633,22 @@ export default function OnboardingPage() {
               >
                 {loading ? "Setting up your account…" : finishError ? "Try again" : "Start Mission 1"}
               </button>
-              <button
-                onClick={() => handleFinish(true)}
-                disabled={loading}
-                className="text-sm text-ink-muted hover:text-ink transition-colors text-center py-1"
-              >
-                Skip for now
-              </button>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setStep(3)}
+                  disabled={loading}
+                  className="text-sm text-ink-muted hover:text-ink transition-colors py-1"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => handleFinish(true)}
+                  disabled={loading}
+                  className="text-sm text-ink-muted hover:text-ink transition-colors py-1"
+                >
+                  Skip for now
+                </button>
+              </div>
             </div>
 
             <p className="text-xs text-ink-muted text-center mt-4">

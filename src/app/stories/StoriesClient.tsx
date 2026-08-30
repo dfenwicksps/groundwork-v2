@@ -34,6 +34,11 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
           <p className="text-ink-muted text-sm">
             Real situations. No celebrities. No tidy endings.
           </p>
+          <p className="text-xs text-ink-muted mt-2 leading-relaxed">
+            Each one is based on real students&apos; experiences, with names and
+            identifying details changed. Nobody here is a real named person — the
+            situations are.
+          </p>
         </div>
 
         {/* Filter */}
@@ -88,7 +93,7 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
                       <h2 className="text-base font-semibold text-navy group-hover:text-teal transition-colors">
                         {story.title}
                       </h2>
-                      <svg
+                      <svg aria-hidden="true"
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"

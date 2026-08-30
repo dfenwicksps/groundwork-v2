@@ -34,7 +34,7 @@ export default async function StoryPage({
           href="/stories"
           className="inline-flex items-center gap-1 text-ink-muted hover:text-ink text-sm mb-6 transition-colors"
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path
               d="M9 11L5 7l4-4"
               stroke="currentColor"
@@ -114,7 +114,7 @@ export default async function StoryPage({
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-teal hover:text-teal-dark transition-colors"
                 >
                   Write about this
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path
                       d="M2 6h8M6.5 2.5L10 6l-3.5 3.5"
                       stroke="currentColor"

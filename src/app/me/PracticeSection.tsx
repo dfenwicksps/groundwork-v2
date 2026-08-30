@@ -191,6 +191,7 @@ export default function PracticeSection({
                 <button
                   key={k}
                   onClick={() => setSelected(selected === k ? null : k)}
+                  aria-pressed={selected === k}
                   className={`px-3 py-2 rounded-xl text-sm border transition-all flex items-center gap-1.5 ${
                     selected === k
                       ? "bg-navy text-white border-navy"

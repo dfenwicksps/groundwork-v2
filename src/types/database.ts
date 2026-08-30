@@ -8,6 +8,7 @@ export type Database = {
           created_at: string;
           onboarding_complete: boolean;
           active_mission: number;
+          ai_reflections_enabled: boolean;
         };
         Insert: {
           id: string;
@@ -15,12 +16,14 @@ export type Database = {
           created_at?: string;
           onboarding_complete?: boolean;
           active_mission?: number;
+          ai_reflections_enabled?: boolean;
         };
         Update: {
           id?: string;
           display_name?: string | null;
           onboarding_complete?: boolean;
           active_mission?: number;
+          ai_reflections_enabled?: boolean;
         };
       };
       onboarding_results: {

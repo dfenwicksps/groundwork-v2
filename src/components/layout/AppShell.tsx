@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import ConfirmEmailBanner from "@/components/common/ConfirmEmailBanner";
 
 const NAV_ITEMS = [
   {
@@ -10,7 +11,7 @@ const NAV_ITEMS = [
     label: "Home",
     match: (p: string) => p === "/dashboard" || p === "/",
     icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
           d="M3.5 11.5L11 4.5l7.5 7"
           stroke="currentColor"
@@ -33,7 +34,7 @@ const NAV_ITEMS = [
     label: "Missions",
     match: (p: string) => p.startsWith("/missions"),
     icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
           cx="11"
           cy="11"
@@ -62,7 +63,7 @@ const NAV_ITEMS = [
     label: "This Week",
     match: (p: string) => p.startsWith("/program"),
     icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <rect
           x="3.5"
           y="4.5"
@@ -93,7 +94,7 @@ const NAV_ITEMS = [
     label: "Journal",
     match: (p: string) => p.startsWith("/journal") || p.startsWith("/revisit"),
     icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <rect
           x="4.5"
           y="3.5"
@@ -117,7 +118,7 @@ const NAV_ITEMS = [
     label: "Me",
     match: (p: string) => p.startsWith("/me") || p.startsWith("/settings"),
     icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
           cx="11"
           cy="8"
@@ -148,6 +149,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
+      {/* Unconfirmed-email nudge — never a blocker, just a reminder */}
+      <ConfirmEmailBanner />
+
       <main id="main-content" className="pb-nav">{children}</main>
 
       <nav

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import BuildStamp from "@/components/BuildStamp";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -14,11 +15,13 @@ export default function SettingsClient({
   email,
   displayName,
   savedValues,
+  aiReflectionsEnabled,
 }: {
   userId: string;
   email: string;
   displayName: string;
   savedValues: string[];
+  aiReflectionsEnabled: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -43,9 +46,20 @@ export default function SettingsClient({
   const [yearSaved, setYearSaved] = useState(false);
   useEffect(() => setYearLevelState(getYearLevelCookie()), []);
 
+  const [aiEnabled, setAiEnabled] = useState(aiReflectionsEnabled);
+  const [savingAi, setSavingAi] = useState(false);
+
   const [newPassword, setNewPassword] = useState("");
   const [pwState, setPwState] = useState<"idle" | "saving" | "saved">("idle");
   const [pwError, setPwError] = useState<string | null>(null);
+
+  async function toggleAiReflections() {
+    const next = !aiEnabled;
+    setAiEnabled(next);
+    setSavingAi(true);
+    await db.from("users").update({ ai_reflections_enabled: next }).eq("id", userId);
+    setSavingAi(false);
+  }
 
   function toggleValue(val: string) {
     if (selectedValues.includes(val)) {
@@ -260,8 +274,10 @@ export default function SettingsClient({
                       type="button"
                       onClick={() => toggleValue(val)}
                       disabled={disabled}
+                      aria-pressed={selected}
                       className={cn(
                         "p-3 rounded-xl text-sm font-medium transition-all border",
+                        "flex items-center justify-center gap-1.5",
                         selected
                           ? "bg-navy text-white border-navy"
                           : disabled
@@ -269,6 +285,8 @@ export default function SettingsClient({
                           : "bg-white text-ink border-surface-border hover:border-navy/30"
                       )}
                     >
+                      {/* Selection is marked by a tick as well as by colour. */}
+                      {selected && <span aria-hidden>✓</span>}
                       {val}
                     </button>
                   );
@@ -298,7 +316,7 @@ export default function SettingsClient({
         </div>
 
         {/* Year level — tunes what the app emphasises */}
-        <div data-animate="3" className="card p-6">
+        <div data-animate="4" className="card p-6">
           <h2 className="font-semibold text-ink mb-1">Year level</h2>
           <p className="text-sm text-ink-muted mb-4">
             We tailor what we show you — e.g. Year 12 sees career pathways and goals first.
@@ -332,8 +350,60 @@ export default function SettingsClient({
           )}
         </div>
 
+        {/* Privacy controls */}
+        <div data-animate="4" className="card p-6">
+          <h2 className="font-semibold text-ink mb-1">Privacy</h2>
+          <p className="text-sm text-ink-muted mb-4">
+            After a reflection, Groundwork can offer three follow-up questions to
+            sit with. Writing those means sending the start of what you wrote to
+            an outside service. Turn this off and nothing you write ever leaves
+            our database.
+          </p>
+          <button
+            type="button"
+            onClick={toggleAiReflections}
+            disabled={savingAi}
+            role="switch"
+            aria-checked={aiEnabled}
+            className={cn(
+              "w-full text-left p-4 rounded-xl border transition-all flex items-center gap-3",
+              aiEnabled ? "border-teal bg-teal/5" : "border-surface-border bg-white"
+            )}
+            style={{ borderWidth: "1.5px" }}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                "w-9 h-5 rounded-full flex-shrink-0 relative transition-colors",
+                aiEnabled ? "bg-teal" : "bg-surface-border"
+              )}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all",
+                  aiEnabled ? "left-[1.125rem]" : "left-0.5"
+                )}
+              />
+            </span>
+            <span className="flex-1">
+              <span className="block text-sm font-medium text-ink">
+                Follow-up questions {aiEnabled ? "are on" : "are off"}
+              </span>
+              <span className="block text-xs text-ink-muted mt-0.5">
+                {aiEnabled
+                  ? "Your reflections are sent for question-writing only, and never used to train anything."
+                  : "Nothing you write leaves Groundwork."}
+              </span>
+            </span>
+          </button>
+          <div className="flex gap-4 mt-4 text-sm">
+            <Link href="/privacy" className="text-teal hover:underline">Privacy policy</Link>
+            <Link href="/terms" className="text-teal hover:underline">Terms</Link>
+          </div>
+        </div>
+
         {/* Account actions */}
-        <div data-animate="4" className="card p-6 space-y-3">
+        <div data-animate="5" className="card p-6 space-y-3">
           <h2 className="font-semibold text-ink">Account</h2>
           <button
             onClick={handleSignOut}
@@ -345,7 +415,7 @@ export default function SettingsClient({
 
         {/* Danger zone */}
         <div
-          data-animate="5"
+          data-animate="6"
           className="rounded-xl p-6 border border-red-100 bg-red-50/30"
         >
           <h2 className="font-semibold text-red-800 mb-2">Danger zone</h2>

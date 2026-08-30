@@ -73,7 +73,7 @@ export default function MissionDetailClient({
             href="/dashboard"
             className="inline-flex items-center gap-1 text-white/70 hover:text-white text-sm mb-6 transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path
                 d="M9 11L5 7l4-4"
                 stroke="currentColor"
@@ -89,9 +89,6 @@ export default function MissionDetailClient({
             <div className="text-xs font-semibold opacity-60 uppercase tracking-wider">
               {mission.subtitle}
             </div>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/15 text-white/80">
-              {mission.phaseLabel}
-            </span>
           </div>
           <h1
             className="text-3xl text-white mb-2"
@@ -184,7 +181,7 @@ export default function MissionDetailClient({
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
-                              True story · goes with the next step
+                              Based on a real student · goes with the next step
                             </div>
                             <div className="text-sm font-medium text-ink truncate">
                               {story.title}
@@ -193,7 +190,7 @@ export default function MissionDetailClient({
                               {story.teaser}
                             </div>
                           </div>
-                          <svg
+                          <svg aria-hidden="true"
                             width="14" height="14" viewBox="0 0 14 14" fill="none"
                             className="text-ink-muted flex-shrink-0"
                           >
@@ -241,7 +238,7 @@ export default function MissionDetailClient({
                             )}
                           >
                             {completed ? (
-                              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
                                 <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             ) : (
@@ -268,7 +265,7 @@ export default function MissionDetailClient({
                             </div>
                           </div>
 
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
+                          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
                             <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </Link>
@@ -315,7 +312,7 @@ export default function MissionDetailClient({
                       <div className="text-sm font-medium text-ink truncate">{story.title}</div>
                       <div className="text-xs text-ink-muted mt-0.5 truncate">{story.teaser}</div>
                     </div>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
                       <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
@@ -333,7 +330,7 @@ export default function MissionDetailClient({
                 onClick={() => setConfirmingRestart(true)}
                 className="flex items-center gap-2 text-sm font-medium text-ink-muted hover:text-ink transition-colors"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M11.5 7a4.5 4.5 0 1 1-1.32-3.18M11.5 1.5V4H9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Restart this mission

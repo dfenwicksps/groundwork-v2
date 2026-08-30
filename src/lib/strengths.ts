@@ -74,7 +74,7 @@ export function strengthName(key: string): string {
   return STRENGTH_BY_KEY[key]?.name ?? key;
 }
 
-// ─── The 12-scenario assessment ───────────────────────────────────────────────
+// ─── The 18-scenario assessment ───────────────────────────────────────────────
 // Each scenario has 4 options mapped to 4 distinct strengths. Across all 18,
 // every strength appears exactly three times (18 × 4 = 72 slots ÷ 24 = 3 each).
 //

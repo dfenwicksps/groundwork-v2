@@ -513,7 +513,7 @@ function ConversationalActivity({
               href={`/missions/${mission.id}`}
               className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
@@ -533,7 +533,7 @@ function ConversationalActivity({
                   className="text-xs font-semibold px-2.5 py-1 rounded-full"
                   style={{ background: `${mission.colour}18`, color: mission.colour }}
                 >
-                  {mission.phaseLabel}
+                  {mission.subtitle} — {mission.title}
                 </span>
                 {activity.isMilestone && (
                   <span className="text-xs text-[--coral] bg-[rgba(225,29,72,0.08)] px-2.5 py-1 rounded-full font-semibold">
@@ -552,7 +552,7 @@ function ConversationalActivity({
               )}
               {activity.timeEstimate && (
                 <div className="flex items-center gap-1.5 mt-2 text-xs text-[--ink-muted]">
-                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <svg aria-hidden="true" width="11" height="11" viewBox="0 0 12 12" fill="none">
                     <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2" />
                     <path d="M6 3.5V6l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                   </svg>
@@ -663,7 +663,7 @@ function ConversationalActivity({
               </div>
             )}
 
-            {/* True story — read inline, inside the activity */}
+            {/* Story — read inline, inside the activity */}
             {pairedStory && (
               <div
                 className="rounded-2xl mb-5 overflow-hidden"
@@ -687,7 +687,7 @@ function ConversationalActivity({
                       className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
                       style={{ color: mission.colour }}
                     >
-                      True story · 2-min read
+                      Based on a real student · 2-min read
                     </div>
                     <div className="text-sm font-semibold text-[--ink]">{pairedStory.title}</div>
                     <div className="text-xs text-[--ink-muted] mt-0.5">
@@ -804,7 +804,7 @@ function ConversationalActivity({
                 }}
                 className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
@@ -878,7 +878,7 @@ function ConversationalActivity({
                       </p>
                     )}
                   </div>
-                  <svg
+                  <svg aria-hidden="true"
                     width="14"
                     height="14"
                     viewBox="0 0 14 14"
@@ -966,6 +966,7 @@ function ConversationalActivity({
                       key={opt}
                       type="button"
                       onClick={() => pickOption(opt)}
+                      aria-pressed={sel}
                       className={cn(
                         "w-full text-left px-4 py-3 rounded-xl border text-sm leading-relaxed transition-all",
                         sel
@@ -974,6 +975,8 @@ function ConversationalActivity({
                       )}
                       style={sel ? { background: mission.colour, borderColor: mission.colour } : undefined}
                     >
+                      {/* Selection is marked by a tick as well as by colour. */}
+                      {sel && <span aria-hidden className="mr-1.5">✓</span>}
                       {opt}
                     </button>
                   );
@@ -1219,7 +1222,7 @@ function ConversationalActivity({
                 style={{ background: mission.colour }}
               >
                 Next: {nextActivity.title}
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </Link>
@@ -1260,7 +1263,7 @@ function ConversationalActivity({
                 onClick={startEdit}
                 className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm flex items-center justify-center gap-1.5"
               >
-                <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                <svg aria-hidden="true" width="13" height="13" viewBox="0 0 14 14" fill="none">
                   <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Edit
@@ -1354,7 +1357,9 @@ function ValuesPickerActivity({
 
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [valueReasons, setValueReasons] = useState<Record<string, string>>({});
-  const [hoveredValue, setHoveredValue] = useState<string | null>(null);
+  const [openValue, setOpenValue] = useState<string | null>(null);
+  const [blockedValue, setBlockedValue] = useState<string | null>(null);
+  const blockedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingEntry);
   // Holds the saved response locally so the summary + edit work even right
@@ -1379,9 +1384,16 @@ function ValuesPickerActivity({
       const updated = { ...valueReasons };
       delete updated[val];
       setValueReasons(updated);
-    } else if (selectedValues.length < (activity.valuesCount || 5)) {
-      setSelectedValues([...selectedValues, val]);
+      return;
     }
+    if (selectedValues.length >= (activity.valuesCount || 5)) {
+      // Say why nothing happened, rather than leaving a dead-looking button.
+      setBlockedValue(val);
+      if (blockedTimer.current) clearTimeout(blockedTimer.current);
+      blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
+      return;
+    }
+    setSelectedValues([...selectedValues, val]);
   }
 
   const canSubmit = selectedValues.length === (activity.valuesCount || 5);
@@ -1470,7 +1482,7 @@ function ValuesPickerActivity({
         <div className="activity-header">
           <div className="max-w-lg mx-auto flex items-center gap-3">
             <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
@@ -1509,7 +1521,7 @@ function ValuesPickerActivity({
             onClick={startEdit}
             className="w-full flex items-center justify-center gap-2 text-sm font-medium text-[--teal] mb-4 py-2.5 rounded-xl border border-[--border] bg-white hover:bg-[--surface-muted] transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M9.5 2.5l2 2L5 11l-2.5.5L3 9l6.5-6.5z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Edit my values
@@ -1541,7 +1553,7 @@ function ValuesPickerActivity({
       <div className="activity-header">
         <div className="max-w-lg mx-auto flex items-center gap-3">
           <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
@@ -1581,7 +1593,7 @@ function ValuesPickerActivity({
               onClick={() => setWhyExpanded((v) => !v)}
               className="flex items-center gap-2 text-xs font-semibold text-[--teal] w-full text-left"
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className={cn("transition-transform flex-shrink-0", whyExpanded && "rotate-90")}>
+              <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" className={cn("transition-transform flex-shrink-0", whyExpanded && "rotate-90")}>
                 <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               The idea behind this
@@ -1643,35 +1655,65 @@ function ValuesPickerActivity({
         <div className="grid grid-cols-2 gap-2 mb-3">
           {(activity.valuesOptions || []).map((val) => {
             const sel = selectedValues.includes(val);
-            const disabled = !sel && selectedValues.length >= (activity.valuesCount || 5);
+            const atLimit = !sel && selectedValues.length >= (activity.valuesCount || 5);
+            const nudging = blockedValue === val;
+            const expanded = openValue === val;
             return (
-              <button
-                key={val}
-                onClick={() => toggleValue(val)}
-                onMouseEnter={() => setHoveredValue(val)}
-                onMouseLeave={() => setHoveredValue(null)}
-                disabled={disabled}
-                className={cn(
-                  "p-3 rounded-xl text-sm font-medium border transition-all text-left",
-                  sel ? "bg-[--navy] text-white border-[--navy]"
-                  : disabled ? "opacity-40 bg-[--surface-muted] border-[--border] cursor-not-allowed"
-                  : "bg-white text-[--ink] border-[--border] hover:border-[rgba(27,58,92,0.3)]"
-                )}
-              >
-                {val}
-              </button>
+              <div key={val} className="relative">
+                <button
+                  type="button"
+                  onClick={() => toggleValue(val)}
+                  aria-pressed={sel}
+                  className={cn(
+                    "w-full h-full p-3 pr-7 rounded-xl text-sm font-medium border transition-all text-left",
+                    nudging && "animate-nudge",
+                    sel ? "bg-[--navy] text-white border-[--navy]"
+                    : atLimit ? "bg-white text-[--ink-muted] border-[--border] hover:border-[rgba(27,58,92,0.2)]"
+                    : "bg-white text-[--ink] border-[--border] hover:border-[rgba(27,58,92,0.3)]"
+                  )}
+                >
+                  {/* Selection is marked by a tick as well as by colour. */}
+                  {sel && <span aria-hidden className="mr-1">✓</span>}
+                  {val}
+                </button>
+                {/* Reading a definition must not cost you a selection, and
+                    hovering is not available on the phones this runs on. */}
+                <button
+                  type="button"
+                  onClick={() => setOpenValue(expanded ? null : val)}
+                  aria-expanded={expanded}
+                  aria-label={`What ${val} means`}
+                  className={cn(
+                    "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
+                    "text-[11px] font-semibold leading-none",
+                    "flex items-center justify-center transition-colors",
+                    sel
+                      ? "border-white/50 text-white/90 hover:bg-white/20"
+                      : "border-[rgba(0,0,0,0.22)] text-[--ink-muted] hover:border-[--navy] hover:text-[--navy]"
+                  )}
+                >
+                  i
+                </button>
+              </div>
             );
           })}
         </div>
 
-        <div className="h-20 mb-4 flex items-start">
-          {hoveredValue ? (
+        <div className="min-h-20 mb-4 flex items-start">
+          {blockedValue ? (
+            <div role="status" className="w-full rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-[--ink]">
+              You&apos;ve chosen {activity.valuesCount || 5}. Tap one of them to
+              swap it out first.
+            </div>
+          ) : openValue ? (
             <div className="w-full rounded-xl bg-[rgba(46,125,140,0.05)] border border-[rgba(46,125,140,0.2)] px-4 py-3 text-sm text-[--ink-muted]">
-              <span className="font-semibold text-[--ink]">{hoveredValue}: </span>
-              {VALUES_WITH_DEFINITIONS[hoveredValue] || ""}
+              <span className="font-semibold text-[--ink]">{openValue}: </span>
+              {VALUES_WITH_DEFINITIONS[openValue] || ""}
             </div>
           ) : (
-            <p className="text-xs text-[--ink-muted] px-1 pt-1">Tap a value to select it · hover to see the definition</p>
+            <p className="text-xs text-[--ink-muted] px-1 pt-1">
+              Tap a value to select it · tap its <span className="font-medium">i</span> for the definition
+            </p>
           )}
         </div>
 
@@ -1800,7 +1842,7 @@ function ChallengeActivity({
     <div className="activity-header">
       <div className="max-w-lg mx-auto flex items-center gap-3">
         <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
@@ -2100,7 +2142,7 @@ function StrengthsAssessmentActivity({
           href={`/missions/${mission.id}`}
           className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </Link>
@@ -2121,7 +2163,7 @@ function StrengthsAssessmentActivity({
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
                 style={{ background: `${mission.colour}18`, color: mission.colour }}
               >
-                {mission.phaseLabel}
+                {mission.subtitle} — {mission.title}
               </span>
               <h1
                 className="text-[1.75rem] leading-tight text-[--navy] mt-3 mb-2"
@@ -2147,7 +2189,7 @@ function StrengthsAssessmentActivity({
               className="btn btn-primary w-full py-4 text-base rounded-xl"
               style={{ background: mission.colour }}
             >
-              Start — 12 quick situations →
+              Start — 18 quick situations →
             </button>
             <p className="text-[11px] text-[--ink-muted]/70 text-center mt-3 leading-relaxed">
               An indicative snapshot to surface your signature strengths — private to you.
@@ -2275,7 +2317,7 @@ function StrengthsAssessmentActivity({
               onClick={() => (idx > 0 ? setIdx(idx - 1) : setPhase("intro"))}
               className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>

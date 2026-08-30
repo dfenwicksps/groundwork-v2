@@ -13,6 +13,7 @@ import type {
 import AppShell from "@/components/layout/AppShell";
 import { TrackBadge } from "@/components/TrackBanner";
 import type { Spine } from "@/lib/spine";
+import { YEAR_OPTIONS, type YearLevel } from "@/lib/yearLevel";
 
 type RevisitEntry = {
   id: string;
@@ -39,6 +40,7 @@ interface Props {
   nudgeActivity: NudgeActivity | null;
   spine: Spine;
   programWeek: ProgramWeekCard;
+  yearLevel: YearLevel;
 }
 
 type ProgramWeekCard = {
@@ -81,6 +83,7 @@ export default function DashboardClient({
   nudgeActivity,
   spine,
   programWeek,
+  yearLevel,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -179,6 +182,20 @@ export default function DashboardClient({
           >
             {firstName}.
           </h1>
+
+          {/* The app reorders itself by year level. Unannounced, that effort is
+              invisible; named, it reads as the app paying attention. */}
+          <p className="text-xs text-ink-muted mt-3">
+            You&apos;re seeing the{" "}
+            <span className="font-medium text-ink">
+              {YEAR_OPTIONS.find((y) => y.key === yearLevel)?.label ?? "Year 10–11"}
+            </span>{" "}
+            view.{" "}
+            <Link href="/settings" className="text-teal hover:underline">
+              Change it any time
+            </Link>
+            .
+          </p>
         </div>
 
         {/* The spine decides what leads. Juniors get the week first; everyone
@@ -248,7 +265,7 @@ export default function DashboardClient({
                 className="inline-flex items-center gap-2 mt-4 bg-white/20 hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium"
               >
                 Continue mission
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path
                     d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
                     stroke="currentColor"
@@ -290,7 +307,7 @@ export default function DashboardClient({
                   &ldquo;{truncate(revisitEntry.response, 100)}&rdquo;
                 </p>
               </div>
-              <svg
+              <svg aria-hidden="true"
                 width="14"
                 height="14"
                 viewBox="0 0 14 14"
@@ -327,7 +344,7 @@ export default function DashboardClient({
                   Your next step is here. No pressure on timing.
                 </p>
               </div>
-              <svg
+              <svg aria-hidden="true"
                 width="14"
                 height="14"
                 viewBox="0 0 14 14"
@@ -427,9 +444,6 @@ export default function DashboardClient({
                   >
                     {mission.title}
                   </div>
-                  <div className={`text-xs mb-0.5 ${isLocked ? "text-ink-muted" : "text-ink-muted"}`}>
-                    {mission.phaseLabel}
-                  </div>
                   <div className={`text-xs mb-3 line-clamp-1 ${isLocked ? "text-ink-muted" : "text-ink-muted"}`} style={{ fontStyle: "italic" }}>
                     {mission.question}
                   </div>
@@ -499,7 +513,7 @@ export default function DashboardClient({
                       </div>
                     </div>
                   </div>
-                  <svg
+                  <svg aria-hidden="true"
                     width="14"
                     height="14"
                     viewBox="0 0 14 14"

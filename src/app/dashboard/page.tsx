@@ -220,6 +220,7 @@ export default async function DashboardPage() {
       revisitEntry={revisitEntry || null}
       nudgeActivity={nudgeActivity}
       spine={spine}
+      yearLevel={yearLevel}
       programWeek={programWeek}
     />
   );

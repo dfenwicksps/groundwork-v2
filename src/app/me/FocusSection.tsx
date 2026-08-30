@@ -89,6 +89,7 @@ export default function FocusSection({
                   key={b.key}
                   onClick={() => toggle(b.key)}
                   disabled={disabled}
+                  aria-pressed={sel}
                   className={`p-3 rounded-xl text-left border transition-all ${
                     sel
                       ? "bg-navy text-white border-navy"
@@ -98,7 +99,7 @@ export default function FocusSection({
                   }`}
                 >
                   <div className="text-sm font-semibold flex items-center gap-1.5">
-                    <span aria-hidden>{b.emoji}</span> {b.name}
+                    <span aria-hidden>{sel ? "✓" : b.emoji}</span> {b.name}
                     {suggested && !sel && (
                       <span className="text-[10px] text-sage font-bold ml-auto" title="Suggested by your habit check">🌱</span>
                     )}
