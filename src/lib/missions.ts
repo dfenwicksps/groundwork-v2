@@ -346,7 +346,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Accepting is the whole step \u2014 you've just turned self-knowledge into an experiment. Whatever happens this week is data, not a grade. Come back in a few days and tell yourself the truth about how it went.",
         type: "challenge",
-        title: "Weekly Challenge",
+        title: "Mission Challenge",
         subtitle: "Step 5 of 5",
         intro:
           "Everything so far has been noticing. This step is one small experiment in the real world — taking one thing you discovered about yourself and actually living it once, just to see what it feels like. You don't need to be certain and it doesn't need to go well. Noticing what happens is the whole point.",
@@ -623,7 +623,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Challenge accepted. Purpose only becomes real when it costs you a little effort \u2014 this week you'll find out what one small act in its direction feels like.",
         type: "challenge",
-        title: "Weekly Challenge",
+        title: "Mission Challenge",
         subtitle: "Step 5 of 5",
         intro:
           "Commitment isn't proven by what you say — it's tested by what you actually do. This challenge asks you to take one real step toward what you care about. Not a grand gesture. Just the smallest version of genuine engagement that feels real to you.",
@@ -895,7 +895,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Reaching toward someone first is how belonging actually gets built \u2014 nobody drifts into it. Whatever happens this week, you'll learn something about connection you can't learn by waiting.",
         type: "challenge",
-        title: "Weekly Challenge",
+        title: "Mission Challenge",
         subtitle: "Step 5 of 5",
         intro:
           "Belonging isn't passive. It's built — slowly, through small acts of reaching toward people. This challenge asks you to take one small step toward genuine connection: not a grand gesture, but something real. Notice what happens when you actually try.",
@@ -1169,7 +1169,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "One deliberate choice, made on purpose, is what all four missions look like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
         type: "challenge",
-        title: "Weekly Challenge",
+        title: "Mission Challenge",
         subtitle: "Step 5 of 5",
         intro:
           "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",

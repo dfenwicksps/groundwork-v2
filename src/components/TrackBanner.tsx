@@ -42,9 +42,12 @@ const COPY: Record<
  */
 export function TrackBadge({ lead }: { lead: boolean }) {
   if (!lead) {
+    // Not "Anytime" — that reads as optional, and on a ten-week cadence it
+    // reads as "timing doesn't matter", which is the opposite of true. These
+    // two tracks run in parallel indefinitely; "Alongside" says so.
     return (
       <span className="text-[10px] font-bold uppercase tracking-widest text-[--ink-faint]">
-        Anytime
+        Alongside
       </span>
     );
   }
@@ -83,7 +86,11 @@ export default function TrackBanner({
       >
         <div className="flex-1 min-w-0">
           <div className="text-xs font-semibold text-[--ink]">
-            {!isLead && <span className="text-[--sage]">Start with </span>}
+            {!isLead ? (
+              <span className="text-[--sage]">Start with </span>
+            ) : (
+              <span className="text-[--ink-muted]">Runs alongside: </span>
+            )}
             {c.otherLabel}
           </div>
           <p className="text-[11px] text-[--ink-muted] leading-relaxed">

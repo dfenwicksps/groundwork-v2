@@ -221,7 +221,7 @@ export default function PracticeSection({
           {selected && (
             <div className="rounded-xl px-4 py-3 bg-teal/5 border border-teal/20 my-3">
               <div className="text-[11px] font-bold text-teal uppercase tracking-widest mb-1">
-                This week&apos;s practice
+                Your current practice
               </div>
               <p className="text-sm text-ink leading-relaxed">
                 {STRENGTH_ACTIONS[selected]}

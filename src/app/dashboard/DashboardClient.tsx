@@ -53,17 +53,30 @@ type ProgramWeekCard = {
   allDone: boolean;
 };
 
+/**
+ * Mission progress in the same units the program uses. The program says
+ * "Week 3 of 10"; a mission saying "40%" made two tracks that already look
+ * like rivals measure themselves differently too. `step` is the one the
+ * student is up to — done + 1 — so it reads the way "Week 3 of 10" does.
+ */
 function getMissionProgress(
   missionId: number,
   progress: MissionProgress[]
-): number {
+): { done: number; total: number; step: number; pct: number; complete: boolean } {
   const mission = MISSIONS.find((m) => m.id === missionId);
-  if (!mission) return 0;
-  const totalActivities = mission.activities.filter((a) => !a.locked).length;
-  const completed = progress.filter(
-    (p) => p.mission_id === missionId
-  ).length;
-  return Math.round((completed / totalActivities) * 100);
+  if (!mission) return { done: 0, total: 0, step: 1, pct: 0, complete: false };
+  const total = mission.activities.filter((a) => !a.locked).length;
+  const done = Math.min(
+    progress.filter((p) => p.mission_id === missionId).length,
+    total
+  );
+  return {
+    done,
+    total,
+    step: Math.min(done + 1, total),
+    pct: total ? Math.round((done / total) * 100) : 0,
+    complete: total > 0 && done >= total,
+  };
 }
 
 const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
@@ -183,9 +196,18 @@ export default function DashboardClient({
             {firstName}.
           </h1>
 
+          {/* Two tracks run in parallel forever, and nothing inside the app
+              said so — a student could reasonably think finishing the missions
+              unlocks the program, or that picking one abandons the other. */}
+          <p className="text-sm text-ink-muted mt-3 leading-relaxed max-w-md">
+            {spine.lead === "program"
+              ? "This week is the habit — one question, one thing to do. Missions are the deep dives, and they run alongside it."
+              : "Missions go deep, one question at a time. This week is the habit that runs alongside them."}
+          </p>
+
           {/* The app reorders itself by year level. Unannounced, that effort is
               invisible; named, it reads as the app paying attention. */}
-          <p className="text-xs text-ink-muted mt-3">
+          <p className="text-xs text-ink-muted mt-2">
             You&apos;re seeing the{" "}
             <span className="font-medium text-ink">
               {YEAR_OPTIONS.find((y) => y.key === yearLevel)?.label ?? "Year 10–11"}
@@ -199,7 +221,8 @@ export default function DashboardClient({
         </div>
 
         {/* The spine decides what leads. Juniors get the week first; everyone
-            else gets their mission, with the program offered below. */}
+            else gets their mission. Either way the other track follows
+            immediately, so "Start here" and "Alongside" are read together. */}
         {spine.lead === "program" && programCard}
 
         {/* Active Mission Card */}
@@ -249,13 +272,19 @@ export default function DashboardClient({
 
               <div className="mt-4 mb-2">
                 <div className="flex items-center justify-between text-xs mb-1.5 opacity-80">
-                  <span>Progress</span>
-                  <span>{activeMissionProgress}%</span>
+                  <span>
+                    {activeMissionProgress.complete
+                      ? `All ${activeMissionProgress.total} steps done`
+                      : `Step ${activeMissionProgress.step} of ${activeMissionProgress.total}`}
+                  </span>
+                  <span>
+                    {activeMissionProgress.done} of {activeMissionProgress.total} complete
+                  </span>
                 </div>
                 <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-white/80 rounded-full transition-all duration-500"
-                    style={{ width: `${activeMissionProgress}%` }}
+                    style={{ width: `${activeMissionProgress.pct}%` }}
                   />
                 </div>
               </div>
@@ -278,6 +307,13 @@ export default function DashboardClient({
             </div>
           </div>
         </div>
+
+        {spine.lead !== "program" && (
+          <>
+            {futureCard}
+            {programCard}
+          </>
+        )}
 
         {/* Revisit prompt — Evaluation Cycle */}
         {revisitEntry && (
@@ -367,7 +403,7 @@ export default function DashboardClient({
         {challenge && (
           <div data-animate="3">
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              This week&apos;s challenge
+              Your mission challenge
             </h2>
             <div className="card p-5 border-l-4" style={{ borderLeftColor: "#F59E0B" }}>
               <div className="flex items-start justify-between gap-3">
@@ -388,13 +424,6 @@ export default function DashboardClient({
               </div>
             </div>
           </div>
-        )}
-
-        {spine.lead !== "program" && (
-          <>
-            {futureCard}
-            {programCard}
-          </>
         )}
 
         {/* Mission Map */}
@@ -429,7 +458,7 @@ export default function DashboardClient({
                         Active
                       </span>
                     )}
-                    {mProgress === 100 && (
+                    {mProgress.complete && (
                       <span className="text-xs font-medium text-sage bg-sage/10 px-2 py-0.5 rounded-full">
                         Done ✓
                       </span>
@@ -448,12 +477,17 @@ export default function DashboardClient({
                     {mission.question}
                   </div>
                   {!isLocked && (
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${mProgress}%` }}
-                      />
-                    </div>
+                    <>
+                      <div className="text-[11px] text-ink-muted mb-1.5">
+                        {mProgress.done} of {mProgress.total} steps
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${mProgress.pct}%` }}
+                        />
+                      </div>
+                    </>
                   )}
                   {isLocked && (
                     <div className="h-1.5 rounded-full bg-surface-border/50" />
