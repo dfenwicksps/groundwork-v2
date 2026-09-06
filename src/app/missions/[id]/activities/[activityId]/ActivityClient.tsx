@@ -15,6 +15,7 @@ import {
 import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
+import { splitScaffoldedResponse } from "@/lib/journal";
 import {
   STRENGTH_SCENARIOS,
   scoreAssessment,
@@ -223,23 +224,10 @@ function ConversationalActivity({
           .join("\n\n");
   }
 
-  // Split a previously-saved response back into per-question answers, using the
-  // known question text as delimiters so multi-line answers parse reliably.
+  // Shared with the program weeks, which recall these entries back to the
+  // student — see src/lib/journal.ts.
   function parsePrevAnswers(saved: string): string[] {
-    if (!saved) return [];
-    if (questions.length === 1) return [saved.trim()];
-    return questions.map((q, i) => {
-      const header = `${i + 1}. ${q}`;
-      const start = saved.indexOf(header);
-      if (start === -1) return "";
-      const answerStart = start + header.length;
-      let end = saved.length;
-      if (i + 1 < questions.length) {
-        const nextIdx = saved.indexOf(`${i + 2}. ${questions[i + 1]}`, answerStart);
-        if (nextIdx !== -1) end = nextIdx;
-      }
-      return saved.slice(answerStart, end).trim();
-    });
+    return splitScaffoldedResponse(saved, questions);
   }
 
   // When editing, pre-fill a step with the user's previous answer so they can

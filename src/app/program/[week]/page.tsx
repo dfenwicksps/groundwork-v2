@@ -9,6 +9,7 @@ import {
   responseToCode,
   commitmentToLines,
   CHARACTER_CODE_ACTIVITY_ID,
+  CAPSTONE_SOURCES,
   type WeekProgress,
 } from "@/lib/program";
 import { topStrengths, strengthName } from "@/lib/strengths";
@@ -19,6 +20,7 @@ import {
   EMPTY_BECOMING,
 } from "@/lib/becoming";
 import { responseToHabits } from "@/lib/habits";
+import { answersOnly } from "@/lib/journal";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +54,16 @@ export default async function WeekPage({
   // the shared record rather than a column of raw keys.
   const needsBecoming = week.artefact?.kind === "qualities" || week.week === 10;
 
+  // A week built on a student's own mission writing reads that entry back.
+  // Week 10 reads two of them, so both cases resolve to a list of activity ids
+  // and one query covers whichever the week needs.
+  const entryIds =
+    week.week === 10
+      ? CAPSTONE_SOURCES.map((c) => c.activityId)
+      : week.source?.kind === "entry"
+        ? [week.source.activityId]
+        : [];
+
   const [
     { data: rows, error: progressError },
     { data: codeRow },
@@ -59,6 +71,7 @@ export default async function WeekPage({
     { data: valuesRow },
     { data: becomingRow },
     { data: habitRow },
+    { data: entryRows },
   ] = await Promise.all([
     db.from("program_progress").select("*").eq("user_id", user.id),
     // Only week 10 needs it, but fetching alongside keeps this a single round trip
@@ -107,6 +120,14 @@ export default async function WeekPage({
           .limit(1)
           .single()
       : Promise.resolve({ data: null }),
+    entryIds.length
+      ? db
+          .from("journal_entries")
+          .select("activity_id, response, created_at")
+          .eq("user_id", user.id)
+          .in("activity_id", entryIds)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
   ]);
 
   const allRows = (rows || []) as any[];
@@ -141,6 +162,35 @@ export default async function WeekPage({
     .map((l) => l.split(":")[0].trim())
     .filter(Boolean)
     .slice(0, 5);
+
+  // Newest first from the query, so the first hit per activity is the current
+  // one — a student who rewrote a milestone sees what they wrote most recently.
+  const latestEntry = new Map<string, string>();
+  for (const r of (entryRows || []) as { activity_id: string; response: string }[]) {
+    if (!latestEntry.has(r.activity_id)) latestEntry.set(r.activity_id, r.response);
+  }
+
+  // Recalled to its own author, so the prompts are stripped and only their
+  // answers come back — see src/lib/journal.ts.
+  const sourceEntry =
+    week.source?.kind === "entry"
+      ? answersOnly(
+          week.source.missionId,
+          week.source.activityId,
+          latestEntry.get(week.source.activityId)
+        ) || null
+      : null;
+
+  // Week 10 only: the mission writing the Character Code should be built from.
+  const capstone =
+    week.week === 10
+      ? CAPSTONE_SOURCES.map((c) => ({
+          ...c,
+          excerpt:
+            answersOnly(c.missionId, c.activityId, latestEntry.get(c.activityId)) ||
+            null,
+        })).filter((c) => !!c.excerpt?.trim())
+      : [];
 
   const becoming = becomingRow
     ? parseBecoming((becomingRow as { response: string }).response)
@@ -190,6 +240,8 @@ export default async function WeekPage({
         values,
       }}
       becoming={becoming}
+      sourceEntry={sourceEntry}
+      capstone={capstone}
       suggestedQualities={suggestedQualities}
       earlier={earlier}
       yearLevel={yearLevel}

@@ -44,6 +44,36 @@ export type Artefact =
   /** Weeks 7 and 8 — a fixed number of free-text lines */
   | { kind: "lines"; count: number; heading: string; blurb: string; placeholders: string[] };
 
+/**
+ * The saved thing a week is built on.
+ *
+ * "strengths" and "values" are structured (the VIA ranking, the five chosen
+ * values), so the week can render them as chips. "entry" is a student's own
+ * prose from a mission step — recalled as an excerpt, because the point is to
+ * show them what they already worked out rather than ask them again.
+ */
+export type WeekSource = {
+  /** Where to go when there's nothing saved yet */
+  href: string;
+  label: string;
+  /** Why the week needs it — shown only when it's missing */
+  whyNeeded: string;
+  /** How this week uses it — shown under the recalled material */
+  soWhat: string;
+} & (
+  | { kind: "strengths" }
+  | { kind: "values" }
+  | {
+      kind: "entry";
+      /** journal_entries.activity_id to read back */
+      activityId: string;
+      /** Which mission it came from, for the card's eyebrow */
+      missionId: number;
+      /** What to call the recalled writing */
+      recallLabel: string;
+    }
+);
+
 export interface ProgramWeek {
   week: number;
   /** The week's question — used as its title */
@@ -76,17 +106,11 @@ export interface ProgramWeek {
    * week reads the student's saved answer and shows it, and only falls back to
    * sending them to make it when there's nothing there yet.
    *
-   * This is what stops the program repeating the missions. Week 1 used to link
-   * to Strengths Mapping; now it shows the strengths that mapping produced.
+   * This is what stops the program repeating the missions, and what makes the
+   * missions load-bearing rather than merely available. Missions 2-4 used to
+   * produce twelve journal entries that nothing in the app ever read again.
    */
-  source?: {
-    kind: "strengths" | "values";
-    /** Where to go when the student hasn't done it yet */
-    href: string;
-    label: string;
-    /** Why the week needs it — shown only when it's missing */
-    whyNeeded: string;
-  };
+  source?: WeekSource;
   /**
    * What a "single" week actually makes. Without this, weeks 1, 2, 7 and 8 end
    * with "write them somewhere you'll see them" — the app telling the student
@@ -126,6 +150,8 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       label: "Strengths Mapping",
       whyNeeded:
         "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Mission 1.",
+      soWhat:
+        "This is who you already are. This week asks a different question — who you want to be at 25 — and the difference between the two lists is the work.",
     },
     // Week 1's artefact is not the week's own — it is the shared "Who I'm
     // becoming" record, which also renders on the profile under Grow. The
@@ -164,6 +190,8 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       label: "Values Clarifier",
       whyNeeded:
         "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
+      soWhat:
+        "You named these in Mission 1. This week is the harder half: proving each one with a behaviour someone could watch you do.",
     },
     artefact: {
       kind: "value-behaviours",
@@ -192,6 +220,18 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       kind: "daily",
       target: 7,
       unit: "day",
+    },
+    source: {
+      kind: "entry",
+      activityId: "what-matters",
+      missionId: 2,
+      recallLabel: "What you said matters to you",
+      href: "/missions/2/activities/what-matters",
+      label: "What Matters",
+      whyNeeded:
+        "Contributing is hollow if you've never named what you actually care about. Mission 2 starts there — about ten minutes.",
+      soWhat:
+        "Contribution isn't only tidying up. Some of what you put in this week should point at that — the thing you'd want to be different.",
     },
     link: {
       href: "/me#standard",
@@ -349,6 +389,18 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         "Adult 2 — worth learning from",
       ],
     },
+    source: {
+      kind: "entry",
+      activityId: "people-who-shaped-you",
+      missionId: 3,
+      recallLabel: "The people who shaped you",
+      href: "/missions/3/activities/people-who-shaped-you",
+      label: "The People Who Shaped You",
+      whyNeeded:
+        "You've already written about who made you who you are — this week builds on that rather than starting the list again. It's the Mission 3 milestone.",
+      soWhat:
+        "Those are the people who already shaped you. This week is the forward-looking version: who you're choosing to be shaped by from here.",
+    },
     link: {
       href: "/support",
       label: "Support Circle",
@@ -376,10 +428,17 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       target: 3,
       unit: "session",
     },
-    link: {
+    source: {
+      kind: "entry",
+      activityId: "digital-self",
+      missionId: 4,
+      recallLabel: "The gap you found between online you and offline you",
       href: "/missions/4/activities/digital-self",
       label: "The Digital Self",
-      note: "Looks at the gap between who you are online and who you are the rest of the time.",
+      whyNeeded:
+        "This week takes the input away for three half-hours. Mission 4 already asked what the input is doing to you — worth having that answer first.",
+      soWhat:
+        "That's what you noticed with the screens on. This week is the same question with them off — and the two answers are worth comparing.",
     },
   },
   {
@@ -404,6 +463,37 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         "Five to seven commitments to guide the next year. Written as things you do, not things you'd like to be. This is the artefact the whole program has been building towards.",
       kind: "single",
     },
+  },
+];
+
+/**
+ * The mission writing week 10 draws on, on top of the program's own artefacts.
+ *
+ * The Character Code is meant to be written from evidence. The program supplies
+ * the behavioural half (weeks 1, 2, 7 and 8); these two supply the half the
+ * weeks never ask for — what the student said they stand for, and the thread
+ * they found running through all four missions.
+ */
+export const CAPSTONE_SOURCES: {
+  activityId: string;
+  missionId: number;
+  label: string;
+  note: string;
+  href: string;
+}[] = [
+  {
+    activityId: "commitment-statement",
+    missionId: 2,
+    label: "What you said you stand for",
+    note: "Mission 2 · Commitment Statement",
+    href: "/missions/2/activities/commitment-statement",
+  },
+  {
+    activityId: "the-through-line",
+    missionId: 4,
+    label: "The thread you found",
+    note: "Mission 4 · The Through-Line",
+    href: "/missions/4/activities/the-through-line",
   },
 ];
 

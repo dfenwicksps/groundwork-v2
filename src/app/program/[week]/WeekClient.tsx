@@ -51,6 +51,8 @@ export default function WeekClient({
   savedCode,
   compass,
   becoming,
+  sourceEntry,
+  capstone,
   suggestedQualities,
   earlier,
   yearLevel,
@@ -66,6 +68,17 @@ export default function WeekClient({
   compass: Compass;
   /** The shared "Who I'm becoming" record — week 1's artefact lives here */
   becoming: Becoming;
+  /** For a week built on a mission entry: what the student wrote there */
+  sourceEntry: string | null;
+  /** Week 10 only: mission writing the Character Code should be built from */
+  capstone: {
+    activityId: string;
+    missionId: number;
+    label: string;
+    note: string;
+    href: string;
+    excerpt: string | null;
+  }[];
   /** VIA keys the habit check flagged, for week 1's picker */
   suggestedQualities: string[];
   /** Week 10 only: the artefacts weeks 1, 2, 7 and 8 made */
@@ -118,7 +131,9 @@ export default function WeekClient({
       ? compass.strengths.length > 0
       : week.source?.kind === "values"
         ? compass.values.length > 0
-        : true;
+        : week.source?.kind === "entry"
+          ? !!sourceEntry?.trim()
+          : true;
   const prev = PROGRAM_WEEKS.find((w) => w.week === week.week - 1);
   const next = PROGRAM_WEEKS.find((w) => w.week === week.week + 1);
 
@@ -260,9 +275,27 @@ export default function WeekClient({
           <div data-animate="2">
             <div className="rounded-2xl bg-white border-2 border-navy/20 p-5">
               <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3 text-navy">
-                <span aria-hidden>🧭</span> From your Mission 1 compass
+                <span aria-hidden>🧭</span>{" "}
+                {week.source.kind === "entry"
+                  ? `From Mission ${week.source.missionId} — your own words`
+                  : "From your Mission 1 compass"}
               </div>
-              {week.source.kind === "strengths" ? (
+              {week.source.kind === "entry" ? (
+                <>
+                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                    {week.source.recallLabel}
+                  </div>
+                  {/* Their own writing, not a summary of it. Clamped rather
+                      than truncated so nothing is silently cut off — the whole
+                      entry is one tap away. */}
+                  <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 mb-3 line-clamp-6 whitespace-pre-line">
+                    {sourceEntry}
+                  </blockquote>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    {week.source.soWhat}
+                  </p>
+                </>
+              ) : week.source.kind === "strengths" ? (
                 <>
                   <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                     Your signature strengths
@@ -282,9 +315,7 @@ export default function WeekClient({
                     ))}
                   </div>
                   <p className="text-xs text-ink-muted leading-relaxed">
-                    This is who you already are. This week asks a different
-                    question — who you want to be at 25 — and the difference
-                    between the two lists is the work.
+                    {week.source.soWhat}
                   </p>
                 </>
               ) : (
@@ -303,8 +334,7 @@ export default function WeekClient({
                     ))}
                   </div>
                   <p className="text-xs text-ink-muted leading-relaxed">
-                    You named these in Mission 1. This week is the harder half:
-                    proving each one with a behaviour someone could watch you do.
+                    {week.source.soWhat}
                   </p>
                 </>
               )}
@@ -312,7 +342,8 @@ export default function WeekClient({
                 href={week.source.href}
                 className="text-xs text-teal hover:underline mt-3 inline-block"
               >
-                Redo {week.source.label}
+                {week.source.kind === "entry" ? "Reread or rewrite" : "Redo"}{" "}
+                {week.source.label}
               </Link>
             </div>
           </div>
@@ -534,6 +565,38 @@ export default function WeekClient({
               Your code should be recognisable from this. If none of it made the
               cut, that&apos;s worth a second look before you write.
             </p>
+          </div>
+        )}
+
+        {/* The other half of the evidence. The weeks supply behaviour; these
+            two mission steps supply what the student said they stand for and
+            the thread they found — writing the app had never read again. */}
+        {week.week === 10 && capstone.length > 0 && (
+          <div data-animate="3">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              And what you wrote in the missions
+            </h2>
+            <div className="space-y-2">
+              {capstone.map((c) => (
+                <div key={c.activityId} className="card p-4">
+                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                    {c.note}
+                  </div>
+                  <div className="text-sm font-semibold text-ink mb-1.5">
+                    {c.label}
+                  </div>
+                  <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 line-clamp-6 whitespace-pre-line">
+                    {c.excerpt}
+                  </blockquote>
+                  <Link
+                    href={c.href}
+                    className="text-xs text-teal hover:underline mt-2 inline-block"
+                  >
+                    Read it in full →
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
