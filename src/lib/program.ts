@@ -1133,14 +1133,27 @@ export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
  * "make my bed every morning" reads the whole exercise as written for children
  * — and a 14-year-old offered "be on time to every shift" has no shift.
  * Everything else about the week is identical.
+ *
+ * One register per year level, not two. Year 10-11 used to be served the Year
+ * 7-9 list, which led with "make my bed every morning" for a sixteen-year-old —
+ * the exact failure the split exists to prevent, in the largest cohort of the
+ * three. Fifteen to seventeen has its own texture: more autonomy than a
+ * fourteen-year-old and no final-year exams yet, so the promises are about
+ * getting yourself out the door rather than being got out of it.
  */
-const COMMITMENT_QUICK: Record<number, Record<"younger" | "senior", string[]>> = {
+const COMMITMENT_QUICK: Record<number, Record<YearLevel, string[]>> = {
   4: {
-    younger: [
+    junior: [
       "Make my bed every morning",
       "Be out the door by 7:40 with my bag packed",
       "Twenty minutes of study before any screen",
       "Message one person back properly each day",
+    ],
+    middle: [
+      "Out the door on time, without being chased",
+      "Twenty minutes on my worst subject before anything fun",
+      "Reply to people the same day, not three days later",
+      "Phone out of reach while I'm actually studying",
     ],
     senior: [
       "On time to every class and shift, no exceptions",
@@ -1150,11 +1163,17 @@ const COMMITMENT_QUICK: Record<number, Record<"younger" | "senior", string[]>> =
     ],
   },
   5: {
-    younger: [
+    junior: [
       "Get properly fit — three runs a week",
       "Learn a song on an instrument I've neglected",
       "Catch up the subject I've fallen behind in",
       "Volunteer somewhere regularly",
+    ],
+    middle: [
+      "Get properly fit, and keep going past the first hard week",
+      "Get good at the thing I'm currently just okay at",
+      "Face the subject I've been quietly avoiding",
+      "Find somewhere to volunteer and actually turn up",
     ],
     senior: [
       "Get properly fit before the year runs away from me",
@@ -1193,7 +1212,7 @@ export function commitmentScaffold(
   const quick = COMMITMENT_QUICK[week];
   return {
     ...rest,
-    quick: quick ? quick[year === "senior" ? "senior" : "younger"] : undefined,
+    quick: quick ? quick[year] : undefined,
   };
 }
 
