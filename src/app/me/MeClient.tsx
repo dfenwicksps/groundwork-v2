@@ -10,6 +10,7 @@ import MoralSection from "./MoralSection";
 import PracticeSection from "./PracticeSection";
 import GoalsSection from "./GoalsSection";
 import BoostsSection from "./BoostsSection";
+import FutureSelfSection from "./FutureSelfSection";
 import SelvesSection from "./SelvesSection";
 import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
@@ -51,6 +52,7 @@ export default function MeClient({
   activePractice,
   recentPractices,
   commitmentExcerpt,
+  futureSelf,
   habitSaved,
   becoming,
   standardCheckins,
@@ -76,6 +78,8 @@ export default function MeClient({
   activePractice: PracticeEntry | null;
   recentPractices: PracticeEntry[];
   commitmentExcerpt: string | null;
+  /** Their Tuesday-at-21 from Mission 4, prompts stripped — surfaced under Future */
+  futureSelf: string | null;
   habitSaved: { answers: Record<string, HabitAnswer>; result: HabitResult } | null;
   /** The shared "Who I'm becoming" record — five qualities plus a focus */
   becoming: Becoming;
@@ -107,16 +111,29 @@ export default function MeClient({
     yearLevel === "senior" ? "future" : yearLevel === "junior" ? "grow" : "profile";
   const [tab, setTab] = useState<MeTab>(defaultTab);
 
-  // Cross-links (journey strip, "#boosts" from a challenge, "attach a goal")
-  // use #anchors — map each to the tab that holds it, then scroll after switch.
+  // Cross-links reach this page two ways, and both have to work.
+  //
+  // `?tab=future` names a tab directly — the dashboard's "Next year" card has
+  // linked that way all along and it did nothing, because only the hash was
+  // ever read. `#goals` names a section, which is mapped to the tab holding it.
+  // Read from window rather than useSearchParams so no Suspense boundary is
+  // needed and both live in one effect.
   useEffect(() => {
+    const TABS_BY_KEY: Record<string, MeTab> = {
+      profile: "profile", reflect: "reflect", grow: "grow", future: "future",
+    };
     const HASH_TAB: Record<string, MeTab> = {
       habits: "reflect", moral: "reflect", standard: "reflect",
       focus: "grow", practice: "grow", boosts: "grow", selves: "grow",
-      pathways: "future", goals: "future",
+      pathways: "future", goals: "future", "future-self": "future",
     };
     const apply = () => {
       const h = window.location.hash.replace("#", "");
+      // A section anchor wins over ?tab= — it's the more specific request.
+      if (!HASH_TAB[h]) {
+        const asked = new URLSearchParams(window.location.search).get("tab");
+        if (asked && TABS_BY_KEY[asked]) setTab(TABS_BY_KEY[asked]);
+      }
       if (HASH_TAB[h]) {
         setTab(HASH_TAB[h]);
         setTimeout(
@@ -480,6 +497,11 @@ export default function MeClient({
         {/* Future — pathways + goals */}
         {hasProfile && tab === "future" && (
           <>
+            {/* The picture the pathways and goals below are for. */}
+            <FutureSelfSection
+              excerpt={futureSelf}
+              href="/missions/4/activities/future-self"
+            />
             <div id="pathways">
               <PathwaysSection top5={top5} values={values} yearLevel={yearLevel} />
             </div>

@@ -7,6 +7,7 @@ import { parseAnswers } from "@/lib/standard";
 import { responseToCode, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
+import { answersOnly } from "@/lib/journal";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function MePage() {
     { data: goalsRaw, error: goalsError },
     { data: practiceRaw },
     { data: commitmentRow },
+    { data: futureSelfRow },
     { data: habitRow },
     { data: focusRow },
     { data: standardRaw, error: standardError },
@@ -69,6 +71,14 @@ export default async function MePage() {
       .select("response")
       .eq("user_id", user.id)
       .eq("activity_id", "commitment-statement")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", "future-self")
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
@@ -154,6 +164,10 @@ export default async function MePage() {
       activePractice={activePractice}
       recentPractices={recentPractices}
       commitmentExcerpt={((commitmentRow?.response as string) || "").slice(0, 140) || null}
+      futureSelf={
+        answersOnly(4, "future-self", futureSelfRow?.response as string | undefined) ||
+        null
+      }
       habitSaved={habitSaved}
       becoming={becoming}
       standardCheckins={standardCheckins}
