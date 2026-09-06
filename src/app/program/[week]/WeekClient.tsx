@@ -26,6 +26,7 @@ import {
 } from "@/lib/program";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
+import { withReturn } from "@/lib/returnTo";
 import type { YearLevel } from "@/lib/yearLevel";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
@@ -339,7 +340,7 @@ export default function WeekClient({
                 </>
               )}
               <Link
-                href={week.source.href}
+                href={withReturn(week.source.href, week.week)}
                 className="text-xs text-teal hover:underline mt-3 inline-block"
               >
                 {week.source.kind === "entry" ? "Reread or rewrite" : "Redo"}{" "}
@@ -360,7 +361,7 @@ export default function WeekClient({
                 {week.source.whyNeeded}
               </p>
               <Link
-                href={week.source.href}
+                href={withReturn(week.source.href, week.week)}
                 className="btn btn-primary w-full py-2.5 rounded-xl text-sm block text-center"
               >
                 {week.source.label} →
@@ -373,7 +374,7 @@ export default function WeekClient({
         {week.link && (
           <div data-animate="2">
             <Link
-              href={week.link.href}
+              href={withReturn(week.link.href, week.week)}
               className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
             >
               <span className="text-2xl flex-shrink-0" aria-hidden>
@@ -503,6 +504,10 @@ export default function WeekClient({
             currentTop={compass.strengthKeys}
             suggested={suggestedQualities}
             variant="program"
+            strengthsHref={withReturn(
+              "/missions/1/activities/strengths-mapping",
+              week.week
+            )}
             disabled={!ready}
             onSaved={(keys) => saveArtefact(linesToCommitment(keys))}
           />
@@ -516,7 +521,10 @@ export default function WeekClient({
             heading={week.artefact.heading}
             blurb={week.artefact.blurb}
             values={compass.values}
-            valuesHref={week.source?.href ?? "/missions/1/activities/values-clarifier"}
+            valuesHref={withReturn(
+              week.source?.href ?? "/missions/1/activities/values-clarifier",
+              week.week
+            )}
             saved={savedPairs}
             busy={busy}
             disabled={!ready}
@@ -589,7 +597,7 @@ export default function WeekClient({
                     {c.excerpt}
                   </blockquote>
                   <Link
-                    href={c.href}
+                    href={withReturn(c.href, week.week)}
                     className="text-xs text-teal hover:underline mt-2 inline-block"
                   >
                     Read it in full →

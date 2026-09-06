@@ -42,6 +42,7 @@ export default function BecomingQualities({
   suggested = [],
   /** "program" frames it as this week's challenge; "profile" as a standing plan */
   variant,
+  strengthsHref = "/missions/1/activities/strengths-mapping",
   /** Program week 1 records its own completion receipt through this */
   onSaved,
   disabled = false,
@@ -52,6 +53,9 @@ export default function BecomingQualities({
   currentTop: string[];
   suggested?: string[];
   variant: "program" | "profile";
+  /** Where to send someone with no strengths mapped — carries a return token
+      when a program week is the one asking. */
+  strengthsHref?: string;
   onSaved?: (qualities: string[]) => Promise<boolean>;
   disabled?: boolean;
   hasGoals?: boolean;
@@ -164,7 +168,7 @@ export default function BecomingQualities({
               Pick your five now if you like — but without your strengths mapped
               there&apos;s nothing to set them against, and the gap is the point.{" "}
               <Link
-                href="/missions/1/activities/strengths-mapping"
+                href={strengthsHref}
                 className="text-teal hover:underline"
               >
                 Strengths Mapping

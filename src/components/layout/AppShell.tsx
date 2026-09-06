@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import ConfirmEmailBanner from "@/components/common/ConfirmEmailBanner";
+import ReturnBanner from "@/components/ReturnBanner";
 
 const NAV_ITEMS = [
   {
@@ -158,6 +159,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </a>
       {/* Unconfirmed-email nudge — never a blocker, just a reminder */}
       <ConfirmEmailBanner />
+      {/* Present only when a program week sent them here — see lib/returnTo. */}
+      <ReturnBanner />
 
       <main id="main-content" className="pb-nav">{children}</main>
 

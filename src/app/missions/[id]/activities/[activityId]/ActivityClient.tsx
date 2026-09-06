@@ -16,6 +16,7 @@ import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import { splitScaffoldedResponse } from "@/lib/journal";
+import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import {
   STRENGTH_SCENARIOS,
   scoreAssessment,
@@ -497,14 +498,7 @@ function ConversationalActivity({
         {/* Minimal header */}
         <div className="activity-header">
           <div className="max-w-lg mx-auto flex items-center gap-3">
-            <Link
-              href={`/missions/${mission.id}`}
-              className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
-            >
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
+            <ActivityBackLink missionId={mission.id} />
             <span className="text-xs font-semibold text-[--ink-muted] tracking-wide truncate">
               {mission.title}
             </span>
@@ -1094,6 +1088,7 @@ function ConversationalActivity({
     <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
       <div className="activity-header">
         <div className="max-w-lg mx-auto flex items-center gap-3">
+          <ActivityBackLink missionId={mission.id} />
           <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
         </div>
       </div>
@@ -1203,6 +1198,7 @@ function ConversationalActivity({
           {/* Primary continue actions — available immediately, never gated on
               the reflection loading below. */}
           <div className="space-y-3 mb-5" data-animate="3">
+            <ReturnToWeekButton />
             {nextActivity ? (
               <Link
                 href={`/missions/${mission.id}/activities/${nextActivity.id}`}
@@ -1478,11 +1474,7 @@ function ValuesPickerActivity({
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         <div className="activity-header">
           <div className="max-w-lg mx-auto flex items-center gap-3">
-            <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
+            <ActivityBackLink missionId={mission.id} />
             <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
           </div>
         </div>
@@ -1523,6 +1515,7 @@ function ValuesPickerActivity({
             </svg>
             Edit my values
           </button>
+          <ReturnToWeekButton />
           {(() => {
             const idx = mission.activities.findIndex((a) => a.id === activity.id);
             const next = mission.activities.slice(idx + 1).find((a) => !a.locked) || null;
@@ -1549,11 +1542,7 @@ function ValuesPickerActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       <div className="activity-header">
         <div className="max-w-lg mx-auto flex items-center gap-3">
-          <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
+          <ActivityBackLink missionId={mission.id} />
           <span className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
           <span className="text-xs text-[--ink-muted]">
             {selectedValues.length} of {activity.valuesCount || 5}
@@ -1838,11 +1827,7 @@ function ChallengeActivity({
   const header = (
     <div className="activity-header">
       <div className="max-w-lg mx-auto flex items-center gap-3">
-        <Link href={`/missions/${mission.id}`} className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted]">
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
+        <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
       </div>
     </div>
@@ -2135,14 +2120,7 @@ function StrengthsAssessmentActivity({
   const header = (label: string) => (
     <div className="activity-header">
       <div className="max-w-lg mx-auto flex items-center gap-3">
-        <Link
-          href={`/missions/${mission.id}`}
-          className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
-        >
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
+        <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
       </div>
     </div>
@@ -2286,6 +2264,7 @@ function StrengthsAssessmentActivity({
               </div>
             )}
 
+            <ReturnToWeekButton />
             <div className="flex gap-3 pb-8">
               <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">
                 Back to mission
