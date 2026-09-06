@@ -6,15 +6,26 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import CharacterCodeBuilder from "./CharacterCodeBuilder";
+import BecomingQualities from "@/components/BecomingQualities";
+import { ValueBehaviours, LinesBuilder } from "./ArtefactBuilders";
 import {
   DAY_LABELS,
   PROGRAM_WEEKS,
   isWeekComplete,
+  artefactComplete,
+  artefactTarget,
+  commitmentToLines,
+  commitmentToPairs,
+  linesToCommitment,
+  pairsToCommitment,
   WEEK_REFLECTION_SCAFFOLDS,
+  ARTEFACT_SCAFFOLDS,
   commitmentScaffold,
   type ProgramWeek,
   type WeekProgress,
 } from "@/lib/program";
+import { STRENGTH_BY_KEY } from "@/lib/strengths";
+import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
 import type { YearLevel } from "@/lib/yearLevel";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 
@@ -24,11 +35,24 @@ import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
  * a record and never a streak — an unticked day is simply unticked, and the
  * week can still be completed with gaps in it.
  */
+export interface Compass {
+  /** Display names of the top five VIA strengths */
+  strengths: string[];
+  /** The same five as keys, for comparison against the week 1 picker */
+  strengthKeys: string[];
+  /** The five values chosen in Mission 1 */
+  values: string[];
+}
+
 export default function WeekClient({
   userId,
   week,
   progress,
   savedCode,
+  compass,
+  becoming,
+  suggestedQualities,
+  earlier,
   yearLevel,
   ready,
 }: {
@@ -38,6 +62,14 @@ export default function WeekClient({
   yearLevel: YearLevel;
   progress: WeekProgress | null;
   savedCode: string[];
+  /** What the missions already produced — shown, not linked to */
+  compass: Compass;
+  /** The shared "Who I'm becoming" record — week 1's artefact lives here */
+  becoming: Becoming;
+  /** VIA keys the habit check flagged, for week 1's picker */
+  suggestedQualities: string[];
+  /** Week 10 only: the artefacts weeks 1, 2, 7 and 8 made */
+  earlier: { week: number; heading: string; items: string[] }[];
   ready: boolean;
 }) {
   const router = useRouter();
@@ -52,8 +84,41 @@ export default function WeekClient({
 
   const target = week.challenge.target ?? 1;
   const isTracked = week.challenge.kind !== "single";
-  const needsCommitment = !!week.challenge.commitmentPrompt;
+  // Weeks 4 and 5 name a promise; the artefact weeks use the same column for
+  // a list, so the free-text commitment box is only for the former.
+  const needsCommitment = !!week.challenge.commitmentPrompt && !week.artefact;
   const done = isWeekComplete(week, progress ?? undefined);
+  // Read from local state, not the server prop, so the reflection unlocks the
+  // moment the artefact is saved rather than on the next navigation.
+  //
+  // Week 1's artefact is the shared "Who I'm becoming" record rather than this
+  // week's own column, so it can already exist — set from the profile — before
+  // this week has any row at all. Asking such a student to "make the 5 above
+  // first" when the five are visible above would be plainly wrong.
+  const artefactDoneNow =
+    week.artefact?.kind === "qualities"
+      ? becoming.qualities.length >= QUALITIES_COUNT
+      : artefactComplete(week, {
+          ...(progress ?? ({} as WeekProgress)),
+          commitment,
+        });
+  // `commitment` holds the saved artefact for these weeks, so read it back
+  // through the shape the week expects.
+  const savedLines = week.artefact ? commitmentToLines(commitment) : [];
+  const savedPairs =
+    week.artefact?.kind === "value-behaviours"
+      ? commitmentToPairs(commitment).filter((x) => x.value)
+      : [];
+  // The qualities picker takes taps, not writing, so week 1 still needs the
+  // switcher down at the reflection. The other two builders don't.
+  const writingArtefactAbove =
+    week.artefact?.kind === "value-behaviours" || week.artefact?.kind === "lines";
+  const hasSource =
+    week.source?.kind === "strengths"
+      ? compass.strengths.length > 0
+      : week.source?.kind === "values"
+        ? compass.values.length > 0
+        : true;
   const prev = PROGRAM_WEEKS.find((w) => w.week === week.week - 1);
   const next = PROGRAM_WEEKS.find((w) => w.week === week.week + 1);
 
@@ -98,9 +163,33 @@ export default function WeekClient({
     await persist({ days: nextDays });
   }
 
+  /**
+   * Artefacts live in the same `commitment` column as the week 4/5 promise, so
+   * saving one is an ordinary persist with the state kept in step — otherwise
+   * the next tick of a day would write the pre-artefact value back over it.
+   */
+  async function saveArtefact(value: string): Promise<boolean> {
+    setCommitment(value);
+    return persist({ commitment: value || null });
+  }
+
   async function finishWeek() {
     if (!reflection.trim()) return;
-    const ok = await persist({ reflection: reflection.trim() }, true);
+    // The artefact gate only guards *completing* a week. A week finished before
+    // the artefact existed is grandfathered — blocking it would leave the
+    // student unable to touch a reflection the header already calls complete.
+    if (!done && week.artefact && !artefactDoneNow) return;
+    // Week 1 keeps a receipt of the shared record, so every server-side surface
+    // (the dashboard card, the program list) can count the week complete
+    // without also having to load the profile.
+    const receipt =
+      week.artefact?.kind === "qualities"
+        ? { commitment: linesToCommitment(becoming.qualities) }
+        : {};
+    const ok = await persist(
+      { reflection: reflection.trim(), ...receipt },
+      true
+    );
     if (ok) {
       // Journal copy so the week's reflection sits with everything else
       await db.from("journal_entries").insert({
@@ -163,7 +252,93 @@ export default function WeekClient({
           </div>
         </div>
 
-        {/* The tool that already does this work */}
+        {/* What the missions already produced. A week built on Mission 1 shows
+            that work rather than linking to it — the link was a detour for
+            anyone who'd already done it, and no help at all in explaining what
+            the week was going to do with it. */}
+        {week.source && hasSource && (
+          <div data-animate="2">
+            <div className="rounded-2xl bg-white border-2 border-navy/20 p-5">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3 text-navy">
+                <span aria-hidden>🧭</span> From your Mission 1 compass
+              </div>
+              {week.source.kind === "strengths" ? (
+                <>
+                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                    Your signature strengths
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {compass.strengthKeys.map((k) => (
+                      <span
+                        key={k}
+                        className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                        style={{ background: "var(--navy)" }}
+                      >
+                        <span aria-hidden className="mr-1">
+                          {STRENGTH_BY_KEY[k]?.emoji}
+                        </span>
+                        {STRENGTH_BY_KEY[k]?.name ?? k}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    This is who you already are. This week asks a different
+                    question — who you want to be at 25 — and the difference
+                    between the two lists is the work.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                    Your values
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {compass.values.map((v) => (
+                      <span
+                        key={v}
+                        className="px-2.5 py-1 rounded-full text-xs font-semibold border border-navy/40 text-navy"
+                      >
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    You named these in Mission 1. This week is the harder half:
+                    proving each one with a behaviour someone could watch you do.
+                  </p>
+                </>
+              )}
+              <Link
+                href={week.source.href}
+                className="text-xs text-teal hover:underline mt-3 inline-block"
+              >
+                Redo {week.source.label}
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Missing source: the week's first action, not a side link. */}
+        {week.source && !hasSource && (
+          <div data-animate="2">
+            <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5">
+              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 text-navy">
+                Do this first
+              </div>
+              <p className="text-sm text-ink leading-relaxed mb-3">
+                {week.source.whyNeeded}
+              </p>
+              <Link
+                href={week.source.href}
+                className="btn btn-primary w-full py-2.5 rounded-xl text-sm block text-center"
+              >
+                {week.source.label} →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* A genuinely different tool the week points into */}
         {week.link && (
           <div data-animate="2">
             <Link
@@ -283,6 +458,85 @@ export default function WeekClient({
           </div>
         </div>
 
+        {/* The thing the week makes. Previously these weeks said "write them
+            somewhere you'll see them" — so the artefact left the app, and
+            week 10's "look back at your week 1 five qualities" pointed at
+            nothing the app could show. */}
+        {/* Week 1's challenge is the profile's "Who I'm becoming" — one
+            artefact, two doors. It reads and writes the shared record, and
+            hands this week a completion receipt on the way through. */}
+        {week.artefact?.kind === "qualities" && (
+          <BecomingQualities
+            userId={userId}
+            saved={becoming}
+            currentTop={compass.strengthKeys}
+            suggested={suggestedQualities}
+            variant="program"
+            disabled={!ready}
+            onSaved={(keys) => saveArtefact(linesToCommitment(keys))}
+          />
+        )}
+
+        {/* Nothing to build until the values exist, and the "do this first"
+            banner above is already the action — a second copy of the same
+            call to action is the redundancy this rework is removing. */}
+        {week.artefact?.kind === "value-behaviours" && hasSource && (
+          <ValueBehaviours
+            heading={week.artefact.heading}
+            blurb={week.artefact.blurb}
+            values={compass.values}
+            valuesHref={week.source?.href ?? "/missions/1/activities/values-clarifier"}
+            saved={savedPairs}
+            busy={busy}
+            disabled={!ready}
+            onSave={(pairs) => saveArtefact(pairsToCommitment(pairs))}
+          />
+        )}
+
+        {week.artefact?.kind === "lines" && (
+          <LinesBuilder
+            heading={week.artefact.heading}
+            blurb={week.artefact.blurb}
+            count={week.artefact.count}
+            placeholders={week.artefact.placeholders}
+            scaffold={ARTEFACT_SCAFFOLDS[week.week]}
+            saved={savedLines}
+            busy={busy}
+            disabled={!ready}
+            onSave={(lines) => saveArtefact(linesToCommitment(lines))}
+          />
+        )}
+
+        {/* Week 10 reads back what the earlier weeks made, so the code is
+            written from evidence rather than from memory. */}
+        {week.week === 10 && earlier.length > 0 && (
+          <div data-animate="3">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              What you already wrote down
+            </h2>
+            <div className="space-y-2">
+              {earlier.map((e) => (
+                <div key={e.week} className="card p-4">
+                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                    Week {e.week} · {e.heading}
+                  </div>
+                  <ul className="space-y-1">
+                    {e.items.map((item, i) => (
+                      <li key={i} className="text-sm text-ink leading-relaxed">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-ink-muted leading-relaxed mt-2">
+              Your code should be recognisable from this. If none of it made the
+              cut, that&apos;s worth a second look before you write.
+            </p>
+          </div>
+        )}
+
         {/* Week 10 writes the artefact instead of a plain reflection */}
         {week.week === 10 ? (
           <CharacterCodeBuilder
@@ -306,7 +560,10 @@ export default function WeekClient({
               <p className="text-xs text-ink-muted mb-3 leading-relaxed">
                 What actually happened? What surprised you? Honest beats tidy.
               </p>
-              <TierSwitcher className="mb-4" />
+              {/* The tier is page-wide state, so two switchers on one screen
+                  are two controls for one setting. The artefact builders above
+                  already render one when they take written answers. */}
+              {!writingArtefactAbove && <TierSwitcher className="mb-4" />}
               <ScaffoldedInput
                 value={reflection}
                 onChange={setReflection}
@@ -321,7 +578,12 @@ export default function WeekClient({
               )}
               <button
                 onClick={finishWeek}
-                disabled={!reflection.trim() || busy || !ready}
+                disabled={
+                  !reflection.trim() ||
+                  busy ||
+                  !ready ||
+                  (!done && !!week.artefact && !artefactDoneNow)
+                }
                 className="btn btn-primary w-full py-2.5 rounded-xl text-sm mt-3"
               >
                 {busy
@@ -335,7 +597,14 @@ export default function WeekClient({
                   Saved.
                 </p>
               )}
-              {days.length < target && (
+              {week.artefact && !artefactDoneNow && (
+                <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">
+                  {done
+                    ? `You finished this week before this part existed. Making the ${artefactTarget(week)} above is worth doing anyway — week 10 reads them back.`
+                    : `Make the ${artefactTarget(week)} above first — reflecting on something you haven't made yet is the habit this program is trying to break.`}
+                </p>
+              )}
+              {isTracked && days.length < target && (
                 <p className="text-[11px] text-ink-muted text-center mt-2">
                   You can finish the week with {days.length} of {target} ticked —
                   it just means less to reflect on.

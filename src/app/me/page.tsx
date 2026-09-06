@@ -6,6 +6,7 @@ import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
 import { responseToCode, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +84,7 @@ export default async function MePage() {
       .from("journal_entries")
       .select("response")
       .eq("user_id", user.id)
-      .eq("activity_id", "focus-qualities")
+      .eq("activity_id", BECOMING_ACTIVITY_ID)
       .order("created_at", { ascending: false })
       .limit(1)
       .single(),
@@ -129,12 +130,10 @@ export default async function MePage() {
   const habitSaved = habitRow?.response
     ? responseToHabits(habitRow.response as string)
     : null;
-  const focusKeys = (((focusRow?.response as string) || "")
-    .split("\n")
-    .find((l: string) => l.startsWith("keys:")) || "")
-    .replace("keys:", "")
-    .split(",")
-    .filter(Boolean);
+  // Five qualities at 25 plus the one or two being worked on — the same record
+  // program week 1 writes. parseBecoming also reads the pre-merge format, where
+  // this entry held only one or two Boost keys.
+  const becoming = parseBecoming(focusRow?.response as string | undefined);
 
   const standardCheckins = ((standardRaw || []) as any[]).map((c) => ({
     id: c.id as string,
@@ -156,7 +155,7 @@ export default async function MePage() {
       recentPractices={recentPractices}
       commitmentExcerpt={((commitmentRow?.response as string) || "").slice(0, 140) || null}
       habitSaved={habitSaved}
-      focusKeys={focusKeys}
+      becoming={becoming}
       standardCheckins={standardCheckins}
       characterCode={responseToCode(codeRow?.response as string | undefined)}
       // The Standard ships in migration 004 — same graceful degradation as

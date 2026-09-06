@@ -153,6 +153,116 @@ export const VALUES_WITH_DEFINITIONS: Record<string, string> = {
     "Showing up as yourself, not a version shaped by what others expect. It means saying what you actually think, living by what you actually believe, and refusing to perform a role that isn't yours.",
 };
 
+/**
+ * Observable behaviours for each value — the tap-answers for the program's
+ * week 2 ("five values, five behaviours"). They are deliberately small and
+ * unimpressive: the exercise is ruined by aspirational answers, and a student
+ * offered "stand up for what is right" writes a preference back. Each of these
+ * is something a person watching for a week could actually see happen.
+ */
+export const VALUE_BEHAVIOURS: Record<string, string[]> = {
+  Courage: [
+    "Said the unpopular thing out loud in a room that disagreed",
+    "Put my hand up when I wasn't sure I was right",
+    "Tried the thing I might be bad at in front of people",
+  ],
+  Kindness: [
+    "Sat with the person nobody was sitting with",
+    "Sent the message I didn't have to send",
+    "Helped someone catch up without making a thing of it",
+  ],
+  Honesty: [
+    "Owned up before anyone found out",
+    "Told a friend the true thing instead of the easy thing",
+    "Admitted I hadn't done the work rather than making an excuse",
+  ],
+  Creativity: [
+    "Made something and showed one person",
+    "Suggested the different way of doing it, not the obvious one",
+    "Finished something imperfect instead of making nothing",
+  ],
+  Loyalty: [
+    "Stuck up for someone who wasn't in the room",
+    "Turned up for a friend when it cost me my evening",
+    "Didn't join in when the group turned on someone",
+  ],
+  Fairness: [
+    "Made sure the quiet one got a say",
+    "Called out a split that wasn't even",
+    "Gave someone credit for work I could have taken",
+  ],
+  Growth: [
+    "Asked for feedback I didn't want to hear",
+    "Went back to the thing I was worst at",
+    "Said 'I don't understand' instead of nodding along",
+  ],
+  Family: [
+    "Put my phone down at dinner",
+    "Did the job at home nobody asked me to do",
+    "Rang the relative I keep meaning to ring",
+  ],
+  Independence: [
+    "Made the decision without polling everyone first",
+    "Sorted the problem myself before asking to be rescued",
+    "Held an opinion my friends didn't share",
+  ],
+  Humour: [
+    "Broke the tension when a room needed it",
+    "Made a joke that didn't cost anyone anything",
+    "Laughed at myself instead of getting defensive",
+  ],
+  Compassion: [
+    "Asked someone how they actually were, and waited",
+    "Noticed someone struggling and did something about it",
+    "Listened without turning it into my story",
+  ],
+  Adventure: [
+    "Said yes to the thing outside my routine",
+    "Went somewhere I'd never been, on purpose",
+    "Started the thing before I felt ready",
+  ],
+  Justice: [
+    "Didn't stay a bystander when something was wrong",
+    "Reported the thing that was easier to ignore",
+    "Argued the point when everyone had moved on",
+  ],
+  Faith: [
+    "Kept the practice on the day I didn't feel it",
+    "Turned up to the community thing",
+    "Held to the principle when it was inconvenient",
+  ],
+  Discipline: [
+    "Did the rep on the day motivation had gone",
+    "Studied before the screen, not after",
+    "Went to bed at the time I said I would",
+  ],
+  Connection: [
+    "Had the real conversation instead of the surface one",
+    "Told someone something true about me",
+    "Made the plan instead of waiting to be invited",
+  ],
+  Curiosity: [
+    "Asked the question I thought would make me look stupid",
+    "Went and found out instead of assuming",
+    "Followed the thing that interested me off-topic",
+  ],
+  Service: [
+    "Did the useful thing and told nobody",
+    "Stayed back to stack the chairs",
+    "Signed up for the shift nobody wanted",
+  ],
+  Resilience: [
+    "Went back the day after it went badly",
+    "Let myself feel it, then found the next move",
+    "Didn't quit the thing that embarrassed me",
+  ],
+  Authenticity: [
+    "Said what I actually thought, not the room's version",
+    "Showed someone the part of me I usually hide",
+    "Stopped performing in a room where I normally do",
+  ],
+};
+
 export const MISSIONS: Mission[] = [
   {
     id: 1,
@@ -1234,7 +1344,8 @@ const BASE_ACTIVITY_LABELS: Record<string, string> = (() => {
  */
 const SPECIAL_LABELS: Record<string, string> = {
   "habit-check": "Habit Check",
-  "focus-qualities": "My Focus Qualities",
+  // Reuses the pre-merge id; the label follows the merged artefact.
+  "focus-qualities": "Who I'm Becoming",
   "strength-practice": "Strength in Action",
   "goal-checkin": "Goal Check-in",
 };

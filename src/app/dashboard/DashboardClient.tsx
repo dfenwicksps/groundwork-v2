@@ -118,9 +118,11 @@ export default function DashboardClient({
             ? "The weekly five"
             : programWeek.started
               ? "Carry on with"
-              : "This week"}
+              : spine.missionsFirst
+                ? "After the missions"
+                : "This week"}
         </h2>
-        <TrackBadge lead={spine.lead === "program"} />
+        <TrackBadge lead={spine.lead === "program"} missionsFirst={spine.missionsFirst} />
       </div>
       <Link
         href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
@@ -147,7 +149,9 @@ export default function DashboardClient({
       </Link>
       {!programWeek.started && !programWeek.allDone && (
         <p className="text-xs text-ink-muted leading-relaxed mt-2">
-          {spine.programBlurb}
+          {spine.missionsFirst
+            ? `${4 - spine.missionsDone} mission${4 - spine.missionsDone === 1 ? "" : "s"} to finish first — the weeks read from what they produce. This one will be waiting.`
+            : spine.programBlurb}
         </p>
       )}
     </div>
@@ -198,11 +202,13 @@ export default function DashboardClient({
 
           {/* Two tracks run in parallel forever, and nothing inside the app
               said so — a student could reasonably think finishing the missions
-              unlocks the program, or that picking one abandons the other. */}
+              unlocks the program, or that picking one abandons the other.
+              Once Mission 1 is done the two really are parallel; until then
+              there genuinely is an order, and saying so beats a badge. */}
           <p className="text-sm text-ink-muted mt-3 leading-relaxed max-w-md">
-            {spine.lead === "program"
-              ? "This week is the habit — one question, one thing to do. Missions are the deep dives, and they run alongside it."
-              : "Missions go deep, one question at a time. This week is the habit that runs alongside them."}
+            {spine.missionsFirst
+              ? "The four missions come first — they're the foundation. The ten-week program is where what you find in them turns into habit."
+              : "All four missions done. The ten weeks are the practice layer now — one question a week, and one thing to actually do."}
           </p>
 
           {/* The app reorders itself by year level. Unannounced, that effort is
@@ -233,7 +239,7 @@ export default function DashboardClient({
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
               Your mission
             </h2>
-            <TrackBadge lead={spine.lead !== "program"} />
+            <TrackBadge lead={spine.lead !== "program"} missionsFirst={spine.missionsFirst} />
           </div>
           <div
             className="rounded-2xl p-6 text-white relative overflow-hidden"

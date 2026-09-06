@@ -6,6 +6,7 @@ import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS } from "@/lib/missions";
+import { missionsCompleted } from "@/lib/missionProgress";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
@@ -175,7 +176,15 @@ export default async function DashboardPage() {
   // Which track leads is a function of year level, not of what happens to be
   // furthest along. See src/lib/spine.ts.
   const yearLevel = parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle";
-  const spine = spineFor(yearLevel);
+
+  // The missions are the foundation and the program is the practice layer that
+  // follows, so the program is held back until all four are done — see spine.ts.
+  const spine = spineFor(
+    yearLevel,
+    missionsCompleted(
+      (progress || []) as { mission_id: number; activity_id: string }[]
+    )
+  );
 
   // Program state for the "this week" card. Absent table (migration 005 not
   // run) degrades to offering week 1 rather than erroring.

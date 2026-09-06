@@ -8,9 +8,17 @@
 // what that person values → practise behaviours consistent with those values →
 // reflect on your impact on other people → repeat until it's just who you are.
 //
-// Where the app already has a tool for a week's work, that week links to it
-// rather than duplicating it — the program supplies the sequence and the
-// challenge, not a second copy of the strengths assessment.
+// The program follows the four missions rather than running beside them: the
+// missions are the foundation, these ten weeks are where what was found there
+// gets grown and embedded. See src/lib/spine.ts.
+//
+// So where a week's material already exists, the week *shows* it rather than
+// linking to it. Week 1 displays the strengths Mission 1 mapped and asks which
+// five you want at 25; week 2 lays out the values Mission 1 chose and asks for
+// the behaviour that proves each. A link would be a detour for anyone who had
+// already done the work — which, in this order, is everyone. `link` is kept
+// only for genuinely different tools a week points into (see `source` vs
+// `link` on ProgramWeek).
 
 /** The five questions a student returns to every week (see WEEKLY_FIVE). */
 export type Strand = "identity" | "values" | "discipline" | "contribution" | "impact";
@@ -22,6 +30,19 @@ export type ChallengeKind =
   | "sessions"
   /** One thing, made once, that stands for the whole week */
   | "single";
+
+/**
+ * The thing a week asks the student to name and keep. Each kind is a different
+ * shape of answer, and each is stored in program_progress.commitment (see
+ * WeekProgress.commitment) so no new table is needed.
+ */
+export type Artefact =
+  /** Week 1 — five character qualities chosen from the VIA 24 */
+  | { kind: "qualities"; count: number; heading: string; blurb: string }
+  /** Week 2 — the student's five values, each with an observable behaviour */
+  | { kind: "value-behaviours"; heading: string; blurb: string }
+  /** Weeks 7 and 8 — a fixed number of free-text lines */
+  | { kind: "lines"; count: number; heading: string; blurb: string; placeholders: string[] };
 
 export interface ProgramWeek {
   week: number;
@@ -49,6 +70,30 @@ export interface ProgramWeek {
   };
   /** An existing part of the app that already does this week's inner work */
   link?: { href: string; label: string; note: string };
+  /**
+   * Where this week's raw material already exists in the app. Unlike `link` —
+   * which is a suggestion — a source is something the week is *built on*: the
+   * week reads the student's saved answer and shows it, and only falls back to
+   * sending them to make it when there's nothing there yet.
+   *
+   * This is what stops the program repeating the missions. Week 1 used to link
+   * to Strengths Mapping; now it shows the strengths that mapping produced.
+   */
+  source?: {
+    kind: "strengths" | "values";
+    /** Where to go when the student hasn't done it yet */
+    href: string;
+    label: string;
+    /** Why the week needs it — shown only when it's missing */
+    whyNeeded: string;
+  };
+  /**
+   * What a "single" week actually makes. Without this, weeks 1, 2, 7 and 8 end
+   * with "write them somewhere you'll see them" — the app telling the student
+   * to keep the artefact outside the app, which then makes week 10's
+   * "look back at your week 1 five qualities" a promise nothing can keep.
+   */
+  artefact?: Artefact;
   /** Which of the weekly five this week deepens */
   strand: Strand | "all";
   emoji: string;
@@ -72,13 +117,26 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     challenge: {
       title: "Five qualities at 25",
       description:
-        "Choose five character qualities you'd want people to use when describing you at 25. Not achievements, not a job — qualities. Write them somewhere you'll see them.",
+        "Choose five character qualities you'd want people to use when describing you at 25. Not achievements, not a job — qualities. Then look at the gap between those five and the five you actually lead with today, and pick one or two to actually work on. That gap is the whole point of the next nine weeks.",
       kind: "single",
     },
-    link: {
+    source: {
+      kind: "strengths",
       href: "/missions/1/activities/strengths-mapping",
       label: "Strengths Mapping",
-      note: "Start from where you actually are — rank all 24 character strengths first.",
+      whyNeeded:
+        "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Mission 1.",
+    },
+    // Week 1's artefact is not the week's own — it is the shared "Who I'm
+    // becoming" record, which also renders on the profile under Grow. The
+    // heading and blurb live with the component; these are here so week 10 can
+    // label the readback. See src/lib/becoming.ts.
+    artefact: {
+      kind: "qualities",
+      count: 5,
+      heading: "Who I'm becoming — five qualities at 25",
+      blurb:
+        "Pick the five you'd want someone to reach for when describing you at 25. Not the ones you already have — the ones you'd want to be true.",
     },
   },
   {
@@ -97,13 +155,21 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     challenge: {
       title: "Five values, five behaviours",
       description:
-        "Pick five core values. Next to each, write one specific behaviour that demonstrates it — something someone watching could observe. A value without a behaviour is a preference.",
+        "Take your five values and put one specific behaviour next to each — something a person watching you for a week could actually observe. A value without a behaviour is a preference.",
       kind: "single",
     },
-    link: {
+    source: {
+      kind: "values",
       href: "/missions/1/activities/values-clarifier",
       label: "Values Clarifier",
-      note: "Choose your five here — then come back and write the behaviour for each.",
+      whyNeeded:
+        "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
+    },
+    artefact: {
+      kind: "value-behaviours",
+      heading: "Five values, five behaviours",
+      blurb:
+        "These are the five you chose in Mission 1. For each one, write the behaviour that proves it — observable, specific, this week.",
     },
   },
   {
@@ -234,8 +300,20 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     challenge: {
       title: "Three identity statements",
       description:
-        "Write three statements that begin 'I'm the kind of person who…'. Keeps my word. Stops before reacting. Looks after my body. Make them yours, make them true-ish, and say them like facts rather than goals.",
+        "Write three statements that begin \u201cI\u2019m the kind of person who\u2026\u201d. Keeps my word. Stops before reacting. Looks after my body. Make them yours, make them true-ish, and say them like facts rather than goals.",
       kind: "single",
+    },
+    artefact: {
+      kind: "lines",
+      count: 3,
+      heading: "Three identity statements",
+      blurb:
+        "Each one starts \u201cI\u2019m the kind of person who\u2026\u201d. Write them as descriptions, not goals \u2014 that\u2019s the whole mechanism.",
+      placeholders: [
+        "I\u2019m the kind of person who keeps their word.",
+        "I\u2019m the kind of person who stops before reacting.",
+        "I\u2019m the kind of person who looks after their body.",
+      ],
     },
   },
   {
@@ -256,6 +334,20 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       description:
         "Name three peers who lift you and two adults worth learning from. Then spend deliberate time with them this week — not accidental time. Send the message, take the lift, ask the question.",
       kind: "single",
+    },
+    artefact: {
+      kind: "lines",
+      count: 5,
+      heading: "Three peers, two adults",
+      blurb:
+        "Naming them is the step most people skip. Write the five, then the week is just spending time with people you\u2019ve already chosen.",
+      placeholders: [
+        "Peer 1 — who lifts you",
+        "Peer 2 — who lifts you",
+        "Peer 3 — who lifts you",
+        "Adult 1 — worth learning from",
+        "Adult 2 — worth learning from",
+      ],
     },
     link: {
       href: "/support",
@@ -394,7 +486,12 @@ export interface WeekProgress {
   week: number;
   /** Ticked units — day indices 0-6 for "daily", or 0..n-1 for "sessions" */
   days: number[];
-  /** The student's own promise / hill, where the week asks for one */
+  /**
+   * Whatever this week asked the student to name, one item per line: the
+   * promise (week 4), the hill (week 5), or the week's artefact — five
+   * qualities, five "value: behaviour" pairs, or three/five free lines.
+   * One column rather than one per shape, so no week needs a migration.
+   */
   commitment: string | null;
   reflection: string | null;
   completed_at: string | null;
@@ -424,8 +521,69 @@ export function isWeekComplete(w: ProgramWeek, p: WeekProgress | undefined): boo
   if (!p) return false;
   if (p.completed_at) return true;
   if (!p.reflection?.trim()) return false;
+  // A week that makes something isn't done until the thing exists. Reflecting
+  // on an artefact you never made is the exact failure this program is for.
+  if (w.artefact && !artefactComplete(w, p)) return false;
   if (w.challenge.kind === "single") return true;
   return p.days.length >= (w.challenge.target ?? 1);
+}
+
+// ─── Artefacts ────────────────────────────────────────────────────────────────
+// Stored one item per line in program_progress.commitment. Value-behaviour
+// pairs use "Value: behaviour", matching how the Values Clarifier already
+// writes its journal entry, so the two are readable by the same parser.
+
+export function linesToCommitment(items: string[]): string {
+  return items.map((i) => i.trim()).filter(Boolean).join("\n");
+}
+
+export function commitmentToLines(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return raw.split("\n").map((l) => l.trim()).filter(Boolean);
+}
+
+/** "Courage: I said the unpopular thing in class" → { value, behaviour } */
+export function commitmentToPairs(
+  raw: string | null | undefined
+): { value: string; behaviour: string }[] {
+  return commitmentToLines(raw).map((line) => {
+    const i = line.indexOf(":");
+    if (i === -1) return { value: line, behaviour: "" };
+    return { value: line.slice(0, i).trim(), behaviour: line.slice(i + 1).trim() };
+  });
+}
+
+export function pairsToCommitment(
+  pairs: { value: string; behaviour: string }[]
+): string {
+  return pairs
+    .filter((p) => p.value.trim())
+    .map((p) => `${p.value.trim()}: ${p.behaviour.trim()}`)
+    .join("\n");
+}
+
+/** How many items this week's artefact needs before it counts as made. */
+export function artefactTarget(w: ProgramWeek): number {
+  if (!w.artefact) return 0;
+  if (w.artefact.kind === "value-behaviours") return 5;
+  return w.artefact.count;
+}
+
+export function artefactComplete(
+  w: ProgramWeek,
+  p: WeekProgress | undefined
+): boolean {
+  if (!w.artefact) return true;
+  const lines = commitmentToLines(p?.commitment);
+  if (w.artefact.kind === "value-behaviours") {
+    // A value with no behaviour beside it is the preference the week is
+    // arguing against, so an empty right-hand side doesn't count.
+    return (
+      lines.length >= 5 &&
+      commitmentToPairs(p?.commitment).filter((x) => x.behaviour).length >= 5
+    );
+  }
+  return lines.length >= artefactTarget(w);
 }
 
 /**
@@ -815,6 +973,44 @@ export function commitmentScaffold(
     quick: quick ? quick[year === "senior" ? "senior" : "younger"] : undefined,
   };
 }
+
+/**
+ * Weeks 7 and 8 write lines rather than a promise, so they get their own
+ * scaffolds — the app's rule is that no box is ever blank, and these two were
+ * the last places a student met one.
+ */
+export const ARTEFACT_SCAFFOLDS: Record<number, Scaffold> = {
+  7: {
+    quick: [
+      "I\u2019m the kind of person who keeps their word, even on small things.",
+      "I\u2019m the kind of person who stops before reacting.",
+      "I\u2019m the kind of person who finishes what they start.",
+      "I\u2019m the kind of person who tells the truth when it\u2019s awkward.",
+      "I\u2019m the kind of person who looks after their body.",
+    ],
+    stems: ["I\u2019m the kind of person who", "I don\u2019t", "When it\u2019s hard, I"],
+    stuck: [
+      "Say it as a fact, not a goal. \u201cI\u2019m trying to\u201d is a fight; \u201cI\u2019m the kind of person who\u201d is a description you live up to.",
+      "Pick a rule you keep breaking, and write the identity that would make the rule unnecessary.",
+      "True-ish is fine \u2014 it only has to be more true than false right now.",
+    ],
+  },
+  8: {
+    quick: [
+      "A friend who makes me want to try harder",
+      "Someone who tells me the truth even when it\u2019s awkward",
+      "The person I\u2019m calmest around",
+      "A coach or teacher who takes me seriously",
+      "A family member who\u2019s further down the road than me",
+    ],
+    stems: ["Someone who lifts me is", "I feel better after", "An adult worth learning from is"],
+    stuck: [
+      "Who do you feel better after seeing? Start there rather than with who you see most.",
+      "The two adults don\u2019t have to be impressive \u2014 just people whose character you\u2019d take.",
+      "If you can\u2019t fill five, write the ones you have. The gap is the finding.",
+    ],
+  },
+};
 
 /** The week 10 capstone — commitments in the present tense. */
 export const CHARACTER_CODE_SCAFFOLD: Scaffold = {
