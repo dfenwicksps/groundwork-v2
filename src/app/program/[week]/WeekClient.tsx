@@ -23,6 +23,7 @@ import {
   commitmentScaffold,
   type ProgramWeek,
   type WeekProgress,
+  type WeekSource,
 } from "@/lib/program";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
@@ -52,7 +53,7 @@ export default function WeekClient({
   savedCode,
   compass,
   becoming,
-  sourceEntry,
+  sourceEntries,
   capstone,
   suggestedQualities,
   earlier,
@@ -69,8 +70,8 @@ export default function WeekClient({
   compass: Compass;
   /** The shared "Who I'm becoming" record — week 1's artefact lives here */
   becoming: Becoming;
-  /** For a week built on a mission entry: what the student wrote there */
-  sourceEntry: string | null;
+  /** For a week built on mission entries: what they wrote, by activity id */
+  sourceEntries: Record<string, string>;
   /** Week 10 only: mission writing the Character Code should be built from */
   capstone: {
     activityId: string;
@@ -127,17 +128,19 @@ export default function WeekClient({
   // switcher down at the reflection. The other two builders don't.
   const writingArtefactAbove =
     week.artefact?.kind === "value-behaviours" || week.artefact?.kind === "lines";
-  const hasSource =
-    week.source?.kind === "strengths"
-      ? compass.strengths.length > 0
-      : week.source?.kind === "values"
-        ? compass.values.length > 0
-        : week.source?.kind === "entry"
-          ? !!sourceEntry?.trim()
-          : true;
+  /** Has the student done the work this source reads? */
+  function satisfied(src: WeekSource): boolean {
+    if (src.kind === "strengths") return compass.strengths.length > 0;
+    if (src.kind === "values") return compass.values.length > 0;
+    return !!sourceEntries[src.activityId]?.trim();
+  }
+  const allSources = week.sources ?? [];
+  const ready_ = allSources.filter(satisfied);
+  const missing = allSources.filter((src) => !satisfied(src));
   // A required source is a prerequisite, not a suggestion — the week can't be
   // finished until the mission work behind it exists.
-  const blockedOnSource = !!week.source?.required && !hasSource;
+  const blockingSources = missing.filter((src) => src.required);
+  const blockedOnSource = blockingSources.length > 0;
   const prev = PROGRAM_WEEKS.find((w) => w.week === week.week - 1);
   const next = PROGRAM_WEEKS.find((w) => w.week === week.week + 1);
 
@@ -272,104 +275,126 @@ export default function WeekClient({
           </div>
         </div>
 
-        {/* What the missions already produced. A week built on Mission 1 shows
-            that work rather than linking to it — the link was a detour for
-            anyone who'd already done it, and no help at all in explaining what
-            the week was going to do with it. */}
-        {week.source && hasSource && (
+        {/* What the missions already produced. A week built on earlier work
+            shows that work rather than linking to it — the link was a detour
+            for anyone who'd already done it, and no help at all in explaining
+            what the week was going to do with it. Multiple sources are sections
+            of one card, not a stack of cards. */}
+        {ready_.length > 0 && (
           <div data-animate="2">
-            <div className="rounded-2xl bg-white border-2 border-navy/20 p-5">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3 text-navy">
-                <span aria-hidden>🧭</span>{" "}
-                {week.source.kind === "entry"
-                  ? `From Mission ${week.source.missionId} — your own words`
-                  : "From your Mission 1 compass"}
-              </div>
-              {week.source.kind === "entry" ? (
-                <>
-                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-                    {week.source.recallLabel}
-                  </div>
-                  {/* Their own writing, not a summary of it. Clamped rather
-                      than truncated so nothing is silently cut off — the whole
-                      entry is one tap away. */}
-                  <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 mb-3 line-clamp-6 whitespace-pre-line">
-                    {sourceEntry}
-                  </blockquote>
+            <div className="rounded-2xl bg-white border-2 border-navy/20 p-5 space-y-5">
+              {ready_.map((src, i) => {
+                const eyebrow =
+                  src.kind === "entry"
+                    ? `From Mission ${src.missionId} — your own words`
+                    : "From your Mission 1 compass";
+                const prev = ready_[i - 1];
+                // Two sources from the same mission would otherwise print the
+                // same heading twice in a row.
+                const sameAsPrev =
+                  !!prev &&
+                  eyebrow ===
+                    (prev.kind === "entry"
+                      ? `From Mission ${prev.missionId} — your own words`
+                      : "From your Mission 1 compass");
+                return (
+                <div key={src.href}>
+                  {!sameAsPrev && (
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3 text-navy">
+                      {i === 0 && <span aria-hidden>🧭</span>}
+                      {eyebrow}
+                    </div>
+                  )}
+
+                  {src.kind === "entry" ? (
+                    <>
+                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                        {src.recallLabel}
+                      </div>
+                      {/* Their own writing, not a summary of it. Clamped rather
+                          than truncated so nothing is silently cut off — the
+                          whole entry is one tap away. */}
+                      <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 mb-3 line-clamp-6 whitespace-pre-line">
+                        {sourceEntries[src.activityId]}
+                      </blockquote>
+                    </>
+                  ) : src.kind === "strengths" ? (
+                    <>
+                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                        Your signature strengths
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {compass.strengthKeys.map((k) => (
+                          <span
+                            key={k}
+                            className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
+                            style={{ background: "var(--navy)" }}
+                          >
+                            <span aria-hidden className="mr-1">
+                              {STRENGTH_BY_KEY[k]?.emoji}
+                            </span>
+                            {STRENGTH_BY_KEY[k]?.name ?? k}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                        Your values
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {compass.values.map((v) => (
+                          <span
+                            key={v}
+                            className="px-2.5 py-1 rounded-full text-xs font-semibold border border-navy/40 text-navy"
+                          >
+                            {v}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
                   <p className="text-xs text-ink-muted leading-relaxed">
-                    {week.source.soWhat}
+                    {src.soWhat}
                   </p>
-                </>
-              ) : week.source.kind === "strengths" ? (
-                <>
-                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-                    Your signature strengths
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {compass.strengthKeys.map((k) => (
-                      <span
-                        key={k}
-                        className="px-2.5 py-1 rounded-full text-xs font-semibold text-white"
-                        style={{ background: "var(--navy)" }}
-                      >
-                        <span aria-hidden className="mr-1">
-                          {STRENGTH_BY_KEY[k]?.emoji}
-                        </span>
-                        {STRENGTH_BY_KEY[k]?.name ?? k}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    {week.source.soWhat}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
-                    Your values
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {compass.values.map((v) => (
-                      <span
-                        key={v}
-                        className="px-2.5 py-1 rounded-full text-xs font-semibold border border-navy/40 text-navy"
-                      >
-                        {v}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    {week.source.soWhat}
-                  </p>
-                </>
-              )}
-              <Link
-                href={withReturn(week.source.href, week.week)}
-                className="text-xs text-teal hover:underline mt-3 inline-block"
-              >
-                {week.source.kind === "entry" ? "Reread or rewrite" : "Redo"}{" "}
-                {week.source.label}
-              </Link>
+                  <Link
+                    href={withReturn(src.href, week.week)}
+                    className="text-xs text-teal hover:underline mt-2 inline-block"
+                  >
+                    {src.kind === "entry" ? "Reread or rewrite" : "Redo"}{" "}
+                    {src.label}
+                  </Link>
+                </div>
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* Missing source: the week's first action, not a side link. */}
-        {week.source && !hasSource && (
+        {missing.length > 0 && (
           <div data-animate="2">
-            <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5">
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 text-navy">
-                Do this first
+            <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5 space-y-4">
+              <div className="text-[11px] font-bold uppercase tracking-widest text-navy">
+                {blockedOnSource ? "Do this first" : "Worth doing first"}
               </div>
-              <p className="text-sm text-ink leading-relaxed mb-3">
-                {week.source.whyNeeded}
-              </p>
-              <Link
-                href={withReturn(week.source.href, week.week)}
-                className="btn btn-primary w-full py-2.5 rounded-xl text-sm block text-center"
-              >
-                {week.source.label} →
-              </Link>
+              {missing.map((src) => (
+                <div key={src.href}>
+                  <p className="text-sm text-ink leading-relaxed mb-3">
+                    {src.whyNeeded}
+                  </p>
+                  <Link
+                    href={withReturn(src.href, week.week)}
+                    className={`w-full py-2.5 rounded-xl text-sm block text-center btn ${
+                      src.required ? "btn-primary" : "btn-secondary"
+                    }`}
+                  >
+                    {src.label} →
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -520,13 +545,15 @@ export default function WeekClient({
         {/* Nothing to build until the values exist, and the "do this first"
             banner above is already the action — a second copy of the same
             call to action is the redundancy this rework is removing. */}
-        {week.artefact?.kind === "value-behaviours" && hasSource && (
+        {week.artefact?.kind === "value-behaviours" &&
+          compass.values.length > 0 && (
           <ValueBehaviours
             heading={week.artefact.heading}
             blurb={week.artefact.blurb}
             values={compass.values}
             valuesHref={withReturn(
-              week.source?.href ?? "/missions/1/activities/values-clarifier",
+              allSources.find((x) => x.kind === "values")?.href ??
+                "/missions/1/activities/values-clarifier",
               week.week
             )}
             saved={savedPairs}
@@ -675,9 +702,10 @@ export default function WeekClient({
               )}
               {blockedOnSource && !done && (
                 <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">
-                  This week is built on {week.source!.label} — do that first and
-                  this unlocks. It&apos;s the one piece the week can&apos;t
-                  supply for you.
+                  This week is built on{" "}
+                  {blockingSources.map((x) => x.label).join(" and ")} — do that
+                  first and this unlocks. It&apos;s the one piece the week
+                  can&apos;t supply for you.
                 </p>
               )}
               {week.artefact && !artefactDoneNow && (

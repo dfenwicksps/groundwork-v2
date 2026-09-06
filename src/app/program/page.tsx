@@ -14,7 +14,9 @@ import type { WeeklyCheckin } from "./WeeklyFiveSection";
 const REQUIRED_SOURCE_IDS = [
   "values-clarifier",
   ...PROGRAM_WEEKS.flatMap((w) =>
-    w.source?.required && w.source.kind === "entry" ? [w.source.activityId] : []
+    (w.sources ?? []).flatMap((src) =>
+      src.required && src.kind === "entry" ? [src.activityId] : []
+    )
   ),
 ];
 
@@ -121,14 +123,17 @@ export default async function ProgramPage() {
   );
   const waiting: Record<number, { mission: number; label: string }> = {};
   for (const w of PROGRAM_WEEKS) {
-    if (!w.source?.required) continue;
-    const id =
-      w.source.kind === "entry" ? w.source.activityId : "values-clarifier";
-    if (!haveSource.has(id)) {
-      waiting[w.week] = {
-        mission: w.source.kind === "entry" ? w.source.missionId : 1,
-        label: w.source.label,
-      };
+    // Only required sources gate a week, so only those are worth flagging on
+    // the overview — a week is "waiting" on the first one still outstanding.
+    for (const src of w.sources ?? []) {
+      if (!src.required || waiting[w.week]) continue;
+      const id = src.kind === "entry" ? src.activityId : "values-clarifier";
+      if (!haveSource.has(id)) {
+        waiting[w.week] = {
+          mission: src.kind === "entry" ? src.missionId : 1,
+          label: src.label,
+        };
+      }
     }
   }
 

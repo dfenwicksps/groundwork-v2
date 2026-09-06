@@ -46,7 +46,7 @@ export default async function WeekPage({
   // Weeks that are built on Mission 1's work read it rather than linking to it;
   // week 10 reads back weeks 1 and 2. Both need every week's row, so the query
   // is by user rather than by week and the current week is picked out below.
-  const needsCompass = !!week.source || week.week === 10;
+  const needsCompass = !!week.sources?.length || week.week === 10;
   // Week 1's challenge IS the profile's "Who I'm becoming" record, so the week
   // reads it rather than keeping its own copy. The habit check supplies the
   // 🌱 suggestions the profile picker has always had.
@@ -60,9 +60,9 @@ export default async function WeekPage({
   const entryIds =
     week.week === 10
       ? CAPSTONE_SOURCES.map((c) => c.activityId)
-      : week.source?.kind === "entry"
-        ? [week.source.activityId]
-        : [];
+      : (week.sources ?? []).flatMap((src) =>
+          src.kind === "entry" ? [src.activityId] : []
+        );
 
   const [
     { data: rows, error: progressError },
@@ -171,15 +171,18 @@ export default async function WeekPage({
   }
 
   // Recalled to its own author, so the prompts are stripped and only their
-  // answers come back — see src/lib/journal.ts.
-  const sourceEntry =
-    week.source?.kind === "entry"
-      ? answersOnly(
-          week.source.missionId,
-          week.source.activityId,
-          latestEntry.get(week.source.activityId)
-        ) || null
-      : null;
+  // answers come back — see src/lib/journal.ts. Keyed by activity id, because
+  // a week can stand on more than one piece of earlier writing.
+  const sourceEntries: Record<string, string> = {};
+  for (const src of week.sources ?? []) {
+    if (src.kind !== "entry") continue;
+    const text = answersOnly(
+      src.missionId,
+      src.activityId,
+      latestEntry.get(src.activityId)
+    );
+    if (text) sourceEntries[src.activityId] = text;
+  }
 
   // Week 10 only: the mission writing the Character Code should be built from.
   const capstone =
@@ -240,7 +243,7 @@ export default async function WeekPage({
         values,
       }}
       becoming={becoming}
-      sourceEntry={sourceEntry}
+      sourceEntries={sourceEntries}
       capstone={capstone}
       suggestedQualities={suggestedQualities}
       earlier={earlier}

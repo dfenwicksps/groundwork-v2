@@ -120,8 +120,14 @@ export interface ProgramWeek {
    * This is what stops the program repeating the missions, and what makes the
    * missions load-bearing rather than merely available. Missions 2-4 used to
    * produce twelve journal entries that nothing in the app ever read again.
+   *
+   * A list rather than one, because some weeks genuinely stand on two pieces of
+   * earlier work — week 8's challenge is "three peers, two adults", and the
+   * peers and the adults were worked out in different mission steps. They are
+   * rendered as sections of a single card, so a second source adds a paragraph
+   * rather than another card to scroll past.
    */
-  source?: WeekSource;
+  sources?: WeekSource[];
   /**
    * What a "single" week actually makes. Without this, weeks 1, 2, 7 and 8 end
    * with "write them somewhere you'll see them" — the app telling the student
@@ -155,15 +161,17 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         "Choose five character qualities you'd want people to use when describing you at 25. Not achievements, not a job — qualities. Then look at the gap between those five and the five you actually lead with today, and pick one or two to actually work on. That gap is the whole point of the next nine weeks.",
       kind: "single",
     },
-    source: {
-      kind: "strengths",
-      href: "/missions/1/activities/strengths-mapping",
-      label: "Strengths Mapping",
-      whyNeeded:
-        "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Mission 1.",
-      soWhat:
-        "This is who you already are. This week asks a different question — who you want to be at 25 — and the difference between the two lists is the work.",
-    },
+    sources: [
+      {
+        kind: "strengths",
+        href: "/missions/1/activities/strengths-mapping",
+        label: "Strengths Mapping",
+        whyNeeded:
+          "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Mission 1.",
+        soWhat:
+          "This is who you already are. This week asks a different question — who you want to be at 25 — and the difference between the two lists is the work.",
+      }
+    ],
     // Week 1's artefact is not the week's own — it is the shared "Who I'm
     // becoming" record, which also renders on the profile under Grow. The
     // heading and blurb live with the component; these are here so week 10 can
@@ -195,15 +203,17 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         "Take your five values and put one specific behaviour next to each — something a person watching you for a week could actually observe. A value without a behaviour is a preference.",
       kind: "single",
     },
-    source: {
-      kind: "values",
-      href: "/missions/1/activities/values-clarifier",
-      label: "Values Clarifier",
-      whyNeeded:
-        "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
-      soWhat:
-        "You named these in Mission 1. This week is the harder half: proving each one with a behaviour someone could watch you do.",
-    },
+    sources: [
+      {
+        kind: "values",
+        href: "/missions/1/activities/values-clarifier",
+        label: "Values Clarifier",
+        whyNeeded:
+          "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
+        soWhat:
+          "You named these in Mission 1. This week is the harder half: proving each one with a behaviour someone could watch you do.",
+      }
+    ],
     artefact: {
       kind: "value-behaviours",
       heading: "Five values, five behaviours",
@@ -232,19 +242,21 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       target: 7,
       unit: "day",
     },
-    source: {
-      kind: "entry",
-      activityId: "what-matters",
-      missionId: 2,
-      recallLabel: "What you said matters to you",
-      href: "/missions/2/activities/what-matters",
-      label: "What Matters",
-      required: true,
-      whyNeeded:
-        "Contributing is hollow if you've never named what you actually care about. Mission 2 starts there — about ten minutes.",
-      soWhat:
-        "Contribution isn't only tidying up. Some of what you put in this week should point at that — the thing you'd want to be different.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "what-matters",
+        missionId: 2,
+        recallLabel: "What you said matters to you",
+        href: "/missions/2/activities/what-matters",
+        label: "What Matters",
+        required: true,
+        whyNeeded:
+          "Contributing is hollow if you've never named what you actually care about. Mission 2 starts there — about ten minutes.",
+        soWhat:
+          "Contribution isn't only tidying up. Some of what you put in this week should point at that — the thing you'd want to be different.",
+      }
+    ],
     link: {
       href: "/me#standard",
       label: "The Standard — question 2",
@@ -274,18 +286,32 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       commitmentPrompt:
         "Write the promise you're making. Be specific enough that at the end of a day you'd know for certain whether you kept it.",
     },
-    source: {
-      kind: "entry",
-      activityId: "fitting-in-vs-belonging",
-      missionId: 3,
-      recallLabel: "Where you genuinely belong, and where you're just fitting in",
-      href: "/missions/3/activities/fitting-in-vs-belonging",
-      label: "Fitting In vs. Belonging",
-      whyNeeded:
-        "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you find the rooms where you aren't — about ten minutes.",
-      soWhat:
-        "Being trusted means being the same person in both of those rooms. Your promise this week will be easier to keep in one than the other — notice which, and why.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "mask-check",
+        missionId: 1,
+        recallLabel: "The version of you that shows up in each room",
+        href: "/missions/1/activities/mask-check",
+        label: "The Mask Check",
+        whyNeeded:
+          "Being the same person privately and publicly is one of this week's three questions. Mission 1 already had you look at where you aren't.",
+        soWhat:
+          "That's the adjusting you already do. Trust is what's left when the adjusting stops — and the promise you keep this week is the smallest possible test of it.",
+      },
+      {
+        kind: "entry",
+        activityId: "fitting-in-vs-belonging",
+        missionId: 3,
+        recallLabel: "Where you genuinely belong, and where you're just fitting in",
+        href: "/missions/3/activities/fitting-in-vs-belonging",
+        label: "Fitting In vs. Belonging",
+        whyNeeded:
+          "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you find the rooms where you aren't — about ten minutes.",
+        soWhat:
+          "Being trusted means being the same person in both of those rooms. Your promise this week will be easier to keep in one than the other — notice which, and why.",
+      }
+    ],
     link: {
       href: "/me#standard",
       label: "The Standard — question 3",
@@ -315,18 +341,20 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       commitmentPrompt:
         "Name your hill, and what one session of work on it actually looks like.",
     },
-    source: {
-      kind: "entry",
-      activityId: "the-other-side",
-      missionId: 2,
-      recallLabel: "The person you found who cares about the same thing",
-      href: "/missions/2/activities/the-other-side",
-      label: "The Other Side",
-      whyNeeded:
-        "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
-      soWhat:
-        "They didn't get there comfortably either. Watching someone you recognise do a hard thing is one of the few reliable ways of coming to believe you could — so pick your hill with them in view.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "the-other-side",
+        missionId: 2,
+        recallLabel: "The person you found who cares about the same thing",
+        href: "/missions/2/activities/the-other-side",
+        label: "The Other Side",
+        whyNeeded:
+          "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
+        soWhat:
+          "They didn't get there comfortably either. Watching someone you recognise do a hard thing is one of the few reliable ways of coming to believe you could — so pick your hill with them in view.",
+      }
+    ],
     link: {
       href: "/me#practice",
       label: "Strength in action",
@@ -354,19 +382,21 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       target: 7,
       unit: "day",
     },
-    source: {
-      kind: "entry",
-      activityId: "across-the-gap",
-      missionId: 3,
-      recallLabel: "What connection across a real difference taught you",
-      href: "/missions/3/activities/across-the-gap",
-      label: "Across the Gap",
-      required: true,
-      whyNeeded:
-        "The hardest dilemmas are the ones where the other person isn't like you. Mission 3 has you sit with exactly that — about ten minutes, and this week leans on it.",
-      soWhat:
-        "Holding someone else's view without needing to agree is the skill underneath every dilemma this week. You've already practised it once.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "across-the-gap",
+        missionId: 3,
+        recallLabel: "What connection across a real difference taught you",
+        href: "/missions/3/activities/across-the-gap",
+        label: "Across the Gap",
+        required: true,
+        whyNeeded:
+          "The hardest dilemmas are the ones where the other person isn't like you. Mission 3 has you sit with exactly that — about ten minutes, and this week leans on it.",
+        soWhat:
+          "Holding someone else's view without needing to agree is the skill underneath every dilemma this week. You've already practised it once.",
+      }
+    ],
     link: {
       href: "/me#moral",
       label: "Moral Compass",
@@ -438,18 +468,32 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         "Adult 2 — worth learning from",
       ],
     },
-    source: {
-      kind: "entry",
-      activityId: "people-who-shaped-you",
-      missionId: 3,
-      recallLabel: "The people who shaped you",
-      href: "/missions/3/activities/people-who-shaped-you",
-      label: "The People Who Shaped You",
-      whyNeeded:
-        "You've already written about who made you who you are — this week builds on that rather than starting the list again. It's the Mission 3 milestone.",
-      soWhat:
-        "Those are the people who already shaped you. This week is the forward-looking version: who you're choosing to be shaped by from here.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "belonging",
+        missionId: 3,
+        recallLabel: "The people who make you feel most like yourself",
+        href: "/missions/3/activities/belonging",
+        label: "Where You Belong",
+        whyNeeded:
+          "Half this week is naming three peers who lift you. Mission 3 already had you work out who that is — about ten minutes.",
+        soWhat:
+          "Those are your three, or most of them. This week is the part that costs something: spending deliberate time with them rather than accidental time.",
+      },
+      {
+        kind: "entry",
+        activityId: "people-who-shaped-you",
+        missionId: 3,
+        recallLabel: "The people who shaped you",
+        href: "/missions/3/activities/people-who-shaped-you",
+        label: "The People Who Shaped You",
+        whyNeeded:
+          "You've already written about who made you who you are — this week builds on that rather than starting the list again. It's the Mission 3 milestone.",
+        soWhat:
+          "Those are the people who already shaped you. This week is the forward-looking version: who you're choosing to be shaped by from here.",
+      }
+    ],
     link: {
       href: "/support",
       label: "Support Circle",
@@ -477,19 +521,21 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       target: 3,
       unit: "session",
     },
-    source: {
-      kind: "entry",
-      activityId: "digital-self",
-      missionId: 4,
-      recallLabel: "The gap you found between online you and offline you",
-      href: "/missions/4/activities/digital-self",
-      label: "The Digital Self",
-      required: true,
-      whyNeeded:
-        "This week takes the input away for three half-hours. Mission 4 already asked what the input is doing to you — worth having that answer first.",
-      soWhat:
-        "That's what you noticed with the screens on. This week is the same question with them off — and the two answers are worth comparing.",
-    },
+    sources: [
+      {
+        kind: "entry",
+        activityId: "digital-self",
+        missionId: 4,
+        recallLabel: "The gap you found between online you and offline you",
+        href: "/missions/4/activities/digital-self",
+        label: "The Digital Self",
+        required: true,
+        whyNeeded:
+          "This week takes the input away for three half-hours. Mission 4 already asked what the input is doing to you — worth having that answer first.",
+        soWhat:
+          "That's what you noticed with the screens on. This week is the same question with them off — and the two answers are worth comparing.",
+      }
+    ],
   },
   {
     week: 10,

@@ -24,7 +24,7 @@ import type { YearLevel } from "./yearLevel";
 // without that material, so Mission 1 gates the program.
 //
 // Missions 2, 3 and 4 do NOT gate it — they gate the weeks that are actually
-// built on them (see `required` on ProgramWeek.source):
+// built on them (see `required` on ProgramWeek.sources):
 //
 //   Mission 1  →  weeks 1-2      strengths and values
 //   Mission 2  →  week 3         what you care about
