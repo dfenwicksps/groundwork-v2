@@ -21,7 +21,8 @@ const COPY: Record<
     title: "This week",
     what: "One question a week and one thing to actually do, for ten weeks.",
     otherLabel: "Missions",
-    otherHref: "/missions/1",
+    // The index, not mission 1 — same reason as the nav.
+    otherHref: "/missions",
     otherWhat:
       "Four deep dives — identity, purpose, connection, meaning. Any order, any time.",
   },

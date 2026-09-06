@@ -10,7 +10,10 @@ const NAV_ITEMS = [
   {
     href: "/dashboard",
     label: "Home",
-    match: (p: string) => p === "/dashboard" || p === "/",
+    // /support has no tab of its own; the dashboard is where the support
+    // circle lives, so Home is the honest anchor rather than nothing lit.
+    match: (p: string) =>
+      p === "/dashboard" || p === "/" || p.startsWith("/support"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
@@ -31,9 +34,14 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/missions/1",
+    // Not /missions/1: a student on Mission 4 who taps Missions should not
+    // land on one they finished in July. The index offers whichever mission
+    // is actually next, the way /program offers the next week.
+    href: "/missions",
     label: "Missions",
-    match: (p: string) => p.startsWith("/missions"),
+    // Stories are mission companions, reached from a mission page — so they
+    // belong under Missions rather than leaving the nav unlit.
+    match: (p: string) => p.startsWith("/missions") || p.startsWith("/stories"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle

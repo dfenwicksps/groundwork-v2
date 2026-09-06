@@ -59,8 +59,16 @@ export default function JourneyStrip({
         </span>
       </div>
       <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-        {stages.map((s) => (
-          <Link
+        {stages.map((s) => {
+          // Same-page stages must be plain anchors, not next/link. A Link soft
+          // navigates via pushState, which does not fire `hashchange` — and
+          // hashchange is what /me listens for to switch to the tab holding the
+          // section. Through a Link the hash changed and nothing else did, so
+          // five of the seven stages silently did nothing when tapped.
+          const samePage = s.href.startsWith("#");
+          const Tag = (samePage ? "a" : Link) as React.ElementType;
+          return (
+          <Tag
             key={s.key}
             href={s.href}
             title={s.outcome}
@@ -76,8 +84,9 @@ export default function JourneyStrip({
             <span className={`text-[10px] font-semibold ${s.done ? "text-sage" : "text-ink-muted"}`}>
               {s.label}
             </span>
-          </Link>
-        ))}
+          </Tag>
+          );
+        })}
       </div>
     </div>
   );
