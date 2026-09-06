@@ -1039,7 +1039,7 @@ export const MISSIONS: Mission[] = [
         scenarios: [
           "It's a random Tuesday and you're 21. Your alarm goes off. Walk through the day like a camera is following you \u2014 where you wake up, what you do, who you talk to, what fills the afternoon.",
           "That 21-year-old has figured some things out that current-you is still wrestling with. One of them would be a genuine relief to have sorted.",
-          "But some things about right-now-you are worth protecting. The 21-year-old would be poorer without them.",
+          "Some of what's in your life right now \u2014 a person, a place, a routine, a thing you make time for \u2014 you'd want to still be there at 21. None of it survives by accident.",
           "The 21-year-old looks back at you, right now, this week \u2014 and there's one thing you could start that they'd be genuinely grateful for.",
         ],
         starterOptions: [
@@ -1058,11 +1058,11 @@ export const MISSIONS: Mission[] = [
             "How to speak up without rehearsing it for a week",
           ],
           [
-            "My sense of humour",
-            "How much I care about my people",
-            "My curiosity \u2014 the questions, the rabbit holes",
-            "My stubbornness about what's fair",
-            "The dreams everyone tells me to be realistic about",
+            "The friends I have now \u2014 the real ones",
+            "Being close to my family, even from further away",
+            "The thing I do that isn't for marks or money",
+            "Living somewhere I can get outside easily",
+            "Having people I can turn up to unannounced",
           ],
           [
             "Actually start the thing I keep talking about",
@@ -1076,7 +1076,7 @@ export const MISSIONS: Mission[] = [
         title: "Future Self",
         subtitle: "Step 1 of 5 · Your future",
         intro:
-          "Identity isn't a fixed thing — it's a story you're always in the middle of writing. Before you can decide what kind of life to build, it helps to have a clear image of who you're building it for. Not an ambition. Not a career goal. Just a vivid picture of the kind of person you want to be growing into — someone specific, living an ordinary week, not a highlight reel.",
+          "Identity isn't a fixed thing — it's a story you're always in the middle of writing. Before you can decide what kind of life to build, it helps to have a clear image of the life itself. Not a list of qualities and not a career goal — the actual shape of an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
           "Think about the last time you felt genuinely alive — not just happy, but actually alive. Interested, purposeful, like you were doing something that mattered. Where were you and what were you doing? Hold that in mind before you write.",
         prompt:
@@ -1084,7 +1084,7 @@ export const MISSIONS: Mission[] = [
         scaffoldingSteps: [
           "Picture yourself at 21 in an ordinary week — not a highlight, just a regular Tuesday. What does that look like? Where are you, what are you doing, who are you with?",
           "What do you hope you'll have figured out about yourself by then that you haven't yet?",
-          "What do you want to have stayed the same about you — the things you'd be sad to lose along the way?",
+          "What about your life right now — the people, the places, the things you make time for — would you want to still be there at 21?",
           "What's one thing the version of you right now could start doing that would make the 21-year-old version grateful?",
         ],
         whyItMatters:
@@ -1155,12 +1155,12 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "That thread \u2014 who you are, what you care about, where you belong \u2014 is the closest thing to a compass heading anyone ever gets. Now write it down properly: your milestone letter to the person you're becoming.",
+          "That thread is the closest thing to a compass heading anyone gets \u2014 and it's the last thing this mission asks you to find. Everything so far has been looking back. The letter next is the only step that looks forward: where the thread goes, and what following it would cost.",
         scenarios: [
           "Rewind to Mission 1 \u2014 strengths, values, masks, your letter. One discovery from that mission still rings true weeks later.",
           "Mission 2 asked what pulls at you and what you could contribute. Underneath everything you wrote, there was one honest sentence.",
           "Mission 3 was about your people \u2014 where you're known, who shaped you. It told you something about what you need from other humans.",
-          "Now lay all three answers side by side. They point somewhere \u2014 not at a job, at a way of being.",
+          "Now lay all three answers side by side. One thing is true in all of them. That's the thread \u2014 and it's usually shorter than you'd expect.",
         ],
         starterOptions: [
           [
@@ -1185,27 +1185,27 @@ export const MISSIONS: Mission[] = [
             "I'm still looking for my place \u2014 and that's honest",
           ],
           [
-            "A life where I make things that matter to someone",
-            "A life where my people are close and real",
-            "A life where I fight for something bigger than me",
-            "A life where I'm the same person in every room",
-            "A life built on purpose \u2014 not drifted into",
+            "I notice what other people walk past",
+            "I go hardest when someone's being treated as less",
+            "I do my best work alongside people I trust",
+            "I need to be making something or I go flat",
+            "Being known matters more to me than being impressive",
           ],
         ],
         type: "journal",
         title: "The Through-Line",
-        subtitle: "Step 3 of 5 · Integration",
+        subtitle: "Step 3 of 5 · Looking back",
         intro:
           "Mission 1 was about who you are — your strengths, your values, where you're most yourself. Mission 2 was about what you care about — what pulls you, what you have to contribute, who else shares that care. Mission 3 was about where you belong — the relationships that see you clearly, the ones that have shaped you most. This step asks the question that sits underneath all three: what's the thread running through it?",
         warmUp:
           "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
-          "Look across everything you've learned about yourself in this journey. What's the single thread that connects who you are, what you care about, and where you belong — and what kind of life does it point toward?",
+          "Look back across everything you've learned about yourself in this journey. What's the single thread that connects who you are, what you care about, and where you belong?",
         scaffoldingSteps: [
           "What's the most important thing you learned about yourself in Mission 1 — something about your inner compass that still feels true?",
           "What's the most honest thing you discovered about what you care about and want to contribute in Mission 2?",
           "What did Mission 3 tell you about the relationships and communities that matter most to you?",
-          "If you put all three together — who you are, what you care about, where you belong — what kind of life does that combination point toward? Not just a career — a way of being. (Though your strengths do point at careers too — check your Me page.)",
+          "Now say the thread itself, in one sentence. Not where it leads — just the thing that stays true across all three.",
         ],
         whyItMatters:
           "Integration — the third phase of identity development — isn't about having everything figured out. It's about finding the through-line: the thread that connects your values, your purpose, and your relationships into something coherent. Psychologists find that this coherence is what separates people who feel like they're drifting from people who feel like they're building something — even when their external circumstances look similar. The thread doesn't have to be obvious. But naming it tends to make it real.",
@@ -1216,61 +1216,61 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "That letter holds the whole journey in one place, written by the only real expert on you. It's not a plan \u2014 it's a direction. One last thing: live one deliberate day of it.",
+          "You've now written down a direction and what you'd pay for it \u2014 which is more than most adults have done. It isn't a plan, and it doesn't have to survive contact with reality unchanged. One last thing: live one deliberate day of it.",
         scenarios: [
-          "Open the letter the way you'd want to be introduced to a stranger who's going to know you for the next ten years \u2014 the real version, not the r\u00e9sum\u00e9.",
-          "Future-you will forget how clear this feels right now. Put what you care about on the record, plainly.",
-          "The people. Future-you should remember who mattered here at the start, and what you learned about letting people actually know you.",
-          "End with the direction. Not a five-year plan \u2014 a heading. The kind of life this whole journey points toward.",
+          "You're not writing a plan. You're writing a heading \u2014 the direction you'd still be pointing in even if every detail changed.",
+          "Every life you pick quietly declines a few others. People who build one thing well have almost always said no to three things they also wanted.",
+          "Picture who you'd want in the room in ten years. Not one of those people stays by accident.",
+          "There'll be a stretch where none of this feels true and the default path looks easier. This last part is written for that week.",
         ],
         starterOptions: [
           [
-            "I'm someone still under construction \u2014 and okay with that",
-            "I'm quieter outside than I am inside",
-            "I'm the one who notices things others walk past",
-            "I'm braver than my track record shows so far",
-            "I'm someone who feels everything \u2014 I've stopped apologising for it",
+            "Toward making things that are actually useful to someone",
+            "Toward being the steady one people can rely on",
+            "Toward work that isn't only about me",
+            "Toward a small life with real people in it, done well",
+            "Toward finding out how good I could get at one thing",
           ],
           [
-            "What I care about is real even when it isn't cool",
-            "I want my effort to count for someone besides me",
-            "I've found the thing that makes me feel switched on",
-            "I refuse to become someone who shrugs",
-            "My caring is a strength \u2014 not a weakness to manage",
+            "Being liked by everyone",
+            "The easy option, every time it's offered",
+            "Money \u2014 at least for a while",
+            "Being the person who's always available",
+            "Looking like I've got it together",
           ],
           [
-            "Thank the people who saw me before I saw myself",
-            "Remember: being known beats being impressive",
-            "Keep choosing the friends who let me be real",
-            "Forgive the ones who shaped me the hard way",
-            "Stay someone people can be real around",
+            "The friends who let me be unimpressive",
+            "My family \u2014 which means actually calling",
+            "People who tell me the truth instead of what I want",
+            "Whoever I end up building something with",
+            "The ones who knew me before any of this",
           ],
           [
-            "Build a life I don't need to escape from",
-            "Keep the promises I made to myself here",
-            "Be the same person in every room",
-            "Make the quiet kind of difference that actually lasts",
-            "Stay curious \u2014 never stop figuring myself out",
+            "Because drifting is a decision too \u2014 just a slower one",
+            "Because I've seen up close what the other version costs",
+            "Because it's the only one I wouldn't resent later",
+            "Because someone showed me it was possible",
+            "Because I'd rather try and be wrong than never find out",
           ],
         ],
         type: "milestone_letter",
         title: "A Life Worth Building",
         subtitle: "Step 4 of 5 · Milestone",
         intro:
-          "You've mapped who you are, named what you care about, found where you belong, and traced the thread that connects all three. Now comes the final act: putting it in writing. This letter is addressed to the version of yourself that's still becoming — not a promise, not a plan, but a declaration of what you're building toward and why. It's the most honest document in this whole journey.",
+          "You've just named the thread. This letter is its other half: where that thread is going, what following it would actually cost, and why it's worth the cost anyway. Every step before this one looked backwards at what you found. This is the only one that looks forward — not a promise and not a plan, but a direction, written down while you can still see it clearly.",
         warmUp:
-          "Imagine you're looking back on this moment from ten years from now. What would you want the version of you reading this letter to know about who you were and what you were just beginning to understand?",
+          "Somewhere in the next year or two there'll be a week when none of this feels true and the easy path looks obviously smarter. You're not writing to today's you. You're writing to that week.",
         prompt:
-          "Write a letter to your future self about the life you're beginning to build. Draw on everything you've learned across all four missions. What do you know about yourself now that you want to carry forward?",
+          "Write a letter to your future self about the life you're beginning to build. You've named the thread — this is where it goes, what it will cost you, and why you chose it anyway.",
         isMilestone: true,
         scaffoldingSteps: [
-          "Start with who you are right now — the real version, not the curated one. What do you know about yourself that you didn't know at the start of this?",
-          "Name what you genuinely care about and the kind of contribution you want to make — the honest version, not the impressive one.",
-          "Write about the people who matter to you, and what you've learned about what belonging actually means to you.",
-          "Look ahead: what kind of life — not career, not status, but life — are you starting to build? What would you want your future self to remember about why you chose it?",
+          "What are you building toward? Not a job, and not a picture of a Tuesday — a direction. Say it as a heading you'd still be following if the details all changed.",
+          "What would you have to say no to, to go that way? Every life you choose is a few others you don't.",
+          "Who do you want still around when you get there — and what would keeping them actually take from you?",
+          "Future-you will forget why this mattered. Put the reason on the record, plainly, for the week they need it.",
         ],
         whyItMatters:
-          "Research on expressive writing — particularly writing to your future self — shows it does something structurally different from ordinary reflection: it activates a sense of continuity between who you are now and who you're becoming, which psychologists call 'identity coherence.' People who score higher on identity coherence report significantly higher life satisfaction, better decision-making under pressure, and greater resilience when things go wrong. The letter works because it makes your future self feel real — and that changes how you act now.",
+          "Research on expressive writing — particularly writing to your future self — shows it does something structurally different from ordinary reflection: it activates a sense of continuity between who you are now and who you're becoming, which psychologists call 'identity coherence.' People who score higher on identity coherence report higher life satisfaction, better decision-making under pressure, and more resilience when things go wrong. The cost question is here for a related reason: a direction you've never priced is a preference, and naming what you'd trade for something is most of what separates a decision from a daydream.",
         timeEstimate: "About 15 minutes",
       },
       {
