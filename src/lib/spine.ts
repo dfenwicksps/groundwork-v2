@@ -16,32 +16,31 @@ import type { YearLevel } from "./yearLevel";
 // with questions about next year, and a ten-week character cadence is not the
 // answer to those, so pathways and goals are surfaced first for seniors.
 //
-// ─── One rule overrides all three: the missions come first ───────────────────
+// ─── One rule overrides all three: Mission 1 comes first ─────────────────────
 //
-// The four missions are the foundation; the ten weeks are where what was
-// learned in them gets grown and embedded. So the missions are completed
-// first, and the program is the practice layer that follows.
+// Mission 1 is the foundation and the program cannot start without it: week 1
+// sets the qualities you want at 25 against the strengths it mapped, and week 2
+// attaches a behaviour to each of the five values it chose. Neither week works
+// without that material, so Mission 1 gates the program.
 //
-// This isn't only a philosophical ordering — the program is already built on
-// mission output. Week 1 sets the qualities you want at 25 against the
-// strengths Mission 1 mapped; week 2 attaches a behaviour to each of the five
-// values Mission 1 chose; week 6 reads the moral compass; week 9 points at
-// Mission 4's Digital Self. Run the weeks first and half of them are a
-// worksheet with an errand attached.
+// Missions 2, 3 and 4 do NOT gate it — they gate the weeks that are actually
+// built on them (see `required` on ProgramWeek.source):
 //
-// It used to be a live contradiction rather than a theory: juniors were told
-// "Start here → the program", and the program's week 1 immediately sent them
-// into Mission 1 to take an eight-minute assessment. The "start here" track's
-// first step was the other track.
+//   Mission 1  →  weeks 1-2      strengths and values
+//   Mission 2  →  week 3         what you care about
+//   Mission 3  →  week 6         holding a view that isn't yours
+//   Mission 4  →  week 9         what the input is doing to you
 //
-// So the order the app now teaches, everywhere it speaks about order:
+// All four still get finished. The difference is when. Requiring all four up
+// front puts roughly four hours of reflective writing in front of the first
+// lived challenge, and the challenges are what actually change behaviour — so
+// front-loading delays every behavioural mechanism in the app at the age most
+// likely to abandon it. Staging them means a student starts living the work
+// after one mission, and meets each later mission at the point its material is
+// needed, which also happens to be when it will stick.
 //
-//   Missions 1-4  →  the ten weeks  →  the weekly five, indefinitely
-//
-// Nothing is hard-locked: a student who wants to read week 5 today still can,
-// and the year-level reasoning above still shapes everything else. The spine
-// only decides what gets offered first, and while missions are outstanding the
-// answer is the same for everyone.
+// This is a gate, not a lock: every week stays readable, and only finishing a
+// week that genuinely depends on a mission requires that mission.
 
 export type SpineLead = "program" | "mission";
 
@@ -76,30 +75,30 @@ export interface Spine {
  */
 export function spineFor(
   year: YearLevel,
-  missionsDone: number = MISSION_COUNT
+  missionsDone: number = MISSION_COUNT,
+  /** Mission 1 specifically — the program's only hard prerequisite. */
+  foundationDone: boolean = missionsDone >= 1
 ): Spine {
   const done = Math.max(0, Math.min(MISSION_COUNT, missionsDone));
   const futureFirst = year === "senior";
 
-  if (done < MISSION_COUNT) {
-    const left = MISSION_COUNT - done;
+  if (!foundationDone) {
     return {
       lead: "mission",
       futureFirst,
       missionsFirst: true,
       missionsDone: done,
       programBlurb:
-        left === MISSION_COUNT
-          ? "Ten weeks of putting it into practice — it opens once the four missions are done."
-          : `Ten weeks of putting it into practice. ${left} mission${left === 1 ? "" : "s"} to go first.`,
+        "Ten weeks of putting it into practice — it opens once Mission 1 has mapped your strengths and values.",
       orderLine:
-        "The four missions first — they're the foundation. Then the ten-week program takes what you found there and grows it into habit.",
+        "Mission 1 first — weeks 1 and 2 are made from the strengths and values it maps. After that the weeks run every week, and missions 2 to 4 arrive as the weeks that need them come up.",
     };
   }
 
   // Foundation laid. The program is now the only track still moving, so it
   // leads regardless of year level; the year level still decides whether the
   // next-year work sits above it.
+  const left = MISSION_COUNT - done;
   return {
     lead: "program",
     futureFirst,
@@ -107,9 +106,11 @@ export function spineFor(
     missionsDone: done,
     programBlurb:
       year === "senior"
-        ? "All four missions done. Ten weeks of character work now — slower than the rest of the app, and the part that outlasts school."
-        : "All four missions done. Now the ten weeks — one question each, and one thing to actually do.",
+        ? "Ten weeks of character work — slower than the rest of the app, and the part that outlasts school."
+        : "Ten weeks — one question each, and one thing to actually do.",
     orderLine:
-      "All four missions are done. The ten weeks are what turns what you found in them into habit — one week at a time, then the weekly five for good.",
+      left === 0
+        ? "All four missions are done. The ten weeks are what turns what you found in them into habit — one week at a time, then the weekly five for good."
+        : `Mission 1 is done, so the weeks are open. The other ${left} mission${left === 1 ? "" : "s"} aren't homework — each one unlocks the week that's built on it, when you get there.`,
   };
 }

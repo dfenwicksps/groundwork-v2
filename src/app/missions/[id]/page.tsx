@@ -4,7 +4,7 @@ import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 import { spineFor } from "@/lib/spine";
 import { createServerClient } from "@/lib/supabase-server";
 import { getMission } from "@/lib/missions";
-import { missionsCompleted } from "@/lib/missionProgress";
+import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import MissionDetailClient from "./MissionDetailClient";
 
 export const dynamic = 'force-dynamic';
@@ -43,9 +43,12 @@ export default async function MissionPage({
     .from("mission_progress")
     .select("mission_id, activity_id")
     .eq("user_id", user.id);
-  const missionsDone = missionsCompleted(
-    (allProgress || []) as { mission_id: number; activity_id: string }[]
-  );
+  const allRows = (allProgress || []) as {
+    mission_id: number;
+    activity_id: string;
+  }[];
+  const missionsDone = missionsCompleted(allRows);
+  const foundationDone = missionComplete(allRows, 1);
 
   const completedActivities = new Set((progress as Array<{ activity_id: string }> | null)?.map((p) => p.activity_id) || []);
 
@@ -56,7 +59,8 @@ export default async function MissionPage({
       completedActivities={completedActivities}
       spine={spineFor(
         parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle",
-        missionsDone
+        missionsDone,
+        foundationDone
       )}
       stories={stories || []}
     />

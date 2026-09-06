@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { MISSIONS } from "@/lib/missions";
-import { missionsCompleted } from "@/lib/missionProgress";
+import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { spineFor } from "@/lib/spine";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 import MissionsClient from "./MissionsClient";
@@ -63,7 +63,8 @@ export default async function MissionsIndexPage() {
       activeMission={activeMission}
       spine={spineFor(
         parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle",
-        missionsCompleted(rows)
+        missionsCompleted(rows),
+        missionComplete(rows, 1)
       )}
     />
   );

@@ -23,6 +23,7 @@ export default function ProgramClient({
   weekly,
   spine,
   outstanding,
+  waiting,
   ready,
 }: {
   userId: string;
@@ -31,6 +32,8 @@ export default function ProgramClient({
   weekly: WeeklyCheckin[];
   /** Missions still to finish before the program is the student's next step */
   outstanding: { id: number; title: string; question: string; done: number; total: number }[];
+  /** Weeks whose prerequisite mission work hasn't been done yet, by week number */
+  waiting: Record<number, { mission: number; label: string }>;
   ready: boolean;
 }) {
   const doneCount = PROGRAM_WEEKS.filter((w) =>
@@ -60,56 +63,50 @@ export default function ProgramClient({
 
         <TrackBanner track="program" spine={spine} />
 
-        {/* The missions are the foundation; this is the practice layer that
-            follows. The page used to offer "Up next: Week 1" regardless of how
-            much of that foundation existed — so a student could start the
-            program having done none of the work its weeks read from. */}
-        {spine.missionsFirst && (
+        {/* Mission 1 is the only hard prerequisite: weeks 1 and 2 are made
+            out of the strengths and values it maps. Missions 2-4 aren't listed
+            here as homework — each unlocks the one week built on it, when the
+            student reaches it. */}
+        {spine.missionsFirst && outstanding.length > 0 && (
           <div data-animate="2">
             <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5">
               <div className="text-[11px] font-bold uppercase tracking-widest mb-2 text-navy">
-                Finish the missions first
+                Before week 1
               </div>
-              <p className="text-sm text-ink leading-relaxed mb-1">
-                The four missions are the foundation — they&apos;re where you
-                work out your strengths, values, purpose and the people you
-                belong to. These ten weeks are where all of that gets grown into
-                habit, and several of them read directly from what the missions
-                produced.
+              <p className="text-sm text-ink leading-relaxed mb-4">
+                Week 1 sets the qualities you want at 25 against the strengths
+                you already lead with, and week 2 attaches a behaviour to each
+                of your values. Both are made out of Mission 1 — without it
+                they&apos;re guesswork.
               </p>
-              <p className="text-sm text-ink-muted leading-relaxed mb-4">
-                <span className="font-semibold text-ink">
-                  {spine.missionsDone} of 4 done.
-                </span>{" "}
-                Here&apos;s what&apos;s left.
-              </p>
-              <div className="space-y-2">
-                {outstanding.map((m) => (
+              {(() => {
+                const m1 = outstanding.find((m) => m.id === 1);
+                if (!m1) return null;
+                return (
                   <Link
-                    key={m.id}
-                    href={`/missions/${m.id}`}
+                    href="/missions/1"
                     className="card p-3 flex items-center gap-3 hover:border-navy/30 transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0 bg-navy">
-                      {m.id}
+                      1
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-ink">
-                        {m.title}
+                        {m1.title}
                       </div>
                       <p className="text-xs text-ink-muted truncate">
-                        {m.done} of {m.total} steps · {m.question}
+                        {m1.done} of {m1.total} steps · {m1.question}
                       </p>
                     </div>
                     <span className="text-ink-muted flex-shrink-0" aria-hidden>
                       →
                     </span>
                   </Link>
-                ))}
-              </div>
+                );
+              })()}
               <p className="text-[11px] text-ink-muted leading-relaxed mt-3">
-                Nothing is locked — you can read any week below right now. This
-                is the order that makes them work, not a gate.
+                Missions 2, 3 and 4 aren&apos;t needed yet — each one opens the
+                week that&apos;s built on it, when you get there.
               </p>
             </div>
           </div>
@@ -242,10 +239,18 @@ export default function ProgramClient({
                       {w.challenge.title}
                     </div>
                   </div>
-                  {started && (
-                    <span className="text-[10px] font-bold text-teal uppercase tracking-wide flex-shrink-0">
-                      {p.days.length}/{target}
+                  {waiting[w.week] && !done ? (
+                    <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wide flex-shrink-0 text-right leading-tight">
+                      Needs
+                      <br />
+                      Mission {waiting[w.week].mission}
                     </span>
+                  ) : (
+                    started && (
+                      <span className="text-[10px] font-bold text-teal uppercase tracking-wide flex-shrink-0">
+                        {p.days.length}/{target}
+                      </span>
+                    )
                   )}
                 </Link>
               );

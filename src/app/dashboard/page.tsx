@@ -6,7 +6,7 @@ import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS } from "@/lib/missions";
-import { missionsCompleted } from "@/lib/missionProgress";
+import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
@@ -179,11 +179,14 @@ export default async function DashboardPage() {
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
+  const missionRows = (progress || []) as {
+    mission_id: number;
+    activity_id: string;
+  }[];
   const spine = spineFor(
     yearLevel,
-    missionsCompleted(
-      (progress || []) as { mission_id: number; activity_id: string }[]
-    )
+    missionsCompleted(missionRows),
+    missionComplete(missionRows, 1)
   );
 
   // Program state for the "this week" card. Absent table (migration 005 not

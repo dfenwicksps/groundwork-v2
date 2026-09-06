@@ -58,6 +58,17 @@ export type WeekSource = {
   label: string;
   /** Why the week needs it — shown only when it's missing */
   whyNeeded: string;
+  /**
+   * True when the week cannot be finished without it.
+   *
+   * This is what makes the missions get done. With the program gated only on
+   * Mission 1, nine of the ten weeks could be completed having touched no other
+   * mission — the "do this first" card was a suggestion the student could walk
+   * past. Marking the weeks that are genuinely built on a mission means all
+   * four still get finished, but each arrives at the point its material is
+   * needed rather than as four hours of writing before anything is lived.
+   */
+  required?: boolean;
   /** How this week uses it — shown under the recalled material */
   soWhat: string;
 } & (
@@ -228,6 +239,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       recallLabel: "What you said matters to you",
       href: "/missions/2/activities/what-matters",
       label: "What Matters",
+      required: true,
       whyNeeded:
         "Contributing is hollow if you've never named what you actually care about. Mission 2 starts there — about ten minutes.",
       soWhat:
@@ -317,6 +329,19 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       kind: "daily",
       target: 7,
       unit: "day",
+    },
+    source: {
+      kind: "entry",
+      activityId: "across-the-gap",
+      missionId: 3,
+      recallLabel: "What connection across a real difference taught you",
+      href: "/missions/3/activities/across-the-gap",
+      label: "Across the Gap",
+      required: true,
+      whyNeeded:
+        "The hardest dilemmas are the ones where the other person isn't like you. Mission 3 has you sit with exactly that — about ten minutes, and this week leans on it.",
+      soWhat:
+        "Holding someone else's view without needing to agree is the skill underneath every dilemma this week. You've already practised it once.",
     },
     link: {
       href: "/me#moral",
@@ -435,6 +460,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       recallLabel: "The gap you found between online you and offline you",
       href: "/missions/4/activities/digital-self",
       label: "The Digital Self",
+      required: true,
       whyNeeded:
         "This week takes the input away for three half-hours. Mission 4 already asked what the input is doing to you — worth having that answer first.",
       soWhat:

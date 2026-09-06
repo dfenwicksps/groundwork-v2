@@ -4,10 +4,19 @@ import { createServerClient } from "@/lib/supabase-server";
 import ProgramClient from "./ProgramClient";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 import { spineFor } from "@/lib/spine";
-import { missionsCompleted } from "@/lib/missionProgress";
+import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
+import { PROGRAM_WEEKS } from "@/lib/program";
 import { MISSIONS } from "@/lib/missions";
 import { parseDays, type WeekProgress, type Strand } from "@/lib/program";
 import type { WeeklyCheckin } from "./WeeklyFiveSection";
+
+/** Mission writing the weeks hard-depend on — see `required` in program.ts. */
+const REQUIRED_SOURCE_IDS = [
+  "values-clarifier",
+  ...PROGRAM_WEEKS.flatMap((w) =>
+    w.source?.required && w.source.kind === "entry" ? [w.source.activityId] : []
+  ),
+];
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +33,7 @@ export default async function ProgramPage() {
     { data: progressRaw, error: progressError },
     { data: weeklyRaw },
     { data: missionRaw },
+    { data: sourceRaw },
   ] = await Promise.all([
     db.from("program_progress").select("*").eq("user_id", user.id),
     db
@@ -37,6 +47,13 @@ export default async function ProgramPage() {
       .from("mission_progress")
       .select("mission_id, activity_id")
       .eq("user_id", user.id),
+    // Which mission writing exists, so the week list can say which weeks are
+    // waiting on which mission rather than only telling them once they're in.
+    db
+      .from("journal_entries")
+      .select("activity_id")
+      .eq("user_id", user.id)
+      .in("activity_id", REQUIRED_SOURCE_IDS),
   ]);
 
   // The program is the practice layer that follows the four missions, so its
@@ -48,7 +65,8 @@ export default async function ProgramPage() {
   }[];
   const spine = spineFor(
     parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle",
-    missionsCompleted(missionRows)
+    missionsCompleted(missionRows),
+    missionComplete(missionRows, 1)
   );
 
   // Which missions are still outstanding, for the "finish these first" card.
@@ -97,6 +115,23 @@ export default async function ProgramPage() {
       progressError.message || ""
     );
 
+  // Weeks whose prerequisite mission work is still missing.
+  const haveSource = new Set(
+    ((sourceRaw || []) as { activity_id: string }[]).map((r) => r.activity_id)
+  );
+  const waiting: Record<number, { mission: number; label: string }> = {};
+  for (const w of PROGRAM_WEEKS) {
+    if (!w.source?.required) continue;
+    const id =
+      w.source.kind === "entry" ? w.source.activityId : "values-clarifier";
+    if (!haveSource.has(id)) {
+      waiting[w.week] = {
+        mission: w.source.kind === "entry" ? w.source.missionId : 1,
+        label: w.source.label,
+      };
+    }
+  }
+
   return (
     <ProgramClient
       userId={user.id}
@@ -104,6 +139,7 @@ export default async function ProgramPage() {
       weekly={weekly}
       spine={spine}
       outstanding={outstanding}
+      waiting={waiting}
       ready={ready}
     />
   );

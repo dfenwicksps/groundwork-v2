@@ -135,6 +135,9 @@ export default function WeekClient({
         : week.source?.kind === "entry"
           ? !!sourceEntry?.trim()
           : true;
+  // A required source is a prerequisite, not a suggestion — the week can't be
+  // finished until the mission work behind it exists.
+  const blockedOnSource = !!week.source?.required && !hasSource;
   const prev = PROGRAM_WEEKS.find((w) => w.week === week.week - 1);
   const next = PROGRAM_WEEKS.find((w) => w.week === week.week + 1);
 
@@ -195,6 +198,7 @@ export default function WeekClient({
     // the artefact existed is grandfathered — blocking it would leave the
     // student unable to touch a reflection the header already calls complete.
     if (!done && week.artefact && !artefactDoneNow) return;
+    if (!done && blockedOnSource) return;
     // Week 1 keeps a receipt of the shared record, so every server-side surface
     // (the dashboard card, the program list) can count the week complete
     // without also having to load the profile.
@@ -653,7 +657,8 @@ export default function WeekClient({
                   !reflection.trim() ||
                   busy ||
                   !ready ||
-                  (!done && !!week.artefact && !artefactDoneNow)
+                  (!done && !!week.artefact && !artefactDoneNow) ||
+                  (!done && blockedOnSource)
                 }
                 className="btn btn-primary w-full py-2.5 rounded-xl text-sm mt-3"
               >
@@ -666,6 +671,13 @@ export default function WeekClient({
               {saved && (
                 <p className="text-[11px] text-sage text-center mt-2 font-medium">
                   Saved.
+                </p>
+              )}
+              {blockedOnSource && !done && (
+                <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">
+                  This week is built on {week.source!.label} — do that first and
+                  this unlocks. It&apos;s the one piece the week can&apos;t
+                  supply for you.
                 </p>
               )}
               {week.artefact && !artefactDoneNow && (
