@@ -229,6 +229,13 @@ export default function DashboardClient({
         {/* The spine decides what leads. Juniors get the week first; everyone
             else gets their mission. Either way the other track follows
             immediately, so "Start here" and "Alongside" are read together. */}
+        {/* Year 12s arrive with questions about next year, so the near-future
+            work sits above whichever track leads. This used to live inside the
+            "mission leads" branch below, which meant that once Mission 1 was
+            done and the program took over the lead, the one card the senior
+            spine exists to surface stopped rendering at all. */}
+        {spine.futureFirst && futureCard}
+
         {spine.lead === "program" && programCard}
 
         {/* Active Mission Card */}
@@ -314,12 +321,7 @@ export default function DashboardClient({
           </div>
         </div>
 
-        {spine.lead !== "program" && (
-          <>
-            {futureCard}
-            {programCard}
-          </>
-        )}
+        {spine.lead !== "program" && programCard}
 
         {/* Revisit prompt — Evaluation Cycle */}
         {revisitEntry && (
