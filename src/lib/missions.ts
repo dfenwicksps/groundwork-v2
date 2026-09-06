@@ -1,3 +1,5 @@
+import type { Strand } from "./program";
+
 export interface Activity {
   id: string;
   type:
@@ -75,10 +77,22 @@ export interface Mission {
   colourLight: string;
   textColour: string;
   activities: Activity[];
+  /**
+   * Which of the weekly five this mission lays the foundation for.
+   *
+   * The app described character in two vocabularies: the missions in
+   * developmental phases (exploration → commitment → integration) and the
+   * program in five strands. The phases are real and stay in the data, but the
+   * five strands are the ones a student keeps answering after the ten weeks
+   * end, so they are the shared map — and this is how a mission says which
+   * part of it it built.
+   *
+   * Discipline appears in no mission's list. That's accurate rather than an
+   * omission: it is built by reps, which is what the weeks are for.
+   */
+  strands: Strand[];
   /** Identity development phase from Erikson's framework */
   phase: "exploration" | "commitment" | "integration";
-  /** Short phase label shown in UI */
-  phaseLabel: string;
   /** One-sentence description of what this phase involves */
   phaseDescription: string;
 }
@@ -269,8 +283,8 @@ export const MISSIONS: Mission[] = [
     title: "Identity",
     subtitle: "Mission 1",
     question: "What am I actually like?",
+    strands: ["identity", "values"],
     phase: "exploration",
-    phaseLabel: "Phase 1 — Exploration",
     phaseDescription:
       "Looking inward without pressure to have it figured out yet.",
     description:
@@ -473,8 +487,8 @@ export const MISSIONS: Mission[] = [
     title: "Purpose",
     subtitle: "Mission 2",
     question: "What do I care about?",
+    strands: ["contribution"],
     phase: "commitment",
-    phaseLabel: "Phase 2 — Commitment",
     phaseDescription:
       "Moving from self-knowledge to conscious choices about what matters.",
     description:
@@ -750,8 +764,8 @@ export const MISSIONS: Mission[] = [
     title: "Connection",
     subtitle: "Mission 3",
     question: "Where do I belong?",
+    strands: ["impact"],
     phase: "commitment",
-    phaseLabel: "Phase 2 — Commitment",
     phaseDescription:
       "Understanding how your relationships shape and reflect who you are.",
     description:
@@ -1022,8 +1036,8 @@ export const MISSIONS: Mission[] = [
     title: "Meaning",
     subtitle: "Mission 4",
     question: "What kind of life do I want?",
+    strands: ["identity"],
     phase: "integration",
-    phaseLabel: "Phase 3 — Integration",
     phaseDescription:
       "Weaving what you know about yourself into how you actually live.",
     description:

@@ -50,7 +50,7 @@ export default async function MissionsIndexPage() {
       question: m.question,
       description: m.description,
       colour: m.colour,
-      phaseLabel: m.phaseLabel,
+      strands: m.strands,
       done,
       total,
       complete: total > 0 && done >= total,

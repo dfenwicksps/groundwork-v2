@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import type { Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
+import { WEEKLY_BY_KEY } from "@/lib/program";
 
 interface StoryPreview {
   id: string;
@@ -103,9 +104,28 @@ export default function MissionDetailClient({
           <p className="text-white/75 text-sm leading-relaxed mb-1 max-w-md">
             {mission.description}
           </p>
-          <p className="text-white/50 text-xs leading-relaxed mb-5 max-w-md italic">
+          <p className="text-white/50 text-xs leading-relaxed mb-3 max-w-md italic">
             {mission.phaseDescription}
           </p>
+
+          {/* Which of the weekly five this mission is the ground for. The
+              weekly questions outlive the program; without this the missions
+              read as a finished thing rather than what they stand on. */}
+          <Link
+            href="/program#weekly"
+            className="inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-1 mb-5 text-xs text-white/70 hover:text-white transition-colors"
+          >
+            <span className="text-white/50">Builds the foundation for</span>
+            {mission.strands.map((k) => (
+              <span
+                key={k}
+                className="font-semibold px-1.5 py-0.5 rounded bg-white/15 text-white"
+              >
+                {WEEKLY_BY_KEY[k].emoji} {WEEKLY_BY_KEY[k].name}
+              </span>
+            ))}
+            <span className="text-white/50">in the weekly five →</span>
+          </Link>
 
           {/* Progress */}
           <div>

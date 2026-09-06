@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -113,6 +115,22 @@ export default function WeeklyFiveSection({
                       </p>
                       <p className="text-[11px] text-ink-muted leading-relaxed mt-0.5">
                         {q.meaning}
+                      </p>
+                      {/* Where this question was first worked out. Four of the
+                          five were built in a mission and nothing said so. */}
+                      <p className="text-[11px] text-ink-faint leading-relaxed mt-1">
+                        {q.foundation.href ? (
+                          <Link
+                            href={q.foundation.href}
+                            className="text-teal hover:underline font-medium"
+                          >
+                            {q.foundation.label}
+                          </Link>
+                        ) : (
+                          <span className="font-medium">{q.foundation.label}</span>
+                        )}
+                        {" — "}
+                        {q.foundation.note}
                       </p>
                     </div>
                   </div>

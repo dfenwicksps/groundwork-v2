@@ -4,6 +4,7 @@ import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import TrackBanner from "@/components/TrackBanner";
 import type { Spine } from "@/lib/spine";
+import { WEEKLY_BY_KEY, type Strand } from "@/lib/program";
 
 interface MissionCard {
   id: number;
@@ -12,7 +13,7 @@ interface MissionCard {
   question: string;
   description: string;
   colour: string;
-  phaseLabel: string;
+  strands: Strand[];
   done: number;
   total: number;
   complete: boolean;
@@ -162,6 +163,10 @@ export default function MissionsClient({
                     style={{ fontStyle: "italic" }}
                   >
                     {m.question}
+                  </div>
+                  {/* Which of the weekly five this one is the ground for. */}
+                  <div className="text-[10px] text-ink-faint leading-snug mt-0.5 truncate">
+                    {m.strands.map((k) => WEEKLY_BY_KEY[k].name).join(" · ")}
                   </div>
                 </div>
                 <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wide flex-shrink-0">

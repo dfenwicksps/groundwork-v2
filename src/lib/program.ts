@@ -515,6 +515,19 @@ export interface WeeklyQuestion {
   /** Plain-English gloss so the question can't be answered on autopilot */
   meaning: string;
   placeholder: string;
+  /**
+   * Where this question's foundation was built.
+   *
+   * The weekly five is the part that outlives the program — a student answers
+   * these forever. But four of the five were first worked out in a mission, and
+   * nothing said so, which left the missions looking like a finished thing you
+   * walk away from rather than the ground the weekly questions stand on.
+   *
+   * Discipline has no `href` on purpose: no mission builds it. It's made of
+   * reps, which is what the weeks are for, and pretending otherwise would be
+   * the kind of tidy-looking mapping that teaches a student something false.
+   */
+  foundation: { href?: string; label: string; note: string };
 }
 
 export const WEEKLY_FIVE: WeeklyQuestion[] = [
@@ -526,6 +539,11 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     meaning:
       "Not who you are today — the direction. One week doesn't change much, but ten of these in a row show you a line.",
     placeholder: "Which way did this week move you? Towards or away?",
+    foundation: {
+      href: "/missions/1/activities/strengths-mapping",
+      label: "Mission 1 · Strengths Mapping",
+      note: "Where you mapped who you already are.",
+    },
   },
   {
     key: "values",
@@ -535,6 +553,11 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     meaning:
       "A value you were never tested on this week is just a preference. Where did one of yours actually cost you something?",
     placeholder: "What did you hold to this week — and what did holding it cost?",
+    foundation: {
+      href: "/missions/1/activities/values-clarifier",
+      label: "Mission 1 · Values Clarifier",
+      note: "The five you chose to steer by.",
+    },
   },
   {
     key: "discipline",
@@ -544,6 +567,10 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     meaning:
       "Not the hard thing you should do. The one you actually did, on a day you didn't want to.",
     placeholder: "What did you do this week that comfort was arguing against?",
+    foundation: {
+      label: "No mission builds this one",
+      note: "It's made of reps rather than insight, so weeks 5 and 7 are where it gets built.",
+    },
   },
   {
     key: "contribution",
@@ -553,6 +580,11 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     meaning:
       "Every room takes effort to keep running. Were you one of the people doing that, or living off someone who was?",
     placeholder: "What did you put in this week that nobody asked you for?",
+    foundation: {
+      href: "/missions/2/activities/contribution-map",
+      label: "Mission 2 · The Contribution Map",
+      note: "Where your strengths met the thing you care about.",
+    },
   },
   {
     key: "impact",
@@ -563,6 +595,11 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     meaning:
       "The one question the whole thing comes down to. Answer it about specific people, not people in general.",
     placeholder: "Name one person. Were they better off for you being there this week?",
+    foundation: {
+      href: "/missions/3/activities/people-who-shaped-you",
+      label: "Mission 3 · The People Who Shaped You",
+      note: "You wrote about who shaped you. This is the same question pointed outward.",
+    },
   },
 ];
 
