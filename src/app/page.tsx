@@ -126,8 +126,9 @@ export default function LandingPage() {
             Each mission is five steps: four reflective activities of about
             8&ndash;15 minutes, then one challenge you carry through the week.
             Twenty steps in all, at whatever pace you like — nothing expires and
-            nothing nags you. Together they answer four big questions:{" "}
-            <span className="italic text-navy">Who am I? What do I stand for? Who am I becoming? How can I contribute?</span>
+            nothing nags you. The four missions come first: they&apos;re the
+            foundation. The ten-week program then takes what you found in them
+            and grows it into habit.
           </p>
         </div>
 

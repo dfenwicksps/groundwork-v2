@@ -1378,22 +1378,31 @@ function ValuesPickerActivity({
     writeTier(m);
   }
 
+  /**
+   * Functional updates rather than reading `selectedValues` from the render
+   * closure: two taps inside one React batch would otherwise both see the same
+   * array, so the second silently discarded the first. That is precisely what
+   * fast tapping on a phone produces, and it looked like a dead button.
+   */
   function toggleValue(val: string) {
-    if (selectedValues.includes(val)) {
-      setSelectedValues(selectedValues.filter((v) => v !== val));
-      const updated = { ...valueReasons };
-      delete updated[val];
-      setValueReasons(updated);
-      return;
-    }
-    if (selectedValues.length >= (activity.valuesCount || 5)) {
-      // Say why nothing happened, rather than leaving a dead-looking button.
-      setBlockedValue(val);
-      if (blockedTimer.current) clearTimeout(blockedTimer.current);
-      blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
-      return;
-    }
-    setSelectedValues([...selectedValues, val]);
+    setSelectedValues((prev) => {
+      if (prev.includes(val)) {
+        setValueReasons((r) => {
+          const updated = { ...r };
+          delete updated[val];
+          return updated;
+        });
+        return prev.filter((v) => v !== val);
+      }
+      if (prev.length >= (activity.valuesCount || 5)) {
+        // Say why nothing happened, rather than leaving a dead-looking button.
+        setBlockedValue(val);
+        if (blockedTimer.current) clearTimeout(blockedTimer.current);
+        blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
+        return prev;
+      }
+      return [...prev, val];
+    });
   }
 
   const canSubmit = selectedValues.length === (activity.valuesCount || 5);

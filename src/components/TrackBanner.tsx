@@ -40,14 +40,23 @@ const COPY: Record<
  * with exactly the same words the track pages use — a student who reads
  * "Start here" on the dashboard should meet the same phrase when they land.
  */
-export function TrackBadge({ lead }: { lead: boolean }) {
+export function TrackBadge({
+  lead,
+  /** True while missions are still outstanding — see spine.ts */
+  missionsFirst = false,
+}: {
+  lead: boolean;
+  missionsFirst?: boolean;
+}) {
   if (!lead) {
-    // Not "Anytime" — that reads as optional, and on a ten-week cadence it
-    // reads as "timing doesn't matter", which is the opposite of true. These
-    // two tracks run in parallel indefinitely; "Alongside" says so.
+    // "Alongside" was right when the two tracks ran in parallel from day one.
+    // They don't: the program is the practice layer that follows the missions,
+    // so while any mission is outstanding the honest label is "next", not
+    // "also". Once the foundation is laid the program becomes the lead and
+    // this branch stops describing it.
     return (
       <span className="text-[10px] font-bold uppercase tracking-widest text-[--ink-faint]">
-        Alongside
+        {missionsFirst ? "After the missions" : "Alongside"}
       </span>
     );
   }
@@ -76,7 +85,7 @@ export default function TrackBanner({
     <div className="rounded-2xl border border-[--border] bg-white p-4" data-animate="1">
       <div className="flex items-baseline gap-2 flex-wrap mb-1">
         <span className="text-sm font-semibold text-[--ink]">{c.title}</span>
-        <TrackBadge lead={isLead} />
+        <TrackBadge lead={isLead} missionsFirst={spine.missionsFirst} />
       </div>
       <p className="text-xs text-[--ink-muted] leading-relaxed">{c.what}</p>
 
@@ -88,6 +97,8 @@ export default function TrackBanner({
           <div className="text-xs font-semibold text-[--ink]">
             {!isLead ? (
               <span className="text-[--sage]">Start with </span>
+            ) : spine.missionsFirst ? (
+              <span className="text-[--ink-muted]">Comes after: </span>
             ) : (
               <span className="text-[--ink-muted]">Runs alongside: </span>
             )}
@@ -101,6 +112,13 @@ export default function TrackBanner({
           →
         </span>
       </Link>
+
+      {/* "Which first?" was answered with a badge and nothing else, which
+          leaves "and then what?" open. The order is one sentence — say it. */}
+      <p className="mt-3 pt-3 border-t border-[--border] text-[11px] text-[--ink-muted] leading-relaxed">
+        <span className="font-semibold text-[--ink]">The order: </span>
+        {spine.orderLine}
+      </p>
     </div>
   );
 }

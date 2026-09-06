@@ -11,12 +11,13 @@ import PracticeSection from "./PracticeSection";
 import GoalsSection from "./GoalsSection";
 import BoostsSection from "./BoostsSection";
 import HabitsSection from "./HabitsSection";
-import FocusSection from "./FocusSection";
+import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
 import type { YearLevel } from "@/lib/yearLevel";
 import type { MoralStyle } from "@/lib/moral";
+import { toStrengthKey, type Becoming } from "@/lib/becoming";
 import type { StandardCheckin } from "@/lib/standard";
 
 // Virtue accent colours (from the bright palette)
@@ -50,7 +51,7 @@ export default function MeClient({
   recentPractices,
   commitmentExcerpt,
   habitSaved,
-  focusKeys,
+  becoming,
   standardCheckins,
   standardReady,
   characterCode,
@@ -75,7 +76,8 @@ export default function MeClient({
   recentPractices: PracticeEntry[];
   commitmentExcerpt: string | null;
   habitSaved: { answers: Record<string, HabitAnswer>; result: HabitResult } | null;
-  focusKeys: string[];
+  /** The shared "Who I'm becoming" record — five qualities plus a focus */
+  becoming: Becoming;
   standardCheckins: StandardCheckin[];
   standardReady: boolean;
   characterCode: string[];
@@ -246,7 +248,7 @@ export default function MeClient({
             hasHabits={!!habitSaved}
             hasMoral={!!moralProfile}
             hasStandard={standardCheckins.length > 0}
-            hasFocus={focusKeys.length > 0}
+            hasFocus={becoming.focus.length > 0}
             hasPractice={!!activePractice || recentPractices.length > 0}
             hasSupport={supportCount > 0}
             hasGoals={goals.length > 0}
@@ -442,12 +444,20 @@ export default function MeClient({
         {/* Grow — choose qualities + practise them */}
         {hasProfile && tab === "grow" && (
           <>
-            <FocusSection
+            {/* The same artefact program week 1 builds — one record, two
+                doors. See src/lib/becoming.ts. */}
+            <BecomingQualities
               userId={userId}
-              focusKeys={focusKeys}
-              suggestedQualities={Array.from(
-                new Set((habitSaved?.result.grows || []).map((g) => g.quality))
+              saved={becoming}
+              currentTop={top5}
+              suggested={Array.from(
+                new Set(
+                  (habitSaved?.result.grows || [])
+                    .map((g) => toStrengthKey(g.quality))
+                    .filter((k): k is string => !!k)
+                )
               )}
+              variant="profile"
               hasGoals={goals.length > 0}
             />
             {featuresReady && (

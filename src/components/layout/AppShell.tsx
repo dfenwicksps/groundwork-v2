@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import ConfirmEmailBanner from "@/components/common/ConfirmEmailBanner";
-import { getYearLevelCookie } from "@/lib/yearLevel";
-import { spineFor } from "@/lib/spine";
 
 const NAV_ITEMS = [
   {
@@ -143,15 +140,12 @@ const NAV_ITEMS = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // The nav shows Missions and This Week as equal peers, which is where the
-  // "two tracks, no idea which is mine" impression starts. The spine already
-  // knows the answer; this is the cheapest place to say it. Resolved after
-  // mount because the year level lives in a cookie the client reads.
-  const [leadHref, setLeadHref] = useState<string | null>(null);
-  useEffect(() => {
-    const lead = spineFor(getYearLevelCookie() ?? "middle").lead;
-    setLeadHref(lead === "program" ? "/program" : "/missions/1");
-  }, []);
+  // The nav used to put a "start here" dot on whichever track the spine led
+  // with, guessed from the year-level cookie. It can't be right any more: which
+  // track leads now depends on how many missions are finished, which is server
+  // state the nav has no cheap way to read — so the dot was as likely to point
+  // backwards as forwards. The order is stated in words on the dashboard, on
+  // both track pages and on the landing page, which is where it belongs.
 
   return (
     <div className="min-h-screen bg-[--surface-muted]">
@@ -176,7 +170,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-around h-16">
             {NAV_ITEMS.map((item) => {
               const active = item.match(pathname);
-              const isLead = item.href === leadHref;
               return (
                 <Link
                   key={item.href}
@@ -189,17 +182,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                       : "text-[--ink-muted] hover:text-[--ink]"
                   )}
                 >
-                  <span className="relative">
-                    {item.icon(active)}
-                    {/* Only worth pointing at a track you are not already on. */}
-                    {isLead && !active && (
-                      <span
-                        aria-hidden
-                        className="absolute -top-0.5 -right-1 w-[7px] h-[7px] rounded-full ring-2 ring-white"
-                        style={{ background: "var(--sage)" }}
-                      />
-                    )}
-                  </span>
+                  <span className="relative">{item.icon(active)}</span>
                   <span
                     className={cn(
                       "text-[11px] font-semibold tracking-wide leading-none",
@@ -207,7 +190,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                   >
                     {item.label}
-                    {isLead && !active && <span className="sr-only"> — start here</span>}
                   </span>
                 </Link>
               );
