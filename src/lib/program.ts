@@ -274,6 +274,18 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       commitmentPrompt:
         "Write the promise you're making. Be specific enough that at the end of a day you'd know for certain whether you kept it.",
     },
+    source: {
+      kind: "entry",
+      activityId: "fitting-in-vs-belonging",
+      missionId: 3,
+      recallLabel: "Where you genuinely belong, and where you're just fitting in",
+      href: "/missions/3/activities/fitting-in-vs-belonging",
+      label: "Fitting In vs. Belonging",
+      whyNeeded:
+        "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you find the rooms where you aren't — about ten minutes.",
+      soWhat:
+        "Being trusted means being the same person in both of those rooms. Your promise this week will be easier to keep in one than the other — notice which, and why.",
+    },
     link: {
       href: "/me#standard",
       label: "The Standard — question 3",
@@ -302,6 +314,18 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       unit: "session",
       commitmentPrompt:
         "Name your hill, and what one session of work on it actually looks like.",
+    },
+    source: {
+      kind: "entry",
+      activityId: "the-other-side",
+      missionId: 2,
+      recallLabel: "The person you found who cares about the same thing",
+      href: "/missions/2/activities/the-other-side",
+      label: "The Other Side",
+      whyNeeded:
+        "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
+      soWhat:
+        "They didn't get there comfortably either. Watching someone you recognise do a hard thing is one of the few reliable ways of coming to believe you could — so pick your hill with them in view.",
     },
     link: {
       href: "/me#practice",
