@@ -61,12 +61,16 @@ export default function SettingsClient({
     setSavingAi(false);
   }
 
+  /** Functional update — see the note in the onboarding picker. Two taps in one
+      React batch would otherwise read the same array and lose the first. */
   function toggleValue(val: string) {
-    if (selectedValues.includes(val)) {
-      setSelectedValues(selectedValues.filter((v) => v !== val));
-    } else if (selectedValues.length < 3) {
-      setSelectedValues([...selectedValues, val]);
-    }
+    setSelectedValues((prev) =>
+      prev.includes(val)
+        ? prev.filter((v) => v !== val)
+        : prev.length < 3
+          ? [...prev, val]
+          : prev
+    );
   }
 
   async function handleSaveValues() {

@@ -113,19 +113,24 @@ export default function OnboardingPage() {
     if (blockedTimer.current) clearTimeout(blockedTimer.current);
   }, []);
 
+  /**
+   * Functional updates rather than reading `selectedValues` from the render
+   * closure: two taps inside one React batch would otherwise both see the same
+   * array and the second would discard the first. Tapping three values quickly
+   * — which is exactly what this screen invites — registered as one.
+   */
   function toggleValue(val: string) {
-    if (selectedValues.includes(val)) {
-      setSelectedValues(selectedValues.filter((v) => v !== val));
-      return;
-    }
-    if (selectedValues.length >= 3) {
-      // Say why nothing happened, rather than leaving a dead-looking button.
-      setBlockedValue(val);
-      if (blockedTimer.current) clearTimeout(blockedTimer.current);
-      blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
-      return;
-    }
-    setSelectedValues([...selectedValues, val]);
+    setSelectedValues((prev) => {
+      if (prev.includes(val)) return prev.filter((v) => v !== val);
+      if (prev.length >= 3) {
+        // Say why nothing happened, rather than leaving a dead-looking button.
+        setBlockedValue(val);
+        if (blockedTimer.current) clearTimeout(blockedTimer.current);
+        blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
+        return prev;
+      }
+      return [...prev, val];
+    });
   }
 
   const openValueDefinition = openValue ? VALUES_WITH_DEFINITIONS[openValue] : null;
