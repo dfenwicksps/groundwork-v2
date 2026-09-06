@@ -72,6 +72,25 @@ export function splitScaffoldedResponse(
 }
 
 /**
+ * One specific answer from a scaffolded entry, by step index.
+ *
+ * Some steps are written to be quotable on their own — the Through-Line's last
+ * step asks for the thread in a single sentence — so a summary wants that step
+ * rather than the whole entry.
+ */
+export function answerAt(
+  missionId: number,
+  activityId: string,
+  response: string | null | undefined,
+  index: number
+): string {
+  if (!response?.trim()) return "";
+  const steps = getActivity(missionId, activityId)?.scaffoldingSteps;
+  if (!steps?.length) return index === 0 ? response.trim() : "";
+  return splitScaffoldedResponse(response, steps)[index]?.trim() ?? "";
+}
+
+/**
  * The student's own words, with the prompts stripped — for recalling an entry
  * back to its author.
  *

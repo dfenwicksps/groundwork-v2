@@ -7,6 +7,12 @@ import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgres
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
+import { MISSION_COUNT } from "@/lib/spine";
+import {
+  buildMissionSummary,
+  hasSummary,
+  type MissionSummary,
+} from "@/lib/missionSummary";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
@@ -183,11 +189,42 @@ export default async function DashboardPage() {
     mission_id: number;
     activity_id: string;
   }[];
-  const spine = spineFor(
-    yearLevel,
-    missionsCompleted(missionRows),
-    missionComplete(missionRows, 1)
-  );
+  const missionsDone = missionsCompleted(missionRows);
+  const spine = spineFor(yearLevel, missionsDone, missionComplete(missionRows, 1));
+
+  // With every mission finished there is no active mission left to offer, so
+  // the dashboard shows what they found instead — see lib/missionSummary.
+  let summary: MissionSummary | null = null;
+  if (missionsDone === MISSION_COUNT) {
+    const db = supabase as any;
+    const entry = (id: string) =>
+      db
+        .from("journal_entries")
+        .select("response")
+        .eq("user_id", user.id)
+        .eq("activity_id", id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+    const [{ data: sRow }, { data: vRow }, { data: wRow }, { data: bRow }, { data: tRow }] =
+      await Promise.all([
+        db.from("strength_profiles").select("ranking").eq("user_id", user.id).single(),
+        entry("values-clarifier"),
+        entry("what-matters"),
+        entry("belonging"),
+        entry("the-through-line"),
+      ]);
+
+    const built = buildMissionSummary({
+      ranking: (sRow as { ranking?: string[] } | null)?.ranking,
+      valuesResponse: (vRow as { response?: string } | null)?.response,
+      whatMatters: (wRow as { response?: string } | null)?.response,
+      belonging: (bRow as { response?: string } | null)?.response,
+      throughLine: (tRow as { response?: string } | null)?.response,
+    });
+    if (hasSummary(built)) summary = built;
+  }
 
   // Program state for the "this week" card. Absent table (migration 005 not
   // run) degrades to offering week 1 rather than erroring.
@@ -233,6 +270,7 @@ export default async function DashboardPage() {
       nudgeActivity={nudgeActivity}
       spine={spine}
       yearLevel={yearLevel}
+      missionSummary={summary}
       programWeek={programWeek}
     />
   );

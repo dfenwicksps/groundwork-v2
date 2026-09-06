@@ -12,6 +12,8 @@ import type {
 } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import { TrackBadge } from "@/components/TrackBanner";
+import MissionsSummaryCard from "./MissionsSummaryCard";
+import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { YEAR_OPTIONS, type YearLevel } from "@/lib/yearLevel";
 
@@ -41,6 +43,8 @@ interface Props {
   spine: Spine;
   programWeek: ProgramWeekCard;
   yearLevel: YearLevel;
+  /** Present only once all four missions are done — replaces the active card */
+  missionSummary: MissionSummary | null;
 }
 
 type ProgramWeekCard = {
@@ -97,6 +101,7 @@ export default function DashboardClient({
   spine,
   programWeek,
   yearLevel,
+  missionSummary,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -239,7 +244,11 @@ export default function DashboardClient({
 
         {spine.lead === "program" && programCard}
 
-        {/* Active Mission Card */}
+        {/* With all four finished there is no active mission, and the card was
+            still offering "Continue" on something already complete. */}
+        {missionSummary ? (
+          <MissionsSummaryCard summary={missionSummary} />
+        ) : (
         <div data-animate="2">
           {/* Both cards carry the same marker, so "which one first?" is answered
               on the dashboard rather than only once you're inside a track. */}
@@ -321,6 +330,7 @@ export default function DashboardClient({
             </div>
           </div>
         </div>
+        )}
 
         {spine.lead !== "program" && programCard}
 
