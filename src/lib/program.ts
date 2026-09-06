@@ -208,6 +208,10 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         kind: "values",
         href: "/missions/1/activities/values-clarifier",
         label: "Values Clarifier",
+        // Week 2 has always been blocked without this — the behaviours builder
+        // has nothing to render. Saying so explicitly makes it behave like the
+        // other gated weeks, which were the only ones the overview flagged.
+        required: true,
         whyNeeded:
           "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
         soWhat:

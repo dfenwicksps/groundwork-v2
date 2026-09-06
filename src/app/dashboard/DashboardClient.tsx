@@ -119,7 +119,9 @@ export default function DashboardClient({
             : programWeek.started
               ? "Carry on with"
               : spine.missionsFirst
-                ? "After Mission 1"
+                // The badge beside this already says "After Mission 1", so the
+                // heading names the thing rather than repeating the timing.
+                ? "The ten weeks"
                 : "This week"}
         </h2>
         <TrackBadge lead={spine.lead === "program"} missionsFirst={spine.missionsFirst} />
