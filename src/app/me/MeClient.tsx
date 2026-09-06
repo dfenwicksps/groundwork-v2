@@ -10,6 +10,7 @@ import MoralSection from "./MoralSection";
 import PracticeSection from "./PracticeSection";
 import GoalsSection from "./GoalsSection";
 import BoostsSection from "./BoostsSection";
+import SelvesSection from "./SelvesSection";
 import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
@@ -111,7 +112,7 @@ export default function MeClient({
   useEffect(() => {
     const HASH_TAB: Record<string, MeTab> = {
       habits: "reflect", moral: "reflect", standard: "reflect",
-      focus: "grow", practice: "grow", boosts: "grow",
+      focus: "grow", practice: "grow", boosts: "grow", selves: "grow",
       pathways: "future", goals: "future",
     };
     const apply = () => {
@@ -469,6 +470,8 @@ export default function MeClient({
                 recent={recentPractices}
               />
             )}
+            {/* Understand the words, then build the qualities. */}
+            <SelvesSection />
             <BoostsSection />
             {!featuresReady && soonNote}
           </>
