@@ -126,9 +126,10 @@ export default function LandingPage() {
             Each mission is five steps: four reflective activities of about
             8&ndash;15 minutes, then one challenge you carry through the week.
             Twenty steps in all, at whatever pace you like — nothing expires and
-            nothing nags you. The four missions come first: they&apos;re the
-            foundation. The ten-week program then takes what you found in them
-            and grows it into habit.
+            nothing nags you. Mission 1 comes first — it maps the strengths and
+            values the ten-week program&apos;s opening weeks are built from.
+            After that the weeks run every week, and missions 2 to 4 arrive as
+            the weeks that need them come up.
           </p>
         </div>
 

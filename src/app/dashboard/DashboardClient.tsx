@@ -119,7 +119,7 @@ export default function DashboardClient({
             : programWeek.started
               ? "Carry on with"
               : spine.missionsFirst
-                ? "After the missions"
+                ? "After Mission 1"
                 : "This week"}
         </h2>
         <TrackBadge lead={spine.lead === "program"} missionsFirst={spine.missionsFirst} />
@@ -149,9 +149,7 @@ export default function DashboardClient({
       </Link>
       {!programWeek.started && !programWeek.allDone && (
         <p className="text-xs text-ink-muted leading-relaxed mt-2">
-          {spine.missionsFirst
-            ? `${4 - spine.missionsDone} mission${4 - spine.missionsDone === 1 ? "" : "s"} to finish first — the weeks read from what they produce. This one will be waiting.`
-            : spine.programBlurb}
+          {spine.programBlurb}
         </p>
       )}
     </div>
@@ -205,10 +203,11 @@ export default function DashboardClient({
               unlocks the program, or that picking one abandons the other.
               Once Mission 1 is done the two really are parallel; until then
               there genuinely is an order, and saying so beats a badge. */}
+          {/* The order, from the one place that knows it. This used to be its
+              own copy of the sentence and went stale the moment the gate moved
+              from all four missions to Mission 1. */}
           <p className="text-sm text-ink-muted mt-3 leading-relaxed max-w-md">
-            {spine.missionsFirst
-              ? "The four missions come first — they're the foundation. The ten-week program is where what you find in them turns into habit."
-              : "All four missions done. The ten weeks are the practice layer now — one question a week, and one thing to actually do."}
+            {spine.orderLine}
           </p>
 
           {/* The app reorders itself by year level. Unannounced, that effort is

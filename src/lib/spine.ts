@@ -16,7 +16,7 @@ import type { YearLevel } from "./yearLevel";
 // with questions about next year, and a ten-week character cadence is not the
 // answer to those, so pathways and goals are surfaced first for seniors.
 //
-// ─── One rule overrides all three: Mission 1 comes first ─────────────────────
+// ─── The rule that overrides year level: Mission 1 comes first ───────────────
 //
 // Mission 1 is the foundation and the program cannot start without it: week 1
 // sets the qualities you want at 25 against the strengths it mapped, and week 2

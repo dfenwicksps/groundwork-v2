@@ -51,13 +51,12 @@ export function TrackBadge({
 }) {
   if (!lead) {
     // "Alongside" was right when the two tracks ran in parallel from day one.
-    // They don't: the program is the practice layer that follows the missions,
-    // so while any mission is outstanding the honest label is "next", not
-    // "also". Once the foundation is laid the program becomes the lead and
-    // this branch stops describing it.
+    // They don't: weeks 1 and 2 are made out of Mission 1, so until that exists
+    // the honest label is "next", not "also". Once it does, the program becomes
+    // the lead and this branch stops describing it.
     return (
       <span className="text-[10px] font-bold uppercase tracking-widest text-[--ink-faint]">
-        {missionsFirst ? "After the missions" : "Alongside"}
+        {missionsFirst ? "After Mission 1" : "Alongside"}
       </span>
     );
   }
@@ -99,7 +98,7 @@ export default function TrackBanner({
             {!isLead ? (
               <span className="text-[--sage]">Start with </span>
             ) : spine.missionsFirst ? (
-              <span className="text-[--ink-muted]">Comes after: </span>
+              <span className="text-[--ink-muted]">Comes after Mission 1: </span>
             ) : (
               <span className="text-[--ink-muted]">Runs alongside: </span>
             )}
