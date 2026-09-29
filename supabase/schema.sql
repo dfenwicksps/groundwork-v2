@@ -95,6 +95,19 @@ create table if not exists public.stories (
   tags text[] not null default '{}'
 );
 
+-- Story engagement — one row per (user, story). read_at is set when the
+-- student reaches the end of a story (or finishes its animated telling);
+-- actioned_at when they follow one of its reflection prompts into the journal.
+-- Both set = the green tick on the stories list.
+create table if not exists public.story_reads (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.users(id) on delete cascade not null,
+  story_id uuid references public.stories(id) on delete cascade not null,
+  read_at timestamptz,
+  actioned_at timestamptz,
+  unique(user_id, story_id)
+);
+
 -- Practical goals (WOOP-lite)
 create table if not exists public.goals (
   id uuid primary key default gen_random_uuid(),
@@ -187,6 +200,7 @@ alter table public.challenges enable row level security;
 alter table public.support_circle enable row level security;
 alter table public.mission_progress enable row level security;
 alter table public.stories enable row level security;
+alter table public.story_reads enable row level security;
 alter table public.strength_profiles enable row level security;
 alter table public.goals enable row level security;
 alter table public.practice_log enable row level security;
@@ -242,6 +256,11 @@ create policy "Stories are publicly readable"
   on public.stories for select
   to authenticated
   using (true);
+
+-- story_reads: own rows only
+create policy "Users can manage own story reads"
+  on public.story_reads for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- strength_profiles: own row only
 create policy "Users can manage own strength profile"
@@ -321,12 +340,13 @@ values
 -- Mission 1 — Identity
 (1,
  'The Version of Me at School',
- 'Priya always knew who she was at home — but at school, she kept becoming someone else.',
- 'Priya had always been loud at home. She made her family laugh, she argued confidently about things she cared about, she sang badly and on purpose. But at school she was quieter. Careful. She said yes when she meant maybe, laughed at things she didn''t find funny, and wore a version of herself that felt slightly wrong — like shoes that were almost her size.',
- 'In Year 10, her English teacher asked the class to write about someone they admired. Priya wrote about her grandmother, who had never once apologised for taking up space. When she read it aloud, her voice cracked. The room was quiet in a way that felt different from usual. Afterwards, a girl she barely knew said, "That was really something." Priya realised she hadn''t been performing at all. She''d just been herself. It felt enormous.',
+ 'At home, Priya took up space. At school, she shrank to fit — until an English assignment asked who she admired.',
+ 'At home, Priya took up the whole room. She did impressions that made her family beg her to stop, argued at dinner about things she actually cared about, and sang badly — loudly, on purpose. But every morning, somewhere between the front door and the school gate, she turned herself down. At school she was quieter. Careful. She said yes when she meant maybe and laughed at jokes she didn''t find funny. Nobody noticed, which was sort of the point — and sort of the problem. It was a version of her that almost fitted, like shoes half a size too small.',
+ 'In Year 10, her English teacher set a piece of writing: someone you admire. Priya nearly picked someone safe. Instead she wrote about her grandmother, a woman who had never once apologised for taking up space. Reading it aloud, her voice cracked halfway through. Everyone heard it. She could have stopped, made a joke, sat down. She kept going. When she finished, the room was quiet — not the bored kind, the listening kind. At lunch, a girl she barely knew caught up with her and said, "That was really something." Priya realised she hadn''t been performing at all. For five minutes, the version of her at home and the version of her at school had been the same person. It felt enormous. The next day she was still quieter at school than at home — that didn''t just vanish. But she only laughed when something was funny. And she''d seen the mask for what it was: something she could take off.',
  ARRAY[
-   'Think about a time you felt the gap between who you are and who you were performing. What was happening?',
-   'What would it take to bring a little more of your real self into the spaces where you usually hold back?'
+   'Think about a time you felt the gap between who you are and who you were performing. What was happening — and who were you performing for?',
+   'What''s one thing people at home know about you that people at school don''t? What do you think would happen if they found out?',
+   'Priya didn''t plan to be brave — she just didn''t stop. Where''s one small, low-stakes place you could let a bit more of your real self show this week?'
  ],
  ARRAY['identity', 'authenticity', 'school']
 ),
@@ -371,12 +391,13 @@ values
 -- Mission 3 — Connection
 (3,
  'The Friend Who Stayed',
- 'When everything fell apart, Jonah expected people to disappear. One person didn''t.',
- 'Jonah''s parents separated in the middle of Year 9. He didn''t tell anyone at school. He became quieter, more distracted, quicker to cancel plans. He assumed his friends would drift — that''s what he''d seen happen with other people in hard situations. He started pulling away before they could.',
- 'His friend Leon didn''t take the hint. He kept texting. Not about anything in particular — just memes, questions about the weekend, ordinary things. One afternoon he came over unannounced and they sat in the backyard for an hour barely talking. It wasn''t a big conversation. Leon didn''t ask what was wrong. He just stayed. Later, Jonah realised that''s what real connection had felt like — not someone rescuing him, just someone refusing to let him disappear. He''d never told Leon how much that had meant. He still hasn''t, but he thinks about it.',
+ 'When his parents split up, Jonah started pulling away before his friends could drift. One of them wouldn''t let him.',
+ 'In the middle of Year 9, Jonah''s parents split up. His dad moved into a flat across town, and the house went quiet in a new way. Jonah didn''t tell anyone at school — not even Leon. He got quieter. He said he was "just tired". He cancelled on Saturday, then the Saturday after. He''d seen how it went when things got hard for someone — people drifted. So he started drifting first. Leon didn''t take the hint. He kept texting — never about anything. A dog in a hoodie. Who was coming on Saturday. Jonah left most of them on read. Leon kept sending them anyway.',
+ 'Then one Saturday, the doorbell. Leon was standing there with a packet of chips and a footy. "I was in the area," he said. He lived twenty minutes away. They sat on the back step for an hour. Kicked the footy against the fence a bit. Mostly didn''t talk. Leon didn''t ask what was wrong, and he didn''t say anything wise. He just stayed. Near the end, without planning to, Jonah said it: "Dad moved out." Leon nodded. "Figured it was something." Then he passed the chips. That was the whole conversation. It was enough. Later, Jonah worked out what that afternoon had been. Not someone rescuing him — nobody fixed anything. Just someone refusing to let him disappear. He''s never told Leon what it meant. He still hasn''t. But these days, when a mate goes quiet, Jonah''s the one who keeps sending the dog videos.',
  ARRAY[
-   'Think about a time someone showed up for you without making a big deal of it. What did that mean to you?',
-   'Is there someone in your life you''ve been pulling away from? What would it look like to let them back in, even a little?'
+   'Think about a time someone showed up for you without making a big deal of it. What did they actually do — and what did it mean to you?',
+   'Is there someone you''ve been pulling away from before they can drift? What would it look like to let them back in, even a little?',
+   'Is there someone who''s gone a bit quiet lately? What''s one small, ordinary thing you could send or do this week — no big conversation needed?'
  ],
  ARRAY['connection', 'friendship', 'vulnerability']
 ),

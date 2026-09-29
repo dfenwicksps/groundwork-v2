@@ -171,6 +171,26 @@ export type Database = {
           tags?: string[];
         };
       };
+      story_reads: {
+        Row: {
+          id: string;
+          user_id: string;
+          story_id: string;
+          read_at: string | null;
+          actioned_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          story_id: string;
+          read_at?: string | null;
+          actioned_at?: string | null;
+        };
+        Update: {
+          read_at?: string | null;
+          actioned_at?: string | null;
+        };
+      };
     };
   };
 };
@@ -182,4 +202,5 @@ export type Challenge = Database["public"]["Tables"]["challenges"]["Row"];
 export type SupportContact = Database["public"]["Tables"]["support_circle"]["Row"];
 export type MissionProgress = Database["public"]["Tables"]["mission_progress"]["Row"];
 export type Story = Database["public"]["Tables"]["stories"]["Row"];
+export type StoryRead = Database["public"]["Tables"]["story_reads"]["Row"];
 export type OnboardingResult = Database["public"]["Tables"]["onboarding_results"]["Row"];
