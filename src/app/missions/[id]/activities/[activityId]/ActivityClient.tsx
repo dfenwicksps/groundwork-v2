@@ -17,6 +17,8 @@ import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import { splitScaffoldedResponse } from "@/lib/journal";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
+import StoryFilm from "@/components/stories/StoryFilm";
+import { storyHasFilm } from "@/components/stories/films";
 import {
   STRENGTH_SCENARIOS,
   scoreAssessment,
@@ -662,18 +664,24 @@ function ConversationalActivity({
                     style={{ background: mission.colour }}
                     aria-hidden
                   >
-                    📖
+                    {storyHasFilm(pairedStory.title) ? "▶" : "📖"}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div
                       className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
                       style={{ color: mission.colour }}
                     >
-                      Based on a real student · 2-min read
+                      {storyHasFilm(pairedStory.title)
+                        ? "An animated story · about a minute"
+                        : "Based on a real student · 2-min read"}
                     </div>
                     <div className="text-sm font-semibold text-[--ink]">{pairedStory.title}</div>
                     <div className="text-xs text-[--ink-muted] mt-0.5">
-                      {storyOpen ? "Someone's been where you're about to go." : "Tap to read it right here — it sets up this activity."}
+                      {storyOpen
+                        ? "Someone's been where you're about to go."
+                        : storyHasFilm(pairedStory.title)
+                          ? "Tap to watch it right here — it sets up this activity."
+                          : "Tap to read it right here — it sets up this activity."}
                     </div>
                   </div>
                   <svg
@@ -684,7 +692,12 @@ function ConversationalActivity({
                     <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
-                {storyOpen && (
+                {storyOpen && storyHasFilm(pairedStory.title) && (
+                  <div className="px-4 pb-1">
+                    <StoryFilm storyId={pairedStory.id} title={pairedStory.title} />
+                  </div>
+                )}
+                {storyOpen && !storyHasFilm(pairedStory.title) && (
                   <div className="px-4 pb-4 space-y-3">
                     <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">
                       {pairedStory.context}

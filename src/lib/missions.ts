@@ -1362,6 +1362,7 @@ const SPECIAL_LABELS: Record<string, string> = {
   "focus-qualities": "Who I'm Becoming",
   "strength-practice": "Strength in Action",
   "goal-checkin": "Goal Check-in",
+  "story-reflection": "Story Reflection",
 };
 
 export function getActivityLabel(activityId: string): string {

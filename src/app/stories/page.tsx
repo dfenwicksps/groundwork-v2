@@ -9,10 +9,16 @@ export default async function StoriesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: stories } = await supabase
-    .from("stories")
-    .select("id, mission_id, title, teaser, tags")
-    .order("mission_id");
+  const [{ data: stories }, { data: reads }] = await Promise.all([
+    supabase
+      .from("stories")
+      .select("id, mission_id, title, teaser, tags")
+      .order("mission_id"),
+    supabase
+      .from("story_reads")
+      .select("story_id, read_at, actioned_at")
+      .eq("user_id", user.id),
+  ]);
 
-  return <StoriesClient stories={stories || []} />;
+  return <StoriesClient stories={stories || []} reads={reads || []} />;
 }

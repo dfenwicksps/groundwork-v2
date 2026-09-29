@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MISSIONS } from "@/lib/missions";
 import { cn } from "@/lib/utils";
 import AppShell from "@/components/layout/AppShell";
+import { storyHasFilm } from "@/components/stories/films";
 
 interface StoryPreview {
   id: string;
@@ -14,8 +15,21 @@ interface StoryPreview {
   tags: string[];
 }
 
-export default function StoriesClient({ stories }: { stories: StoryPreview[] }) {
+interface StoryReadState {
+  story_id: string;
+  read_at: string | null;
+  actioned_at: string | null;
+}
+
+export default function StoriesClient({
+  stories,
+  reads,
+}: {
+  stories: StoryPreview[];
+  reads: StoryReadState[];
+}) {
   const [filter, setFilter] = useState<number | null>(null);
+  const readById = new Map(reads.map((r) => [r.story_id, r]));
 
   const filtered = filter
     ? stories.filter((s) => s.mission_id === filter)
@@ -75,18 +89,25 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
         <div className="grid gap-3" data-animate="3">
           {filtered.map((story) => {
             const mission = MISSIONS.find((m) => m.id === story.mission_id);
+            const read = readById.get(story.id);
+            // Same treatment as a finished mission: sage card, sage tick.
+            const complete = !!read?.read_at && !!read?.actioned_at;
             return (
               <Link
                 key={story.id}
                 href={`/stories/${story.id}`}
-                className="card p-5 hover:shadow-card transition-all group block"
+                className={cn(
+                  "card p-5 hover:shadow-card transition-all group block",
+                  complete && "bg-sage/5 border-sage/30"
+                )}
               >
                 <div className="flex items-start gap-4">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm font-semibold"
-                    style={{ background: mission?.colour || "#4F46E5" }}
+                    style={{ background: complete ? "var(--sage)" : mission?.colour || "#4F46E5" }}
+                    aria-label={complete ? "Read and reflected on" : undefined}
                   >
-                    {mission?.id}
+                    {complete ? "✓" : mission?.id}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -109,11 +130,19 @@ export default function StoriesClient({ stories }: { stories: StoryPreview[] }) 
                         />
                       </svg>
                     </div>
-                    <div
-                      className="text-xs font-medium mb-2"
-                      style={{ color: mission?.colour }}
-                    >
-                      {mission?.title}
+                    <div className="flex items-center gap-2 text-xs font-medium mb-2">
+                      <span style={{ color: mission?.colour }}>{mission?.title}</span>
+                      {storyHasFilm(story.title) && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-navy/10 text-navy">
+                          <svg aria-hidden="true" width="8" height="8" viewBox="0 0 12 12" fill="currentColor">
+                            <path d="M3 1.8v8.4c0 .6.65.97 1.16.66l6.3-4.2a.78.78 0 000-1.32l-6.3-4.2A.78.78 0 003 1.8z" />
+                          </svg>
+                          Animated
+                        </span>
+                      )}
+                      {read?.read_at && !read.actioned_at && (
+                        <span className="text-ink-muted font-normal">Read · one reflection to go</span>
+                      )}
                     </div>
                     <p className="text-sm text-ink-muted leading-relaxed">
                       {story.teaser}

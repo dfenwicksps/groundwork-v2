@@ -3,6 +3,9 @@ import { createServerClient } from "@/lib/supabase-server";
 import Link from "next/link";
 import { MISSIONS } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
+import StoryReflections from "@/components/stories/StoryReflections";
+import StoryFilm from "@/components/stories/StoryFilm";
+import { storyHasFilm } from "@/components/stories/films";
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +28,25 @@ export default async function StoryPage({
   if (!story) notFound();
 
   const mission = MISSIONS.find((m) => m.id === story.mission_id);
+  const hasFilm = storyHasFilm(story.title);
+
+  const [{ data: _read }, { data: _written }] = await Promise.all([
+    supabase
+      .from("story_reads")
+      .select("read_at, actioned_at")
+      .eq("user_id", user.id)
+      .eq("story_id", story.id)
+      .maybeSingle(),
+    supabase
+      .from("journal_entries")
+      .select("prompt")
+      .eq("user_id", user.id)
+      .eq("activity_id", "story-reflection")
+      .in("prompt", story.reflection_prompts),
+  ]);
+  const read = _read as { read_at: string | null; actioned_at: string | null } | null;
+  const writtenPrompts = ((_written as { prompt: string }[] | null) || []).map((w) => w.prompt);
+  const complete = !!read?.read_at && !!read?.actioned_at;
 
   return (
     <AppShell>
@@ -67,67 +89,63 @@ export default async function StoryPage({
           {story.title}
         </h1>
 
-        {/* Context */}
-        <div data-animate="2">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            The situation
+        {complete && (
+          <div className="flex items-center gap-2 text-xs font-medium text-sage mb-6 -mt-3">
+            <span
+              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold"
+              style={{ background: "var(--sage)" }}
+              aria-hidden="true"
+            >
+              ✓
+            </span>
+            Read and reflected on
           </div>
-          <div className="card p-6 mb-6">
-            <p className="text-ink leading-relaxed">{story.context}</p>
-          </div>
-        </div>
+        )}
 
-        {/* Turning point */}
-        <div data-animate="3">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            The turning point
+        {hasFilm ? (
+          <div data-animate="2">
+            <StoryFilm storyId={story.id} title={story.title} />
           </div>
-          <div
-            className="rounded-xl p-6 mb-6 border-l-4"
-            style={{
-              borderLeftColor: mission?.colour || "#4F46E5",
-              background: "#FAFAF8",
-              borderTop: "1px solid #E8E8E4",
-              borderRight: "1px solid #E8E8E4",
-              borderBottom: "1px solid #E8E8E4",
-            }}
-          >
-            <p className="text-ink leading-relaxed">{story.turning_point}</p>
-          </div>
-        </div>
-
-        {/* Reflection prompts */}
-        <div data-animate="4">
-          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            Reflect on this
-          </div>
-          <div className="space-y-3">
-            {story.reflection_prompts.map((prompt, i) => (
-              <div key={i} className="card p-5">
-                <p className="text-sm text-ink leading-relaxed mb-3">
-                  {prompt}
-                </p>
-                <Link
-                  href={`/missions/${story.mission_id}/activities/${
-                    mission?.activities[0]?.id || "strengths-mapping"
-                  }?prompt=${encodeURIComponent(prompt)}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-teal hover:text-teal-dark transition-colors"
-                >
-                  Write about this
-                  <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path
-                      d="M2 6h8M6.5 2.5L10 6l-3.5 3.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Link>
+        ) : (
+          <>
+            {/* Context */}
+            <div data-animate="2">
+              <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+                The situation
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="card p-6 mb-6">
+                <p className="text-ink leading-relaxed">{story.context}</p>
+              </div>
+            </div>
+
+            {/* Turning point */}
+            <div data-animate="3">
+              <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+                The turning point
+              </div>
+              <div
+                className="rounded-xl p-6 mb-6 border-l-4"
+                style={{
+                  borderLeftColor: mission?.colour || "#4F46E5",
+                  background: "#FAFAF8",
+                  borderTop: "1px solid #E8E8E4",
+                  borderRight: "1px solid #E8E8E4",
+                  borderBottom: "1px solid #E8E8E4",
+                }}
+              >
+                <p className="text-ink leading-relaxed">{story.turning_point}</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        <StoryReflections
+          storyId={story.id}
+          missionId={story.mission_id}
+          prompts={story.reflection_prompts}
+          writtenPrompts={writtenPrompts}
+          markReadOnView={!hasFilm}
+        />
 
         {/* Tags */}
         {story.tags.length > 0 && (
