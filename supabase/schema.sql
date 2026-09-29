@@ -404,12 +404,13 @@ values
 
 (3,
  'Different Enough',
- 'Sofia and her mum had nothing in common — until they found the one thing they did.',
- 'Sofia and her mother had been in low-level conflict for as long as she could remember. Different temperaments, different interests, different ways of seeing the world. Her mother was practical, routine-driven, and uncomfortable with big emotions. Sofia was none of those things. Family dinners often ended with at least one of them retreating to a different room.',
- 'The summer Sofia was 15, the power went out during a storm and they ended up on the back veranda with candles and no screens. Her mother started talking — really talking — about her own teenage years, things Sofia had never heard before. Sofia realised she''d never thought of her mother as someone who''d once been her age, uncertain and searching. They weren''t suddenly best friends. The conflict didn''t disappear. But something opened up — a small gap through which something more honest could pass. Sofia started trying to find that gap more often.',
+ 'Sofia and her mum had nothing in common — until a blackout, a candle, and a story Sofia had never heard.',
+ 'Sofia and her mum ran on different settings. Mum had lists, labelled freezer containers and dinner at six-thirty sharp. Sofia had big feelings, no plan, and a sketchbook she drew in instead of doing homework. Most dinners went the same way: a comment, a sigh, someone saying "I''m just being honest" — and one of them taking their plate to another room. They lived ten metres apart and hardly knew each other. Sofia figured that was just how it was going to be.',
+ 'The summer Sofia was fifteen, a storm took the power out. No wifi. No TV. Phone on four per cent. Just a candle, and the two of them on the back veranda, waiting. Then, out of nowhere, Mum started talking. About being sixteen and not knowing what she wanted. About an art teacher who told her she was good. About a sketchbook she filled that year and never showed anyone. Sofia had never once pictured her mum at her age — unsure, searching, drawing in the margins. She sat in the candlelight trying to fit the two people together. When the power came back, Mum blew out the candle and went to check the freezer. They weren''t suddenly best friends. The arguments didn''t stop. But something had opened — a small gap where something more honest could get through. A few weeks later, Sofia left her sketchbook open on the kitchen bench. Mum didn''t say anything. She just stuck a note on one page: "This one."',
  ARRAY[
    'Think about a relationship in your life that feels difficult. What do you actually know about that person''s inner life?',
-   'Have you ever seen someone differently after learning something new about them? What changed?'
+   'Have you ever seen someone differently after learning something new about them? What changed — in them, or in you?',
+   'Pick someone you clash with. What''s one question you could ask them this week about when they were your age?'
  ],
  ARRAY['connection', 'family', 'empathy']
 ),
