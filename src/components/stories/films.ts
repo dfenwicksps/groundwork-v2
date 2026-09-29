@@ -4,6 +4,7 @@
 export const STORY_FILM_TITLES = [
   "The Version of Me at School",
   "The Friend Who Stayed",
+  "Different Enough",
 ] as const;
 
 export function storyHasFilm(title: string): boolean {
