@@ -8,6 +8,8 @@ import { MISSIONS, getActivityLabel } from "@/lib/missions";
 import { formatDate } from "@/lib/utils";
 import AppShell from "@/components/layout/AppShell";
 import ScaffoldedInput from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 import {
   revisitEligibility,
   revisitPrompts,
@@ -41,6 +43,7 @@ export default function RevisitClient({
   const [response, setResponse] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [supportNeeded, setSupportNeeded] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const { original, revisits } = chain;
@@ -78,6 +81,7 @@ export default function RevisitClient({
       return;
     }
 
+    setSupportNeeded(mentionsCrisis(response));
     setDone(true);
     setSubmitting(false);
     router.refresh();
@@ -116,6 +120,11 @@ export default function RevisitClient({
               {revisits.length === 0 ? "look" : "looks"} back at this one. In a
               few months it&apos;ll be worth reading the whole thing again.
             </p>
+            {supportNeeded && (
+              <div className="text-left max-w-md mx-auto">
+                <SupportCard />
+              </div>
+            )}
             <div className="flex gap-3 justify-center">
               <Link href="/journal" className="btn btn-secondary">
                 See your journal

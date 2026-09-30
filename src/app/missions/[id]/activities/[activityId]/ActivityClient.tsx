@@ -18,6 +18,9 @@ import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
 import { splitScaffoldedResponse } from "@/lib/journal";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
+import GetHelpButton from "@/components/help/GetHelpButton";
+import SupportCard from "@/components/help/SupportCard";
+import { mentionsCrisis } from "@/lib/help";
 import { storyHasFilm } from "@/components/stories/films";
 import {
   STRENGTH_SCENARIOS,
@@ -261,6 +264,9 @@ function ConversationalActivity({
     existingEntry?.ai_reflection || null
   );
   const [reflectionFailed, setReflectionFailed] = useState(false);
+  // Set by the on-device phrase check or the AI's concern flag; replaces the
+  // follow-up questions with the support card.
+  const [supportNeeded, setSupportNeeded] = useState(false);
   const [restoredDraft, setRestoredDraft] = useState(false);
   const [existingResponse] = useState(existingEntry?.response || "");
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
@@ -426,6 +432,8 @@ function ConversationalActivity({
     // Saved for real — safe to drop the local draft now.
     clearDraft();
 
+    if (mentionsCrisis(finalResponse)) setSupportNeeded(true);
+
     // Request AI reflection async (non-blocking, with a timeout so the done
     // screen never shows an eternal spinner).
     if (finalResponse.length > 20 && entryId) {
@@ -449,8 +457,10 @@ function ConversationalActivity({
         body: JSON.stringify({ text, entryId }),
       });
       if (res.ok) {
-        const { reflection } = await res.json();
-        if (reflection) {
+        const { reflection, concern } = await res.json();
+        if (concern) {
+          setSupportNeeded(true);
+        } else if (reflection) {
           setAiReflection(reflection);
           setReflectionFailed(false);
         } else {
@@ -504,6 +514,7 @@ function ConversationalActivity({
             <span className="text-xs font-semibold text-[--ink-muted] tracking-wide truncate">
               {mission.title}
             </span>
+            <GetHelpButton variant="inline" />
           </div>
         </div>
 
@@ -809,6 +820,7 @@ function ConversationalActivity({
               <span className="text-xs text-[--ink-muted] flex-shrink-0">
                 {qIdx + 1} of {questions.length}
               </span>
+              <GetHelpButton variant="inline" />
             </div>
             {/* Progress bar */}
             <div
@@ -1103,6 +1115,7 @@ function ConversationalActivity({
         <div className="max-w-lg mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
           <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+          <GetHelpButton variant="inline" />
         </div>
       </div>
 
@@ -1286,7 +1299,9 @@ function ConversationalActivity({
 
           {/* AI reflection — a bonus that loads in the background. The user has
               already been given everything they need to move on above. */}
-          {aiReflection && (() => {
+          {supportNeeded && <SupportCard />}
+
+          {!supportNeeded && aiReflection && (() => {
             const parsed = parseReflection(aiReflection);
             if (!parsed) return null;
             return (
@@ -1295,8 +1310,11 @@ function ConversationalActivity({
                 style={{ background: "rgba(46,125,140,0.04)", borderColor: "rgba(46,125,140,0.2)" }}
                 data-animate="4"
               >
-                <div className="text-[11px] font-bold text-[--teal] mb-3 uppercase tracking-widest">
-                  Something to sit with
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <span className="text-[11px] font-bold text-[--teal] uppercase tracking-widest">
+                    Something to sit with
+                  </span>
+                  <span className="text-[11px] text-[--ink-muted]">Suggested by AI</span>
                 </div>
                 {parsed.type === "tricheck" ? (
                   <div className="space-y-3">
@@ -1322,7 +1340,7 @@ function ConversationalActivity({
 
           {/* Non-blocking note while the reflection generates — with an honest
               fallback once it fails or times out, so no eternal spinner. */}
-          {!aiReflection && turns.length > 0 && (
+          {!supportNeeded && !aiReflection && turns.length > 0 && (
             <div
               role="status"
               className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white"
@@ -1505,6 +1523,7 @@ function ValuesPickerActivity({
           <div className="max-w-lg mx-auto flex items-center gap-3">
             <ActivityBackLink missionId={mission.id} />
             <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+            <GetHelpButton variant="inline" />
           </div>
         </div>
         <div className="max-w-lg mx-auto px-5 pt-8 pb-nav">
@@ -1576,6 +1595,7 @@ function ValuesPickerActivity({
           <span className="text-xs text-[--ink-muted]">
             {selectedValues.length} of {activity.valuesCount || 5}
           </span>
+          <GetHelpButton variant="inline" />
         </div>
       </div>
 
@@ -1805,6 +1825,7 @@ function ChallengeActivity({
   const [submitted, setSubmitted] = useState(!!existingChallenge);
   const [debrief, setDebrief] = useState(existingChallenge?.debrief_response || "");
   const [debriefDone, setDebriefDone] = useState(!!existingChallenge?.completed_at);
+  const [debriefSupportNeeded, setDebriefSupportNeeded] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const showDebrief = existingChallenge && !existingChallenge.completed_at;
@@ -1849,6 +1870,7 @@ function ChallengeActivity({
       prompt: "Reflect on your challenge: what happened?",
       response: debrief,
     });
+    setDebriefSupportNeeded(mentionsCrisis(debrief));
     setDebriefDone(true);
     setSubmitting(false);
   }
@@ -1858,6 +1880,7 @@ function ChallengeActivity({
       <div className="max-w-lg mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+        <GetHelpButton variant="inline" />
       </div>
     </div>
   );
@@ -1875,6 +1898,11 @@ function ChallengeActivity({
             <div className="text-center py-10">
               <div className="text-4xl mb-4">✓</div>
               <p className="font-medium text-[--navy] mb-6">Reflection saved.</p>
+              {debriefSupportNeeded && (
+                <div className="text-left">
+                  <SupportCard />
+                </div>
+              )}
               <div className="space-y-3 max-w-xs mx-auto">
                 {nextMission ? (
                   <Link
@@ -2151,6 +2179,7 @@ function StrengthsAssessmentActivity({
       <div className="max-w-lg mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
+        <GetHelpButton variant="inline" />
       </div>
     </div>
   );
@@ -2330,6 +2359,7 @@ function StrengthsAssessmentActivity({
             <span className="text-xs text-[--ink-muted] flex-shrink-0">
               {idx + 1} of {scenarios.length}
             </span>
+            <GetHelpButton variant="inline" />
           </div>
           <div
             role="progressbar"

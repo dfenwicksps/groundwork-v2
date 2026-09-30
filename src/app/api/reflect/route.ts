@@ -40,7 +40,11 @@ export async function POST(request: NextRequest) {
       // finishing an activity. Quality is plenty for a few short questions.
       model: "claude-haiku-4-5",
       max_tokens: 250,
-      system: `You are a warm, thoughtful guide helping a teenager reflect more deeply on their personal growth. Based on what they've written, generate exactly three short follow-up questions — one for each dimension below.
+      system: `You are a warm, thoughtful guide helping a young person (aged 13 to 23) reflect more deeply on their personal growth.
+
+First, check for risk. If what they wrote suggests they may be at risk of harm — thoughts of suicide or self-harm, being hurt or abused by someone, not feeling safe at home, or being in crisis — do not write questions. Return exactly {"concern":true} and nothing else. Only do this for real signs of risk, not for ordinary sadness, stress or a hard week.
+
+Otherwise, generate exactly three short follow-up questions — one for each dimension below.
 
 "conceptual": A question about what this reveals about their beliefs or values (what they think or care about).
 "practical": A question about a small real-world action they could take this week that reflects what they wrote.
@@ -53,7 +57,7 @@ Rules:
 - Never mention AI, artificial intelligence, or technology.
 
 Return ONLY valid JSON with no other text before or after it:
-{"conceptual":"...","practical":"...","collective":"..."}`,
+{"concern":false,"conceptual":"...","practical":"...","collective":"..."}`,
       messages: [
         {
           role: "user",
@@ -69,6 +73,11 @@ Return ONLY valid JSON with no other text before or after it:
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
+        // A concern is answered with the support card, never stored: the entry
+        // shouldn't carry a record that its writer was flagged as at risk.
+        if (parsed?.concern === true) {
+          return NextResponse.json({ reflection: null, concern: true });
+        }
         if (
           parsed &&
           typeof parsed.conceptual === "string" &&

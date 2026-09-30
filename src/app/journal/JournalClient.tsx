@@ -243,8 +243,11 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                               borderColor: "rgba(46, 125, 140, 0.2)",
                             }}
                           >
-                            <div className="text-xs font-semibold text-teal mb-3 uppercase tracking-wide">
-                              Something to sit with
+                            <div className="flex items-center justify-between gap-3 mb-3">
+                              <span className="text-xs font-semibold text-teal uppercase tracking-wide">
+                                Something to sit with
+                              </span>
+                              <span className="text-[11px] text-ink-muted">Suggested by AI</span>
                             </div>
                             {parsed.type === "tricheck" ? (
                               <div className="space-y-3">

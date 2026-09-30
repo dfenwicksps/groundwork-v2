@@ -16,6 +16,8 @@ import {
   type StandardKey,
 } from "@/lib/standard";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 /**
  * The Standard — three questions the student holds themselves to, answered
@@ -39,6 +41,7 @@ export default function StandardSection({
   const previous = checkins.slice(1);
 
   const [writing, setWriting] = useState(false);
+  const [supportNeeded, setSupportNeeded] = useState(false);
   const [drafts, setDrafts] = useState<StandardAnswers>({});
   const [openId, setOpenId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -64,6 +67,7 @@ export default function StandardSection({
   async function save() {
     const answers = cleanAnswers(drafts);
     if (Object.keys(answers).length === 0) return;
+    setSupportNeeded(mentionsCrisis(Object.values(answers).join("\n")));
     setBusy(true);
     setError(null);
 
@@ -103,6 +107,7 @@ export default function StandardSection({
     if (!latest) return;
     const answers = cleanAnswers(drafts);
     if (Object.keys(answers).length === 0) return;
+    setSupportNeeded(mentionsCrisis(Object.values(answers).join("\n")));
     setBusy(true);
     setError(null);
     const { error: err } = await db
@@ -302,6 +307,8 @@ export default function StandardSection({
         The three questions you hold yourself to · {checkins.length} check-in
         {checkins.length === 1 ? "" : "s"}
       </p>
+
+      {supportNeeded && <SupportCard />}
 
       <div className="card p-5">
         <div className="flex items-center justify-between gap-2 mb-4">

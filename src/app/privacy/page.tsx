@@ -87,6 +87,17 @@ export default function PrivacyPage() {
           and nothing you write will leave our database.
         </p>
         <p>
+          <strong>If something you write sounds like you might be at risk</strong>,
+          for example thoughts of suicide or self-harm, or not feeling safe at
+          home, the app shows you a list of free support services instead of the
+          usual questions. There are two ways it notices. When follow-up
+          questions are on, the same request that writes them can say so
+          instead. And whether or not they&apos;re on, the app checks what you
+          saved for a few specific phrases, on your own device, without sending
+          anything anywhere. Neither check is saved, flagged or seen by anyone:
+          it only changes what appears on your screen.
+        </p>
+        <p>
           No staff member reads your journal for interest or for research. We
           access individual entries only if you ask us to — for example, to help
           recover something — or if we are legally required to.
