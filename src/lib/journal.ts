@@ -113,3 +113,16 @@ export function answersOnly(
   // dropping the last answer, usually the one that synthesises the rest.
   return answers.length ? answers.join("\n") : response.trim();
 }
+
+/**
+ * The values a student settled on in Mission 1's Values Clarifier. Its saved
+ * response is one "Value: why it matters" line per value. These are the values
+ * the rest of the app shows; the three picked at onboarding are only a starting
+ * point until this step is done.
+ */
+export function clarifierValues(response: string | null | undefined): string[] {
+  return (response || "")
+    .split("\n")
+    .map((l) => l.split(":")[0].trim())
+    .filter(Boolean);
+}

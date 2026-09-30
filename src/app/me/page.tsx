@@ -7,7 +7,8 @@ import { parseAnswers } from "@/lib/standard";
 import { responseToCode, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
-import { answersOnly } from "@/lib/journal";
+import { answersOnly, clarifierValues } from "@/lib/journal";
+import { truncate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -121,10 +122,7 @@ export default async function MePage() {
 
   const ranking: string[] | null = strengthRow?.ranking ?? null;
   const scores: Record<string, number> = strengthRow?.scores ?? {};
-  const values = ((valuesRow?.response as string) || "")
-    .split("\n")
-    .map((l: string) => l.split(":")[0].trim())
-    .filter(Boolean);
+  const values = clarifierValues(valuesRow?.response as string | undefined);
 
   const practices = (practiceRaw || []) as {
     id: string;
@@ -163,7 +161,13 @@ export default async function MePage() {
       goals={goalsRaw || []}
       activePractice={activePractice}
       recentPractices={recentPractices}
-      commitmentExcerpt={((commitmentRow?.response as string) || "").slice(0, 140) || null}
+      commitmentExcerpt={
+        truncate(
+          answersOnly(2, "commitment-statement", commitmentRow?.response as string | undefined)
+            .split("\n")[0],
+          140
+        ) || null
+      }
       futureSelf={
         answersOnly(4, "future-self", futureSelfRow?.response as string | undefined) ||
         null

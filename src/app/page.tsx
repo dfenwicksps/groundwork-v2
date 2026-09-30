@@ -138,7 +138,7 @@ export default function LandingPage() {
             {
               n: "01",
               title: "Identity",
-              q: "What am I actually like?",
+              q: "Who am I?",
               col: "#4F46E5",
             },
             {

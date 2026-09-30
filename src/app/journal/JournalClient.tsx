@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MISSIONS, getActivityLabel } from "@/lib/missions";
+import {
+  MISSIONS,
+  getActivityLabel,
+  entryGroup,
+  ENTRY_GROUP_LABELS,
+  type EntryGroup,
+} from "@/lib/missions";
 import { formatDate, isWithin24Hours, truncate, parseReflection } from "@/lib/utils";
 import type { JournalEntry } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
@@ -15,12 +21,13 @@ import {
 } from "@/lib/revisit";
 
 export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
-  const [filter, setFilter] = useState<number | null>(null);
+  const [filter, setFilter] = useState<EntryGroup | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
+  const groupOf = (e: JournalEntry) => entryGroup(e.activity_id, e.mission_id);
   const byMission = filter
-    ? entries.filter((e) => e.mission_id === filter)
+    ? entries.filter((e) => groupOf(e) === filter)
     : entries;
 
   // Revisits keyed by the entry they look back at, so a card can show how many
@@ -89,7 +96,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
             All
           </button>
           {MISSIONS.map((m) => {
-            const count = entries.filter((e) => e.mission_id === m.id).length;
+            const count = entries.filter((e) => groupOf(e) === m.id).length;
             if (count === 0) return null;
             return (
               <button
@@ -104,6 +111,25 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                 style={filter === m.id ? { background: m.colour } : {}}
               >
                 {m.title}
+                <span className="text-xs opacity-70">{count}</span>
+              </button>
+            );
+          })}
+          {(["weeks", "me"] as const).map((g) => {
+            const count = entries.filter((e) => groupOf(e) === g).length;
+            if (count === 0) return null;
+            return (
+              <button
+                key={g}
+                onClick={() => setFilter(g)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex items-center gap-1.5",
+                  filter === g
+                    ? "bg-navy text-white border-navy"
+                    : "bg-white text-ink-muted border-surface-border hover:border-navy/30"
+                )}
+              >
+                {ENTRY_GROUP_LABELS[g]}
                 <span className="text-xs opacity-70">{count}</span>
               </button>
             );
@@ -124,7 +150,9 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
         ) : (
           <div className="space-y-3" data-animate="3">
             {filtered.map((entry) => {
-              const mission = MISSIONS.find((m) => m.id === entry.mission_id);
+              const group = groupOf(entry);
+              const mission =
+                typeof group === "number" ? MISSIONS.find((m) => m.id === group) : undefined;
               const isOpen = expanded === entry.id;
               const canEdit = isWithin24Hours(entry.created_at);
               const label =
@@ -163,7 +191,9 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                           </div>
                           <div className="text-xs text-ink-muted mt-0.5">
                             {formatDate(entry.created_at)} ·{" "}
-                            {mission?.title || "Unknown mission"}
+                            {typeof group === "number"
+                              ? mission?.title || "Unknown mission"
+                              : ENTRY_GROUP_LABELS[group]}
                           </div>
                           {!isOpen && (
                             <p className="text-xs text-ink-muted mt-1.5 line-clamp-2">

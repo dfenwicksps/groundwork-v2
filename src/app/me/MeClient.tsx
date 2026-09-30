@@ -224,7 +224,7 @@ export default function MeClient({
                 <> · stands for <span className="font-semibold">{values[0]}</span></>
               )}
               {commitmentExcerpt && (
-                <> · committed to <span className="italic">&ldquo;{commitmentExcerpt}…&rdquo;</span></>
+                <> · in your words, <span className="italic">&ldquo;{commitmentExcerpt}&rdquo;</span></>
               )}
             </p>
           </div>

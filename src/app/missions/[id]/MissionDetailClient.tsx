@@ -268,7 +268,7 @@ export default function MissionDetailClient({
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className={cn("text-sm font-medium", completed ? "text-ink-muted line-through" : "text-ink")}>
+                              <span className={cn("text-sm font-medium", completed ? "text-ink-muted" : "text-ink")}>
                                 {activity.title}
                               </span>
                               {activity.isMilestone && (

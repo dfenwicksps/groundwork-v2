@@ -1,4 +1,4 @@
-import type { Strand } from "./program";
+import { WEEK_BY_NUMBER, CHARACTER_CODE_ACTIVITY_ID, type Strand } from "./program";
 
 export interface Activity {
   id: string;
@@ -282,7 +282,7 @@ export const MISSIONS: Mission[] = [
     id: 1,
     title: "Identity",
     subtitle: "Mission 1",
-    question: "What am I actually like?",
+    question: "Who am I?",
     strands: ["identity", "values"],
     phase: "exploration",
     phaseDescription:
@@ -1363,10 +1363,20 @@ const SPECIAL_LABELS: Record<string, string> = {
   "strength-practice": "Strength in Action",
   "goal-checkin": "Goal Check-in",
   "story-reflection": "Story Reflection",
+  "the-standard": "The Standard",
+  "weekly-five": "The Weekly Five",
+  [CHARACTER_CODE_ACTIVITY_ID]: "Character Code",
 };
+
+const PROGRAM_WEEK_ID = /^program-week-(\d+)$/;
 
 export function getActivityLabel(activityId: string): string {
   if (SPECIAL_LABELS[activityId]) return SPECIAL_LABELS[activityId];
+  const week = activityId.match(PROGRAM_WEEK_ID);
+  if (week) {
+    const w = WEEK_BY_NUMBER[Number(week[1])];
+    return w ? `Week ${w.week} · ${w.title}` : `Week ${week[1]}`;
+  }
   if (activityId.endsWith("-debrief")) {
     const base = BASE_ACTIVITY_LABELS[activityId.replace(/-debrief$/, "")];
     return base ? `${base} — Debrief` : "Challenge Debrief";
@@ -1377,3 +1387,24 @@ export function getActivityLabel(activityId: string): string {
   }
   return BASE_ACTIVITY_LABELS[activityId] || activityId;
 }
+
+/**
+ * Which part of the app a journal entry came from. Entries written outside the
+ * missions (the ten weeks, the Me tab) are still stored with mission_id 1, so
+ * mission_id alone would file all of them under Identity.
+ */
+export type EntryGroup = number | "weeks" | "me";
+
+const WEEK_ACTIVITY_IDS = new Set(["weekly-five", CHARACTER_CODE_ACTIVITY_ID]);
+
+export function entryGroup(activityId: string, missionId: number): EntryGroup {
+  const base = activityId.replace(/-(debrief|revisit)$/, "");
+  if (BASE_ACTIVITY_LABELS[base] || activityId === "story-reflection") return missionId;
+  if (PROGRAM_WEEK_ID.test(activityId) || WEEK_ACTIVITY_IDS.has(activityId)) return "weeks";
+  return "me";
+}
+
+export const ENTRY_GROUP_LABELS: Record<"weeks" | "me", string> = {
+  weeks: "Ten weeks",
+  me: "Me tab",
+};

@@ -112,6 +112,7 @@ export default function DashboardClient({
   const activeMissionProgress = getMissionProgress(profile.active_mission, progress);
 
   const totalCompleted = progress.length;
+  const missionsDone = MISSIONS.filter((m) => getMissionProgress(m.id, progress).complete).length;
 
   // The program's "this week" — the dashboard previously never mentioned the
   // program at all, so a student who didn't tap its nav icon never met it.
@@ -472,7 +473,7 @@ export default function DashboardClient({
                     >
                       {mission.id}
                     </div>
-                    {isActive && (
+                    {isActive && !mProgress.complete && (
                       <span className="text-xs font-medium text-teal bg-teal/10 px-2 py-0.5 rounded-full">
                         Active
                       </span>
@@ -657,15 +658,17 @@ export default function DashboardClient({
                 value: totalCompleted,
                 color: "#4F46E5",
               },
+              missionsDone > 0
+                ? { label: "Missions done", value: missionsDone, color: "#0E7490" }
+                : {
+                    label: "Missions started",
+                    value: MISSIONS.filter((m) =>
+                      progress.some((p) => p.mission_id === m.id)
+                    ).length,
+                    color: "#0E7490",
+                  },
               {
-                label: "Missions started",
-                value: MISSIONS.filter((m) =>
-                  progress.some((p) => p.mission_id === m.id)
-                ).length,
-                color: "#0E7490",
-              },
-              {
-                label: "Days active",
+                label: "Days since you joined",
                 value: Math.max(
                   1,
                   Math.ceil(

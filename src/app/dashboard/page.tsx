@@ -46,12 +46,16 @@ export default async function DashboardPage() {
     .select("*")
     .eq("user_id", user.id);
 
-  // Fetch active challenge
+  // Fetch active challenge. A mission challenge runs for a week; one that has
+  // gone unchecked for three weeks drops off the dashboard rather than sitting
+  // there for months. It stays open on its mission page for a late check-in.
+  const challengeCutoff = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString();
   const { data: _challenge } = await supabase
     .from("challenges")
     .select("*")
     .eq("user_id", user.id)
     .is("completed_at", null)
+    .gte("issued_at", challengeCutoff)
     .order("issued_at", { ascending: false })
     .limit(1)
     .single();
