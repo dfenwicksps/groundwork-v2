@@ -117,12 +117,12 @@ export default function WeeklyFiveSection({
                       <p className="text-sm text-ink font-semibold leading-snug">
                         {q.question}
                       </p>
-                      <p className="text-[11px] text-ink-muted leading-relaxed mt-0.5">
+                      <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
                         {q.meaning}
                       </p>
                       {/* Where this question was first worked out. Four of the
                           five were built in a mission and nothing said so. */}
-                      <p className="text-[11px] text-ink-faint leading-relaxed mt-1">
+                      <p className="text-xs text-ink-faint leading-relaxed mt-1">
                         {q.foundation.href ? (
                           <Link
                             href={q.foundation.href}
@@ -139,7 +139,7 @@ export default function WeeklyFiveSection({
                     </div>
                   </div>
                   {last && (
-                    <p className="text-[11px] text-ink-muted italic leading-relaxed mb-1.5 pl-6">
+                    <p className="text-xs text-ink-muted italic leading-relaxed mb-1.5 pl-6">
                       Last week: &ldquo;{last}&rdquo;
                     </p>
                   )}
@@ -178,7 +178,7 @@ export default function WeeklyFiveSection({
               {busy ? "Saving…" : "Save this week"}
             </button>
           </div>
-          <p className="text-[11px] text-ink-muted text-center mt-2">
+          <p className="text-xs text-ink-muted text-center mt-2">
             {filled} of {WEEKLY_FIVE.length} answered — partial is fine.
           </p>
         </div>
@@ -201,10 +201,10 @@ export default function WeeklyFiveSection({
       {latest ? (
         <div className="card p-5">
           <div className="flex items-center justify-between gap-2 mb-3">
-            <span className="text-[11px] font-bold text-teal uppercase tracking-wider">
+            <span className="text-xs font-bold text-teal uppercase tracking-wider">
               Most recent
             </span>
-            <span className="text-[11px] text-ink-muted">
+            <span className="text-xs text-ink-muted">
               {formatRelativeDate(latest.created_at)}
             </span>
           </div>
@@ -218,7 +218,7 @@ export default function WeeklyFiveSection({
                     {q.emoji}
                   </span>
                   <div className="min-w-0">
-                    <div className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">
+                    <div className="text-xs font-bold text-ink-muted uppercase tracking-widest">
                       {q.name}
                     </div>
                     <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
@@ -260,7 +260,7 @@ export default function WeeklyFiveSection({
       {/* History */}
       {checkins.length > 1 && (
         <div className="mt-3 space-y-1.5">
-          <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">
+          <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
             Earlier weeks
           </div>
           {checkins.slice(1).map((c) => {
@@ -307,7 +307,7 @@ export default function WeeklyFiveSection({
                       if (!a) return null;
                       return (
                         <div key={q.key}>
-                          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">
+                          <div className="text-xs font-bold text-ink-muted uppercase tracking-widest">
                             {q.emoji} {q.name}
                           </div>
                           <p className="text-xs text-ink leading-relaxed whitespace-pre-wrap">

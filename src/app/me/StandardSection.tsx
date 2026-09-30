@@ -188,7 +188,7 @@ export default function StandardSection({
                   {/* The payoff of a recurring check-in: last time's answer, right there */}
                   {!editing && last && (
                     <div className="rounded-xl px-3 py-2 bg-surface-muted border border-surface-border mb-2.5">
-                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-0.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-0.5">
                         Last time you wrote
                       </div>
                       <p className="text-xs text-ink-muted italic leading-relaxed">
@@ -210,7 +210,7 @@ export default function StandardSection({
                   {/* The counterweight — only once they've started, so it reads as
                       a deepening question rather than an accusation. */}
                   {(drafts[q.key] || "").trim().length > 0 && (
-                    <p className="text-[11px] text-gold-text leading-relaxed mt-2 pl-2 border-l-2 border-gold/40">
+                    <p className="text-xs text-gold-text leading-relaxed mt-2 pl-2 border-l-2 border-gold/40">
                       {q.harder}
                     </p>
                   )}
@@ -245,7 +245,7 @@ export default function StandardSection({
               {busy ? "Saving…" : editing ? "Save changes" : "Save this check-in"}
             </button>
           </div>
-          <p className="text-[11px] text-ink-muted text-center mt-2">
+          <p className="text-xs text-ink-muted text-center mt-2">
             {filled === 0
               ? "Answer at least one to save."
               : filled < STANDARD_QUESTIONS.length
@@ -312,10 +312,10 @@ export default function StandardSection({
 
       <div className="card p-5">
         <div className="flex items-center justify-between gap-2 mb-4">
-          <span className="text-[11px] font-bold text-teal uppercase tracking-wider">
+          <span className="text-xs font-bold text-teal uppercase tracking-wider">
             Most recent
           </span>
-          <span className="text-[11px] text-ink-muted">
+          <span className="text-xs text-ink-muted">
             {formatRelativeDate(latest.created_at)}
           </span>
         </div>
@@ -377,7 +377,7 @@ export default function StandardSection({
       {/* History — the actual point of the exercise */}
       {previous.length > 0 && (
         <div className="mt-3">
-          <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">
+          <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
             Earlier check-ins
           </div>
           <div className="space-y-1.5">
@@ -430,7 +430,7 @@ export default function StandardSection({
                         if (!answer) return null;
                         return (
                           <div key={q.key}>
-                            <div className="text-[11px] font-semibold text-ink-muted mb-0.5">
+                            <div className="text-xs font-semibold text-ink-muted mb-0.5">
                               {q.emoji} {STANDARD_BY_KEY[q.key].short}
                             </div>
                             <p className="text-xs text-ink leading-relaxed whitespace-pre-wrap">

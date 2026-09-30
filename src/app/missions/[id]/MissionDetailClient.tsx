@@ -91,7 +91,7 @@ export default function MissionDetailClient({
           <h1
             className="text-3xl text-white mb-2"
             style={{
-              fontFamily: "var(--font-display)",
+              fontFamily: "var(--font-story)",
               fontWeight: 400,
               fontStyle: "italic",
             }}
@@ -195,7 +195,7 @@ export default function MissionDetailClient({
                             📖
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                            <div className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
                               Based on a real student · goes with the next step
                             </div>
                             <div className="text-sm font-medium text-ink truncate">

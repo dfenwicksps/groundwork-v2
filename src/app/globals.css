@@ -4,22 +4,56 @@
 
 :root {
   /* Populated by next/font in layout.tsx */
-  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-story: var(--font-fraunces), Georgia, serif;
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 
-  /* Bright, teen-friendly palette. Every colour used for text or white-on-
-     fill passes WCAG AA (fills for large text; text tokens for body copy). */
-  --navy: #4338CA;        /* indigo — brand ink + primary buttons */
-  --teal: #0E7490;        /* bright cyan — links + accents */
-  --gold: #F59E0B;        /* amber — challenge/energy fills (pair with dark text) */
-  --gold-text: #92610C;   /* amber for TEXT — 5.0:1 on white */
-  --sage: #15803D;        /* vivid green — success + connection */
-  --coral: #E11D48;       /* pop accent — milestones + celebrations */
-  --surface-muted: #FAF5EC; /* warm cream instead of grey */
-  --surface: #FFFFFF;
-  --border: #EBE2D2;      /* warm border to match the cream */
-  --ink: #1A1A1A;
-  --ink-muted: #63605A;   /* warm grey, 5.6:1 on white */
+  /* Colours are stored as RGB channels so Tailwind's opacity modifiers
+     (bg-navy/10) work, and so dark mode only has to redefine them below.
+     Every colour used for text or white-on-fill passes WCAG AA in light
+     (fills for large text; text tokens for body copy). */
+  color-scheme: light dark;
+  --c-navy: 67 56 202;          /* indigo — brand ink + primary buttons */
+  --c-navy-light: 79 70 229;
+  --c-navy-dark: 55 48 163;
+  --c-teal: 14 116 144;         /* bright cyan — links + accents */
+  --c-teal-light: 8 145 178;
+  --c-teal-dark: 21 94 117;
+  --c-gold: 245 158 11;         /* amber — fills (pair with dark text) */
+  --c-gold-light: 251 191 36;
+  --c-gold-dark: 217 119 6;
+  --c-gold-text: 146 97 12;     /* amber for TEXT — 5.0:1 on white */
+  --c-sage: 21 128 61;          /* vivid green — success + connection */
+  --c-sage-light: 22 163 74;
+  --c-sage-dark: 22 101 52;
+  --c-coral: 225 29 72;         /* pop accent — milestones + celebrations */
+  --c-coral-light: 244 63 94;
+  --c-coral-dark: 190 18 60;
+  --c-surface: 255 255 255;
+  --c-surface-muted: 250 245 236; /* warm cream instead of grey */
+  --c-border: 235 226 210;      /* warm border to match the cream */
+  --c-ink: 26 26 26;
+  --c-ink-muted: 99 96 90;      /* warm grey, 5.6:1 on white */
+  --c-ink-faint: 153 153 153;
+
+  --virtue-wisdom: #4338CA;
+  --virtue-courage: #C2410C;
+  --virtue-humanity: #E11D48;
+  --virtue-justice: #0E7490;
+  --virtue-temperance: #15803D;
+  --virtue-transcendence: #92610C;
+
+  --navy: rgb(var(--c-navy));
+  --teal: rgb(var(--c-teal));
+  --gold: rgb(var(--c-gold));
+  --gold-text: rgb(var(--c-gold-text));
+  --sage: rgb(var(--c-sage));
+  --coral: rgb(var(--c-coral));
+  --surface-muted: rgb(var(--c-surface-muted));
+  --surface: rgb(var(--c-surface));
+  --border: rgb(var(--c-border));
+  --ink: rgb(var(--c-ink));
+  --ink-muted: rgb(var(--c-ink-muted));
 
   /* iOS safe areas */
   --safe-top: env(safe-area-inset-top, 0px);
@@ -27,6 +61,41 @@
 
   /* Layout constants */
   --nav-height: 4rem;
+}
+
+/* Dark mode follows the phone. Surfaces go deep blue-black; brand colours are
+   lifted so they read as text on dark while still carrying white labels on
+   buttons. Mission colours and the story films keep their own palettes: they
+   are coloured cards and pictures, not surfaces. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --c-navy: 99 102 241;
+    --c-navy-light: 129 140 248;
+    --c-navy-dark: 79 70 229;
+    --c-teal: 6 182 212;
+    --c-teal-light: 34 211 238;
+    --c-teal-dark: 8 145 178;
+    --c-gold-text: 251 191 36;
+    --c-sage: 22 163 74;
+    --c-sage-light: 34 197 94;
+    --c-sage-dark: 21 128 61;
+    --c-coral: 244 63 94;
+    --c-coral-light: 251 113 133;
+    --c-coral-dark: 225 29 72;
+    --c-surface: 28 28 41;
+    --c-surface-muted: 18 18 28;
+    --c-border: 46 46 66;
+    --c-ink: 237 237 245;
+    --c-ink-muted: 167 167 189;
+    --c-ink-faint: 117 117 140;
+    --virtue-wisdom: #A5B4FC;
+    --virtue-courage: #FDBA74;
+    --virtue-humanity: #FDA4AF;
+    --virtue-justice: #67E8F9;
+    --virtue-temperance: #86EFAC;
+    --virtue-transcendence: #FCD34D;
+  }
 }
 
 /* True viewport height on mobile */
@@ -93,7 +162,7 @@ body {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #d1d0cb;
+    background: var(--border);
     border-radius: 3px;
   }
 }
@@ -117,14 +186,14 @@ body {
 
   /* Card styles */
   .card {
-    background: white;
+    background: var(--surface);
     border-radius: 1rem;
     border: 1px solid var(--border);
     box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
   }
 
   .card-elevated {
-    background: white;
+    background: var(--surface);
     border-radius: 1rem;
     border: 1px solid var(--border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
@@ -154,7 +223,7 @@ body {
   }
 
   .btn-primary:hover {
-    background: #4F46E5;
+    background: rgb(var(--c-navy-light));
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3);
   }
@@ -176,7 +245,7 @@ body {
   }
 
   .btn-teal:hover {
-    background: #0891B2;
+    background: rgb(var(--c-teal-light));
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(14, 116, 144, 0.25);
   }
@@ -190,7 +259,7 @@ body {
     font-family: var(--font-sans);
     font-size: 0.9375rem;
     color: var(--ink);
-    background: white;
+    background: var(--surface);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
     outline: none;
   }
@@ -216,7 +285,7 @@ body {
     font-size: 1rem;
     line-height: 1.7;
     color: var(--ink);
-    background: white;
+    background: var(--surface);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
     outline: none;
     resize: vertical;
@@ -260,7 +329,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 30;
-    background: rgba(250, 245, 236, 0.95);
+    background: rgb(var(--c-surface-muted) / 0.95);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
@@ -270,7 +339,7 @@ body {
 
   /* Conversational question card */
   .question-card {
-    background: white;
+    background: var(--surface);
     border-radius: 1.25rem;
     border: 1px solid var(--border);
     padding: 1.25rem;
@@ -283,7 +352,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: white;
+    background: var(--surface);
     border-top: 1px solid var(--border);
     padding: 0.75rem 1rem;
     padding-bottom: calc(0.75rem + var(--safe-bottom));
@@ -311,7 +380,7 @@ body {
   .conv-textarea:focus {
     border-color: var(--teal);
     box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.1);
-    background: white;
+    background: var(--surface);
   }
 
   .conv-textarea::placeholder {
@@ -327,7 +396,7 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 2rem;
     border: 1.5px solid var(--border);
-    background: white;
+    background: var(--surface);
     color: var(--ink-muted);
     font-size: 0.8125rem;
     font-family: var(--font-sans);
@@ -420,4 +489,23 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-nudge { animation: none; }
+}
+
+/* Tailwind's bg-white means "card surface" throughout the app, so in dark mode
+   it follows the surface token. (Translucent white on coloured cards —
+   bg-white/20 and friends — is left alone: it's a highlight, not a surface.) */
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    background-color: var(--surface);
+  }
+  .bg-white\/95 {
+    background-color: rgb(var(--c-surface) / 0.95);
+  }
+  .bg-white\/96 {
+    background-color: rgb(var(--c-surface) / 0.96);
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+    background-size: 200% 100%;
+  }
 }

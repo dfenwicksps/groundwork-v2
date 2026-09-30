@@ -3,7 +3,7 @@
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import type { Spine } from "@/lib/spine";
-import { WEEKLY_BY_KEY, type Strand } from "@/lib/program";
+import type { Strand } from "@/lib/program";
 
 interface MissionCard {
   id: number;
@@ -99,13 +99,13 @@ export default function MissionsClient({
               className="block rounded-2xl p-5 text-white"
               style={{ background: next.colour }}
             >
-              <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+              <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
                 {next.subtitle}
               </div>
               <p
                 className="text-xl mb-2"
                 style={{
-                  fontFamily: "var(--font-display)",
+                  fontFamily: "var(--font-story)",
                   fontWeight: 400,
                   fontStyle: "italic",
                 }}
@@ -123,7 +123,7 @@ export default function MissionsClient({
             className="rounded-2xl p-5 text-white"
             style={{ background: "var(--navy)" }}
           >
-            <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+            <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
               All four missions
             </div>
             <p className="text-sm leading-relaxed">
@@ -164,12 +164,8 @@ export default function MissionsClient({
                   >
                     {m.question}
                   </div>
-                  {/* Which of the weekly five this one is the ground for. */}
-                  <div className="text-[10px] text-ink-faint leading-snug mt-0.5 truncate">
-                    {m.strands.map((k) => WEEKLY_BY_KEY[k].name).join(" · ")}
-                  </div>
                 </div>
-                <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wide flex-shrink-0">
+                <span className="text-xs font-bold text-ink-muted uppercase tracking-wide flex-shrink-0">
                   {m.done}/{m.total}
                 </span>
               </Link>

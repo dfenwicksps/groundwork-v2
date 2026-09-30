@@ -14,30 +14,31 @@ import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
 import SupportCard from "@/components/help/SupportCard";
 import { markStoryActioned } from "@/lib/storyEngagement";
 import { mentionsCrisis } from "@/lib/help";
+import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
 
 const WHY_OPTIONS = [
   {
     value: "exploring",
     label: "Exploring myself",
-    icon: "🧭",
+    icon: <CompassIcon />,
     sub: "Curious about who I am and what I value",
   },
   {
     value: "lost",
     label: "Feeling a bit lost",
-    icon: "🌊",
+    icon: <WavesIcon />,
     sub: "Not sure where I'm headed right now",
   },
   {
     value: "direction",
     label: "Wanting more direction",
-    icon: "🎯",
+    icon: <TargetIcon />,
     sub: "I know what I want — I need help getting there",
   },
   {
     value: "curious",
     label: "Just curious",
-    icon: "✨",
+    icon: <SparkIcon />,
     sub: "Saw this and thought it looked interesting",
   },
 ];
@@ -241,7 +242,7 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
                   ["left", "Finished school", "grid-cols-2"],
                 ] as const).map(([group, heading, cols]) => (
                   <div key={group} className="mb-2">
-                    <div className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
+                    <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
                       {heading}
                     </div>
                     <div className={cn("grid gap-2", cols)}>
@@ -266,13 +267,13 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
                             {lifeStage === y.key && <span aria-hidden>✓ </span>}
                             {y.label}
                           </div>
-                          <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+                          <div className="text-xs text-ink-muted mt-0.5">{y.sub}</div>
                         </button>
                       ))}
                     </div>
                   </div>
                 ))}
-                <p className="text-[11px] text-ink-muted mt-1.5">
+                <p className="text-xs text-ink-muted mt-1.5">
                   We&apos;ll tailor what we show you — you can change this later.
                 </p>
               </div>
@@ -288,7 +289,7 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
                   placeholder="Your first name"
                   className="input"
                 />
-                <p className="text-[11px] text-ink-muted mt-1.5">
+                <p className="text-xs text-ink-muted mt-1.5">
                   A nickname is fine — this is just what the app calls you.
                 </p>
               </div>
@@ -313,7 +314,7 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
                       )}
                       style={{ borderWidth: "1.5px" }}
                     >
-                      <span className="text-xl flex-shrink-0">{opt.icon}</span>
+                      <span className="flex-shrink-0 text-navy">{opt.icon}</span>
                       <div>
                         <div className="font-medium text-ink text-sm">
                           {opt.label}

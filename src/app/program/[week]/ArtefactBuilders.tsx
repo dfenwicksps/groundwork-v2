@@ -96,7 +96,7 @@ export function ValueBehaviours({
           >
             Choose your five values →
           </Link>
-          <p className="text-[11px] text-ink-muted text-center mt-2">
+          <p className="text-xs text-ink-muted text-center mt-2">
             About eight minutes, in Mission 1. Then come straight back here.
           </p>
         </div>
@@ -153,7 +153,7 @@ export function ValueBehaviours({
                     }
                     aria-expanded={openValue === p.value}
                     aria-label={`What ${p.value} means`}
-                    className="w-[18px] h-[18px] rounded-full border border-[rgba(0,0,0,0.22)] text-[11px] font-semibold leading-none text-ink-muted hover:border-navy hover:text-navy flex items-center justify-center flex-shrink-0"
+                    className="w-[18px] h-[18px] rounded-full border border-[rgba(0,0,0,0.22)] text-xs font-semibold leading-none text-ink-muted hover:border-navy hover:text-navy flex items-center justify-center flex-shrink-0"
                   >
                     i
                   </button>
@@ -187,7 +187,7 @@ export function ValueBehaviours({
         >
           {busy ? "Saving…" : "Save my behaviours"}
         </button>
-        <p className="text-[11px] text-ink-muted text-center mt-2">
+        <p className="text-xs text-ink-muted text-center mt-2">
           {filled} of {pairs.length} written — a value with an empty box beside
           it is the preference this week is arguing against.
         </p>
@@ -302,7 +302,7 @@ export function LinesBuilder({
         >
           {busy ? "Saving…" : "Save these"}
         </button>
-        <p className="text-[11px] text-ink-muted text-center mt-2">
+        <p className="text-xs text-ink-muted text-center mt-2">
           {filled} of {count} written
         </p>
       </div>

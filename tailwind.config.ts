@@ -8,49 +8,52 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Every colour reads a CSS token (globals.css), so dark mode is a
+      // change of token values rather than a second set of classes.
       colors: {
         navy: {
-          DEFAULT: "#4338CA",
-          light: "#4F46E5",
-          dark: "#3730A3",
+          DEFAULT: "rgb(var(--c-navy) / <alpha-value>)",
+          light: "rgb(var(--c-navy-light) / <alpha-value>)",
+          dark: "rgb(var(--c-navy-dark) / <alpha-value>)",
         },
         teal: {
-          DEFAULT: "#0E7490",
-          light: "#0891B2",
-          dark: "#155E75",
+          DEFAULT: "rgb(var(--c-teal) / <alpha-value>)",
+          light: "rgb(var(--c-teal-light) / <alpha-value>)",
+          dark: "rgb(var(--c-teal-dark) / <alpha-value>)",
         },
         gold: {
-          DEFAULT: "#F59E0B",
-          light: "#FBbf24",
-          dark: "#D97706",
+          DEFAULT: "rgb(var(--c-gold) / <alpha-value>)",
+          light: "rgb(var(--c-gold-light) / <alpha-value>)",
+          dark: "rgb(var(--c-gold-dark) / <alpha-value>)",
           // For text on light backgrounds — 5.0:1 on white (AA pass);
           // the DEFAULT gold is a fill colour, pair it with dark text.
-          text: "#92610C",
+          text: "rgb(var(--c-gold-text) / <alpha-value>)",
         },
         sage: {
-          DEFAULT: "#15803D",
-          light: "#16A34A",
-          dark: "#166534",
+          DEFAULT: "rgb(var(--c-sage) / <alpha-value>)",
+          light: "rgb(var(--c-sage-light) / <alpha-value>)",
+          dark: "rgb(var(--c-sage-dark) / <alpha-value>)",
         },
         coral: {
-          DEFAULT: "#E11D48",
-          light: "#F43F5E",
-          dark: "#BE123C",
+          DEFAULT: "rgb(var(--c-coral) / <alpha-value>)",
+          light: "rgb(var(--c-coral-light) / <alpha-value>)",
+          dark: "rgb(var(--c-coral-dark) / <alpha-value>)",
         },
         surface: {
-          DEFAULT: "#FFFFFF",
-          muted: "#FAF5EC",
-          border: "#EBE2D2",
+          DEFAULT: "rgb(var(--c-surface) / <alpha-value>)",
+          muted: "rgb(var(--c-surface-muted) / <alpha-value>)",
+          border: "rgb(var(--c-border) / <alpha-value>)",
         },
         ink: {
-          DEFAULT: "#1A1A1A",
-          muted: "#63605A",
-          faint: "#999999",
+          DEFAULT: "rgb(var(--c-ink) / <alpha-value>)",
+          muted: "rgb(var(--c-ink-muted) / <alpha-value>)",
+          faint: "rgb(var(--c-ink-faint) / <alpha-value>)",
         },
       },
       fontFamily: {
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
+        display: ["var(--font-bricolage)", "system-ui", "sans-serif"],
+        story: ["var(--font-fraunces)", "Georgia", "serif"],
         mono: ["ui-monospace", "monospace"],
       },
       spacing: {

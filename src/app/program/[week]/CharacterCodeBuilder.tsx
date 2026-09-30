@@ -88,7 +88,7 @@ export default function CharacterCodeBuilder({
           className="rounded-2xl p-5 text-white"
           style={{ background: "var(--navy)" }}
         >
-          <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-3">
+          <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-3">
             The next year
           </div>
           <ol className="space-y-2.5">
@@ -168,7 +168,7 @@ export default function CharacterCodeBuilder({
         >
           {busy ? "Saving…" : "This is my code"}
         </button>
-        <p className="text-[11px] text-ink-muted text-center mt-2">
+        <p className="text-xs text-ink-muted text-center mt-2">
           {filled} written · {CODE_MIN} needed
         </p>
       </div>

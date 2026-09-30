@@ -44,7 +44,7 @@ export default function BoostsSection() {
           <div className="card p-5 mt-3 space-y-3">
             <p className="text-sm text-ink leading-relaxed">{b.what}</p>
             <div className="rounded-xl px-4 py-3 bg-teal/5 border border-teal/20">
-              <div className="text-[11px] font-bold text-teal uppercase tracking-widest mb-1">
+              <div className="text-xs font-bold text-teal uppercase tracking-widest mb-1">
                 Try this week
               </div>
               <p className="text-sm text-ink leading-relaxed">{b.exercise}</p>

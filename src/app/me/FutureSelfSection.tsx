@@ -59,7 +59,7 @@ export default function FutureSelfSection({
             >
               Future Self →
             </Link>
-            <p className="text-[11px] text-ink-muted text-center mt-2">
+            <p className="text-xs text-ink-muted text-center mt-2">
               About ten minutes, in Mission 4.
             </p>
           </>

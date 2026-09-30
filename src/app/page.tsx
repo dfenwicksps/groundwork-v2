@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BuildStamp from "@/components/BuildStamp";
 import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
+import { LockIcon, PeopleIcon, SproutIcon } from "@/components/icons";
 
 export default function LandingPage() {
   return (
@@ -44,7 +45,7 @@ export default function LandingPage() {
           data-animate="2"
         >
           Figure out who you are.{" "}
-          <span style={{ fontStyle: "italic", color: "#0E7490" }}>
+          <span style={{ fontFamily: "var(--font-story)", fontStyle: "italic", color: "var(--teal)" }}>
             Build a life that matters.
           </span>
         </h1>
@@ -200,23 +201,23 @@ export default function LandingPage() {
         <div className="grid md:grid-cols-3 gap-8">
           {[
             {
-              icon: "🔒",
+              icon: <LockIcon />,
               title: "Private by default",
               body: "Everything you write is yours. Nothing is shared with other students, compared, or scored — and our privacy policy says exactly where it does go.",
             },
             {
-              icon: "🤝",
+              icon: <PeopleIcon />,
               title: "Real relationships first",
               body: "Groundwork regularly points you toward the humans in your life — not toward staying on the app.",
             },
             {
-              icon: "🌱",
+              icon: <SproutIcon />,
               title: "Growth, not performance",
               body: "There are no rankings, no streaks to protect, no pressure. Just honest reflection at your own pace.",
             },
           ].map((p) => (
             <div key={p.title} className="card p-6">
-              <div className="text-2xl mb-4">{p.icon}</div>
+              <div className="mb-4 text-navy">{p.icon}</div>
               <h3 className="font-semibold text-navy mb-2 text-lg">
                 {p.title}
               </h3>
@@ -231,7 +232,7 @@ export default function LandingPage() {
         <div className="bg-navy rounded-3xl p-12 text-center text-white">
           <h2
             className="text-3xl md:text-4xl mb-4"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic" }}
+            style={{ fontFamily: "var(--font-story)", fontWeight: 400, fontStyle: "italic" }}
           >
             Ready to do the work?
           </h2>

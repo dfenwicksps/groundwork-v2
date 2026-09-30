@@ -32,6 +32,17 @@ const VIRTUE_COLOUR: Record<Virtue, string> = {
   Transcendence: "#92610C",
 };
 
+// The same colours as label text: these follow the theme, because the fills
+// above are too dark to read as text on a dark background.
+const VIRTUE_TEXT: Record<Virtue, string> = {
+  Wisdom: "var(--virtue-wisdom)",
+  Courage: "var(--virtue-courage)",
+  Humanity: "var(--virtue-humanity)",
+  Justice: "var(--virtue-justice)",
+  Temperance: "var(--virtue-temperance)",
+  Transcendence: "var(--virtue-transcendence)",
+};
+
 interface PracticeEntry {
   id: string;
   strength_key: string;
@@ -195,7 +206,7 @@ export default function MeClient({
                   aria-selected={tab === t.key}
                   onClick={() => setTab(t.key)}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl text-[11px] font-semibold transition-all",
+                    "flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl text-xs font-semibold transition-all",
                     tab === t.key
                       ? "bg-navy text-white"
                       : "bg-white text-ink-muted border border-surface-border"
@@ -216,7 +227,7 @@ export default function MeClient({
             className="rounded-2xl p-4 text-white"
             style={{ background: "var(--navy)" }}
           >
-            <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+            <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
               Your profile in one line
             </div>
             <p className="text-sm leading-relaxed">
@@ -324,8 +335,8 @@ export default function MeClient({
                         <div className="text-xs text-ink-muted leading-snug">{s.short}</div>
                       </div>
                       <span
-                        className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full flex-shrink-0"
-                        style={{ background: `${c}15`, color: c }}
+                        className="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full flex-shrink-0"
+                        style={{ background: `${c}15`, color: VIRTUE_TEXT[s.virtue] }}
                       >
                         {s.virtue}
                       </span>
@@ -405,7 +416,7 @@ export default function MeClient({
                               {s.name}{" "}
                               <span className="text-ink-muted">· {s.plain}</span>
                             </span>
-                            <span className="text-[10px] text-ink-muted flex-shrink-0">
+                            <span className="text-xs text-ink-muted flex-shrink-0">
                               {s.virtue}
                             </span>
                           </div>

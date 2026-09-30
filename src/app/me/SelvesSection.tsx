@@ -55,14 +55,14 @@ export default function SelvesSection() {
               <p className="text-sm text-ink leading-relaxed">{s.what}</p>
 
               <div className="rounded-xl px-4 py-3 bg-amber-50 border border-amber-200">
-                <div className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">
+                <div className="text-xs font-bold text-ink-muted uppercase tracking-widest mb-1">
                   Often confused with
                 </div>
                 <p className="text-sm text-ink leading-relaxed">{s.notThis}</p>
               </div>
 
               <div className="rounded-xl px-4 py-3 bg-[rgba(46,125,140,0.05)] border border-[rgba(46,125,140,0.2)]">
-                <div className="text-[10px] font-bold text-teal uppercase tracking-widest mb-1">
+                <div className="text-xs font-bold text-teal uppercase tracking-widest mb-1">
                   Where yours sits
                 </div>
                 <p className="text-sm text-ink leading-relaxed">{s.selfCheck}</p>
@@ -82,7 +82,7 @@ export default function SelvesSection() {
 
       {!open && (
         <div className="card p-4 mt-3 space-y-2.5">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-widest">
+          <div className="text-xs font-bold text-ink-muted uppercase tracking-widest">
             The three that get mixed up most
           </div>
           {CONFUSED_PAIRS.map((p) => (

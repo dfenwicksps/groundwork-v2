@@ -144,7 +144,7 @@ export default function BecomingQualities({
         <div className="card p-5">
           {currentTop.length > 0 ? (
             <div className="rounded-xl bg-surface-muted border border-surface-border p-4 mb-4">
-              <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-2">
+              <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
                 What you lead with today · from Mission 1
               </div>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -157,7 +157,7 @@ export default function BecomingQualities({
                   </span>
                 ))}
               </div>
-              <p className="text-[11px] text-ink-muted leading-relaxed">
+              <p className="text-xs text-ink-muted leading-relaxed">
                 You&apos;re choosing from the same 24, so the two lists line up.
                 Picking your current five back is allowed — just make sure
                 it&apos;s a decision rather than a default.
@@ -181,7 +181,7 @@ export default function BecomingQualities({
             <span className="text-sm font-semibold text-ink">
               Pick {QUALITIES_COUNT}
             </span>
-            <span className="text-[11px] text-ink-muted">
+            <span className="text-xs text-ink-muted">
               {picked.length} of {QUALITIES_COUNT}
             </span>
           </div>
@@ -217,7 +217,7 @@ export default function BecomingQualities({
                     {currentSet.has(s.key) && (
                       <span
                         className={cn(
-                          "block text-[10px] font-semibold mt-0.5",
+                          "block text-xs font-semibold mt-0.5",
                           sel ? "text-white/70" : "text-sage"
                         )}
                       >
@@ -227,7 +227,7 @@ export default function BecomingQualities({
                     {!currentSet.has(s.key) && suggestedSet.has(s.key) && (
                       <span
                         className={cn(
-                          "block text-[10px] font-semibold mt-0.5",
+                          "block text-xs font-semibold mt-0.5",
                           sel ? "text-white/70" : "text-teal"
                         )}
                       >
@@ -242,7 +242,7 @@ export default function BecomingQualities({
                     aria-label={`What ${s.name} means`}
                     className={cn(
                       "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
-                      "text-[11px] font-semibold leading-none flex items-center justify-center transition-colors",
+                      "text-xs font-semibold leading-none flex items-center justify-center transition-colors",
                       sel
                         ? "border-white/50 text-white/90 hover:bg-white/20"
                         : "border-[rgba(0,0,0,0.22)] text-[--ink-muted] hover:border-[--navy] hover:text-[--navy]"
@@ -350,7 +350,7 @@ export default function BecomingQualities({
                     {currentSet.has(k) && (
                       <span
                         className={cn(
-                          "text-[10px] font-semibold ml-auto",
+                          "text-xs font-semibold ml-auto",
                           sel ? "text-white/70" : "text-sage"
                         )}
                       >
@@ -360,7 +360,7 @@ export default function BecomingQualities({
                   </div>
                   <div
                     className={cn(
-                      "text-[11px] mt-0.5 leading-snug",
+                      "text-xs mt-0.5 leading-snug",
                       sel ? "text-white/80" : "text-ink-muted"
                     )}
                   >
@@ -371,7 +371,7 @@ export default function BecomingQualities({
             })}
           </div>
 
-          <p className="text-[11px] text-ink-muted mb-3">
+          <p className="text-xs text-ink-muted mb-3">
             {focus.length} of {FOCUS_MAX} chosen
             {blocked &&
               ` · you've chosen ${FOCUS_MAX} — tap one to swap it out first`}
@@ -414,7 +414,7 @@ export default function BecomingQualities({
         className="rounded-2xl p-5 text-white mb-3"
         style={{ background: "var(--navy)" }}
       >
-        <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-2">
+        <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2">
           At 25, I want to be described as
         </div>
         <div className="flex flex-wrap gap-1.5 mb-4">
@@ -452,7 +452,7 @@ export default function BecomingQualities({
       {/* The gap — only meaningful once Mission 1 has produced a top five. */}
       {currentTop.length > 0 && (
         <div className="card p-4 mb-3 space-y-2">
-          <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider">
+          <div className="text-xs font-bold text-ink-muted uppercase tracking-wider">
             Against where you are now
           </div>
           {already.length > 0 && (
@@ -497,7 +497,7 @@ export default function BecomingQualities({
                 {inPractice}
               </p>
               <div className="rounded-xl px-3.5 py-2.5 bg-teal/5 border border-teal/20">
-                <div className="text-[10px] font-bold text-teal uppercase tracking-widest mb-0.5">
+                <div className="text-xs font-bold text-teal uppercase tracking-widest mb-0.5">
                   My practice action
                 </div>
                 <p className="text-xs text-ink leading-relaxed">{action}</p>
@@ -506,7 +506,7 @@ export default function BecomingQualities({
               {boost && (
                 <Link
                   href="/me?tab=grow#boosts"
-                  className="text-[11px] text-teal hover:underline mt-2 inline-block"
+                  className="text-xs text-teal hover:underline mt-2 inline-block"
                 >
                   Read the longer guide on this →
                 </Link>
