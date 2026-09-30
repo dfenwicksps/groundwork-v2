@@ -110,7 +110,7 @@ export default function HabitsSection({
             </button>
           </div>
           {!allAnswered && (
-            <p className="text-[11px] text-ink-muted text-center mt-2">
+            <p className="text-xs text-ink-muted text-center mt-2">
               Answer all {HABIT_QUESTIONS.length} to continue.
             </p>
           )}
@@ -157,7 +157,7 @@ export default function HabitsSection({
       <div className="card p-5 space-y-4">
         {local.keeps.length > 0 && (
           <div>
-            <div className="text-[11px] font-bold text-sage uppercase tracking-wider mb-1.5">
+            <div className="text-xs font-bold text-sage uppercase tracking-wider mb-1.5">
               ✓ Already working for you
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -171,7 +171,7 @@ export default function HabitsSection({
         )}
         {local.grows.length > 0 && (
           <div>
-            <div className="text-[11px] font-bold text-gold-text uppercase tracking-wider mb-1.5">
+            <div className="text-xs font-bold text-gold-text uppercase tracking-wider mb-1.5">
               🌱 Worth working on
             </div>
             <div className="space-y-1.5">

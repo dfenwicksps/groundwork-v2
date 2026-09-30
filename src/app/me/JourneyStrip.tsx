@@ -81,7 +81,7 @@ export default function JourneyStrip({
             <span className="text-base" aria-hidden>
               {s.done ? "✅" : s.emoji}
             </span>
-            <span className={`text-[10px] font-semibold ${s.done ? "text-sage" : "text-ink-muted"}`}>
+            <span className={`text-xs font-semibold ${s.done ? "text-sage" : "text-ink-muted"}`}>
               {s.label}
             </span>
           </Tag>

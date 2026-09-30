@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import type { SupportContact } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import HelpLines from "@/components/help/HelpLines";
+import { PeopleIcon } from "@/components/icons";
 
 const CONVERSATION_STARTERS = [
   "\"I've been doing some thinking about who I want to become, and I'd love to hear your perspective on something.\"",
@@ -149,7 +150,7 @@ export default function SupportClient({
             </div>
           ) : (
             <div className="card p-6 text-center mb-4">
-              <div className="text-3xl mb-2">🤝</div>
+              <div className="flex justify-center mb-2 text-ink-muted"><PeopleIcon size={30} /></div>
               <p className="text-ink-muted text-sm">
                 You haven&apos;t added anyone yet.
               </p>

@@ -80,7 +80,7 @@ export default async function StoryPage({
         <h1
           className="text-3xl text-navy mb-6"
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--font-story)",
             fontWeight: 400,
             lineHeight: 1.2,
           }}
@@ -92,7 +92,7 @@ export default async function StoryPage({
         {complete && (
           <div className="flex items-center gap-2 text-xs font-medium text-sage mb-6 -mt-3">
             <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold"
+              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
               style={{ background: "var(--sage)" }}
               aria-hidden="true"
             >
@@ -127,10 +127,10 @@ export default async function StoryPage({
                 className="rounded-xl p-6 mb-6 border-l-4"
                 style={{
                   borderLeftColor: mission?.colour || "#4F46E5",
-                  background: "#FAFAF8",
-                  borderTop: "1px solid #E8E8E4",
-                  borderRight: "1px solid #E8E8E4",
-                  borderBottom: "1px solid #E8E8E4",
+                  background: "var(--surface)",
+                  borderTop: "1px solid var(--border)",
+                  borderRight: "1px solid var(--border)",
+                  borderBottom: "1px solid var(--border)",
                 }}
               >
                 <p className="text-ink leading-relaxed">{story.turning_point}</p>

@@ -136,7 +136,7 @@ export default function PracticeSection({
             <span className="text-sm font-semibold text-ink">
               {STRENGTH_BY_KEY[active.strength_key]?.name || active.strength_key}
             </span>
-            <span className="text-[11px] font-bold text-teal uppercase tracking-wider ml-auto">
+            <span className="text-xs font-bold text-teal uppercase tracking-wider ml-auto">
               In progress
             </span>
           </div>
@@ -204,7 +204,7 @@ export default function PracticeSection({
                     · {s.plain}
                   </span>
                   {isGrowth && selected !== k && (
-                    <span className="text-[10px] text-sage font-semibold">🌱</span>
+                    <span className="text-xs text-sage font-semibold">🌱</span>
                   )}
                 </button>
               );
@@ -220,7 +220,7 @@ export default function PracticeSection({
           )}
           {selected && (
             <div className="rounded-xl px-4 py-3 bg-teal/5 border border-teal/20 my-3">
-              <div className="text-[11px] font-bold text-teal uppercase tracking-widest mb-1">
+              <div className="text-xs font-bold text-teal uppercase tracking-widest mb-1">
                 Your current practice
               </div>
               <p className="text-sm text-ink leading-relaxed">
@@ -262,7 +262,7 @@ export default function PracticeSection({
       {/* Practice log */}
       {recent.length > 0 && (
         <div className="mt-3">
-          <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-2">
+          <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
             Practice log
           </div>
           <div className="space-y-1.5">

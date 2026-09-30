@@ -70,7 +70,7 @@ export default function ProgramClient({
         {spine.missionsFirst && outstanding.length > 0 && (
           <div data-animate="2">
             <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5">
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 text-navy">
+              <div className="text-xs font-bold uppercase tracking-widest mb-2 text-navy">
                 Before week 1
               </div>
               <p className="text-sm text-ink leading-relaxed mb-4">
@@ -104,7 +104,7 @@ export default function ProgramClient({
                   </Link>
                 );
               })()}
-              <p className="text-[11px] text-ink-muted leading-relaxed mt-3">
+              <p className="text-xs text-ink-muted leading-relaxed mt-3">
                 Missions 2, 3 and 4 aren&apos;t needed yet — each one opens the
                 week that&apos;s built on it, when you get there.
               </p>
@@ -165,7 +165,7 @@ export default function ProgramClient({
               className="block rounded-2xl p-5 text-white"
               style={{ background: "var(--navy)" }}
             >
-              <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+              <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
                 Week {next.week} · {next.emoji}
               </div>
               <p
@@ -187,7 +187,7 @@ export default function ProgramClient({
             className="rounded-2xl p-5 text-white"
             style={{ background: "var(--navy)" }}
           >
-            <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+            <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
               All ten weeks
             </div>
             <p className="text-sm leading-relaxed">
@@ -241,14 +241,14 @@ export default function ProgramClient({
                     </div>
                   </div>
                   {waiting[w.week] && !done ? (
-                    <span className="text-[10px] font-bold text-ink-muted uppercase tracking-wide flex-shrink-0 text-right leading-tight">
+                    <span className="text-xs font-bold text-ink-muted uppercase tracking-wide flex-shrink-0 text-right leading-tight">
                       Needs
                       <br />
                       Mission {waiting[w.week].mission}
                     </span>
                   ) : (
                     started && (
-                      <span className="text-[10px] font-bold text-teal uppercase tracking-wide flex-shrink-0">
+                      <span className="text-xs font-bold text-teal uppercase tracking-wide flex-shrink-0">
                         {p.days.length}/{target}
                       </span>
                     )

@@ -130,7 +130,7 @@ export default function DashboardClient({
           aria-hidden
         />
         <div className="relative">
-          <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+          <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
             Mission {nextMissionStep.missionId} · {nextMissionStep.missionTitle} · Step{" "}
             {nextMissionStep.step} of {nextMissionStep.total}
           </div>
@@ -150,7 +150,7 @@ export default function DashboardClient({
         className="block rounded-2xl p-6 text-white group"
         style={{ background: "var(--navy)" }}
       >
-        <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
+        <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
           {programWeek.allDone
             ? "All ten weeks done"
             : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}
@@ -282,7 +282,9 @@ export default function DashboardClient({
               )}
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-base font-semibold text-navy mb-1">{featuredStory.title}</p>
+                  <p className="text-lg text-navy mb-1" style={{ fontFamily: "var(--font-story)", fontWeight: 500 }}>
+                    {featuredStory.title}
+                  </p>
                   <p className="text-sm text-ink-muted leading-relaxed">{featuredStory.teaser}</p>
                 </div>
                 <Arrow className="text-ink-muted flex-shrink-0 mt-1" />

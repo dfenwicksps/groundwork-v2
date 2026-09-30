@@ -52,12 +52,12 @@ export default function BuildStamp({ className = "" }: { className?: string }) {
   return (
     <p
       title={detail}
-      className={`text-[11px] text-ink-muted/70 tabular-nums ${className}`}
+      className={`text-xs text-ink-muted/70 tabular-nums ${className}`}
     >
       {buildLabel()}
       {date && <span className="opacity-70"> · {date}</span>}
       {BUILD.env === "preview" && (
-        <span className="ml-1.5 px-1 py-0.5 rounded bg-gold/15 text-gold-text font-semibold uppercase tracking-wide text-[9px]">
+        <span className="ml-1.5 px-1 py-0.5 rounded bg-gold/15 text-gold-text font-semibold uppercase tracking-wide text-xs">
           preview
         </span>
       )}

@@ -32,7 +32,7 @@ export default function MissionsSummaryCard({
           Your missions
         </h2>
         <span
-          className="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
+          className="text-xs font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
           style={{ background: "var(--sage)", color: "white" }}
         >
           All four done
@@ -58,7 +58,7 @@ export default function MissionsSummaryCard({
 
           {summary.strengths.length > 0 && (
             <div className="mb-3">
-              <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1.5">
+              <div className="text-xs font-bold uppercase tracking-wider opacity-60 mb-1.5">
                 Your strengths
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -79,7 +79,7 @@ export default function MissionsSummaryCard({
 
           {summary.values.length > 0 && (
             <div className="mb-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1.5">
+              <div className="text-xs font-bold uppercase tracking-wider opacity-60 mb-1.5">
                 Your values
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -99,7 +99,7 @@ export default function MissionsSummaryCard({
             <div className="space-y-3 mb-1">
               {rows.map((r) => (
                 <div key={r.mission}>
-                  <div className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-0.5">
+                  <div className="text-xs font-bold uppercase tracking-wider opacity-60 mb-0.5">
                     {r.label}
                   </div>
                   {/* Their own words, clamped — the full entry is in the

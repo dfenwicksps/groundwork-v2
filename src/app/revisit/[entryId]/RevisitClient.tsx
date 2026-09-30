@@ -199,7 +199,7 @@ export default function RevisitClient({
                 <div key={r.id} className="pl-4 border-l-2 border-surface-border ml-2">
                   <div className="rounded-xl p-4 bg-white border border-surface-border">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-teal">
+                      <span className="text-xs font-bold uppercase tracking-widest text-teal">
                         {elapsedLabel(daysBetween(original.created_at, r.created_at))}
                       </span>
                       <span className="text-xs text-ink-muted">

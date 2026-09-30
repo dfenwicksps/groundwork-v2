@@ -200,7 +200,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <span className="relative">{item.icon(active)}</span>
                   <span
                     className={cn(
-                      "text-[11px] font-semibold tracking-wide leading-none",
+                      "text-xs font-semibold tracking-wide leading-none",
                       active ? "text-[--teal]" : "text-[--ink-muted]"
                     )}
                   >

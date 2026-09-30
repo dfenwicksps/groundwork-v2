@@ -304,7 +304,7 @@ export default function WeekClient({
                 return (
                 <div key={src.href}>
                   {!sameAsPrev && (
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3 text-navy">
+                    <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3 text-navy">
                       {i === 0 && <span aria-hidden>🧭</span>}
                       {eyebrow}
                     </div>
@@ -312,7 +312,7 @@ export default function WeekClient({
 
                   {src.kind === "entry" ? (
                     <>
-                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                         {src.recallLabel}
                       </div>
                       {/* Their own writing, not a summary of it. Clamped rather
@@ -324,7 +324,7 @@ export default function WeekClient({
                     </>
                   ) : src.kind === "strengths" ? (
                     <>
-                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                         Your signature strengths
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
@@ -344,7 +344,7 @@ export default function WeekClient({
                     </>
                   ) : (
                     <>
-                      <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                         Your values
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
@@ -381,7 +381,7 @@ export default function WeekClient({
         {missing.length > 0 && (
           <div data-animate="2">
             <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5 space-y-4">
-              <div className="text-[11px] font-bold uppercase tracking-widest text-navy">
+              <div className="text-xs font-bold uppercase tracking-widest text-navy">
                 {blockedOnSource ? "Do this first" : "Worth doing first"}
               </div>
               {missing.map((src) => (
@@ -468,12 +468,12 @@ export default function WeekClient({
             {isTracked && (!needsCommitment || (progress?.commitment ?? "").trim()) && (
               <div className="mt-5 pt-4 border-t border-surface-border">
                 <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">
+                  <span className="text-xs font-bold text-ink-muted uppercase tracking-wider">
                     {week.challenge.kind === "daily"
                       ? "The week"
                       : `${week.challenge.unit ?? "session"}s`}
                   </span>
-                  <span className="text-[11px] text-ink-muted">
+                  <span className="text-xs text-ink-muted">
                     {days.length} of {target}
                   </span>
                 </div>
@@ -506,7 +506,7 @@ export default function WeekClient({
                     );
                   })}
                 </div>
-                <p className="text-[11px] text-ink-muted mt-2 leading-relaxed">
+                <p className="text-xs text-ink-muted mt-2 leading-relaxed">
                   A missed one is just a missed one — no streak to break. Tick
                   them honestly or the record is worth nothing.
                 </p>
@@ -514,7 +514,7 @@ export default function WeekClient({
             )}
 
             {isTracked && needsCommitment && !(progress?.commitment ?? "").trim() && (
-              <p className="text-[11px] text-ink-muted mt-3 leading-relaxed">
+              <p className="text-xs text-ink-muted mt-3 leading-relaxed">
                 Name your{" "}
                 {week.week === 4 ? "promise" : "hill"} above first — tracking it
                 before you&apos;ve decided what it is defeats the point.
@@ -591,7 +591,7 @@ export default function WeekClient({
             <div className="space-y-2">
               {earlier.map((e) => (
                 <div key={e.week} className="card p-4">
-                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                  <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                     Week {e.week} · {e.heading}
                   </div>
                   <ul className="space-y-1">
@@ -622,7 +622,7 @@ export default function WeekClient({
             <div className="space-y-2">
               {capstone.map((c) => (
                 <div key={c.activityId} className="card p-4">
-                  <div className="text-[10px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                  <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                     {c.note}
                   </div>
                   <div className="text-sm font-semibold text-ink mb-1.5">
@@ -700,7 +700,7 @@ export default function WeekClient({
                     : "Finish this week ✓"}
               </button>
               {saved && (
-                <p className="text-[11px] text-sage text-center mt-2 font-medium">
+                <p className="text-xs text-sage text-center mt-2 font-medium">
                   Saved.
                 </p>
               )}
@@ -710,7 +710,7 @@ export default function WeekClient({
                 </div>
               )}
               {blockedOnSource && !done && (
-                <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">
+                <p className="text-xs text-ink-muted text-center mt-2 leading-relaxed">
                   This week is built on{" "}
                   {blockingSources.map((x) => x.label).join(" and ")} — do that
                   first and this unlocks. It&apos;s the one piece the week
@@ -718,14 +718,14 @@ export default function WeekClient({
                 </p>
               )}
               {week.artefact && !artefactDoneNow && (
-                <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">
+                <p className="text-xs text-ink-muted text-center mt-2 leading-relaxed">
                   {done
                     ? `You finished this week before this part existed. Making the ${artefactTarget(week)} above is worth doing anyway — week 10 reads them back.`
                     : `Make the ${artefactTarget(week)} above first — reflecting on something you haven't made yet is the habit this program is trying to break.`}
                 </p>
               )}
               {isTracked && days.length < target && (
-                <p className="text-[11px] text-ink-muted text-center mt-2">
+                <p className="text-xs text-ink-muted text-center mt-2">
                   You can finish the week with {days.length} of {target} ticked —
                   it just means less to reflect on.
                 </p>

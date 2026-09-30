@@ -111,7 +111,10 @@ export default function StoriesClient({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <h2 className="text-base font-semibold text-navy group-hover:text-teal transition-colors">
+                      <h2
+                        className="text-lg text-navy group-hover:text-teal transition-colors"
+                        style={{ fontFamily: "var(--font-story)", fontWeight: 500 }}
+                      >
                         {story.title}
                       </h2>
                       <svg aria-hidden="true"

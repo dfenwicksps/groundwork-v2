@@ -247,7 +247,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                               <span className="text-xs font-semibold text-teal uppercase tracking-wide">
                                 Something to sit with
                               </span>
-                              <span className="text-[11px] text-ink-muted">Suggested by AI</span>
+                              <span className="text-xs text-ink-muted">Suggested by AI</span>
                             </div>
                             {parsed.type === "tricheck" ? (
                               <div className="space-y-3">
@@ -257,7 +257,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                                   { label: "Who gets it",      q: parsed.tricheck.collective },
                                 ] as const).map(({ label, q }) => (
                                   <div key={label} className="flex gap-3">
-                                    <span className="text-[11px] font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
+                                    <span className="text-xs font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
                                       {label}
                                     </span>
                                     <p className="text-sm text-ink leading-relaxed">{q}</p>

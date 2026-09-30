@@ -585,14 +585,14 @@ function ConversationalActivity({
                 style={{ borderColor: `${mission.colour}35` }}
               >
                 <div
-                  className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3"
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
                   style={{ color: mission.colour }}
                 >
                   <span aria-hidden>🧭</span> Your inner compass so far
                 </div>
                 {compass.strengths.length > 0 && (
                   <div className="mb-3">
-                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                    <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
                       Your signature strengths
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -610,7 +610,7 @@ function ConversationalActivity({
                 )}
                 {compass.values.length > 0 && (
                   <div className="mb-3">
-                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                    <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
                       Your values
                     </div>
                     <div className="flex flex-wrap gap-1.5">
@@ -628,7 +628,7 @@ function ConversationalActivity({
                 )}
                 {compass.moralStyle && (
                   <div className="mb-3">
-                    <div className="text-[10px] font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
+                    <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-wider mb-1.5">
                       How you decide
                     </div>
                     <span
@@ -650,7 +650,7 @@ function ConversationalActivity({
             {/* Warm-up */}
             {activity.warmUp && (
               <div className="question-card mb-5">
-                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
+                <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
                   Before you start
                 </div>
                 <p className="text-[--ink] leading-relaxed">{activity.warmUp}</p>
@@ -678,7 +678,7 @@ function ConversationalActivity({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div
-                      className="text-[11px] font-bold uppercase tracking-widest mb-0.5"
+                      className="text-xs font-bold uppercase tracking-widest mb-0.5"
                       style={{ color: mission.colour }}
                     >
                       {storyHasFilm(pairedStory.title)
@@ -717,7 +717,7 @@ function ConversationalActivity({
                       style={{ borderColor: `${mission.colour}35` }}
                     >
                       <div
-                        className="text-[11px] font-bold uppercase tracking-widest mb-1"
+                        className="text-xs font-bold uppercase tracking-widest mb-1"
                         style={{ color: mission.colour }}
                       >
                         The turning point
@@ -741,7 +741,7 @@ function ConversationalActivity({
                   {questions.map((q, i) => (
                     <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
                       <span
-                        className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5"
+                        className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
                         style={{ background: `${mission.colour}60` }}
                       >
                         {i + 1}
@@ -779,7 +779,7 @@ function ConversationalActivity({
                 ? "Start writing"
                 : "Begin →"}
             </button>
-            <p className="text-[11px] text-[--ink-muted] text-center mt-3 leading-relaxed">
+            <p className="text-xs text-[--ink-muted] text-center mt-3 leading-relaxed">
               All entries are private. Only you can see this.
             </p>
           </div>
@@ -864,7 +864,7 @@ function ConversationalActivity({
                   className="w-full flex items-start gap-2.5 text-left"
                 >
                   <span
-                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white mt-0.5"
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
                     style={{ background: "var(--sage)" }}
                   >
                     ✓
@@ -914,7 +914,7 @@ function ConversationalActivity({
                 }}
               >
                 <div
-                  className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
                   style={{ color: mission.colour }}
                 >
                   <span aria-hidden>✦</span> Picture this
@@ -928,7 +928,7 @@ function ConversationalActivity({
             {/* Current question */}
             <div data-animate="2" className="question-card">
               <div
-                className="text-[11px] font-bold uppercase tracking-widest mb-3"
+                className="text-xs font-bold uppercase tracking-widest mb-3"
                 style={{ color: mission.colour }}
               >
                 {activity.scenarios?.[qIdx]
@@ -953,7 +953,7 @@ function ConversationalActivity({
                 the user can always see what they said last time */}
             {prevAnswersRef.current[qIdx] && (
               <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border]">
-                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
+                <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
                   {editing ? "Previously you " + (usingStarter ? "chose" : "wrote") : "Last time you said"}
                 </div>
                 <p className="text-sm text-[--ink-muted] italic leading-relaxed whitespace-pre-wrap">
@@ -1012,7 +1012,7 @@ function ConversationalActivity({
                 thinking, Open assumes you know how to begin. */}
             {mode === "extended" && !!stepScaffold.stems?.length && (
               <div data-animate="3" className="space-y-1.5">
-                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest">
+                <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest">
                   Start with one of these
                 </div>
                 {stepScaffold.stems.map((stem) => (
@@ -1145,7 +1145,7 @@ function ConversationalActivity({
               data-animate="2"
             >
               <div
-                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-3"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
                 style={{ color: mission.colour }}
               >
                 <span aria-hidden>🧭</span> Compass check: complete
@@ -1186,7 +1186,7 @@ function ConversationalActivity({
               style={{ background: mission.colour }}
               data-animate="2"
             >
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+              <div className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
                 ✨ What you just discovered
               </div>
               <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
@@ -1310,10 +1310,10 @@ function ConversationalActivity({
                 data-animate="4"
               >
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  <span className="text-[11px] font-bold text-[--teal] uppercase tracking-widest">
+                  <span className="text-xs font-bold text-[--teal] uppercase tracking-widest">
                     Something to sit with
                   </span>
-                  <span className="text-[11px] text-[--ink-muted]">Suggested by AI</span>
+                  <span className="text-xs text-[--ink-muted]">Suggested by AI</span>
                 </div>
                 {parsed.type === "tricheck" ? (
                   <div className="space-y-3">
@@ -1323,7 +1323,7 @@ function ConversationalActivity({
                       { label: "Who gets it", q: parsed.tricheck.collective },
                     ] as const).map(({ label, q }) => (
                       <div key={label} className="flex gap-3">
-                        <span className="text-[11px] font-bold text-[--teal]/50 uppercase tracking-wide w-20 flex-shrink-0 pt-0.5 leading-tight">
+                        <span className="text-xs font-bold text-[--teal]/50 uppercase tracking-wide w-20 flex-shrink-0 pt-0.5 leading-tight">
                           {label}
                         </span>
                         <p className="text-sm text-[--ink] leading-relaxed">{q}</p>
@@ -1534,7 +1534,7 @@ function ValuesPickerActivity({
               className="rounded-2xl p-5 mb-5 text-white"
               style={{ background: mission.colour }}
             >
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+              <div className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
                 ✨ What you just discovered
               </div>
               <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
@@ -1644,7 +1644,7 @@ function ValuesPickerActivity({
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-2 px-0.5">
               <span
-                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white"
                 style={{ background: mission.colour }}
               >
                 1
@@ -1673,7 +1673,7 @@ function ValuesPickerActivity({
         {/* Step 2 — choose values */}
         <div className="flex items-center gap-2 mb-3 px-0.5">
           <span
-            className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+            className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white"
             style={{ background: mission.colour }}
           >
             {activity.scenarios && activity.scenarios.length > 0 ? 2 : 1}
@@ -1716,7 +1716,7 @@ function ValuesPickerActivity({
                   aria-label={`What ${val} means`}
                   className={cn(
                     "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
-                    "text-[11px] font-semibold leading-none",
+                    "text-xs font-semibold leading-none",
                     "flex items-center justify-center transition-colors",
                     sel
                       ? "border-white/50 text-white/90 hover:bg-white/20"
@@ -1963,7 +1963,7 @@ function ChallengeActivity({
               className="rounded-2xl p-5 mb-5 text-left text-white"
               style={{ background: mission.colour }}
             >
-              <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+              <div className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
                 ✨ What this step does
               </div>
               <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
@@ -2002,7 +2002,7 @@ function ChallengeActivity({
           style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
         >
           <div className="text-3xl mb-3" aria-hidden>🎯</div>
-          <p className="text-xl mb-3" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic" }}>
+          <p className="text-xl mb-3" style={{ fontFamily: "var(--font-story)", fontWeight: 400, fontStyle: "italic" }}>
             Your challenge this week
           </p>
           <p className="leading-relaxed text-left whitespace-pre-line text-sm font-medium">{activity.prompt}</p>
@@ -2014,7 +2014,7 @@ function ChallengeActivity({
             style={{ borderColor: `${mission.colour}35` }}
           >
             <div
-              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
               style={{ color: mission.colour }}
             >
               <span aria-hidden>🌱</span> A growth edge to try
@@ -2207,7 +2207,7 @@ function StrengthsAssessmentActivity({
             )}
             {activity.warmUp && (
               <div className="question-card mb-5">
-                <div className="text-[11px] font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
+                <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest mb-2">
                   How it works
                 </div>
                 <p className="text-[--ink] leading-relaxed">{activity.warmUp}</p>
@@ -2220,7 +2220,7 @@ function StrengthsAssessmentActivity({
             >
               Start — 18 quick situations →
             </button>
-            <p className="text-[11px] text-[--ink-muted]/70 text-center mt-3 leading-relaxed">
+            <p className="text-xs text-[--ink-muted]/70 text-center mt-3 leading-relaxed">
               An indicative snapshot to surface your signature strengths — private to you.
             </p>
           </div>
@@ -2311,7 +2311,7 @@ function StrengthsAssessmentActivity({
                 style={{ background: mission.colour }}
                 data-animate="3"
               >
-                <div className="text-[11px] font-bold uppercase tracking-widest mb-2 opacity-80">
+                <div className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
                   ✨ What you just discovered
                 </div>
                 <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
@@ -2381,7 +2381,7 @@ function StrengthsAssessmentActivity({
             data-animate="1"
           >
             <div
-              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest mb-2"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
               style={{ color: mission.colour }}
             >
               <span aria-hidden>✦</span> Picture this
@@ -2428,7 +2428,7 @@ function StrengthsAssessmentActivity({
                 );
               })}
             </div>
-            <p className="text-[11px] text-[--ink-muted] mt-2 px-0.5 leading-relaxed">
+            <p className="text-xs text-[--ink-muted] mt-2 px-0.5 leading-relaxed">
               Optional: tap <span className="font-semibold">Least</span> on the one that&apos;s least like you — it sharpens your results.
             </p>
           </div>

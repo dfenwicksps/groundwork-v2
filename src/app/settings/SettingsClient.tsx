@@ -249,7 +249,7 @@ export default function SettingsClient({
             ["left", "Finished school", "grid-cols-2"],
           ] as const).map(([group, heading, cols]) => (
             <div key={group} className="mb-2">
-              <div className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
+              <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
                 {heading}
               </div>
               <div className={cn("grid gap-2", cols)}>
@@ -274,7 +274,7 @@ export default function SettingsClient({
                     style={{ borderWidth: "1.5px" }}
                   >
                     <div className="text-sm font-semibold text-ink whitespace-nowrap">{y.label}</div>
-                    <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+                    <div className="text-xs text-ink-muted mt-0.5">{y.sub}</div>
                   </button>
                 ))}
               </div>

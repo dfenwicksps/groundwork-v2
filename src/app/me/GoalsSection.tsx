@@ -174,11 +174,11 @@ export default function GoalsSection({
           {active.map((g) => (
             <div key={g.id} className="card p-4">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-[11px] font-bold text-teal uppercase tracking-wider">
+                <span className="text-xs font-bold text-teal uppercase tracking-wider">
                   {domainLabels[g.domain].emoji} {domainLabels[g.domain].label}
                 </span>
                 {g.linked_value && (
-                  <span className="text-[11px] text-ink-muted ml-auto">
+                  <span className="text-xs text-ink-muted ml-auto">
                     for <span className="font-semibold">{g.linked_value}</span>
                   </span>
                 )}
@@ -353,7 +353,7 @@ export default function GoalsSection({
             </button>
           </div>
           {(!wish.trim() || !plan.trim()) && (
-            <p className="text-[11px] text-ink-muted text-center">
+            <p className="text-xs text-ink-muted text-center">
               The what and the if-then plan are the two that matter — fill those to save.
             </p>
           )}

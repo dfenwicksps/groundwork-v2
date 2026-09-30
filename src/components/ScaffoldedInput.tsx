@@ -209,7 +209,7 @@ export default function ScaffoldedInput({
       {/* Only shown when the chosen tier has nothing authored for this prompt,
           so the student isn't left wondering where the help went. */}
       {!hasTierContent(scaffold, tier) && tier !== "open" && hasStuck && (
-        <p className="text-[11px] text-[--ink-muted] mt-1.5 leading-relaxed">
+        <p className="text-xs text-[--ink-muted] mt-1.5 leading-relaxed">
           No tap-answers for this one — the hints above are the help here.
         </p>
       )}

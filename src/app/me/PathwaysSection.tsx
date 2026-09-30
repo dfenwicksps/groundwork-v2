@@ -73,7 +73,7 @@ export default function PathwaysSection({
                     style={{ background: "rgba(67,56,202,0.04)", borderColor: "rgba(67,56,202,0.15)" }}
                   >
                     <div
-                      className="text-[11px] font-bold uppercase tracking-wider mb-1.5"
+                      className="text-xs font-bold uppercase tracking-wider mb-1.5"
                       style={{ color: "var(--navy)" }}
                     >
                       🎓 First steps after school
@@ -105,7 +105,7 @@ export default function PathwaysSection({
                       {" "}point here.
                     </p>
                     <div>
-                      <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                         Example paths
                       </div>
                       <div className="flex flex-wrap gap-1.5">
@@ -117,7 +117,7 @@ export default function PathwaysSection({
                       </div>
                     </div>
                     <div>
-                      <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider mb-1.5">
+                      <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1.5">
                         Subjects that feed it
                       </div>
                       <p className="text-xs text-ink-muted">{cluster.subjects.join(" · ")}</p>
@@ -130,7 +130,7 @@ export default function PathwaysSection({
           );
         })}
       </div>
-      <p className="text-[11px] text-ink-muted mt-3 leading-relaxed">
+      <p className="text-xs text-ink-muted mt-3 leading-relaxed">
         Indicative and Australia-focused — a careers adviser can help you with the
         specifics (subjects, ATAR, entry requirements) for your state.
       </p>
