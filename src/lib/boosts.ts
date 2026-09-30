@@ -1,5 +1,5 @@
 // ─── Boosts: guidance for building specific character qualities ───────────────
-// Short, practical guides for the qualities the programme promises to develop:
+// Short, practical guides for the qualities the program promises to develop:
 // courage, vulnerability, resilience, self-belief, self-efficacy, empathy,
 // compassion, kindness. Exercises adapted from the character-strengths
 // intervention literature (Niemiec, Character Strengths Interventions).

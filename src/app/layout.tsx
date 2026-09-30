@@ -24,7 +24,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Groundwork — Figure out who you are",
   description:
-    "A self-guided programme for teenagers to build identity, purpose, connection, and meaning.",
+    "Short missions, real-world challenges and stories for anyone working out who they are and where they're heading.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),

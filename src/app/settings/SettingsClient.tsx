@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
-import { ONBOARDING_VALUES } from "@/lib/missions";
 import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
 
 export default function SettingsClient({
@@ -41,11 +40,6 @@ export default function SettingsClient({
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  const [selectedValues, setSelectedValues] = useState<string[]>(savedValues);
-  const [savingValues, setSavingValues] = useState(false);
-  const [savedValues2, setSavedValues2] = useState(false);
-  const [valuesError, setValuesError] = useState<string | null>(null);
-  const [editingValues, setEditingValues] = useState(false);
 
   const [lifeStage, setLifeStageState] = useState<LifeStage>(initialLifeStage);
   const [stageSaved, setStageSaved] = useState(false);
@@ -63,41 +57,6 @@ export default function SettingsClient({
     setSavingAi(true);
     await db.from("users").update({ ai_reflections_enabled: next }).eq("id", userId);
     setSavingAi(false);
-  }
-
-  /** Functional update — see the note in the onboarding picker. Two taps in one
-      React batch would otherwise read the same array and lose the first. */
-  function toggleValue(val: string) {
-    setSelectedValues((prev) =>
-      prev.includes(val)
-        ? prev.filter((v) => v !== val)
-        : prev.length < 3
-          ? [...prev, val]
-          : prev
-    );
-  }
-
-  async function handleSaveValues() {
-    setSavingValues(true);
-    setValuesError(null);
-    const { error } = await db
-      .from("onboarding_results")
-      .update({ values: selectedValues })
-      .eq("user_id", userId);
-    setSavingValues(false);
-    if (error) {
-      setValuesError("Couldn't save your values — please try again.");
-      return;
-    }
-    setSavedValues2(true);
-    setEditingValues(false);
-    setTimeout(() => setSavedValues2(false), 2000);
-  }
-
-  function handleCancelValues() {
-    setSelectedValues(savedValues);
-    setEditingValues(false);
-    setValuesError(null);
   }
 
   async function handleSaveName() {
@@ -240,115 +199,42 @@ export default function SettingsClient({
 
         {/* Your values */}
         <div data-animate="3" className="card p-6">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-semibold text-ink">Your values</h2>
-            {!editingValues && missionValues.length === 0 && (
-              <button
-                onClick={() => setEditingValues(true)}
-                className="text-sm text-teal hover:underline"
-              >
-                Edit
-              </button>
-            )}
-          </div>
+          <h2 className="font-semibold text-ink mb-1">Your values</h2>
           {missionValues.length > 0 ? (
-            <>
-              <p className="text-sm text-ink-muted mb-4">
-                From the Values Clarifier in Mission 1. These are the values the rest of the app
-                shows you.
-              </p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {missionValues.map((val) => (
-                  <span
-                    key={val}
-                    className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
-                  >
-                    {val}
-                  </span>
-                ))}
-              </div>
-              <Link
-                href="/missions/1/activities/values-clarifier"
-                className="text-sm text-teal hover:underline"
-              >
-                Redo the Values Clarifier to change them
-              </Link>
-            </>
+            <p className="text-sm text-ink-muted mb-4">
+              From the Values Clarifier in Mission 1. These are the values the rest of the app
+              shows you.
+            </p>
+          ) : savedValues.length > 0 ? (
+            <p className="text-sm text-ink-muted mb-4">
+              The three you picked when you started. Mission 1&apos;s Values Clarifier goes deeper,
+              and once you&apos;ve done it, those become your values.
+            </p>
           ) : (
-          <>
-          <p className="text-sm text-ink-muted mb-4">
-            The three you picked when you started. Mission 1&apos;s Values Clarifier goes deeper,
-            and once you&apos;ve done it, those become your values.
-          </p>
-
-          {!editingValues ? (
-            <div className="flex flex-wrap gap-2">
-              {selectedValues.length > 0 ? (
-                selectedValues.map((val) => (
-                  <span
-                    key={val}
-                    className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
-                  >
-                    {val}
-                  </span>
-                ))
-              ) : (
-                <p className="text-sm text-ink-muted italic">No values selected yet.</p>
-              )}
-            </div>
-          ) : (
-            <div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-                {ONBOARDING_VALUES.map((val) => {
-                  const selected = selectedValues.includes(val);
-                  const disabled = !selected && selectedValues.length >= 3;
-                  return (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => toggleValue(val)}
-                      disabled={disabled}
-                      aria-pressed={selected}
-                      className={cn(
-                        "p-3 rounded-xl text-sm font-medium transition-all border",
-                        "flex items-center justify-center gap-1.5",
-                        selected
-                          ? "bg-navy text-white border-navy"
-                          : disabled
-                          ? "bg-surface-muted text-ink-muted border-surface-border cursor-not-allowed"
-                          : "bg-white text-ink border-surface-border hover:border-navy/30"
-                      )}
-                    >
-                      {/* Selection is marked by a tick as well as by colour. */}
-                      {selected && <span aria-hidden>✓</span>}
-                      {val}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-ink-muted mb-4">{selectedValues.length} of 3 selected</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleCancelValues}
-                  className="btn btn-secondary flex-1"
+            <p className="text-sm text-ink-muted mb-4">
+              You&apos;ll choose these in Mission 1&apos;s Values Clarifier.
+            </p>
+          )}
+          {(missionValues.length > 0 ? missionValues : savedValues).length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {(missionValues.length > 0 ? missionValues : savedValues).map((val) => (
+                <span
+                  key={val}
+                  className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveValues}
-                  disabled={savingValues || selectedValues.length !== 3}
-                  className="btn btn-primary flex-[2]"
-                >
-                  {savingValues ? "Saving…" : savedValues2 ? "Saved ✓" : "Save values"}
-                </button>
-              </div>
-              {valuesError && (
-                <p role="alert" className="text-xs text-red-600 mt-2">{valuesError}</p>
-              )}
+                  {val}
+                </span>
+              ))}
             </div>
           )}
-          </>
-          )}
+          <Link
+            href="/missions/1/activities/values-clarifier"
+            className="text-sm text-teal hover:underline"
+          >
+            {missionValues.length > 0
+              ? "Redo the Values Clarifier to change them"
+              : "Go to the Values Clarifier"}
+          </Link>
         </div>
 
         {/* Life stage — tunes what the app emphasises */}

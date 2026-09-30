@@ -1319,27 +1319,6 @@ export function getActivity(
   return mission?.activities.find((a) => a.id === activityId);
 }
 
-/**
- * The 12-value subset offered during onboarding (all drawn from VALUES_LIST,
- * definitions in VALUES_WITH_DEFINITIONS). Single source of truth — the
- * onboarding flow and the Settings values editor both import this, so the
- * value the user picks at onboarding is always editable later.
- */
-export const ONBOARDING_VALUES = [
-  "Courage",
-  "Kindness",
-  "Honesty",
-  "Creativity",
-  "Growth",
-  "Family",
-  "Humour",
-  "Compassion",
-  "Curiosity",
-  "Resilience",
-  "Fairness",
-  "Authenticity",
-] as const;
-
 // Base display labels derived straight from the mission definitions, so they
 // can never drift from the actual activity titles.
 const BASE_ACTIVITY_LABELS: Record<string, string> = (() => {

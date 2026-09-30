@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BOOSTS } from "@/lib/boosts";
 
 /**
- * "Build a quality" — practical guidance for the qualities the programme
+ * "Build a quality" — practical guidance for the qualities the program
  * develops: courage, vulnerability, resilience, self-belief, self-efficacy,
  * empathy, compassion, kindness.
  */

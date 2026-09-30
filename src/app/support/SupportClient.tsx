@@ -9,7 +9,7 @@ import HelpLines from "@/components/help/HelpLines";
 
 const CONVERSATION_STARTERS = [
   "\"I've been doing some thinking about who I want to become, and I'd love to hear your perspective on something.\"",
-  "\"There's a programme I'm doing about identity and values. Can I tell you what I've been learning about myself?\"",
+  "\"There's a program I'm doing about identity and values. Can I tell you what I've been learning about myself?\"",
   "\"I've been reflecting on what matters most to me. I think you know me well — does this sound right?\"",
   "\"I want to talk to you about something I've been thinking about. It's not a crisis — I just value your opinion.\"",
 ];

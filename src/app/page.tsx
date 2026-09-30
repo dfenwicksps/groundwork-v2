@@ -1,6 +1,6 @@
 import Link from "next/link";
 import BuildStamp from "@/components/BuildStamp";
-import ProductPreview from "@/components/landing/ProductPreview";
+import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
 
 export default function LandingPage() {
   return (
@@ -32,7 +32,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-24 text-center">
+      <section className="max-w-5xl mx-auto px-6 pt-8 pb-10 text-center">
         <h1
           className="text-5xl md:text-6xl lg:text-7xl text-navy mb-6 max-w-3xl mx-auto"
           style={{
@@ -50,28 +50,15 @@ export default function LandingPage() {
         </h1>
 
         <p
-          className="text-lg text-ink-muted max-w-xl mx-auto mb-4 leading-relaxed"
+          className="text-lg text-ink-muted max-w-xl mx-auto mb-3 leading-relaxed"
           data-animate="3"
         >
-          Groundwork is a self-guided programme that helps teenagers develop
-          identity, purpose, connection, and meaning — through honest reflection
-          and real-world challenges.
+          For anyone working out who they are and where they&apos;re heading: at
+          school, just out of it, or a few years on. Short missions, small
+          real-world challenges, and stories that don&apos;t pretend it&apos;s easy.
         </p>
-
-        {/* The three parts of the app, named once. The same sentence is used
-            wherever someone meets Groundwork for the first time — the app had
-            three tracks and no single place that said what they were. */}
-        <p
-          className="text-base text-ink-muted max-w-2xl mx-auto mb-10 leading-relaxed"
-          data-animate="3"
-        >
-          <strong className="text-ink font-medium">Four missions</strong> are the
-          deep dives, one big question each.{" "}
-          <strong className="text-ink font-medium">The ten-week program</strong>{" "}
-          is the habit layer — one question a week and one thing to actually do.{" "}
-          <strong className="text-ink font-medium">The Standard</strong> is the
-          mirror: three questions you answer again and again, and read back over
-          months.
+        <p className="text-sm text-ink-muted mb-10" data-animate="3">
+          Most answers are a tap. Write more only if you want to.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center" data-animate="4">
@@ -79,59 +66,82 @@ export default function LandingPage() {
             href="/auth?mode=signup"
             className="btn btn-primary px-8 py-3.5 text-base"
           >
-            Start your journey
+            Start Mission 1 — free
           </Link>
           <Link
-            href="#how-it-works"
+            href="#story"
             className="btn btn-secondary px-8 py-3.5 text-base"
           >
-            How it works
+            Watch a story
           </Link>
         </div>
+      </section>
 
-        {/* What it actually looks like — the same dashboard you land on. */}
-        <div className="mt-14" data-animate="5">
-          <ProductPreview />
-          <p className="mt-4 text-xs text-ink-muted">
-            Your dashboard partway through Mission 1.
-          </p>
-        </div>
-
-        {/* Honest disclaimer */}
-        <p
-          className="mt-10 text-sm text-ink-muted max-w-md mx-auto"
-          data-animate="6"
+      {/* Show before explaining: one of the animated stories, playable here. */}
+      <section id="story" className="max-w-lg mx-auto px-6 pb-14 scroll-mt-6">
+        <h2
+          className="text-2xl md:text-3xl text-navy mb-2 text-center"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
         >
-          This isn&apos;t a therapy app. If something feels too heavy to carry alone, please talk to someone you trust.
-          <br />
-          <span className="text-ink-muted/80">
-            Built on the VIA character strengths framework and social-emotional learning research.
-          </span>
+          One minute, one story.
+        </h2>
+        <p className="text-sm text-ink-muted mb-5 text-center leading-relaxed">
+          Priya is loud at home and careful at school. Watch what happens when
+          the two versions of her meet.
+        </p>
+        <VersionOfMeFilm storyId="landing" />
+        <p className="text-sm text-ink-muted text-center max-w-md mx-auto">
+          This isn&apos;t a therapy app. If something feels too heavy to carry
+          alone, please talk to someone you trust.
         </p>
       </section>
 
       {/* How it works */}
       <section
         id="how-it-works"
-        className="max-w-5xl mx-auto px-6 py-20 border-t border-surface-border"
+        className="max-w-5xl mx-auto px-6 py-14 border-t border-surface-border"
       >
-        <div className="text-center mb-14">
+        <div className="text-center mb-8">
           <h2
             className="text-3xl md:text-4xl text-navy mb-4"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
-            Four missions. One question each.
+            How it works
           </h2>
           <p className="text-ink-muted max-w-lg mx-auto">
-            Each mission is five steps: four reflective activities of about
-            8&ndash;15 minutes, then one challenge you carry through the week.
-            Twenty steps in all, at whatever pace you like — nothing expires and
-            nothing nags you. Mission 1 comes first — it maps the strengths and
-            values the ten-week program&apos;s opening weeks are built from.
-            After that the weeks run every week, and missions 2 to 4 arrive as
-            the weeks that need them come up.
+            At whatever pace you like. Nothing expires and nothing nags you.
           </p>
         </div>
+
+        <ol className="grid md:grid-cols-3 gap-4 mb-12">
+          {[
+            {
+              title: "Start with who you are",
+              body: "Mission 1 maps your strengths and values. Each step takes about 8 to 15 minutes, less if you tap.",
+            },
+            {
+              title: "Try it in real life",
+              body: "Then, each week: one question to think about and one small thing to actually do.",
+            },
+            {
+              title: "Look back",
+              body: "Months later, reread what you wrote and see what's changed. Only you can see it.",
+            },
+          ].map((step, i) => (
+            <li key={step.title} className="card p-6 text-left">
+              <div className="text-xs font-semibold text-teal mb-2">Step {i + 1}</div>
+              <h3 className="font-semibold text-navy mb-1.5 text-lg">{step.title}</h3>
+              <p className="text-ink-muted text-sm leading-relaxed">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+
+        <h3
+          className="text-xl text-navy mb-4 text-center"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+        >
+          Four missions. One question each.
+        </h3>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
@@ -186,7 +196,7 @@ export default function LandingPage() {
       </section>
 
       {/* Principles */}
-      <section className="max-w-5xl mx-auto px-6 py-20 border-t border-surface-border">
+      <section className="max-w-5xl mx-auto px-6 py-14 border-t border-surface-border">
         <div className="grid md:grid-cols-3 gap-8">
           {[
             {
@@ -217,7 +227,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
+      <section className="max-w-5xl mx-auto px-6 py-14">
         <div className="bg-navy rounded-3xl p-12 text-center text-white">
           <h2
             className="text-3xl md:text-4xl mb-4"
@@ -226,14 +236,14 @@ export default function LandingPage() {
             Ready to do the work?
           </h2>
           <p className="text-white/70 mb-8 max-w-sm mx-auto">
-            Mission 1, step one, takes about 8 minutes. The results last a lot
-            longer than that.
+            Mission 1&apos;s first step takes about 8 minutes, and most of it is
+            taps. The results last a lot longer than that.
           </p>
           <Link
             href="/auth?mode=signup"
             className="btn bg-white text-navy hover:bg-white/90 px-10 py-3.5 text-base"
           >
-            Begin Mission 1 — free
+            Start Mission 1 — free
           </Link>
         </div>
       </section>
@@ -241,13 +251,14 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-surface-border py-8 text-center text-sm text-ink-muted px-6">
         <p>
-          Groundwork is not a therapy replacement. If you need support, please
-          speak to a trusted adult or call{" "}
-          <a
-            href="tel:1800551800"
-            className="underline hover:text-ink-muted transition-colors"
-          >
-            Kids Helpline: 1800 55 1800
+          Groundwork is not a therapy replacement. If you need support, talk to
+          someone you trust, or call{" "}
+          <a href="tel:1800551800" className="underline hover:text-ink transition-colors">
+            Kids Helpline (ages 5–25) on 1800 55 1800
+          </a>{" "}
+          or{" "}
+          <a href="tel:131114" className="underline hover:text-ink transition-colors">
+            Lifeline on 13 11 14
           </a>
           .
         </p>

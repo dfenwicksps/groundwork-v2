@@ -210,7 +210,7 @@ export default function AuthForm() {
             </span>
           </div>
           <h1 className="text-2xl text-navy mt-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
-            {mode === "login" ? "Welcome back" : "Start your journey"}
+            {mode === "login" ? "Welcome back" : "Make your account"}
           </h1>
           <p className="text-sm text-ink-muted mt-1">
             {mode === "login"

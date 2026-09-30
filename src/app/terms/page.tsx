@@ -17,7 +17,7 @@ export default function TermsPage() {
     >
       <Section heading="What Groundwork is">
         <Plainly>
-          A self-guided programme, not a service with a person on the other end.
+          A self-guided program, not a service with a person on the other end.
         </Plainly>
         <p>
           Groundwork gives you missions, a ten-week program, reflection prompts,

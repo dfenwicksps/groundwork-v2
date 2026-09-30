@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback, useId } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { cn, parseReflection } from "@/lib/utils";
-import { type ProcessingStyle, getProcessingStyle } from "@/lib/processingStyle";
 import {
   TIERS,
   readTier,
@@ -1398,9 +1397,6 @@ function ValuesPickerActivity({
   const [savedResponse, setSavedResponse] = useState(existingEntry?.response || "");
   const whyId = useId();
   const [whyExpanded, setWhyExpanded] = useState(false);
-  const [style] = useState<ProcessingStyle | null>(() =>
-    typeof window !== "undefined" ? getProcessingStyle() : null
-  );
   const [mode, setModeState] = useState<Tier>("quick");
   const [saveError, setSaveError] = useState<string | null>(null);
   useEffect(() => setModeState(readTier()), []);
@@ -1619,7 +1615,7 @@ function ValuesPickerActivity({
           </p>
         </div>
 
-        {style === "informational" && activity.whyItMatters && (
+        {activity.whyItMatters && (
           <div className="mb-5">
             <button
               type="button"
