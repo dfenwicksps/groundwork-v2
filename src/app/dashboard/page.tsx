@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { createServerClient } from "@/lib/supabase-server";
-import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
@@ -183,9 +182,9 @@ export default async function DashboardPage() {
   }
 
   // ── The spine ──
-  // Which track leads is a function of year level, not of what happens to be
+  // Which track leads is a function of life stage, not of what happens to be
   // furthest along. See src/lib/spine.ts.
-  const yearLevel = parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle";
+  const lifeStage = await getLifeStage(supabase, user.id);
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
@@ -194,7 +193,7 @@ export default async function DashboardPage() {
     activity_id: string;
   }[];
   const missionsDone = missionsCompleted(missionRows);
-  const spine = spineFor(yearLevel, missionsDone, missionComplete(missionRows, 1));
+  const spine = spineFor(lifeStage, missionsDone, missionComplete(missionRows, 1));
 
   // With every mission finished there is no active mission left to offer, so
   // the dashboard shows what they found instead — see lib/missionSummary.
@@ -273,7 +272,7 @@ export default async function DashboardPage() {
       revisitEntry={revisitEntry || null}
       nudgeActivity={nudgeActivity}
       spine={spine}
-      yearLevel={yearLevel}
+      lifeStage={lifeStage}
       missionSummary={summary}
       programWeek={programWeek}
     />

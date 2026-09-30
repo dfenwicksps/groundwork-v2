@@ -28,7 +28,7 @@ import {
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
 import { withReturn } from "@/lib/returnTo";
-import type { YearLevel } from "@/lib/yearLevel";
+import type { LifeStage } from "@/lib/lifeStage";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 import { mentionsCrisis } from "@/lib/help";
 import SupportCard from "@/components/help/SupportCard";
@@ -59,13 +59,13 @@ export default function WeekClient({
   capstone,
   suggestedQualities,
   earlier,
-  yearLevel,
+  lifeStage,
   ready,
 }: {
   userId: string;
   week: ProgramWeek;
   /** Only affects the register of the commitment examples — see program.ts */
-  yearLevel: YearLevel;
+  lifeStage: LifeStage;
   progress: WeekProgress | null;
   savedCode: string[];
   /** What the missions already produced — shown, not linked to */
@@ -450,7 +450,7 @@ export default function WeekClient({
                 <ScaffoldedInput
                   value={commitment}
                   onChange={setCommitment}
-                  scaffold={commitmentScaffold(week.week, yearLevel)}
+                  scaffold={commitmentScaffold(week.week, lifeStage)}
                   placeholder="Specific beats ambitious."
                   rows={2}
                 />

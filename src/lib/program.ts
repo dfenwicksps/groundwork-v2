@@ -858,7 +858,7 @@ export function responseToCode(response: string | null | undefined): string[] {
 // scaffolding. See src/lib/scaffold.ts for what the three tiers mean.
 
 import type { Scaffold } from "./scaffold";
-import type { YearLevel } from "./yearLevel";
+import type { LifeStage } from "./lifeStage";
 
 /** The weekly five — the prompts a student answers most often, so scaffolded hardest. */
 export const WEEKLY_SCAFFOLDS: Record<Strand, Scaffold> = {
@@ -1132,20 +1132,22 @@ export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
 /**
  * Weeks 4 and 5 ask the student to name their own promise or hill first.
  *
- * The examples are year-aware because this is where register matters most: a
+ * The examples are stage-aware because this is where register matters most: a
  * promise is meant to be small, boring and yours, so an 18-year-old offered
  * "make my bed every morning" reads the whole exercise as written for children
  * — and a 14-year-old offered "be on time to every shift" has no shift.
  * Everything else about the week is identical.
  *
- * One register per year level, not two. Year 10-11 used to be served the Year
+ * One register per life stage. Year 10-11 used to be served the Year
  * 7-9 list, which led with "make my bed every morning" for a sixteen-year-old —
  * the exact failure the split exists to prevent, in the largest cohort of the
  * three. Fifteen to seventeen has its own texture: more autonomy than a
  * fourteen-year-old and no final-year exams yet, so the promises are about
- * getting yourself out the door rather than being got out of it.
+ * getting yourself out the door rather than being got out of it. The two
+ * post-school stages get their own lists for the same reason: at nineteen the
+ * promise is about shifts, meals and money, which nobody is organising for you.
  */
-const COMMITMENT_QUICK: Record<number, Record<YearLevel, string[]>> = {
+const COMMITMENT_QUICK: Record<number, Record<LifeStage, string[]>> = {
   4: {
     junior: [
       "Make my bed every morning",
@@ -1164,6 +1166,18 @@ const COMMITMENT_QUICK: Record<number, Record<YearLevel, string[]>> = {
       "Do the reading before the class, not after it",
       "Reply properly to messages the same day",
       "Phone charging outside my room overnight",
+    ],
+    leaver: [
+      "On time to every lecture, shift and class, no exceptions",
+      "Cook one real meal a day instead of living on snacks",
+      "Reply properly to messages the same day",
+      "Phone out of the bedroom overnight",
+    ],
+    adult: [
+      "Up at the same time every day, work day or not",
+      "Check my bank balance once a day, even when I'd rather not",
+      "Reply to people the same day, not three days later",
+      "Thirty minutes of moving every day",
     ],
   },
   5: {
@@ -1184,6 +1198,18 @@ const COMMITMENT_QUICK: Record<number, Record<YearLevel, string[]>> = {
       "Rebuild the subject I've quietly given up on",
       "Learn the thing I keep saying I'll learn after exams",
       "Volunteer or work somewhere that isn't about me",
+    ],
+    leaver: [
+      "Get properly fit now nobody's timetabling it for me",
+      "Get on top of the course or job I'm finding hardest",
+      "Learn the skill that would open the next door",
+      "Join or volunteer at something that isn't about me",
+    ],
+    adult: [
+      "Get properly fit, and keep going past the first hard week",
+      "Build the skill my next job is going to need",
+      "Put a set amount aside every pay, no exceptions",
+      "Start the thing I keep saying I'll do when life settles down",
     ],
   },
 };
@@ -1209,7 +1235,7 @@ const COMMITMENT_REST: Record<number, Omit<Scaffold, "quick">> = {
 
 export function commitmentScaffold(
   week: number,
-  year: YearLevel = "middle"
+  year: LifeStage = "middle"
 ): Scaffold | undefined {
   const rest = COMMITMENT_REST[week];
   if (!rest) return undefined;

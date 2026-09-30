@@ -20,7 +20,10 @@ create table if not exists public.users (
   display_name text,
   created_at timestamptz default now() not null,
   onboarding_complete boolean default false not null,
-  active_mission int default 1 not null
+  active_mission int default 1 not null,
+  -- Where the student is at: 'junior' (Year 7-9), 'middle' (10-11),
+  -- 'senior' (12), 'leaver' (just left school), 'adult' (a few years out)
+  life_stage text check (life_stage is null or life_stage in ('junior', 'middle', 'senior', 'leaver', 'adult'))
 );
 
 -- Onboarding results

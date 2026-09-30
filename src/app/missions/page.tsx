@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { MISSIONS } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { spineFor } from "@/lib/spine";
-import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import MissionsClient from "./MissionsClient";
 
 export const dynamic = "force-dynamic";
@@ -62,7 +61,7 @@ export default async function MissionsIndexPage() {
       missions={missions}
       activeMission={activeMission}
       spine={spineFor(
-        parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle",
+        await getLifeStage(supabase, user.id),
         missionsCompleted(rows),
         missionComplete(rows, 1)
       )}
