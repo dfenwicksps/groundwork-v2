@@ -3,7 +3,6 @@
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import WeeklyFiveSection, { type WeeklyCheckin } from "./WeeklyFiveSection";
-import TrackBanner from "@/components/TrackBanner";
 import type { Spine } from "@/lib/spine";
 import {
   PROGRAM_WEEKS,
@@ -61,7 +60,8 @@ export default function ProgramClient({
           </p>
         </div>
 
-        <TrackBanner track="program" spine={spine} />
+        {/* Which track comes first, in one sentence. */}
+        <p className="text-sm text-ink leading-relaxed -mt-4">{spine.orderLine}</p>
 
         {/* Mission 1 is the only hard prerequisite: weeks 1 and 2 are made
             out of the strengths and values it maps. Missions 2-4 aren't listed

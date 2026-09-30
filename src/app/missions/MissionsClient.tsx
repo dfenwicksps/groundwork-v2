@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
-import TrackBanner from "@/components/TrackBanner";
 import type { Spine } from "@/lib/spine";
 import { WEEKLY_BY_KEY, type Strand } from "@/lib/program";
 
@@ -65,7 +64,8 @@ export default function MissionsClient({
           </p>
         </div>
 
-        <TrackBanner track="missions" spine={spine} />
+        {/* Which track comes first, in one sentence. */}
+        <p className="text-sm text-ink leading-relaxed -mt-4">{spine.orderLine}</p>
 
         {/* Progress, in the same units the program uses */}
         <div data-animate="2">
