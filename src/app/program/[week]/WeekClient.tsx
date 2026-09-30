@@ -30,6 +30,8 @@ import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
 import { withReturn } from "@/lib/returnTo";
 import type { YearLevel } from "@/lib/yearLevel";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 /**
  * One week of the program: the question to sit with, the existing tool that
@@ -96,6 +98,7 @@ export default function WeekClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [supportNeeded, setSupportNeeded] = useState(false);
 
   const target = week.challenge.target ?? 1;
   const isTracked = week.challenge.kind !== "single";
@@ -214,6 +217,7 @@ export default function WeekClient({
       true
     );
     if (ok) {
+      setSupportNeeded(mentionsCrisis(reflection));
       // Journal copy so the week's reflection sits with everything else
       await db.from("journal_entries").insert({
         user_id: userId,
@@ -699,6 +703,11 @@ export default function WeekClient({
                 <p className="text-[11px] text-sage text-center mt-2 font-medium">
                   Saved.
                 </p>
+              )}
+              {supportNeeded && (
+                <div className="mt-4">
+                  <SupportCard />
+                </div>
               )}
               {blockedOnSource && !done && (
                 <p className="text-[11px] text-ink-muted text-center mt-2 leading-relaxed">

@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase";
 import { formatRelativeDate } from "@/lib/utils";
 import { WEEKLY_FIVE, WEEKLY_SCAFFOLDS, type Strand } from "@/lib/program";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 export interface WeeklyCheckin {
   id: string;
@@ -36,6 +38,7 @@ export default function WeeklyFiveSection({
 
   const latest = checkins[0] ?? null;
   const [writing, setWriting] = useState(false);
+  const [supportNeeded, setSupportNeeded] = useState(false);
   const [drafts, setDrafts] = useState<Partial<Record<Strand, string>>>({});
   const [openId, setOpenId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -50,6 +53,7 @@ export default function WeeklyFiveSection({
       if (v) answers[q.key] = v;
     }
     if (Object.keys(answers).length === 0) return;
+    setSupportNeeded(mentionsCrisis(Object.values(answers).join("\n")));
     setBusy(true);
     setError(null);
 
@@ -191,6 +195,8 @@ export default function WeeklyFiveSection({
         The whole program in five questions
         {checkins.length > 0 && ` · ${checkins.length} week${checkins.length === 1 ? "" : "s"} recorded`}
       </p>
+
+      {supportNeeded && <SupportCard />}
 
       {latest ? (
         <div className="card p-5">

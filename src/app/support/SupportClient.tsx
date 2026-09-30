@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import type { SupportContact } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
+import HelpLines from "@/components/help/HelpLines";
 
 const CONVERSATION_STARTERS = [
   "\"I've been doing some thinking about who I want to become, and I'd love to hear your perspective on something.\"",
@@ -79,6 +80,21 @@ export default function SupportClient({
             more. This is a reminder of who&apos;s in your corner.
           </p>
         </div>
+
+        {/* Help first: someone who opens this page may need it now. */}
+        <section id="get-help" data-animate="2" className="mb-8 scroll-mt-6" aria-labelledby="get-help-heading">
+          <h2
+            id="get-help-heading"
+            className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2"
+          >
+            Need to talk to someone now?
+          </h2>
+          <p className="text-sm text-ink-muted leading-relaxed mb-3">
+            Talking to someone you trust is always a good move: a friend, family, a counsellor at
+            school, uni or TAFE, or your GP. These services are free and confidential too.
+          </p>
+          <HelpLines />
+        </section>
 
         {/* Contacts */}
         <div data-animate="2">
@@ -217,58 +233,6 @@ export default function SupportClient({
                   </p>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Crisis support */}
-        <div data-animate="4">
-          <div
-            className="rounded-xl p-5 border"
-            style={{
-              background: "rgba(74, 124, 89, 0.04)",
-              borderColor: "rgba(74, 124, 89, 0.2)",
-            }}
-          >
-            <h3 className="font-semibold text-sage mb-2">
-              If things feel too hard
-            </h3>
-            <p className="text-sm text-ink-muted leading-relaxed mb-3">
-              If you&apos;re going through something difficult, talking to
-              someone you trust is always the right move. If you need more
-              support, speak to a school counsellor or reach out to:
-            </p>
-            <div className="space-y-2">
-              <a
-                href="tel:1800551800"
-                className="flex items-center gap-3 p-3 bg-white rounded-lg border border-surface-border hover:border-sage/30 transition-colors"
-              >
-                <span className="text-xl">📞</span>
-                <div>
-                  <div className="text-sm font-medium text-ink">
-                    Kids Helpline
-                  </div>
-                  <div className="text-xs text-ink-muted">
-                    1800 55 1800 — free, 24/7, confidential
-                  </div>
-                </div>
-              </a>
-              <a
-                href="https://kidshelpline.com.au"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 bg-white rounded-lg border border-surface-border hover:border-sage/30 transition-colors"
-              >
-                <span className="text-xl">💬</span>
-                <div>
-                  <div className="text-sm font-medium text-ink">
-                    Kids Helpline — online chat
-                  </div>
-                  <div className="text-xs text-ink-muted">
-                    kidshelpline.com.au
-                  </div>
-                </div>
-              </a>
             </div>
           </div>
         </div>

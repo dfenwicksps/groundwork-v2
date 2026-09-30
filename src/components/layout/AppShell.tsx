@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import ConfirmEmailBanner from "@/components/common/ConfirmEmailBanner";
 import ReturnBanner from "@/components/ReturnBanner";
+import GetHelpButton from "@/components/help/GetHelpButton";
 
 const NAV_ITEMS = [
   {
@@ -169,6 +170,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <ConfirmEmailBanner />
       {/* Present only when a program week sent them here — see lib/returnTo. */}
       <ReturnBanner />
+
+      {/* /support opens with the full list, so the button would only cover its title. */}
+      {!pathname.startsWith("/support") && <GetHelpButton variant="floating" />}
 
       <main id="main-content" className="pb-nav">{children}</main>
 
