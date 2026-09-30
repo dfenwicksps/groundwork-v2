@@ -1,51 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import { type ProcessingStyle, setProcessingStyle, tallyStyle } from "@/lib/processingStyle";
-import { ONBOARDING_VALUES, VALUES_WITH_DEFINITIONS } from "@/lib/missions";
 import {
   LIFE_STAGE_OPTIONS,
   hasLeftSchool,
   setLifeStageCookie,
   type LifeStage,
 } from "@/lib/lifeStage";
-
-const STYLE_QUESTIONS: {
-  id: string;
-  question: string;
-  options: { label: string; style: ProcessingStyle }[];
-}[] = [
-  {
-    id: "q1",
-    question: "When you're working something out...",
-    options: [
-      { label: "I like to dig in and understand it from all angles", style: "informational" },
-      { label: "I find it easier with clear steps or someone to guide me", style: "normative" },
-      { label: "I usually need to sit with it for a while first", style: "diffuse-avoidant" },
-    ],
-  },
-  {
-    id: "q2",
-    question: "Starting new things feels...",
-    options: [
-      { label: "Interesting — I want to know why I'm doing it", style: "informational" },
-      { label: "Better with structure — I like knowing the plan", style: "normative" },
-      { label: "Hard sometimes — I can struggle to get going", style: "diffuse-avoidant" },
-    ],
-  },
-  {
-    id: "q3",
-    question: "Be honest — coming here today...",
-    options: [
-      { label: "I'm genuinely curious to understand myself better", style: "informational" },
-      { label: "I'm hoping there's a clear process I can follow", style: "normative" },
-      { label: "Part of me isn't sure I'm ready to start", style: "diffuse-avoidant" },
-    ],
-  },
-];
+import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
+import SupportCard from "@/components/help/SupportCard";
+import { markStoryActioned } from "@/lib/storyEngagement";
+import { mentionsCrisis } from "@/lib/help";
 
 const WHY_OPTIONS = [
   {
@@ -74,8 +42,35 @@ const WHY_OPTIONS = [
   },
 ];
 
-export default function OnboardingClient() {
+// The story screen's one question. It follows Priya's story, so it asks the same
+// thing of the student, as a tap rather than a blank box.
+const GAP_QUESTION = "Where's the biggest gap between the real you and the version you show?";
+
+function gapOptions(stage: LifeStage | null): string[] {
+  return [
+    stage && hasLeftSchool(stage) ? "Between home and work or uni" : "Between home and school",
+    "Between friends and family",
+    "Between online and in person",
+    "Around people I've only just met",
+    "I'm pretty much the same everywhere",
+  ];
+}
+
+/**
+ * Two screens. The first asks the three things the app tailors itself by and
+ * creates the profile. The second is a real piece of Groundwork: a one-minute
+ * story and one question about it, so a new student reaches the actual thing
+ * within about a minute of signing up.
+ *
+ * What used to sit between them moved to where it's used. Values are chosen
+ * properly in Mission 1's Values Clarifier; a trusted person is added from the
+ * dashboard or the Support page. The "how you like to work" questions only
+ * ever decided whether one activity opened its "why it matters" note, which is
+ * one tap away for everyone.
+ */
+export default function OnboardingClient({ storyId }: { storyId: string | null }) {
   const router = useRouter();
+  const TOTAL_STEPS = storyId ? 2 : 1;
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -86,18 +81,11 @@ export default function OnboardingClient() {
   const [lifeStage, setLifeStage] = useState<LifeStage | null>(null);
   const [whyHere, setWhyHere] = useState("");
 
-  // Step 2 — how you like to work
-  const [styleAnswers, setStyleAnswers] = useState<Record<string, ProcessingStyle>>({});
-
-  // Step 3 — values
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [openValue, setOpenValue] = useState<string | null>(null);
-  const [blockedValue, setBlockedValue] = useState<string | null>(null);
-  const blockedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Step 4 — a trusted person
-  const [supportName, setSupportName] = useState("");
-  const [supportRelationship, setSupportRelationship] = useState("");
+  // Step 2
+  const [gap, setGap] = useState<string | null>(null);
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [supportNeeded, setSupportNeeded] = useState(false);
 
   // Carry the name from signup so nobody types it twice. Still editable, which
   // quietly makes the point that you can go by whatever you like here.
@@ -112,47 +100,17 @@ export default function OnboardingClient() {
       });
   }, []);
 
-  useEffect(() => () => {
-    if (blockedTimer.current) clearTimeout(blockedTimer.current);
-  }, []);
-
-  /**
-   * Functional updates rather than reading `selectedValues` from the render
-   * closure: two taps inside one React batch would otherwise both see the same
-   * array and the second would discard the first. Tapping three values quickly
-   * — which is exactly what this screen invites — registered as one.
-   */
-  function toggleValue(val: string) {
-    setSelectedValues((prev) => {
-      if (prev.includes(val)) return prev.filter((v) => v !== val);
-      if (prev.length >= 3) {
-        // Say why nothing happened, rather than leaving a dead-looking button.
-        setBlockedValue(val);
-        if (blockedTimer.current) clearTimeout(blockedTimer.current);
-        blockedTimer.current = setTimeout(() => setBlockedValue(null), 1800);
-        return prev;
-      }
-      return [...prev, val];
-    });
-  }
-
-  const openValueDefinition = openValue ? VALUES_WITH_DEFINITIONS[openValue] : null;
-
-  async function handleFinish(skip: boolean = false) {
+  /** Creates the profile at the end of step 1, so the story is a bonus, not a gate. */
+  async function saveProfile() {
     setLoading(true);
     setFinishError(null);
     const db = createClient() as any;
-    const { data: { user } } = await db.auth.getUser();
+    const {
+      data: { user },
+    } = await db.auth.getUser();
     if (!user) {
-      setLoading(false);
       router.push("/auth");
       return;
-    }
-
-    // Detect and persist processing style from the 3 style questions
-    const votes = Object.values(styleAnswers);
-    if (votes.length > 0) {
-      setProcessingStyle(tallyStyle(votes));
     }
 
     // Ensure the user row exists and mark onboarding complete in a single
@@ -166,11 +124,10 @@ export default function OnboardingClient() {
         {
           id: user.id,
           onboarding_complete: true,
-          ...(name ? { display_name: name } : {}),
+          ...(name.trim() ? { display_name: name.trim() } : {}),
         },
         { onConflict: "id" }
       );
-
     if (userErr) {
       setLoading(false);
       setFinishError(
@@ -185,31 +142,46 @@ export default function OnboardingClient() {
       await db.from("users").update({ life_stage: lifeStage }).eq("id", user.id);
     }
 
-    // Save onboarding results
+    // Non-fatal: the profile is already marked complete.
     const { error: resultsErr } = await db.from("onboarding_results").insert({
       user_id: user.id,
       why_here: whyHere,
-      values: selectedValues,
+      values: [],
     });
-    if (resultsErr) {
-      // Non-fatal: the profile is already marked complete, so don't block the
-      // user from continuing — just log it.
-      console.error("Failed to save onboarding results:", resultsErr.message);
-    }
+    if (resultsErr) console.error("Failed to save onboarding results:", resultsErr.message);
 
-    // Save support circle contact if provided
-    if (!skip && supportName && supportRelationship) {
-      await db.from("support_circle").insert({
+    setLoading(false);
+    if (storyId) setStep(2);
+    else router.push("/dashboard");
+  }
+
+  async function saveAnswer() {
+    if (!gap || !storyId) return;
+    setSaving(true);
+    const db = createClient() as any;
+    const {
+      data: { user },
+    } = await db.auth.getUser();
+    if (user) {
+      const { error } = await db.from("journal_entries").insert({
         user_id: user.id,
-        name: supportName,
-        relationship: supportRelationship,
+        mission_id: 1,
+        activity_id: "story-reflection",
+        prompt: GAP_QUESTION,
+        response: note.trim() ? `${gap}\n${note.trim()}` : gap,
       });
+      if (!error) markStoryActioned(storyId);
     }
-
+    setSaving(false);
+    // Someone who writes something alarming in their first minute sees help
+    // before anything else, and moves on when they choose to.
+    if (mentionsCrisis(note)) {
+      setSupportNeeded(true);
+      return;
+    }
     router.push("/dashboard");
   }
 
-  const TOTAL_STEPS = 4;
   const progressWidth = `${(step / TOTAL_STEPS) * 100}%`;
 
   return (
@@ -256,8 +228,7 @@ export default function OnboardingClient() {
               Let&apos;s start with you.
             </h1>
             <p className="text-ink-muted text-sm mb-6">
-              Three questions here, then three quick ones about how you like to
-              work, then values and one optional detail. Four short screens.
+              Three quick questions, then a one-minute story. That&apos;s it.
             </p>
 
             <div className="space-y-5">
@@ -375,12 +346,17 @@ export default function OnboardingClient() {
               </div>
             </div>
 
+            {finishError && (
+              <p role="alert" className="text-sm text-red-600 mt-4">
+                {finishError}
+              </p>
+            )}
             <button
-              onClick={() => setStep(2)}
-              disabled={!whyHere}
+              onClick={saveProfile}
+              disabled={!whyHere || loading}
               className="btn btn-primary w-full mt-6"
             >
-              Next
+              {loading ? "Setting up your account…" : "Next"}
             </button>
             {!whyHere && (
               <p className="text-xs text-ink-muted text-center mt-2">
@@ -391,302 +367,86 @@ export default function OnboardingClient() {
         </div>
       )}
 
-      {/* Step 2 — how you like to work. Its own screen: it was three questions
-          appearing unannounced under a heading that promised "a couple". */}
-      {step === 2 && (
+      {/* Step 2 — the first real thing: a story, then one question about it */}
+      {step === 2 && storyId && (
         <div className="w-full max-w-md animate-fade-up">
-          <div className="card p-8">
-            <h1
-              className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-            >
-              Three quick ones.
-            </h1>
-            <p className="text-ink-muted text-sm mb-6">
-              These change how much guidance each activity gives you — never what
-              the activities are. You can change it later in settings.
-            </p>
+          <h1
+            className="text-2xl text-navy mb-2"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+          >
+            One minute, one story.
+          </h1>
+          <p className="text-ink-muted text-sm mb-5">
+            Priya&apos;s story sets up your first mission. Watch it, then answer one
+            quick question.
+          </p>
 
-            <div className="space-y-5">
-              {STYLE_QUESTIONS.map((q) => (
-                <fieldset key={q.id}>
-                  <legend className="block text-sm font-medium text-ink mb-2">
-                    {q.question}
-                  </legend>
-                  <div className="space-y-2">
-                    {q.options.map((opt) => {
-                      const selected = styleAnswers[q.id] === opt.style;
-                      return (
-                        <button
-                          key={opt.style}
-                          type="button"
-                          onClick={() =>
-                            setStyleAnswers((prev) => ({ ...prev, [q.id]: opt.style }))
-                          }
-                          aria-pressed={selected}
-                          className={cn(
-                            "w-full text-left px-4 py-3 rounded-xl border transition-all text-sm",
-                            "flex items-start gap-2.5",
-                            selected
-                              ? "border-teal bg-teal/5 ring-1 ring-teal text-ink"
-                              : "border-surface-border bg-white text-ink-muted hover:border-teal/40"
-                          )}
-                          style={{ borderWidth: "1.5px" }}
-                        >
-                          <span
-                            aria-hidden
-                            className={cn(
-                              "w-4 h-4 rounded-full border flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5",
-                              selected
-                                ? "bg-teal border-teal text-white"
-                                : "border-surface-border text-transparent"
-                            )}
-                          >
-                            ✓
-                          </span>
-                          <span>{opt.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </fieldset>
-              ))}
-            </div>
+          <VersionOfMeFilm storyId={storyId} />
 
-            <div className="flex gap-3 mt-6">
-              <button onClick={() => setStep(1)} className="btn btn-secondary flex-1">
-                Back
-              </button>
-              <button
-                onClick={() => setStep(3)}
-                disabled={Object.keys(styleAnswers).length < STYLE_QUESTIONS.length}
-                className="btn btn-primary flex-[2]"
-              >
-                {Object.keys(styleAnswers).length < STYLE_QUESTIONS.length
-                  ? `${Object.keys(styleAnswers).length} of ${STYLE_QUESTIONS.length} answered`
-                  : "Next"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3 — values */}
-      {step === 3 && (
-        <div className="w-full max-w-md animate-fade-up">
-          <div className="card p-8">
-            <h1
-              className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-            >
-              What matters most to you?
-            </h1>
-            <p className="text-ink-muted text-sm mb-6">
-              Choose 3 values that feel genuinely true for you right now — not
-              the ones you think you should have. Tap the{" "}
-              <span className="font-medium">i</span> on any value to read what it
-              means.
-            </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-              {ONBOARDING_VALUES.map((label) => {
-                const selected = selectedValues.includes(label);
-                const atLimit = !selected && selectedValues.length >= 3;
-                const nudging = blockedValue === label;
-                const expanded = openValue === label;
-                return (
-                  <div key={label} className="relative">
-                    <button
-                      type="button"
-                      onClick={() => toggleValue(label)}
-                      aria-pressed={selected}
-                      className={cn(
-                        "w-full h-full p-3 pr-7 rounded-xl text-sm font-medium transition-all border text-left",
-                        nudging && "animate-nudge",
-                        selected
-                          ? "bg-navy text-white border-navy"
-                          : atLimit
-                          ? "bg-white text-ink-muted border-surface-border hover:border-navy/20"
-                          : "bg-white text-ink border-surface-border hover:border-navy/30"
-                      )}
-                    >
-                      {/* Selection is marked by a tick as well as by colour. */}
-                      {selected && <span aria-hidden className="mr-1">✓</span>}
-                      {label}
-                    </button>
-                    {/* Reading a definition must not cost you a selection, so
-                        the info affordance is its own control. */}
-                    <button
-                      type="button"
-                      onClick={() => setOpenValue(expanded ? null : label)}
-                      aria-expanded={expanded}
-                      aria-label={`What ${label} means`}
-                      className={cn(
-                        "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
-                        "text-[11px] font-semibold leading-none",
-                        "flex items-center justify-center transition-colors",
-                        selected
-                          ? "border-white/50 text-white/90 hover:bg-white/20"
-                          : "border-ink-muted/35 text-ink-muted hover:border-navy hover:text-navy"
-                      )}
-                    >
-                      i
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Definition / feedback area — fixed height prevents layout shift */}
-            <div className="mb-4 min-h-[5.5rem] flex items-start">
-              {blockedValue ? (
-                <div role="status" className="w-full rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-ink">
-                  You&apos;ve got three. Tap one of them to swap it out first.
-                </div>
-              ) : openValue && openValueDefinition ? (
-                <div className="w-full rounded-xl bg-teal/5 border border-teal/20 px-4 py-3 text-sm text-ink-muted">
-                  <span className="font-semibold text-ink">{openValue}: </span>
-                  {openValueDefinition}
-                </div>
-              ) : (
-                <p className="text-xs text-ink-muted px-1 pt-1">
-                  Not sure what one means? Tap its <span className="font-medium">i</span>.
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between text-xs text-ink-muted mb-6">
-              <span>{selectedValues.length} of 3 selected</span>
-              {selectedValues.length > 0 && (
+          <div className="card p-6">
+            {supportNeeded ? (
+              <>
+                <SupportCard />
                 <button
-                  onClick={() => setSelectedValues([])}
-                  className="text-teal hover:underline"
+                  onClick={() => router.push("/dashboard")}
+                  className="btn btn-primary w-full"
                 >
-                  Clear all
+                  Go to my dashboard
                 </button>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setStep(2)}
-                className="btn btn-secondary flex-1"
-              >
-                Back
-              </button>
-              <button
-                onClick={() => setStep(4)}
-                disabled={selectedValues.length < 3}
-                className="btn btn-primary flex-[2]"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Step 4 — a trusted person */}
-      {step === 4 && (
-        <div className="w-full max-w-md animate-fade-up">
-          <div className="card p-8">
-            <h1
-              className="text-2xl text-navy mb-2"
-              style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-            >
-              One last thing.
-            </h1>
-            <p className="text-ink-muted text-sm mb-6">
-              Groundwork works best alongside real people. If you have someone you could talk to when things get heavy — a parent, a coach, an older sibling, anyone — it&apos;s worth keeping them in mind.
-            </p>
-
-            <div className="bg-surface-muted rounded-xl p-4 mb-6 border border-surface-border space-y-2">
-              <p className="text-sm text-ink font-medium">
-                We never contact them. This stays between you and the app.
-              </p>
-              <p className="text-sm text-ink-muted">
-                It&apos;s completely optional — just a name to think of if you
-                ever need it. You can add or change this any time.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">
-                  Their name{" "}
-                  <span className="text-ink-muted font-normal">
-                    (optional)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={supportName}
-                  onChange={(e) => setSupportName(e.target.value)}
-                  placeholder={
-                    lifeStage && hasLeftSchool(lifeStage)
-                      ? "e.g. Mum, a mentor, my manager"
-                      : "e.g. Mum, Coach Ben, Mrs Thompson"
-                  }
-                  className="input"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">
-                  Relationship{" "}
-                  <span className="text-ink-muted font-normal">
-                    (optional)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={supportRelationship}
-                  onChange={(e) => setSupportRelationship(e.target.value)}
-                  placeholder={
-                    lifeStage && hasLeftSchool(lifeStage)
-                      ? "e.g. Parent, Friend, Manager"
-                      : "e.g. Parent, Teacher, Older sibling"
-                  }
-                  className="input"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 mt-6">
-              {finishError && (
-                <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
-                  {finishError}
-                </p>
-              )}
-              <button
-                onClick={() => handleFinish(false)}
-                disabled={loading}
-                className="btn btn-primary w-full"
-              >
-                {loading ? "Setting up your account…" : finishError ? "Try again" : "Start Mission 1"}
-              </button>
-              <div className="flex items-center justify-between">
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium text-ink mb-3">{GAP_QUESTION}</p>
+                <div className="space-y-2">
+                  {gapOptions(lifeStage).map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => setGap(opt)}
+                      aria-pressed={gap === opt}
+                      className={cn(
+                        "w-full text-left px-4 py-3 rounded-xl border text-sm transition-all",
+                        gap === opt
+                          ? "border-teal bg-teal/5 ring-1 ring-teal text-ink"
+                          : "border-surface-border bg-white text-ink hover:border-teal/40"
+                      )}
+                      style={{ borderWidth: "1.5px" }}
+                    >
+                      {gap === opt && <span aria-hidden>✓ </span>}
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+                {gap && (
+                  <div className="mt-3">
+                    <label htmlFor="gap-note" className="block text-xs text-ink-muted mb-1.5">
+                      Want to say more? Optional.
+                    </label>
+                    <textarea
+                      id="gap-note"
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      rows={3}
+                      className="input"
+                      placeholder="Only you will see this."
+                    />
+                  </div>
+                )}
                 <button
-                  onClick={() => setStep(3)}
-                  disabled={loading}
-                  className="text-sm text-ink-muted hover:text-ink transition-colors py-1"
+                  onClick={saveAnswer}
+                  disabled={!gap || saving}
+                  className="btn btn-primary w-full mt-5"
                 >
-                  Back
+                  {saving ? "Saving…" : "Save and go to my dashboard"}
                 </button>
                 <button
-                  onClick={() => handleFinish(true)}
-                  disabled={loading}
-                  className="text-sm text-ink-muted hover:text-ink transition-colors py-1"
+                  onClick={() => router.push("/dashboard")}
+                  className="block w-full text-center text-sm text-ink-muted hover:text-ink mt-3"
                 >
                   Skip for now
                 </button>
-              </div>
-            </div>
-
-            <p className="text-xs text-ink-muted text-center mt-4">
-              If you ever need more support, Kids Helpline is available 24/7
-              on 1800 55 1800.
-            </p>
+              </>
+            )}
           </div>
         </div>
       )}
