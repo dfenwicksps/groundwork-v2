@@ -1,9 +1,6 @@
 import { redirect, notFound } from "next/navigation";
-import { getLifeStage } from "@/lib/lifeStageServer";
-import { spineFor } from "@/lib/spine";
 import { createServerClient } from "@/lib/supabase-server";
 import { getMission } from "@/lib/missions";
-import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import MissionDetailClient from "./MissionDetailClient";
 
 export const dynamic = 'force-dynamic';
@@ -35,19 +32,6 @@ export default async function MissionPage({
     .select("id, title, teaser, tags")
     .eq("mission_id", missionId);
 
-  // How many missions are finished decides which track the banner calls first —
-  // the program follows the foundation rather than running beside it. The
-  // per-mission query above is scoped to this mission, so this one isn't.
-  const { data: allProgress } = await supabase
-    .from("mission_progress")
-    .select("mission_id, activity_id")
-    .eq("user_id", user.id);
-  const allRows = (allProgress || []) as {
-    mission_id: number;
-    activity_id: string;
-  }[];
-  const missionsDone = missionsCompleted(allRows);
-  const foundationDone = missionComplete(allRows, 1);
 
   const completedActivities = new Set((progress as Array<{ activity_id: string }> | null)?.map((p) => p.activity_id) || []);
 
@@ -56,11 +40,6 @@ export default async function MissionPage({
       mission={mission}
       userId={user.id}
       completedActivities={completedActivities}
-      spine={spineFor(
-        await getLifeStage(supabase, user.id),
-        missionsDone,
-        foundationDone
-      )}
       stories={stories || []}
     />
   );

@@ -2,20 +2,13 @@
 
 import Link from "next/link";
 import { MISSIONS, getActivityLabel } from "@/lib/missions";
-import { formatRelativeDate, truncate, cn } from "@/lib/utils";
-import type {
-  UserProfile,
-  MissionProgress,
-  Challenge,
-  JournalEntry,
-  SupportContact,
-} from "@/types/database";
+import { formatRelativeDate, truncate } from "@/lib/utils";
+import type { UserProfile, MissionProgress, Challenge } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
-import { TrackBadge } from "@/components/TrackBanner";
 import MissionsSummaryCard from "./MissionsSummaryCard";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
-import { LIFE_STAGE_OPTIONS, type LifeStage } from "@/lib/lifeStage";
+import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 
 type RevisitEntry = {
   id: string;
@@ -26,26 +19,18 @@ type RevisitEntry = {
   created_at: string;
 };
 
-type NudgeActivity = {
+type NextMissionStep = {
   missionId: number;
+  missionTitle: string;
+  question: string;
+  colour: string;
   activityId: string;
-  title: string;
+  activityTitle: string;
+  step: number;
+  total: number;
 };
 
-interface Props {
-  profile: UserProfile;
-  progress: MissionProgress[];
-  challenge: Challenge | null;
-  recentEntries: Partial<JournalEntry>[];
-  supportCircle: SupportContact[];
-  revisitEntry: RevisitEntry | null;
-  nudgeActivity: NudgeActivity | null;
-  spine: Spine;
-  programWeek: ProgramWeekCard;
-  lifeStage: LifeStage;
-  /** Present only once all four missions are done — replaces the active card */
-  missionSummary: MissionSummary | null;
-}
+type FeaturedStory = { id: string; title: string; teaser: string; film: boolean };
 
 type ProgramWeekCard = {
   week: number;
@@ -57,30 +42,20 @@ type ProgramWeekCard = {
   allDone: boolean;
 };
 
-/**
- * Mission progress in the same units the program uses. The program says
- * "Week 3 of 10"; a mission saying "40%" made two tracks that already look
- * like rivals measure themselves differently too. `step` is the one the
- * student is up to — done + 1 — so it reads the way "Week 3 of 10" does.
- */
-function getMissionProgress(
-  missionId: number,
-  progress: MissionProgress[]
-): { done: number; total: number; step: number; pct: number; complete: boolean } {
-  const mission = MISSIONS.find((m) => m.id === missionId);
-  if (!mission) return { done: 0, total: 0, step: 1, pct: 0, complete: false };
-  const total = mission.activities.filter((a) => !a.locked).length;
-  const done = Math.min(
-    progress.filter((p) => p.mission_id === missionId).length,
-    total
-  );
-  return {
-    done,
-    total,
-    step: Math.min(done + 1, total),
-    pct: total ? Math.round((done / total) * 100) : 0,
-    complete: total > 0 && done >= total,
-  };
+interface Props {
+  profile: UserProfile;
+  progress: MissionProgress[];
+  challenge: Challenge | null;
+  supportCount: number;
+  revisitEntry: RevisitEntry | null;
+  welcomeBack: boolean;
+  nextMissionStep: NextMissionStep | null;
+  featuredStory: FeaturedStory | null;
+  spine: Spine;
+  programWeek: ProgramWeekCard;
+  lifeStage: LifeStage;
+  /** Present only once all four missions are done */
+  missionSummary: MissionSummary | null;
 }
 
 const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
@@ -90,14 +65,47 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   4: "meaning-challenge",
 };
 
+function missionsComplete(progress: MissionProgress[]): number {
+  return MISSIONS.filter((m) => {
+    const total = m.activities.filter((a) => !a.locked).length;
+    return total > 0 && progress.filter((p) => p.mission_id === m.id).length >= total;
+  }).length;
+}
+
+function Arrow({ className = "" }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className={className}>
+      <path
+        d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Home. One thing to do next, then only what's time-sensitive, then a story.
+ *
+ * It used to be about ten stacked sections: both tracks as rival cards, the
+ * mission map, recent reflections, the support circle and a stats row. Each
+ * made sense alone; together a fourteen-year-old couldn't see what to do
+ * today. Everything removed lives on its own tab (Missions, Journal, Support).
+ *
+ * "Up next" follows the spine: the next mission step while the missions lead
+ * (until Mission 1 is done), then this week of the ten-week program.
+ */
 export default function DashboardClient({
   profile,
   progress,
   challenge,
-  recentEntries,
-  supportCircle,
+  supportCount,
   revisitEntry,
-  nudgeActivity,
+  welcomeBack,
+  nextMissionStep,
+  featuredStory,
   spine,
   programWeek,
   lifeStage,
@@ -107,120 +115,202 @@ export default function DashboardClient({
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const missionsDone = missionsComplete(progress);
 
-  const activeMission = MISSIONS.find((m) => m.id === profile.active_mission) || MISSIONS[0];
-  const activeMissionProgress = getMissionProgress(profile.active_mission, progress);
-
-  const totalCompleted = progress.length;
-  const missionsDone = MISSIONS.filter((m) => getMissionProgress(m.id, progress).complete).length;
-
-  // The program's "this week" — the dashboard previously never mentioned the
-  // program at all, so a student who didn't tap its nav icon never met it.
-  const programCard = (
-    <div data-animate="2">
-      <div className="flex items-baseline gap-2 flex-wrap mb-3">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-          {programWeek.allDone
-            ? "The weekly five"
-            : programWeek.started
-              ? "Carry on with"
-              : spine.missionsFirst
-                // The badge beside this already says "After Mission 1", so the
-                // heading names the thing rather than repeating the timing.
-                ? "The ten weeks"
-                : "This week"}
-        </h2>
-        <TrackBadge lead={spine.lead === "program"} missionsFirst={spine.missionsFirst} />
-      </div>
+  const upNext =
+    spine.lead === "mission" && nextMissionStep ? (
       <Link
-        href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
-        className="block rounded-2xl p-5 text-white"
-        style={{ background: "var(--navy)" }}
+        href={`/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`}
+        className="block rounded-2xl p-6 text-white relative overflow-hidden group"
+        style={{ background: nextMissionStep.colour }}
       >
         <div
-          className="text-[11px] font-bold uppercase tracking-widest mb-1"
-          style={{ color: "var(--gold)" }}
-        >
+          className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 bg-white"
+          style={{ transform: "translate(30%, -30%)" }}
+          aria-hidden
+        />
+        <div className="relative">
+          <div className="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">
+            Mission {nextMissionStep.missionId} · {nextMissionStep.missionTitle} · Step{" "}
+            {nextMissionStep.step} of {nextMissionStep.total}
+          </div>
+          <p className="text-2xl mb-1" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+            {nextMissionStep.activityTitle}
+          </p>
+          <p className="text-sm opacity-90 italic">{nextMissionStep.question}</p>
+          <span className="inline-flex items-center gap-2 mt-4 bg-white/20 group-hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+            {nextMissionStep.step === 1 ? "Start" : "Carry on"}
+            <Arrow />
+          </span>
+        </div>
+      </Link>
+    ) : (
+      <Link
+        href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
+        className="block rounded-2xl p-6 text-white group"
+        style={{ background: "var(--navy)" }}
+      >
+        <div className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
           {programWeek.allDone
             ? "All ten weeks done"
             : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}
         </div>
-        <p
-          className="text-xl mb-2"
-          style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-        >
+        <p className="text-2xl mb-1" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
           {programWeek.allDone ? "Keep the weekly five going" : programWeek.title}
         </p>
         <p className="text-sm leading-relaxed opacity-90">
           {programWeek.allDone ? spine.programBlurb : programWeek.challenge}
         </p>
+        <span className="inline-flex items-center gap-2 mt-4 bg-white/15 group-hover:bg-white/25 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+          {programWeek.allDone
+            ? "Open the weekly five"
+            : programWeek.started
+              ? "Carry on"
+              : "Start this week"}
+          <Arrow />
+        </span>
       </Link>
-      {!programWeek.started && !programWeek.allDone && (
-        <p className="text-xs text-ink-muted leading-relaxed mt-2">
-          {spine.programBlurb}
-        </p>
-      )}
-    </div>
-  );
+    );
 
-  // Year 12s arrive with questions about next year; the character program is
-  // not the answer to those, so the near-future work is offered above it.
-  const futureCard = spine.futureFirst ? (
-    <div data-animate="2">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-        Next year
-      </h2>
-      <Link
-        href="/me?tab=future"
-        className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
-      >
-        <span className="text-2xl flex-shrink-0" aria-hidden>
-          🧭
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-ink">
-            Pathways and goals
-          </div>
-          <p className="text-xs text-ink-muted leading-relaxed">
-            Where your strengths point, and the first concrete steps after school.
-          </p>
-        </div>
-        <span className="text-ink-muted flex-shrink-0" aria-hidden>
-          →
-        </span>
-      </Link>
-    </div>
-  ) : null;
+  // Only what's time-sensitive or specific to them — never a second "to do".
+  const alsoNow: { key: string; href: string; icon: string; title: string; sub: string }[] = [];
+  if (challenge) {
+    alsoNow.push({
+      key: "challenge",
+      href: `/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`,
+      icon: "⚑",
+      title: "Check in on your mission challenge",
+      sub: `Started ${formatRelativeDate(challenge.issued_at)} · ${truncate(challenge.challenge_text, 70)}`,
+    });
+  }
+  if (revisitEntry) {
+    alsoNow.push({
+      key: "revisit",
+      href: `/revisit/${revisitEntry.id}`,
+      icon: "↩",
+      title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
+      sub: `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
+    });
+  }
+  if (spine.futureFirst) {
+    alsoNow.push({
+      key: "future",
+      href: "/me?tab=future",
+      icon: "→",
+      title: "Pathways and goals",
+      sub: hasLeftSchool(lifeStage)
+        ? "Where your strengths point, and your next concrete steps."
+        : "Where your strengths point, and the first steps after school.",
+    });
+  }
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-
-        {/* Header */}
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-7">
+        {/* Greeting */}
         <div data-animate="1">
           <p className="text-sm text-ink-muted mb-1">{greeting}</p>
-          <h1
-            className="text-3xl text-navy"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-          >
+          <h1 className="text-3xl text-navy" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             {firstName}.
           </h1>
+          {welcomeBack && (
+            <p className="text-sm text-ink-muted mt-2">
+              Welcome back. No catching up to do — here&apos;s the next thing.
+            </p>
+          )}
+        </div>
 
-          {/* Two tracks run in parallel forever, and nothing inside the app
-              said so — a student could reasonably think finishing the missions
-              unlocks the program, or that picking one abandons the other.
-              Once Mission 1 is done the two really are parallel; until then
-              there genuinely is an order, and saying so beats a badge. */}
-          {/* The order, from the one place that knows it. This used to be its
-              own copy of the sentence and went stale the moment the gate moved
-              from all four missions to Mission 1. */}
-          <p className="text-sm text-ink-muted mt-3 leading-relaxed max-w-md">
-            {spine.orderLine}
-          </p>
+        {/* Up next — the one thing to do */}
+        <section data-animate="2" aria-labelledby="up-next">
+          <h2 id="up-next" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+            Up next
+          </h2>
+          {upNext}
+          <p className="text-xs text-ink-muted leading-relaxed mt-2">{spine.orderLine}</p>
+        </section>
 
-          {/* The app reorders itself by life stage. Unannounced, that effort is
-              invisible; named, it reads as the app paying attention. */}
-          <p className="text-xs text-ink-muted mt-2">
+        {/* Also now */}
+        {alsoNow.length > 0 && (
+          <section data-animate="3" aria-labelledby="also-now">
+            <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              Also now
+            </h2>
+            <div className="space-y-2">
+              {alsoNow.map((row) => (
+                <Link
+                  key={row.key}
+                  href={row.href}
+                  className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
+                >
+                  <span
+                    className="w-9 h-9 rounded-xl bg-surface-muted flex items-center justify-center text-base text-ink-muted flex-shrink-0"
+                    aria-hidden
+                  >
+                    {row.icon}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-ink">{row.title}</div>
+                    <p className="text-xs text-ink-muted leading-relaxed truncate">{row.sub}</p>
+                  </div>
+                  <Arrow className="text-ink-muted flex-shrink-0" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* What the missions found, once there's all of it */}
+        {missionSummary && <MissionsSummaryCard summary={missionSummary} />}
+
+        {/* A story, because most students never go looking for one */}
+        {featuredStory && (
+          <section data-animate="4" aria-labelledby="story-for-you">
+            <h2 id="story-for-you" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              A story for you
+            </h2>
+            <Link
+              href={`/stories/${featuredStory.id}`}
+              className="card p-5 block hover:shadow-card transition-all"
+            >
+              {featuredStory.film && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5 rounded-full bg-navy/10 text-navy text-xs font-medium">
+                  <svg aria-hidden="true" width="8" height="8" viewBox="0 0 12 12" fill="currentColor">
+                    <path d="M3 1.8v8.4c0 .6.65.97 1.16.66l6.3-4.2a.78.78 0 000-1.32l-6.3-4.2A.78.78 0 003 1.8z" />
+                  </svg>
+                  Animated · 1 min
+                </span>
+              )}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-base font-semibold text-navy mb-1">{featuredStory.title}</p>
+                  <p className="text-sm text-ink-muted leading-relaxed">{featuredStory.teaser}</p>
+                </div>
+                <Arrow className="text-ink-muted flex-shrink-0 mt-1" />
+              </div>
+            </Link>
+          </section>
+        )}
+
+        {/* Where things stand, one line each, linking to the tab with the detail */}
+        <div data-animate="5" className="pt-4 border-t border-surface-border space-y-2 text-sm">
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/missions" className="text-ink-muted hover:text-ink">
+              Missions <span className="font-semibold text-ink">{missionsDone} of 4</span>
+            </Link>
+            <Link href="/program" className="text-ink-muted hover:text-ink">
+              Weeks <span className="font-semibold text-ink">{programWeek.weeksDone} of 10</span>
+            </Link>
+            <Link href="/support" className="text-ink-muted hover:text-ink">
+              {supportCount > 0 ? (
+                <>
+                  Your support circle <span className="font-semibold text-ink">{supportCount}</span>
+                </>
+              ) : (
+                <>Add someone you trust</>
+              )}
+            </Link>
+          </div>
+          <p className="text-xs text-ink-muted">
             Tuned for:{" "}
             <span className="font-medium text-ink">
               {LIFE_STAGE_OPTIONS.find((y) => y.key === lifeStage)?.label ?? "Year 10–11"}
@@ -232,471 +322,6 @@ export default function DashboardClient({
             .
           </p>
         </div>
-
-        {/* The spine decides what leads. Juniors get the week first; everyone
-            else gets their mission. Either way the other track follows
-            immediately, so "Start here" and "Alongside" are read together. */}
-        {/* Year 12s arrive with questions about next year, so the near-future
-            work sits above whichever track leads. This used to live inside the
-            "mission leads" branch below, which meant that once Mission 1 was
-            done and the program took over the lead, the one card the senior
-            spine exists to surface stopped rendering at all. */}
-        {spine.futureFirst && futureCard}
-
-        {spine.lead === "program" && programCard}
-
-        {/* With all four finished there is no active mission, and the card was
-            still offering "Continue" on something already complete. */}
-        {missionSummary ? (
-          <MissionsSummaryCard summary={missionSummary} />
-        ) : (
-        <div data-animate="2">
-          {/* Both cards carry the same marker, so "which one first?" is answered
-              on the dashboard rather than only once you're inside a track. */}
-          <div className="flex items-baseline gap-2 flex-wrap mb-3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-              Your mission
-            </h2>
-            <TrackBadge lead={spine.lead !== "program"} missionsFirst={spine.missionsFirst} />
-          </div>
-          <div
-            className="rounded-2xl p-6 text-white relative overflow-hidden"
-            style={{ background: activeMission.colour }}
-          >
-            {/* Background decoration */}
-            <div
-              className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10"
-              style={{
-                background: "white",
-                transform: "translate(30%, -30%)",
-              }}
-            />
-            <div
-              className="absolute bottom-0 right-8 w-24 h-24 rounded-full opacity-10"
-              style={{
-                background: "white",
-                transform: "translate(0, 40%)",
-              }}
-            />
-
-            <div className="relative">
-              <div className="text-xs font-medium opacity-70 mb-1">
-                {activeMission.subtitle} — Active
-              </div>
-              <h2
-                className="text-2xl mb-1"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 400,
-                  fontStyle: "italic",
-                }}
-              >
-                {activeMission.question}
-              </h2>
-
-              <div className="mt-4 mb-2">
-                <div className="flex items-center justify-between text-xs mb-1.5 opacity-80">
-                  <span>
-                    {activeMissionProgress.complete
-                      ? `All ${activeMissionProgress.total} steps done`
-                      : `Step ${activeMissionProgress.step} of ${activeMissionProgress.total}`}
-                  </span>
-                  <span>
-                    {activeMissionProgress.done} of {activeMissionProgress.total} complete
-                  </span>
-                </div>
-                <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-white/80 rounded-full transition-all duration-500"
-                    style={{ width: `${activeMissionProgress.pct}%` }}
-                  />
-                </div>
-              </div>
-
-              <Link
-                href={`/missions/${profile.active_mission}`}
-                className="inline-flex items-center gap-2 mt-4 bg-white/20 hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium"
-              >
-                Continue mission
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path
-                    d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Link>
-            </div>
-          </div>
-        </div>
-        )}
-
-        {spine.lead !== "program" && programCard}
-
-        {/* Revisit prompt — Evaluation Cycle */}
-        {revisitEntry && (
-          <div data-animate="3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              Time to check back in
-            </h2>
-            <Link
-              href={`/revisit/${revisitEntry.id}`}
-              className={cn(
-                "card p-5 flex items-start gap-4 hover:shadow-card transition-all group",
-                "border-l-4"
-              )}
-              style={{ borderLeftColor: "#15803D" }}
-            >
-              <div className="w-9 h-9 rounded-xl bg-sage/10 flex items-center justify-center text-lg flex-shrink-0">
-                ↩
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ink mb-1">
-                  {getActivityLabel(revisitEntry.activity_id)}
-                </p>
-                <p className="text-xs text-ink-muted mb-2">
-                  Written {formatRelativeDate(revisitEntry.created_at)} · Does it still feel true?
-                </p>
-                <p className="text-xs text-ink-muted italic line-clamp-2">
-                  &ldquo;{truncate(revisitEntry.response, 100)}&rdquo;
-                </p>
-              </div>
-              <svg aria-hidden="true"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="text-ink-muted group-hover:text-ink-muted flex-shrink-0 mt-1 transition-colors"
-              >
-                <path
-                  d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-          </div>
-        )}
-
-        {/* Avoidance nudge — gentle re-entry when inactive 10+ days */}
-        {nudgeActivity && (
-          <div data-animate="3">
-            <Link
-              href={`/missions/${nudgeActivity.missionId}/activities/${nudgeActivity.activityId}`}
-              className="card p-5 flex items-start gap-4 hover:shadow-card transition-all group border border-dashed border-surface-border hover:border-navy/20"
-            >
-              <div className="w-9 h-9 rounded-xl bg-navy/5 flex items-center justify-center text-lg flex-shrink-0">
-                ✦
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-ink mb-0.5">
-                  {nudgeActivity.title} — whenever you&apos;re ready
-                </p>
-                <p className="text-xs text-ink-muted mb-2">
-                  Your next step is here. No pressure on timing.
-                </p>
-              </div>
-              <svg aria-hidden="true"
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                className="text-ink-muted/30 group-hover:text-ink-muted flex-shrink-0 mt-1 transition-colors"
-              >
-                <path
-                  d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-          </div>
-        )}
-
-        {/* Active Challenge */}
-        {challenge && (
-          <div data-animate="3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              Your mission challenge
-            </h2>
-            <div className="card p-5 border-l-4" style={{ borderLeftColor: "#F59E0B" }}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium text-ink mb-1">
-                    {challenge.challenge_text}
-                  </p>
-                  <p className="text-xs text-ink-muted">
-                    Started {formatRelativeDate(challenge.issued_at)}
-                  </p>
-                </div>
-                <Link
-                  href={`/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`}
-                  className="flex-shrink-0 bg-gold/10 text-gold-text hover:bg-gold/20 transition-colors px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap"
-                >
-                  Check in
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mission Map */}
-        <div data-animate="3">
-          <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            Mission map
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {MISSIONS.map((mission) => {
-              const mProgress = getMissionProgress(mission.id, progress);
-              const isActive = mission.id === profile.active_mission;
-              const isLocked = mission.id > profile.active_mission;
-
-              return (
-                <Link
-                  key={mission.id}
-                  href={isLocked ? "#" : `/missions/${mission.id}`}
-                  className={`card p-4 transition-all group ${
-                    isLocked ? "pointer-events-none" : "hover:shadow-card"
-                  }`}
-                  aria-disabled={isLocked}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold text-white"
-                      style={{ background: mission.colour }}
-                    >
-                      {mission.id}
-                    </div>
-                    {isActive && !mProgress.complete && (
-                      <span className="text-xs font-medium text-teal bg-teal/10 px-2 py-0.5 rounded-full">
-                        Active
-                      </span>
-                    )}
-                    {mProgress.complete && (
-                      <span className="text-xs font-medium text-sage bg-sage/10 px-2 py-0.5 rounded-full">
-                        Done ✓
-                      </span>
-                    )}
-                    {isLocked && (
-                      <span className="text-xs text-ink-muted">Next</span>
-                    )}
-                  </div>
-                  <div
-                    className={`text-sm font-semibold mb-0.5 ${isLocked ? "text-ink-muted" : "text-navy"}`}
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {mission.title}
-                  </div>
-                  <div className={`text-xs mb-3 line-clamp-1 ${isLocked ? "text-ink-muted" : "text-ink-muted"}`} style={{ fontStyle: "italic" }}>
-                    {mission.question}
-                  </div>
-                  {!isLocked && (
-                    <>
-                      <div className="text-[11px] text-ink-muted mb-1.5">
-                        {mProgress.done} of {mProgress.total} steps
-                      </div>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: `${mProgress.pct}%` }}
-                        />
-                      </div>
-                    </>
-                  )}
-                  {isLocked && (
-                    <div className="h-1.5 rounded-full bg-surface-border/50" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent Reflections */}
-        {recentEntries.length > 0 && (
-          <div data-animate="4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-                Recent reflections
-              </h2>
-              <Link
-                href="/journal"
-                className="text-xs text-teal hover:underline"
-              >
-                View all
-              </Link>
-            </div>
-            <div className="space-y-2">
-              {recentEntries.map((entry) => (
-                <Link
-                  key={entry.id}
-                  href={`/journal`}
-                  className="card p-4 flex items-center justify-between group hover:shadow-card transition-all"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{
-                        background:
-                          MISSIONS.find((m) => m.id === entry.mission_id)
-                            ?.colour || "#4F46E5",
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium text-ink truncate">
-                        {entry.activity_id
-                          ? getActivityLabel(entry.activity_id) ||
-                            entry.activity_id
-                          : "Reflection"}
-                        {entry.is_milestone && (
-                          <span className="ml-2 text-xs text-gold-text bg-gold/10 px-1.5 py-0.5 rounded">
-                            ★ Milestone
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-ink-muted mt-0.5">
-                        {entry.created_at
-                          ? formatRelativeDate(entry.created_at)
-                          : ""}
-                      </div>
-                    </div>
-                  </div>
-                  <svg aria-hidden="true"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    className="text-ink-muted group-hover:text-ink-muted flex-shrink-0 ml-3 transition-colors"
-                  >
-                    <path
-                      d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Support Circle Widget */}
-        <div data-animate="5">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-              Your support circle
-            </h2>
-            <Link href="/support" className="text-xs text-teal hover:underline">
-              Manage
-            </Link>
-          </div>
-
-          {supportCircle.length > 0 ? (
-            <div className="card p-5">
-              <p className="text-sm text-ink-muted mb-3">
-                The people in your corner:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {supportCircle.map((contact) => (
-                  <div
-                    key={contact.id}
-                    className="flex items-center gap-2 bg-surface-muted rounded-lg px-3 py-2"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center text-xs font-semibold text-navy">
-                      {contact.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-ink">
-                        {contact.name}
-                      </div>
-                      <div className="text-xs text-ink-muted">
-                        {contact.relationship}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-ink-muted mt-4 leading-relaxed">
-                If things ever feel too hard, reach out to one of these people.
-                Real conversations matter more than anything on this app.
-              </p>
-            </div>
-          ) : (
-            <Link href="/support" className="card p-5 block hover:shadow-card transition-all group">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-teal/10 flex items-center justify-center text-lg flex-shrink-0">
-                  🤝
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-ink mb-1">
-                    Add a trusted person
-                  </p>
-                  <p className="text-xs text-ink-muted leading-relaxed">
-                    Groundwork works best alongside real relationships. Add
-                    someone you could talk to if things get hard.
-                  </p>
-                </div>
-              </div>
-            </Link>
-          )}
-        </div>
-
-        {/* Stats row */}
-        {totalCompleted > 0 && (
-          <div data-animate="6" className="grid grid-cols-3 gap-3">
-            {[
-              {
-                label: "Activities done",
-                value: totalCompleted,
-                color: "#4F46E5",
-              },
-              missionsDone > 0
-                ? { label: "Missions done", value: missionsDone, color: "#0E7490" }
-                : {
-                    label: "Missions started",
-                    value: MISSIONS.filter((m) =>
-                      progress.some((p) => p.mission_id === m.id)
-                    ).length,
-                    color: "#0E7490",
-                  },
-              {
-                label: "Days since you joined",
-                value: Math.max(
-                  1,
-                  Math.ceil(
-                    (new Date().getTime() -
-                      new Date(profile.created_at).getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )
-                ),
-                color: "#15803D",
-              },
-            ].map((stat) => (
-              <div key={stat.label} className="card p-4 text-center">
-                <div
-                  className="text-2xl font-semibold mb-1"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: stat.color,
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div className="text-xs text-ink-muted leading-tight">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </AppShell>
   );

@@ -12,6 +12,7 @@ import {
   hasSummary,
   type MissionSummary,
 } from "@/lib/missionSummary";
+import { storyHasFilm } from "@/components/stories/films";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
@@ -59,14 +60,6 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
   const challenge = _challenge as import("@/types/database").Challenge | null;
-
-  // Fetch recent journal entries (last 3, titles only)
-  const { data: recentEntries } = await supabase
-    .from("journal_entries")
-    .select("id, mission_id, activity_id, prompt, created_at, is_milestone")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(3);
 
   // Fetch support circle
   const { data: supportCircle } = await supabase
@@ -140,46 +133,65 @@ export default async function DashboardPage() {
   const revisitEntry =
     eligible.find((e) => e.is_milestone) || eligible[0] || null;
 
-  // Compute nudge eligibility — only when no revisit card is already showing.
-  // Triggers when: last activity completion was 10+ days ago, OR account is
-  // 7+ days old with zero completions. Never shows alongside the revisit card.
-  type NudgeActivity = { missionId: number; activityId: string; title: string; sentenceStarter?: string };
-  let nudgeActivity: NudgeActivity | null = null;
+  // Away 10+ days (or signed up a week ago and never started): Home says
+  // "welcome back" above the next step rather than adding a card about it.
+  const progressRows = (progress || []) as import("@/types/database").MissionProgress[];
+  const lastCompletion = progressRows.length
+    ? progressRows
+        .map((p) => new Date(p.completed_at).getTime())
+        .reduce((a, b) => Math.max(a, b), 0)
+    : null;
+  const daysAway =
+    (Date.now() - (lastCompletion ?? new Date(profile.created_at).getTime())) /
+    (1000 * 60 * 60 * 24);
+  const welcomeBack = daysAway >= (lastCompletion ? 10 : 7);
 
-  if (!revisitEntry) {
-    const progressRows = (progress || []) as import("@/types/database").MissionProgress[];
-    const now = new Date();
-    const accountAgeDays =
-      (now.getTime() - new Date(profile.created_at).getTime()) /
-      (1000 * 60 * 60 * 24);
-
-    const lastCompletion = progressRows.length
-      ? progressRows
-          .map((p) => new Date(p.completed_at).getTime())
-          .reduce((a, b) => Math.max(a, b), 0)
+  // The next mission step: the first unfinished step of the first unfinished
+  // mission. Home's "Up next" offers it while the missions lead.
+  const completedIds = new Set(progressRows.map((p) => p.activity_id));
+  const nextMission = MISSIONS.find((m) =>
+    m.activities.some((a) => !a.locked && !completedIds.has(a.id))
+  );
+  const nextActivity = nextMission?.activities.find(
+    (a) => !a.locked && !completedIds.has(a.id)
+  );
+  const nextMissionStep =
+    nextMission && nextActivity
+      ? {
+          missionId: nextMission.id,
+          missionTitle: nextMission.title,
+          question: nextMission.question,
+          colour: nextMission.colour,
+          activityId: nextActivity.id,
+          activityTitle: nextActivity.title,
+          step: nextMission.activities.filter((a) => !a.locked).indexOf(nextActivity) + 1,
+          total: nextMission.activities.filter((a) => !a.locked).length,
+        }
       : null;
 
-    const daysSinceLast = lastCompletion
-      ? (now.getTime() - lastCompletion) / (1000 * 60 * 60 * 24)
-      : accountAgeDays;
-
-    if (daysSinceLast >= 10) {
-      const activeMissionData = MISSIONS.find(
-        (m) => m.id === profile.active_mission
-      );
-      const completedIds = new Set(progressRows.map((p) => p.activity_id));
-      const next = activeMissionData?.activities.find(
-        (a) => !a.locked && !completedIds.has(a.id)
-      );
-      if (next) {
-        nudgeActivity = {
-          missionId: profile.active_mission,
-          activityId: next.id,
-          title: next.title,
-        };
-      }
-    }
-  }
+  // One story to offer: an unwatched film first, then any story not yet read
+  // and reflected on. Stories got a tab, but Home is where most students look.
+  const [{ data: storiesRaw }, { data: readsRaw }] = await Promise.all([
+    (supabase as any).from("stories").select("id, title, teaser, mission_id").order("mission_id"),
+    (supabase as any).from("story_reads").select("story_id, read_at, actioned_at").eq("user_id", user.id),
+  ]);
+  const stories = (storiesRaw || []) as { id: string; title: string; teaser: string; mission_id: number }[];
+  const reads = new Map(
+    ((readsRaw || []) as { story_id: string; read_at: string | null; actioned_at: string | null }[]).map(
+      (r) => [r.story_id, r]
+    )
+  );
+  const unfinished = stories.filter((st) => {
+    const r = reads.get(st.id);
+    return !(r?.read_at && r?.actioned_at);
+  });
+  const featured =
+    unfinished.find((st) => storyHasFilm(st.title) && !reads.get(st.id)?.read_at) ??
+    unfinished[0] ??
+    null;
+  const featuredStory = featured
+    ? { id: featured.id, title: featured.title, teaser: featured.teaser, film: storyHasFilm(featured.title) }
+    : null;
 
   // ── The spine ──
   // Which track leads is a function of life stage, not of what happens to be
@@ -267,10 +279,11 @@ export default async function DashboardPage() {
       profile={profile}
       progress={progress || []}
       challenge={challenge || null}
-      recentEntries={recentEntries || []}
-      supportCircle={supportCircle || []}
+      supportCount={(supportCircle || []).length}
       revisitEntry={revisitEntry || null}
-      nudgeActivity={nudgeActivity}
+      welcomeBack={welcomeBack}
+      nextMissionStep={nextMissionStep}
+      featuredStory={featuredStory}
       spine={spine}
       lifeStage={lifeStage}
       missionSummary={summary}
