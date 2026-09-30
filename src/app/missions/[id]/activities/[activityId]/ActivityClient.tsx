@@ -1202,9 +1202,25 @@ function ConversationalActivity({
           {turns.length === 0 && existingResponse && (
             <div className="card p-5 mb-5" data-animate="2">
               <p className="text-xs text-[--ink-muted] font-medium mb-2">Your reflection</p>
-              <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">
-                {existingResponse}
-              </p>
+              {questions.length > 1 ? (
+                <div className="space-y-4">
+                  {parsePrevAnswers(existingResponse).map((answer, i) => (
+                    <div key={i}>
+                      {i > 0 && <div className="h-px bg-[--border] mb-4" />}
+                      <p className="text-xs text-[--ink-muted] mb-1.5 leading-relaxed">
+                        {questions[i]}
+                      </p>
+                      <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">
+                        {answer.trim() || "—"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">
+                  {existingResponse}
+                </p>
+              )}
             </div>
           )}
 

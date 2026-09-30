@@ -31,7 +31,7 @@ this progression, adding a final **integration** phase:
 
 | Mission | Theme | Question | Phase |
 | --- | --- | --- | --- |
-| 1 | Identity | What am I actually like? | Exploration |
+| 1 | Identity | Who am I? | Exploration |
 | 2 | Purpose | What do I care about? | Commitment |
 | 3 | Connection | Where do I belong? | Commitment |
 | 4 | Meaning | What kind of life do I want? | Integration |
@@ -61,7 +61,7 @@ Each mission's activities draw on a specific body of research, captured in the
 `whyItMatters` field of the relevant activity in
 [`src/lib/missions.ts`](../src/lib/missions.ts).
 
-### Mission 1 — Identity ("What am I actually like?")
+### Mission 1 — Identity ("Who am I?")
 
 The app frames identity in **three layers**, used as its own integrating scaffold (the
 "Integrated Identity Framework"):

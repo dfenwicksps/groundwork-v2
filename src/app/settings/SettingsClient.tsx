@@ -15,12 +15,15 @@ export default function SettingsClient({
   email,
   displayName,
   savedValues,
+  missionValues,
   aiReflectionsEnabled,
 }: {
   userId: string;
   email: string;
   displayName: string;
   savedValues: string[];
+  /** From Mission 1's Values Clarifier. Once these exist they're the student's values everywhere else. */
+  missionValues: string[];
   aiReflectionsEnabled: boolean;
 }) {
   const router = useRouter();
@@ -238,7 +241,7 @@ export default function SettingsClient({
         <div data-animate="3" className="card p-6">
           <div className="flex items-center justify-between mb-1">
             <h2 className="font-semibold text-ink">Your values</h2>
-            {!editingValues && (
+            {!editingValues && missionValues.length === 0 && (
               <button
                 onClick={() => setEditingValues(true)}
                 className="text-sm text-teal hover:underline"
@@ -247,8 +250,34 @@ export default function SettingsClient({
               </button>
             )}
           </div>
+          {missionValues.length > 0 ? (
+            <>
+              <p className="text-sm text-ink-muted mb-4">
+                From the Values Clarifier in Mission 1. These are the values the rest of the app
+                shows you.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {missionValues.map((val) => (
+                  <span
+                    key={val}
+                    className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
+                  >
+                    {val}
+                  </span>
+                ))}
+              </div>
+              <Link
+                href="/missions/1/activities/values-clarifier"
+                className="text-sm text-teal hover:underline"
+              >
+                Redo the Values Clarifier to change them
+              </Link>
+            </>
+          ) : (
+          <>
           <p className="text-sm text-ink-muted mb-4">
-            The three values you chose when you started. You can update them any time.
+            The three you picked when you started. Mission 1&apos;s Values Clarifier goes deeper,
+            and once you&apos;ve done it, those become your values.
           </p>
 
           {!editingValues ? (
@@ -316,6 +345,8 @@ export default function SettingsClient({
                 <p role="alert" className="text-xs text-red-600 mt-2">{valuesError}</p>
               )}
             </div>
+          )}
+          </>
           )}
         </div>
 

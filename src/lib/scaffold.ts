@@ -4,7 +4,8 @@
 // not knowing how to start a sentence about yourself.
 //
 // The three tiers differ by how much structure the student gets, not by how
-// much they're expected to write:
+// much they're expected to write. The labels name what the student does; the
+// keys are what's stored, so they don't change:
 //
 //   quick     — tap a complete answer someone else has worded
 //   extended  — complete a sentence someone else has started
@@ -20,17 +21,17 @@ export type Tier = "quick" | "extended" | "open";
 export const TIERS: { key: Tier; label: string; blurb: string }[] = [
   {
     key: "quick",
-    label: "Quick",
+    label: "Tap",
     blurb: "Tap an answer that fits. No writing needed — you can still edit it after.",
   },
   {
     key: "extended",
-    label: "Extended",
+    label: "Starters",
     blurb: "Start with a half-written sentence and finish it in your own words.",
   },
   {
     key: "open",
-    label: "Open",
+    label: "Write",
     blurb: "A blank box. Write it however you want.",
   },
 ];

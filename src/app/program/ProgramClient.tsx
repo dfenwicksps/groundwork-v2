@@ -47,12 +47,12 @@ export default function ProgramClient({
     <AppShell>
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
         <div data-animate="1">
-          <p className="text-sm text-ink-muted mb-1">10 weeks</p>
+          <p className="text-sm text-ink-muted mb-1">Character program · 10 weeks</p>
           <h1
             className="text-3xl text-navy mb-2"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
-            Character program.
+            This week.
           </h1>
           <p className="text-sm text-ink-muted leading-relaxed">
             Identity is the starting point. Character is the practice.
@@ -233,7 +233,8 @@ export default function ProgramClient({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-ink leading-snug">
-                      {w.emoji} {w.title}
+                      <span aria-hidden className="mr-1.5">{w.emoji}</span>
+                      {w.title}
                     </div>
                     <div className="text-xs text-ink-muted leading-snug truncate">
                       {w.challenge.title}
