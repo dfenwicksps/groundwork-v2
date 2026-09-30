@@ -1,8 +1,7 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import ProgramClient from "./ProgramClient";
-import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { PROGRAM_WEEKS } from "@/lib/program";
@@ -66,7 +65,7 @@ export default async function ProgramPage() {
     activity_id: string;
   }[];
   const spine = spineFor(
-    parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle",
+    await getLifeStage(supabase, user.id),
     missionsCompleted(missionRows),
     missionComplete(missionRows, 1)
   );

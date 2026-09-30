@@ -6,7 +6,12 @@ import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { type ProcessingStyle, setProcessingStyle, tallyStyle } from "@/lib/processingStyle";
 import { ONBOARDING_VALUES, VALUES_WITH_DEFINITIONS } from "@/lib/missions";
-import { YEAR_OPTIONS, setYearLevelCookie, type YearLevel } from "@/lib/yearLevel";
+import {
+  LIFE_STAGE_OPTIONS,
+  hasLeftSchool,
+  setLifeStageCookie,
+  type LifeStage,
+} from "@/lib/lifeStage";
 
 const STYLE_QUESTIONS: {
   id: string;
@@ -78,7 +83,7 @@ export default function OnboardingClient() {
 
   // Step 1
   const [name, setName] = useState("");
-  const [yearLevel, setYearLevel] = useState<YearLevel | null>(null);
+  const [lifeStage, setLifeStage] = useState<LifeStage | null>(null);
   const [whyHere, setWhyHere] = useState("");
 
   // Step 2 — how you like to work
@@ -174,6 +179,12 @@ export default function OnboardingClient() {
       return;
     }
 
+    // Separate from the upsert above so a database without the life_stage
+    // column can't block onboarding. The cookie set on tap still carries it.
+    if (lifeStage) {
+      await db.from("users").update({ life_stage: lifeStage }).eq("id", user.id);
+    }
+
     // Save onboarding results
     const { error: resultsErr } = await db.from("onboarding_results").insert({
       user_id: user.id,
@@ -252,34 +263,44 @@ export default function OnboardingClient() {
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-ink mb-2">
-                  What year are you in?
+                  Where are you at right now?
                 </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {YEAR_OPTIONS.map((y) => (
-                    <button
-                      key={y.key}
-                      type="button"
-                      onClick={() => {
-                        setYearLevel(y.key);
-                        setYearLevelCookie(y.key);
-                      }}
-                      aria-pressed={yearLevel === y.key}
-                      className={cn(
-                        "p-3 rounded-xl border text-center transition-all",
-                        yearLevel === y.key
-                          ? "border-teal bg-teal/5 ring-1 ring-teal"
-                          : "border-surface-border bg-white hover:border-teal/40"
-                      )}
-                      style={{ borderWidth: "1.5px" }}
-                    >
-                      <div className="text-sm font-semibold text-ink">
-                        {yearLevel === y.key && <span aria-hidden>✓ </span>}
-                        {y.label}
-                      </div>
-                      <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
-                    </button>
-                  ))}
-                </div>
+                {([
+                  ["school", "At school", "grid-cols-3"],
+                  ["left", "Finished school", "grid-cols-2"],
+                ] as const).map(([group, heading, cols]) => (
+                  <div key={group} className="mb-2">
+                    <div className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
+                      {heading}
+                    </div>
+                    <div className={cn("grid gap-2", cols)}>
+                      {LIFE_STAGE_OPTIONS.filter((o) => o.group === group).map((y) => (
+                        <button
+                          key={y.key}
+                          type="button"
+                          onClick={() => {
+                            setLifeStage(y.key);
+                            setLifeStageCookie(y.key);
+                          }}
+                          aria-pressed={lifeStage === y.key}
+                          className={cn(
+                            "px-2 py-3 rounded-xl border text-center transition-all",
+                            lifeStage === y.key
+                              ? "border-teal bg-teal/5 ring-1 ring-teal"
+                              : "border-surface-border bg-white hover:border-teal/40"
+                          )}
+                          style={{ borderWidth: "1.5px" }}
+                        >
+                          <div className="text-sm font-semibold text-ink whitespace-nowrap">
+                            {lifeStage === y.key && <span aria-hidden>✓ </span>}
+                            {y.label}
+                          </div>
+                          <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
                 <p className="text-[11px] text-ink-muted mt-1.5">
                   We&apos;ll tailor what we show you — you can change this later.
                 </p>
@@ -601,7 +622,11 @@ export default function OnboardingClient() {
                   type="text"
                   value={supportName}
                   onChange={(e) => setSupportName(e.target.value)}
-                  placeholder="e.g. Mum, Coach Ben, Mrs Thompson"
+                  placeholder={
+                    lifeStage && hasLeftSchool(lifeStage)
+                      ? "e.g. Mum, a mentor, my manager"
+                      : "e.g. Mum, Coach Ben, Mrs Thompson"
+                  }
                   className="input"
                 />
               </div>
@@ -617,7 +642,11 @@ export default function OnboardingClient() {
                   type="text"
                   value={supportRelationship}
                   onChange={(e) => setSupportRelationship(e.target.value)}
-                  placeholder="e.g. Parent, Teacher, Older sibling"
+                  placeholder={
+                    lifeStage && hasLeftSchool(lifeStage)
+                      ? "e.g. Parent, Friend, Manager"
+                      : "e.g. Parent, Teacher, Older sibling"
+                  }
                   className="input"
                 />
               </div>

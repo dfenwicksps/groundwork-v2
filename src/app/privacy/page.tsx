@@ -28,7 +28,8 @@ export default function PrivacyPage() {
 
       <Section heading="What we collect">
         <Plainly>
-          Your email, the name you choose, your year level, and the things you
+          Your email, the name you choose, where you&apos;re at (your school year, or
+          whether you&apos;ve left school), and the things you
           write and choose in the app. Nothing else.
         </Plainly>
         <ul className="list-disc pl-5">
@@ -42,8 +43,11 @@ export default function PrivacyPage() {
             has to be the thing you want to be called.
           </li>
           <li>
-            <strong>Your year level.</strong> Kept in a cookie on your own device,
-            not in our database. It only changes what the app shows you first.
+            <strong>Where you&apos;re at.</strong> Year 7&ndash;9, 10&ndash;11 or 12, or
+            whether you&apos;ve left school recently or a few years ago. It&apos;s saved
+            with your account so it follows you between devices, and in a cookie on
+            your device. It only changes what the app shows you first and which
+            examples you see.
           </li>
           <li>
             <strong>What you write and choose.</strong> Mission reflections and

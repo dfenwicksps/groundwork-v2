@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { strengthName } from "@/lib/strengths";
-import type { YearLevel } from "@/lib/yearLevel";
+import { futureFirst, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 import ScaffoldedInput from "@/components/ScaffoldedInput";
 
 interface Goal {
@@ -25,6 +25,13 @@ const DOMAIN_LABEL: Record<Goal["domain"], { label: string; emoji: string }> = {
   future: { label: "Beyond graduation", emoji: "🚀" },
 };
 
+// Past school, the stored domains keep their values but not their names.
+const DOMAIN_LABEL_LEFT_SCHOOL: Record<Goal["domain"], { label: string; emoji: string }> = {
+  school: { label: "Study & work", emoji: "📚" },
+  life: { label: "Life right now", emoji: "🌱" },
+  future: { label: "What's next", emoji: "🚀" },
+};
+
 /**
  * Practical goals — WOOP-lite (wish → outcome → obstacle → plan), linked to
  * the user's own values, for school / life / beyond graduation.
@@ -34,13 +41,13 @@ export default function GoalsSection({
   goals,
   values,
   topStrengthKeys,
-  yearLevel,
+  lifeStage,
 }: {
   userId: string;
   goals: Goal[];
   values: string[];
   topStrengthKeys: string[];
-  yearLevel: YearLevel;
+  lifeStage: LifeStage;
 }) {
   const router = useRouter();
   const db = createClient() as any;
@@ -48,8 +55,9 @@ export default function GoalsSection({
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [domain, setDomain] = useState<Goal["domain"]>(
-    yearLevel === "senior" ? "future" : "school"
+    futureFirst(lifeStage) ? "future" : "school"
   );
+  const domainLabels = hasLeftSchool(lifeStage) ? DOMAIN_LABEL_LEFT_SCHOOL : DOMAIN_LABEL;
   const [wish, setWish] = useState("");
   const [outcome, setOutcome] = useState("");
   const [obstacle, setObstacle] = useState("");
@@ -167,7 +175,7 @@ export default function GoalsSection({
             <div key={g.id} className="card p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-[11px] font-bold text-teal uppercase tracking-wider">
-                  {DOMAIN_LABEL[g.domain].emoji} {DOMAIN_LABEL[g.domain].label}
+                  {domainLabels[g.domain].emoji} {domainLabels[g.domain].label}
                 </span>
                 {g.linked_value && (
                   <span className="text-[11px] text-ink-muted ml-auto">
@@ -276,7 +284,7 @@ export default function GoalsSection({
                       : "bg-white text-ink border-surface-border"
                   }`}
                 >
-                  {DOMAIN_LABEL[d].emoji} {DOMAIN_LABEL[d].label}
+                  {domainLabels[d].emoji} {domainLabels[d].label}
                 </button>
               ))}
             </div>

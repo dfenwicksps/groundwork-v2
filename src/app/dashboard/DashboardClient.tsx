@@ -15,7 +15,7 @@ import { TrackBadge } from "@/components/TrackBanner";
 import MissionsSummaryCard from "./MissionsSummaryCard";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
-import { YEAR_OPTIONS, type YearLevel } from "@/lib/yearLevel";
+import { LIFE_STAGE_OPTIONS, type LifeStage } from "@/lib/lifeStage";
 
 type RevisitEntry = {
   id: string;
@@ -42,7 +42,7 @@ interface Props {
   nudgeActivity: NudgeActivity | null;
   spine: Spine;
   programWeek: ProgramWeekCard;
-  yearLevel: YearLevel;
+  lifeStage: LifeStage;
   /** Present only once all four missions are done — replaces the active card */
   missionSummary: MissionSummary | null;
 }
@@ -100,7 +100,7 @@ export default function DashboardClient({
   nudgeActivity,
   spine,
   programWeek,
-  yearLevel,
+  lifeStage,
   missionSummary,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
@@ -218,14 +218,14 @@ export default function DashboardClient({
             {spine.orderLine}
           </p>
 
-          {/* The app reorders itself by year level. Unannounced, that effort is
+          {/* The app reorders itself by life stage. Unannounced, that effort is
               invisible; named, it reads as the app paying attention. */}
           <p className="text-xs text-ink-muted mt-2">
-            You&apos;re seeing the{" "}
+            Tuned for:{" "}
             <span className="font-medium text-ink">
-              {YEAR_OPTIONS.find((y) => y.key === yearLevel)?.label ?? "Year 10–11"}
-            </span>{" "}
-            view.{" "}
+              {LIFE_STAGE_OPTIONS.find((y) => y.key === lifeStage)?.label ?? "Year 10–11"}
+            </span>
+            .{" "}
             <Link href="/settings" className="text-teal hover:underline">
               Change it any time
             </Link>

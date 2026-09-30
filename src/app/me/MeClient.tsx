@@ -17,7 +17,7 @@ import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
-import type { YearLevel } from "@/lib/yearLevel";
+import { futureFirst, type LifeStage } from "@/lib/lifeStage";
 import type { MoralStyle } from "@/lib/moral";
 import { toStrengthKey, type Becoming } from "@/lib/becoming";
 import type { StandardCheckin } from "@/lib/standard";
@@ -60,7 +60,7 @@ export default function MeClient({
   characterCode,
   supportCount,
   featuresReady,
-  yearLevel,
+  lifeStage,
 }: {
   userId: string;
   displayName: string;
@@ -88,7 +88,7 @@ export default function MeClient({
   characterCode: string[];
   supportCount: number;
   featuresReady: boolean;
-  yearLevel: YearLevel;
+  lifeStage: LifeStage;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -105,10 +105,11 @@ export default function MeClient({
   const range = Math.max(1, maxScore - minScore);
 
   // #4: the Me page was a 13-section scroll — split into journey-aligned tabs.
-  // Default tab follows year level (seniors → Future, juniors → Grow).
+  // Default tab follows life stage (Year 12 and anyone past school → Future,
+  // juniors → Grow).
   type MeTab = "profile" | "reflect" | "grow" | "future";
   const defaultTab: MeTab =
-    yearLevel === "senior" ? "future" : yearLevel === "junior" ? "grow" : "profile";
+    futureFirst(lifeStage) ? "future" : lifeStage === "junior" ? "grow" : "profile";
   const [tab, setTab] = useState<MeTab>(defaultTab);
 
   // Cross-links reach this page two ways, and both have to work.
@@ -503,7 +504,7 @@ export default function MeClient({
               href="/missions/4/activities/future-self"
             />
             <div id="pathways">
-              <PathwaysSection top5={top5} values={values} yearLevel={yearLevel} />
+              <PathwaysSection top5={top5} values={values} lifeStage={lifeStage} />
             </div>
             {featuresReady ? (
               <div id="goals">
@@ -512,7 +513,7 @@ export default function MeClient({
                   goals={goals}
                   values={values}
                   topStrengthKeys={top5}
-                  yearLevel={yearLevel}
+                  lifeStage={lifeStage}
                 />
               </div>
             ) : (

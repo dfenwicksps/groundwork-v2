@@ -1,4 +1,4 @@
-import type { YearLevel } from "./yearLevel";
+import { futureFirst as stageFutureFirst, hasLeftSchool, type LifeStage } from "./lifeStage";
 
 // ─── The spine ────────────────────────────────────────────────────────────────
 // Groundwork carries two bodies of work: the Missions (a library, explored in
@@ -10,13 +10,14 @@ import type { YearLevel } from "./yearLevel";
 // fully reachable from the nav. It only decides what the dashboard offers
 // first, because the first card is the only one some students will ever read.
 //
-// Year level no longer decides *which track* leads — the missions do, until
+// Life stage no longer decides *which track* leads — the missions do, until
 // they're finished (see below). What it still decides is whether the
 // near-future work sits above the program once they are: a Year 12 arrives
 // with questions about next year, and a ten-week character cadence is not the
-// answer to those, so pathways and goals are surfaced first for seniors.
+// answer to those, so pathways and goals are surfaced first for seniors, and
+// for anyone who has already left school and is living those questions.
 //
-// ─── The rule that overrides year level: Mission 1 comes first ───────────────
+// ─── The rule that overrides life stage: Mission 1 comes first ───────────────
 //
 // Mission 1 is the foundation and the program cannot start without it: week 1
 // sets the qualities you want at 25 against the strengths it mapped, and week 2
@@ -56,7 +57,7 @@ export interface Spine {
   programBlurb: string;
   /**
    * True while any mission is outstanding, so the lead is the missions by
-   * design rather than by year level. Surfaces as different copy: "finish the
+   * design rather than by life stage. Surfaces as different copy: "finish the
    * foundation first" rather than "this one's yours".
    */
   missionsFirst: boolean;
@@ -67,20 +68,20 @@ export interface Spine {
 }
 
 /**
- * @param year          the student's year level, from onboarding
+ * @param year          the student's life stage, from onboarding
  * @param missionsDone  how many of the four missions are fully complete.
  *                      Defaults to MISSION_COUNT so callers that genuinely
  *                      can't know (the nav, which only reads a cookie) keep
  *                      their old behaviour instead of nagging on every screen.
  */
 export function spineFor(
-  year: YearLevel,
+  year: LifeStage,
   missionsDone: number = MISSION_COUNT,
   /** Mission 1 specifically — the program's only hard prerequisite. */
   foundationDone: boolean = missionsDone >= 1
 ): Spine {
   const done = Math.max(0, Math.min(MISSION_COUNT, missionsDone));
-  const futureFirst = year === "senior";
+  const futureFirst = stageFutureFirst(year);
 
   if (!foundationDone) {
     return {
@@ -96,7 +97,7 @@ export function spineFor(
   }
 
   // Foundation laid. The program is now the only track still moving, so it
-  // leads regardless of year level; the year level still decides whether the
+  // leads regardless of life stage; the life stage still decides whether the
   // next-year work sits above it.
   const left = MISSION_COUNT - done;
   return {
@@ -107,7 +108,9 @@ export function spineFor(
     programBlurb:
       year === "senior"
         ? "Ten weeks of character work — slower than the rest of the app, and the part that outlasts school."
-        : "Ten weeks — one question each, and one thing to actually do.",
+        : hasLeftSchool(year)
+          ? "Ten weeks of character work — one question and one thing to do each week, alongside everything else you're juggling."
+          : "Ten weeks — one question each, and one thing to actually do.",
     orderLine:
       left === 0
         ? "All four missions are done. The ten weeks are what turns what you found in them into habit — one week at a time, then the weekly five for good."

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import WeekClient from "./WeekClient";
@@ -21,7 +20,7 @@ import {
 } from "@/lib/becoming";
 import { responseToHabits } from "@/lib/habits";
 import { answersOnly } from "@/lib/journal";
-import { parseYearLevel, YEAR_COOKIE } from "@/lib/yearLevel";
+import { getLifeStage } from "@/lib/lifeStageServer";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +40,7 @@ export default async function WeekPage({
   if (!user) redirect("/auth");
 
   const db = supabase as any;
-  const yearLevel = parseYearLevel(cookies().get(YEAR_COOKIE)?.value) ?? "middle";
+  const lifeStage = await getLifeStage(supabase, user.id);
 
   // Weeks that are built on Mission 1's work read it rather than linking to it;
   // week 10 reads back weeks 1 and 2. Both need every week's row, so the query
@@ -247,7 +246,7 @@ export default async function WeekPage({
       capstone={capstone}
       suggestedQualities={suggestedQualities}
       earlier={earlier}
-      yearLevel={yearLevel}
+      lifeStage={lifeStage}
       ready={ready}
     />
   );

@@ -9,6 +9,7 @@ export type Database = {
           onboarding_complete: boolean;
           active_mission: number;
           ai_reflections_enabled: boolean;
+          life_stage: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
         };
         Insert: {
           id: string;
@@ -17,6 +18,7 @@ export type Database = {
           onboarding_complete?: boolean;
           active_mission?: number;
           ai_reflections_enabled?: boolean;
+          life_stage?: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
         };
         Update: {
           id?: string;
@@ -24,6 +26,7 @@ export type Database = {
           onboarding_complete?: boolean;
           active_mission?: number;
           ai_reflections_enabled?: boolean;
+          life_stage?: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
         };
       };
       onboarding_results: {

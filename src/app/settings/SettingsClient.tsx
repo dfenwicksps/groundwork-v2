@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import BuildStamp from "@/components/BuildStamp";
 import { useRouter } from "next/navigation";
@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 import { ONBOARDING_VALUES } from "@/lib/missions";
-import { YEAR_OPTIONS, getYearLevelCookie, setYearLevelCookie, type YearLevel } from "@/lib/yearLevel";
+import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
 
 export default function SettingsClient({
   userId,
@@ -16,6 +16,7 @@ export default function SettingsClient({
   displayName,
   savedValues,
   missionValues,
+  initialLifeStage,
   aiReflectionsEnabled,
 }: {
   userId: string;
@@ -24,6 +25,7 @@ export default function SettingsClient({
   savedValues: string[];
   /** From Mission 1's Values Clarifier. Once these exist they're the student's values everywhere else. */
   missionValues: string[];
+  initialLifeStage: LifeStage;
   aiReflectionsEnabled: boolean;
 }) {
   const router = useRouter();
@@ -45,9 +47,8 @@ export default function SettingsClient({
   const [valuesError, setValuesError] = useState<string | null>(null);
   const [editingValues, setEditingValues] = useState(false);
 
-  const [yearLevel, setYearLevelState] = useState<YearLevel | null>(null);
-  const [yearSaved, setYearSaved] = useState(false);
-  useEffect(() => setYearLevelState(getYearLevelCookie()), []);
+  const [lifeStage, setLifeStageState] = useState<LifeStage>(initialLifeStage);
+  const [stageSaved, setStageSaved] = useState(false);
 
   const [aiEnabled, setAiEnabled] = useState(aiReflectionsEnabled);
   const [savingAi, setSavingAi] = useState(false);
@@ -350,39 +351,50 @@ export default function SettingsClient({
           )}
         </div>
 
-        {/* Year level — tunes what the app emphasises */}
+        {/* Life stage — tunes what the app emphasises */}
         <div data-animate="4" className="card p-6">
-          <h2 className="font-semibold text-ink mb-1">Year level</h2>
+          <h2 className="font-semibold text-ink mb-1">Where you&apos;re at</h2>
           <p className="text-sm text-ink-muted mb-4">
-            We tailor what we show you — e.g. Year 12 sees career pathways and goals first.
+            We tailor what we show you. Year 12 and anyone who&apos;s left school see pathways
+            and goals first, and examples fit your stage.
           </p>
-          <div className="grid grid-cols-3 gap-2">
-            {YEAR_OPTIONS.map((y) => (
-              <button
-                key={y.key}
-                type="button"
-                onClick={() => {
-                  setYearLevelState(y.key);
-                  setYearLevelCookie(y.key);
-                  setYearSaved(true);
-                  setTimeout(() => setYearSaved(false), 2000);
-                }}
-                className={cn(
-                  "p-3 rounded-xl border text-center transition-all",
-                  yearLevel === y.key
-                    ? "border-teal bg-teal/5 ring-1 ring-teal"
-                    : "border-surface-border bg-white hover:border-teal/40"
-                )}
-                style={{ borderWidth: "1.5px" }}
-              >
-                <div className="text-sm font-semibold text-ink">{y.label}</div>
-                <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
-              </button>
-            ))}
-          </div>
-          {yearSaved && (
-            <p className="text-xs text-sage mt-2">Saved ✓ — reopen your Me page to see the new order.</p>
-          )}
+          {([
+            ["school", "At school", "grid-cols-3"],
+            ["left", "Finished school", "grid-cols-2"],
+          ] as const).map(([group, heading, cols]) => (
+            <div key={group} className="mb-2">
+              <div className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider mb-1.5">
+                {heading}
+              </div>
+              <div className={cn("grid gap-2", cols)}>
+                {LIFE_STAGE_OPTIONS.filter((o) => o.group === group).map((y) => (
+                  <button
+                    key={y.key}
+                    type="button"
+                    aria-pressed={lifeStage === y.key}
+                    onClick={async () => {
+                      setLifeStageState(y.key);
+                      await saveLifeStage(db, userId, y.key);
+                      setStageSaved(true);
+                      setTimeout(() => setStageSaved(false), 2000);
+                      router.refresh();
+                    }}
+                    className={cn(
+                      "px-2 py-3 rounded-xl border text-center transition-all",
+                      lifeStage === y.key
+                        ? "border-teal bg-teal/5 ring-1 ring-teal"
+                        : "border-surface-border bg-white hover:border-teal/40"
+                    )}
+                    style={{ borderWidth: "1.5px" }}
+                  >
+                    <div className="text-sm font-semibold text-ink whitespace-nowrap">{y.label}</div>
+                    <div className="text-[11px] text-ink-muted mt-0.5">{y.sub}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+          {stageSaved && <p className="text-xs text-sage mt-2">Saved ✓</p>}
         </div>
 
         {/* Privacy controls */}

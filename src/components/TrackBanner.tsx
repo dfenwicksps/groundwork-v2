@@ -8,7 +8,7 @@ import type { Spine } from "@/lib/spine";
 // unexplained peers and neither page said anything about the other — so the
 // answer to "what am I supposed to be doing?" was nowhere in the app.
 //
-// The spine decides which is "first" by year level. The banner only reports
+// The spine decides which is "first" by life stage. The banner only reports
 // that decision; it never blocks the other track.
 
 type Track = "program" | "missions";

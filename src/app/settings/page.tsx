@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import SettingsClient from "./SettingsClient";
 import { clarifierValues } from "@/lib/journal";
+import { getLifeStage } from "@/lib/lifeStageServer";
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,7 @@ export default async function SettingsPage() {
       displayName={profile?.display_name || ""}
       savedValues={savedValues}
       missionValues={missionValues}
+      initialLifeStage={await getLifeStage(supabase, user.id)}
       aiReflectionsEnabled={profile?.ai_reflections_enabled ?? true}
     />
   );

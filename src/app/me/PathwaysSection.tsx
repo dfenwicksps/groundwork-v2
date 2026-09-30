@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { suggestPathways } from "@/lib/pathways";
-import type { YearLevel } from "@/lib/yearLevel";
+import { futureFirst, type LifeStage } from "@/lib/lifeStage";
 
 /**
  * "Where your strengths could take you" — career clusters computed from the
@@ -12,11 +12,11 @@ import type { YearLevel } from "@/lib/yearLevel";
 export default function PathwaysSection({
   top5,
   values,
-  yearLevel,
+  lifeStage,
 }: {
   top5: string[];
   values: string[];
-  yearLevel: YearLevel;
+  lifeStage: LifeStage;
 }) {
   const [open, setOpen] = useState<string | null>(null);
   const suggestions = suggestPathways(top5, values, 3);
@@ -28,10 +28,14 @@ export default function PathwaysSection({
         Where your strengths could take you
       </h2>
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
-        {yearLevel === "junior"
+        {lifeStage === "junior"
           ? "No rush at all — this is just a peek at where your strengths could lead one day. These are open doors, never “you should become this.”"
-          : yearLevel === "senior"
+          : lifeStage === "senior"
           ? "You're close to choosing your next step — here's where your profile points. Open doors to explore, never “you should become this.”"
+          : lifeStage === "leaver"
+          ? "Whether you're studying, working or still deciding, here's where your profile points. Changing direction early is normal. Open doors, never “you should become this.”"
+          : lifeStage === "adult"
+          ? "It's never too late to change direction — here's where your profile points. Open doors, never “you should become this.”"
           : "Your strengths, values and character profile suggest you may find meaning in pathways where you can… (open doors, never “you should become this.”)"}
       </p>
       <div className="space-y-2">
@@ -87,7 +91,7 @@ export default function PathwaysSection({
                 return (
                   <div className="px-4 pb-4 border-t border-surface-border pt-3 space-y-3">
                     {/* Seniors care most about concrete routes — surface first */}
-                    {yearLevel === "senior" && nextStepsBlock}
+                    {futureFirst(lifeStage) && nextStepsBlock}
                     <p className="text-xs text-ink leading-relaxed">
                       <span className="font-semibold text-teal">Why it fits you: </span>
                       {fromStrengths.length > 0 && (
@@ -118,7 +122,7 @@ export default function PathwaysSection({
                       </div>
                       <p className="text-xs text-ink-muted">{cluster.subjects.join(" · ")}</p>
                     </div>
-                    {yearLevel !== "senior" && nextStepsBlock}
+                    {!futureFirst(lifeStage) && nextStepsBlock}
                   </div>
                 );
               })()}
