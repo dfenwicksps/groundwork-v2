@@ -265,9 +265,14 @@ export default function DashboardClient({
         {/* A story, because most students never go looking for one */}
         {featuredStory && (
           <section data-animate="4" aria-labelledby="story-for-you">
-            <h2 id="story-for-you" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              A story for you
-            </h2>
+            <div className="flex items-baseline justify-between mb-3">
+              <h2 id="story-for-you" className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                A story for you
+              </h2>
+              <Link href="/stories" className="text-xs text-teal hover:underline">
+                All stories
+              </Link>
+            </div>
             <Link
               href={`/stories/${featuredStory.id}`}
               className="card p-5 block hover:shadow-card transition-all"
