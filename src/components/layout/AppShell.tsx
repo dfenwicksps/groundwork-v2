@@ -12,14 +12,9 @@ const NAV_ITEMS = [
     href: "/dashboard",
     label: "Home",
     // /support has no tab of its own; the dashboard is where the support
-    // circle lives, so Home is the honest anchor rather than nothing lit. The
-    // ten weeks live under Home too: this week is what Home's "Up next" offers
-    // once Mission 1 is done, so the program doesn't need a tab of its own.
+    // circle lives, so Home is the honest anchor rather than nothing lit.
     match: (p: string) =>
-      p === "/dashboard" ||
-      p === "/" ||
-      p.startsWith("/support") ||
-      p.startsWith("/program"),
+      p === "/dashboard" || p === "/" || p.startsWith("/support"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
@@ -45,7 +40,11 @@ const NAV_ITEMS = [
     // is actually next, the way /program offers the next week.
     href: "/missions",
     label: "Missions",
-    match: (p: string) => p.startsWith("/missions"),
+    // Stories are mission companions, reached from Home and the mission pages,
+    // so they belong under Missions rather than leaving the nav unlit. (They
+    // had a tab briefly; the weekly program, which students return to daily,
+    // needs it more.)
+    match: (p: string) => p.startsWith("/missions") || p.startsWith("/stories"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
@@ -72,29 +71,32 @@ const NAV_ITEMS = [
     ),
   },
   {
-    // The animated stories are the easiest way into Groundwork for anyone who
-    // doesn't want to write, so they get a tab rather than a link inside a
-    // mission page.
-    href: "/stories",
-    label: "Stories",
-    match: (p: string) => p.startsWith("/stories"),
+    href: "/program",
+    label: "This Week",
+    match: (p: string) => p.startsWith("/program"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <rect
           x="3.5"
           y="4.5"
           width="15"
-          height="13"
-          rx="2.5"
+          height="14"
+          rx="2"
           stroke="currentColor"
           strokeWidth={active ? "2" : "1.6"}
         />
         <path
-          d="M9.5 8.5v5l4-2.5-4-2.5z"
+          d="M3.5 8.5h15M7 3.5v2M15 3.5v2"
           stroke="currentColor"
           strokeWidth={active ? "2" : "1.6"}
+          strokeLinecap="round"
+        />
+        <path
+          d="M7.5 12.5l1.5 1.5 3-3"
+          stroke="currentColor"
+          strokeWidth={active ? "2" : "1.6"}
+          strokeLinecap="round"
           strokeLinejoin="round"
-          fill={active ? "currentColor" : "none"}
         />
       </svg>
     ),
