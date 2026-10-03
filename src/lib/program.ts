@@ -547,20 +547,21 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     strand: "all",
     title: "What will my character code be?",
     focus:
-      "Integrating values, contribution, courage, self-control and purpose into one artefact.",
+      "Joining where you've come from, who you are and where you're heading into one story, then integrating values, contribution, courage, self-control and purpose into commitments.",
     intro:
-      "Nine weeks of evidence about who you are and who you're becoming. This week you write it down as commitments — not aspirations, not vibes. The kind of thing you could be held to.",
+      "Nine weeks of evidence about who you are and who you're becoming, and four missions about where it all comes from. This week you write it down: first the story in one sentence, then the commitments. Not aspirations, not vibes. The kind of thing you could be held to.",
     questions: [
+      "Where have I come from, and what did it give me?",
       "Who am I?",
       "What do I stand for?",
-      "What do I contribute?",
+      "What do I contribute, and what do people experience when I enter a room?",
       "How do I respond when life is difficult?",
-      "What do people experience when I enter a room?",
+      "Where am I heading?",
     ],
     challenge: {
       title: "Write your Character Code",
       description:
-        "Five to seven commitments to guide the next year. Written as things you do, not things you'd like to be. This is the artefact the whole program has been building towards.",
+        "Start with your story in one sentence: because of where you've come from, you're someone who does something, so you're heading somewhere. Then five to seven commitments to guide the next year, written as things you do, not things you'd like to be. This is the artefact the whole program has been building towards.",
       kind: "single",
     },
   },
@@ -570,9 +571,10 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
  * The mission writing week 10 draws on, on top of the program's own artefacts.
  *
  * The Character Code is meant to be written from evidence. The program supplies
- * the behavioural half (weeks 1, 2, 7 and 8); these two supply the half the
- * weeks never ask for — what the student said they stand for, and the thread
- * they found running through all four missions.
+ * the behavioural half (weeks 1, 2, 7 and 8); these supply the half the weeks
+ * never ask for, in the order the code's story runs: where the student has come
+ * from, the thread they found, what they said they stand for, and the direction
+ * they named.
  */
 export const CAPSTONE_SOURCES: {
   activityId: string;
@@ -582,11 +584,11 @@ export const CAPSTONE_SOURCES: {
   href: string;
 }[] = [
   {
-    activityId: "commitment-statement",
-    missionId: 2,
-    label: "What you said you stand for",
-    note: "Mission 2 · Commitment Statement",
-    href: "/missions/2/activities/commitment-statement",
+    activityId: "where-ive-come-from",
+    missionId: 4,
+    label: "Where you've come from",
+    note: "Mission 4 · Where You've Come From",
+    href: "/missions/4/activities/where-ive-come-from",
   },
   {
     activityId: "the-through-line",
@@ -594,6 +596,20 @@ export const CAPSTONE_SOURCES: {
     label: "The thread you found",
     note: "Mission 4 · The Through-Line",
     href: "/missions/4/activities/the-through-line",
+  },
+  {
+    activityId: "commitment-statement",
+    missionId: 2,
+    label: "What you said you stand for",
+    note: "Mission 2 · Commitment Statement",
+    href: "/missions/2/activities/commitment-statement",
+  },
+  {
+    activityId: "meaning-letter",
+    missionId: 4,
+    label: "The direction you named",
+    note: "Mission 4 · A Life Worth Building",
+    href: "/missions/4/activities/meaning-letter",
   },
 ];
 
@@ -836,20 +852,126 @@ export const CHARACTER_CODE_ACTIVITY_ID = "character-code";
 export const CODE_MIN = 5;
 export const CODE_MAX = 7;
 
-export function codeToResponse(commitments: string[]): string {
-  return commitments
+// ─── The story the code stands on ────────────────────────────────────────────
+// Identity, in the research the app is built on, is a life story: where I've
+// come from, who I am, where I'm going, joined up. The commitments alone were
+// all present tense, so the capstone now opens with one sentence in three
+// parts. The "because … so …" is the point: it asks for the causal link
+// between past, present and future, which is the part of a life story that
+// develops most between 13 and 20 and that nothing else in the app asked for.
+//
+// Saved as three labelled lines above the numbered commitments, so a code
+// written before the story existed still reads as a code (it just has no
+// story), and the raw entry reads sensibly in the journal.
+
+export type StoryPart = "from" | "am" | "heading";
+
+export type LifeStory = Record<StoryPart, string>;
+
+export const STORY_PARTS: {
+  key: StoryPart;
+  /** How the line is labelled in the saved entry */
+  label: string;
+  /** The words that lead into the student's own, in the sentence */
+  lead: string;
+  placeholder: string;
+  scaffold: Scaffold;
+}[] = [
+  {
+    key: "from",
+    label: "Where I've come from",
+    lead: "Because",
+    placeholder: "I moved schools three times and got good at reading a room",
+    scaffold: {
+      stems: ["I grew up", "of the time when", "I was handed"],
+      stuck: [
+        "Your chapters and turning point from Mission 4 are above. One of them usually fits here.",
+        "It can be something you were handed and kept, or one you're reworking.",
+      ],
+    },
+  },
+  {
+    key: "am",
+    label: "Who I am",
+    lead: "I'm someone who",
+    placeholder: "notices who's on the edge of things",
+    scaffold: {
+      stems: ["notices", "won't", "keeps going when"],
+      stuck: [
+        "The thread you found in the Through-Line is often most of this.",
+        "Say what you do, not what you're like on a good day.",
+      ],
+    },
+  },
+  {
+    key: "heading",
+    label: "Where I'm heading",
+    lead: "so I'm heading towards",
+    placeholder: "work where I'm on the side of people who get overlooked",
+    scaffold: {
+      stems: ["a life where", "being someone who", "work that"],
+      stuck: [
+        "A direction, not a job title. The letter you wrote in Mission 4 named one.",
+        "If the details all changed, what would you still be heading towards?",
+      ],
+    },
+  },
+];
+
+export const EMPTY_STORY: LifeStory = { from: "", am: "", heading: "" };
+
+export function storyComplete(story: LifeStory): boolean {
+  return STORY_PARTS.every(({ key }) => story[key].trim().length >= 3);
+}
+
+/** "Because …, I'm someone who …, so I'm heading towards …." */
+export function storySentence(story: LifeStory): string {
+  const part = (s: string) => s.trim().replace(/[\s.,;:!]+$/, "");
+  const [from, am, heading] = STORY_PARTS.map(({ key }) => part(story[key]));
+  if (!from && !am && !heading) return "";
+  return `Because ${from}, I'm someone who ${am}, so I'm heading towards ${heading}.`;
+}
+
+function storyLine(line: string): { key: StoryPart; text: string } | null {
+  const part = STORY_PARTS.find(({ label }) => line.startsWith(`${label}:`));
+  return part ? { key: part.key, text: line.slice(part.label.length + 1).trim() } : null;
+}
+
+export function codeToResponse(commitments: string[], story?: LifeStory): string {
+  const storyLines = story
+    ? STORY_PARTS.map(({ key, label }) => `${label}: ${story[key].trim()}`)
+    : [];
+  const codeLines = commitments
     .map((c) => c.trim())
     .filter(Boolean)
-    .map((c, i) => `${i + 1}. ${c}`)
-    .join("\n");
+    .map((c, i) => `${i + 1}. ${c}`);
+  return storyLines.length
+    ? `${storyLines.join("\n")}\n\n${codeLines.join("\n")}`
+    : codeLines.join("\n");
 }
 
 export function responseToCode(response: string | null | undefined): string[] {
   if (!response) return [];
   return response
     .split("\n")
+    .filter((l) => !storyLine(l))
     .map((l) => l.replace(/^\s*\d+[.)]\s*/, "").trim())
     .filter(Boolean);
+}
+
+/** The story a code was written with, or null for a code written before stories. */
+export function responseToStory(response: string | null | undefined): LifeStory | null {
+  if (!response) return null;
+  const story: LifeStory = { ...EMPTY_STORY };
+  let found = false;
+  for (const l of response.split("\n")) {
+    const hit = storyLine(l);
+    if (hit) {
+      story[hit.key] = hit.text;
+      found = true;
+    }
+  }
+  return found ? story : null;
 }
 
 // ─── Scaffolds ────────────────────────────────────────────────────────────────
