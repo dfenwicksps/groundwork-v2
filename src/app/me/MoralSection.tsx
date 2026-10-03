@@ -19,7 +19,7 @@ interface Profile {
 }
 
 /**
- * Moral compass — 8 quick dilemmas diagnosing how the user tends to decide
+ * Moral compass — 8 quick dilemmas giving a snapshot of how the user tends to decide
  * (care-led / fairness-led / loyalty-led / principle-led). Answers are saved
  * and fully editable: retaking pre-fills previous picks and you can move
  * back/forward to change any one.
@@ -170,7 +170,7 @@ export default function MoralSection({
               How do you decide what&apos;s right?
             </p>
             <p className="text-xs text-ink-muted leading-relaxed">
-              8 quick dilemmas reveal your decision-making pattern.
+              8 quick dilemmas give a snapshot of how you tend to decide.
             </p>
           </div>
           <button
@@ -216,6 +216,10 @@ export default function MoralSection({
             {info.watchOut}
           </p>
         </div>
+        <p className="text-xs text-ink-muted leading-relaxed mb-3">
+          A snapshot from 8 dilemmas: how you leaned this time, not a type you
+          are. Most people use all four styles, depending on what&apos;s at stake.
+        </p>
         <button
           onClick={() => {
             setIdx(0);

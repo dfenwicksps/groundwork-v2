@@ -1,5 +1,5 @@
 // ─── Moral compass: how you tend to decide ────────────────────────────────────
-// Eight forced-choice dilemmas diagnosing a student's dominant moral
+// Eight forced-choice dilemmas giving a snapshot of a student's dominant moral
 // decision-making pattern. Four styles, loosely drawn from moral foundations
 // and ethics-of-care research, worded for teenagers. Every scenario offers all
 // four styles; picks are tallied and the top style becomes the profile.

@@ -13,7 +13,7 @@ import {
 } from "@/lib/scaffold";
 import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
-import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
+import { VALUES_WITH_DEFINITIONS, MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
 import { splitScaffoldedResponse, LEFT_OUT_ANSWER as LEFT_OUT } from "@/lib/journal";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
@@ -300,7 +300,7 @@ function ConversationalActivity({
   // Next unlocked activity in this mission, for a "continue" action.
   const currentIdx = mission.activities.findIndex((a) => a.id === activity.id);
   const nextActivity =
-    mission.activities.slice(currentIdx + 1).find((a) => !a.locked) || null;
+    mission.activities.slice(currentIdx + 1).find((a) => !a.locked && !a.optional) || null;
 
   const [phase, setPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
@@ -829,6 +829,34 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* A conversation step: the questions to take with you, before the write-up */}
+            {activity.interviewQuestions && activity.interviewQuestions.length > 0 && (
+              <div
+                className="rounded-2xl p-4 mb-5 bg-white border-2"
+                style={{ borderColor: `${mission.colour}35` }}
+              >
+                <div
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
+                  style={{ color: mission.colour }}
+                >
+                  <span aria-hidden>💬</span> Questions you could ask
+                </div>
+                <ol className="space-y-2 mb-3">
+                  {activity.interviewQuestions.map((q, i) => (
+                    <li key={q} className="flex gap-2.5 text-sm text-[--ink] leading-relaxed">
+                      <span className="text-[--ink-muted] font-semibold flex-shrink-0">{i + 1}.</span>
+                      {q}
+                    </li>
+                  ))}
+                </ol>
+                <p className="text-xs text-[--ink-muted] leading-relaxed">
+                  Screenshot these, or just remember one or two. Let them talk and
+                  follow whatever&apos;s interesting. Once you&apos;ve had the
+                  conversation, come back here and write it up.
+                </p>
+              </div>
+            )}
+
             {/* Story — read inline, inside the activity */}
             {pairedStory && (
               <div
@@ -945,6 +973,8 @@ function ConversationalActivity({
             >
               {restoredDraft
                 ? "Continue where you left off →"
+                : activity.interviewQuestions?.length
+                ? "I've had the conversation →"
                 : usingStarter
                 ? "Begin →"
                 : questions.length === 1
@@ -1818,7 +1848,7 @@ function ValuesPickerActivity({
           <ReturnToWeekButton />
           {(() => {
             const idx = mission.activities.findIndex((a) => a.id === activity.id);
-            const next = mission.activities.slice(idx + 1).find((a) => !a.locked) || null;
+            const next = mission.activities.slice(idx + 1).find((a) => !a.locked && !a.optional) || null;
             return next ? (
               <Link
                 href={`/missions/${mission.id}/activities/${next.id}`}
@@ -2477,7 +2507,7 @@ function StrengthsAssessmentActivity({
               Start — 18 quick situations →
             </button>
             <p className="text-xs text-[--ink-muted]/70 text-center mt-3 leading-relaxed">
-              An indicative snapshot to surface your signature strengths — private to you.
+              A quick snapshot, not a test. Private to you.
             </p>
           </div>
         </div>
@@ -2500,11 +2530,13 @@ function StrengthsAssessmentActivity({
                 className="text-2xl text-[--navy] mb-2"
                 style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
               >
-                Your signature strengths
+                Your strengths snapshot
               </h2>
               <p className="text-sm text-[--ink-muted]">
-                The five that come most naturally to you, out of all 24. Retaking
-                starts from your previous answers — nothing is lost.
+                The five that came out on top this time, out of all 24. It&apos;s a
+                snapshot from 18 situations rather than a test score: strengths grow
+                with use, and yours may look different in a year. Retaking starts
+                from your previous answers, so nothing is lost.
               </p>
             </div>
 
@@ -2749,12 +2781,17 @@ export default function ActivityClient({
         { onConflict: "user_id,mission_id,activity_id", ignoreDuplicates: true }
       );
 
-      const totalActivities = mission.activities.filter((a) => !a.locked).length;
-      const { count } = await db
+      // Optional extras are recorded like any step but never count towards
+      // finishing the mission, so count the required ones by id.
+      const totalActivities = requiredSteps(mission).length;
+      const { data: doneRows } = await db
         .from("mission_progress")
-        .select("id", { count: "exact", head: true })
+        .select("activity_id")
         .eq("user_id", userId)
         .eq("mission_id", mission.id);
+      const count = doneRows
+        ? requiredDone(mission, (doneRows as { activity_id: string }[]).map((r) => r.activity_id))
+        : null;
       const nextMissionId = mission.id + 1;
       const nextMissionExists = MISSIONS.some((m) => m.id === nextMissionId);
       if (count !== null && count >= totalActivities && nextMissionExists) {

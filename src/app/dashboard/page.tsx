@@ -5,7 +5,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, requiredSteps } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { MISSION_COUNT } from "@/lib/spine";
 import {
@@ -151,11 +151,11 @@ export default async function DashboardPage() {
   // mission. Home's "Up next" offers it while the missions lead.
   const completedIds = new Set(progressRows.map((p) => p.activity_id));
   const nextMission = MISSIONS.find((m) =>
-    m.activities.some((a) => !a.locked && !completedIds.has(a.id))
+    requiredSteps(m).some((a) => !completedIds.has(a.id))
   );
-  const nextActivity = nextMission?.activities.find(
-    (a) => !a.locked && !completedIds.has(a.id)
-  );
+  const nextActivity = nextMission
+    ? requiredSteps(nextMission).find((a) => !completedIds.has(a.id))
+    : undefined;
   const nextMissionStep =
     nextMission && nextActivity
       ? {
@@ -165,8 +165,8 @@ export default async function DashboardPage() {
           colour: nextMission.colour,
           activityId: nextActivity.id,
           activityTitle: nextActivity.title,
-          step: nextMission.activities.filter((a) => !a.locked).indexOf(nextActivity) + 1,
-          total: nextMission.activities.filter((a) => !a.locked).length,
+          step: requiredSteps(nextMission).indexOf(nextActivity) + 1,
+          total: requiredSteps(nextMission).length,
         }
       : null;
 
@@ -289,6 +289,23 @@ export default async function DashboardPage() {
   const plan = planRow?.response ? parseNextChapter(planRow.response as string) : null;
   const nextChapter = plan ? { who: plan.who, due: talkDue(plan) } : null;
 
+  // The outcome check-in (lib/checkin.ts): offered once near the start and
+  // once the work it measures is done. Null when migration 013 hasn't run, so
+  // Home never offers something that can't be saved.
+  const { data: checkinRows, error: checkinError } = await (supabase as any)
+    .from("outcome_checkins")
+    .select("wave, created_at")
+    .eq("user_id", user.id);
+  const checkins = checkinError
+    ? null
+    : ((checkinRows || []) as { wave: string; created_at: string }[]);
+  const checkin = checkins
+    ? {
+        startAt: checkins.find((c) => c.wave === "start")?.created_at ?? null,
+        endDone: checkins.some((c) => c.wave === "end"),
+      }
+    : null;
+
   return (
     <DashboardClient
       profile={profile}
@@ -304,6 +321,7 @@ export default async function DashboardPage() {
       missionSummary={summary}
       programWeek={programWeek}
       nextChapter={nextChapter}
+      checkin={checkin}
     />
   );
 }

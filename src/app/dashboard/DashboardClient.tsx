@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MISSIONS, getActivityLabel } from "@/lib/missions";
+import { MISSIONS, getActivityLabel, requiredSteps, requiredDone } from "@/lib/missions";
 import { formatRelativeDate, truncate } from "@/lib/utils";
 import type { UserProfile, MissionProgress, Challenge } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
@@ -10,6 +10,7 @@ import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 import { whoToYou } from "@/lib/nextChapter";
+import { endDue } from "@/lib/checkin";
 
 type RevisitEntry = {
   id: string;
@@ -59,6 +60,8 @@ interface Props {
   missionSummary: MissionSummary | null;
   /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
   nextChapter: { who: string; due: boolean } | null;
+  /** The outcome check-in: null when it isn't available yet */
+  checkin: { startAt: string | null; endDone: boolean } | null;
 }
 
 const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
@@ -70,8 +73,9 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
 
 function missionsComplete(progress: MissionProgress[]): number {
   return MISSIONS.filter((m) => {
-    const total = m.activities.filter((a) => !a.locked).length;
-    return total > 0 && progress.filter((p) => p.mission_id === m.id).length >= total;
+    const total = requiredSteps(m).length;
+    const ids = progress.filter((p) => p.mission_id === m.id).map((p) => p.activity_id);
+    return total > 0 && requiredDone(m, ids) >= total;
   }).length;
 }
 
@@ -114,6 +118,7 @@ export default function DashboardClient({
   lifeStage,
   missionSummary,
   nextChapter,
+  checkin,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -226,6 +231,33 @@ export default function DashboardClient({
       sub: hasLeftSchool(lifeStage)
         ? "Where your strengths point, and your next concrete steps."
         : "Where your strengths point, and the first steps after school.",
+    });
+  }
+
+  // The check-in comes last: it's for later, and nothing else on Home waits on it.
+  if (checkin && !checkin.startAt) {
+    alsoNow.push({
+      key: "checkin",
+      href: "/check-in",
+      icon: "◔",
+      title: "A one-minute check-in",
+      sub: "Nine quick questions now, so later you can see what's moved.",
+    });
+  } else if (
+    checkin &&
+    endDue({
+      startAt: checkin.startAt,
+      endDone: checkin.endDone,
+      missionsDone,
+      codeWritten: programWeek.allDone,
+    })
+  ) {
+    alsoNow.push({
+      key: "checkin",
+      href: "/check-in",
+      icon: "◕",
+      title: "The check-in, one more time",
+      sub: "The same nine questions. See what's moved since you started.",
     });
   }
 

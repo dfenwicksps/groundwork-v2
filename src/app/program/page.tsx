@@ -5,7 +5,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { PROGRAM_WEEKS } from "@/lib/program";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
 import { parseDays, type WeekProgress, type Strand } from "@/lib/program";
 import type { WeeklyCheckin } from "./WeeklyFiveSection";
 
@@ -73,18 +73,20 @@ export default async function ProgramPage() {
   // Which missions are still outstanding, for the "finish these first" card.
   const doneByMission = new Set(
     MISSIONS.filter((m) => {
-      const total = m.activities.filter((a) => !a.locked).length;
-      const done = new Set(
+      const total = requiredSteps(m).length;
+      const done = requiredDone(
+        m,
         missionRows.filter((r) => r.mission_id === m.id).map((r) => r.activity_id)
-      ).size;
+      );
       return total > 0 && done >= total;
     }).map((m) => m.id)
   );
   const outstanding = MISSIONS.filter((m) => !doneByMission.has(m.id)).map((m) => {
-    const total = m.activities.filter((a) => !a.locked).length;
-    const done = new Set(
+    const total = requiredSteps(m).length;
+    const done = requiredDone(
+      m,
       missionRows.filter((r) => r.mission_id === m.id).map((r) => r.activity_id)
-    ).size;
+    );
     return { id: m.id, title: m.title, question: m.question, done, total };
   });
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import type { Mission } from "@/lib/missions";
+import { requiredSteps, requiredDone, type Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import { WEEKLY_BY_KEY } from "@/lib/program";
 
@@ -33,10 +33,9 @@ export default function MissionDetailClient({
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [restarting, setRestarting] = useState(false);
 
-  const totalUnlocked = mission.activities.filter((a) => !a.locked).length;
-  const totalCompleted = mission.activities.filter(
-    (a) => !a.locked && completedActivities.has(a.id)
-  ).length;
+  // Optional extras (the conversations) never count towards the mission.
+  const totalUnlocked = requiredSteps(mission).length;
+  const totalCompleted = requiredDone(mission, completedActivities);
   const progressPct = Math.round((totalCompleted / totalUnlocked) * 100);
 
   // Reset this mission's progress so every activity can be redone. Journal
@@ -166,8 +165,9 @@ export default function MissionDetailClient({
             });
 
             const firstIncompleteIdx = mission.activities.findIndex(
-              (a) => !a.locked && !completedActivities.has(a.id)
+              (a) => !a.locked && !a.optional && !completedActivities.has(a.id)
             );
+            const firstOptionalIdx = mission.activities.findIndex((a) => a.optional);
 
             return (
               <div className="space-y-2">
@@ -180,6 +180,17 @@ export default function MissionDetailClient({
 
                   return (
                     <div key={activity.id}>
+                      {idx === firstOptionalIdx && (
+                        <div className="pt-3 pb-1 px-0.5">
+                          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                            Optional extra
+                          </div>
+                          <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
+                            A conversation with someone in your life. It doesn&apos;t count
+                            towards the mission, but it&apos;s often the part people remember.
+                          </p>
+                        </div>
+                      )}
                       {/* Story card woven in before this activity */}
                       {story && (
                         <Link
@@ -239,6 +250,8 @@ export default function MissionDetailClient({
                               ? "hover:shadow-soft"
                               : isCurrent
                               ? "ring-2 ring-teal hover:shadow-card"
+                              : activity.optional
+                              ? "hover:shadow-soft"
                               : "hover:shadow-soft opacity-70"
                           )}
                         >
@@ -256,6 +269,8 @@ export default function MissionDetailClient({
                               <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
                                 <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
+                            ) : activity.optional ? (
+                              <span aria-hidden>💬</span>
                             ) : (
                               <span>{idx + 1}</span>
                             )}
@@ -274,7 +289,7 @@ export default function MissionDetailClient({
                             </div>
                             <div className="flex items-center gap-2 mt-0.5">
                               <span className="text-xs text-ink-muted">{activity.subtitle}</span>
-                              {activity.timeEstimate && !completed && (
+                              {activity.timeEstimate && !completed && !activity.optional && (
                                 <span className="text-xs text-ink-muted">· {activity.timeEstimate}</span>
                               )}
                             </div>

@@ -1,4 +1,4 @@
-import { MISSIONS } from "./missions";
+import { MISSIONS, requiredSteps, requiredDone } from "./missions";
 
 /**
  * How many of the four missions are fully complete.
@@ -15,11 +15,12 @@ export function missionComplete(
 ): boolean {
   const m = MISSIONS.find((x) => x.id === missionId);
   if (!m) return false;
-  const total = m.activities.filter((a) => !a.locked).length;
+  const total = requiredSteps(m).length;
   if (!total) return false;
-  const done = new Set(
+  const done = requiredDone(
+    m,
     progress.filter((p) => p.mission_id === missionId).map((p) => p.activity_id)
-  ).size;
+  );
   return done >= total;
 }
 
@@ -27,13 +28,12 @@ export function missionsCompleted(
   progress: { mission_id: number; activity_id: string }[]
 ): number {
   return MISSIONS.filter((m) => {
-    const total = m.activities.filter((a) => !a.locked).length;
+    const total = requiredSteps(m).length;
     if (!total) return false;
-    const done = new Set(
-      progress
-        .filter((p) => p.mission_id === m.id)
-        .map((p) => p.activity_id)
-    ).size;
+    const done = requiredDone(
+      m,
+      progress.filter((p) => p.mission_id === m.id).map((p) => p.activity_id)
+    );
     return done >= total;
   }).length;
 }

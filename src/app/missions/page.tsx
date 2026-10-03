@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { spineFor } from "@/lib/spine";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -35,12 +35,10 @@ export default async function MissionsIndexPage() {
     (profileRaw as { active_mission?: number } | null)?.active_mission ?? 1;
 
   const missions = MISSIONS.map((m) => {
-    const total = m.activities.filter((a) => !a.locked).length;
-    const done = Math.min(
-      new Set(
-        rows.filter((r) => r.mission_id === m.id).map((r) => r.activity_id)
-      ).size,
-      total
+    const total = requiredSteps(m).length;
+    const done = requiredDone(
+      m,
+      rows.filter((r) => r.mission_id === m.id).map((r) => r.activity_id)
     );
     return {
       id: m.id,
