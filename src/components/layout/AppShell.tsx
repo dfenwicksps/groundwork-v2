@@ -14,7 +14,7 @@ const NAV_ITEMS = [
     // /support has no tab of its own; the dashboard is where the support
     // circle lives, so Home is the honest anchor rather than nothing lit.
     match: (p: string) =>
-      p === "/dashboard" || p === "/" || p.startsWith("/support"),
+      p === "/dashboard" || p === "/" || p.startsWith("/support") || p.startsWith("/check-in"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path

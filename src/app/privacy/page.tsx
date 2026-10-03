@@ -52,8 +52,9 @@ export default function PrivacyPage() {
           <li>
             <strong>What you write and choose.</strong> Mission reflections and
             journal entries, your strengths results, the values you pick, goals,
-            habits and practice notes, your Standard check-ins, and how far
-            through the missions and the ten-week program you are.
+            habits and practice notes, your Standard check-ins, your answers to
+            the nine-question check-in if you do it, and how far through the
+            missions and the ten-week program you are.
           </li>
           <li>
             <strong>Your support circle.</strong> If you add a trusted person, we
@@ -100,6 +101,13 @@ export default function PrivacyPage() {
           saved for a few specific phrases, on your own device, without sending
           anything anywhere. Neither check is saved, flagged or seen by anyone:
           it only changes what appears on your screen.
+        </p>
+        <p>
+          <strong>The nine-question check-in</strong> is optional. If you answer
+          it, your answers are stored like everything else and shown back to you
+          next to your later ones. They may also be counted in totals, combined
+          with everyone else&apos;s and with names removed, to find out whether
+          Groundwork actually helps. Nobody looks at one person&apos;s answers.
         </p>
         <p>
           No staff member reads your journal for interest or for research. We

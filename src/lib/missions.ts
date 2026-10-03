@@ -76,6 +76,16 @@ export interface Activity {
    * to answer is a reasonable answer, and the step still counts.
    */
   skippableSteps?: number[];
+  /**
+   * An optional extra: shown at the end of the mission, never counted towards
+   * finishing it, never offered as "next". The conversation steps are these.
+   */
+  optional?: boolean;
+  /**
+   * Questions to take into a conversation with someone else, shown before the
+   * student starts. The scaffolding steps are then the write-up afterwards.
+   */
+  interviewQuestions?: string[];
 }
 
 export interface Mission {
@@ -317,7 +327,7 @@ export const MISSIONS: Mission[] = [
         warmUp:
           "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 8 minutes.",
         prompt:
-          "React to 18 everyday situations to discover your top character strengths — the ones that come most naturally to you.",
+          "React to 18 everyday situations for a snapshot of the character strengths that come most naturally to you right now.",
         whyItMatters:
           "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
         timeEstimate: "About 8 minutes",
@@ -491,6 +501,34 @@ export const MISSIONS: Mission[] = [
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
+      },
+      {
+        id: "conversation-who-i-was",
+        type: "journal",
+        optional: true,
+        title: "Who Was I?",
+        subtitle: "Optional · Talk to someone",
+        intro:
+          "Your sense of who you are isn't only built inside your own head. Part of it comes from the stories other people tell about you. This step is a conversation, not a writing task: find someone who knew you when you were small — a parent, grandparent, older sibling, aunty, family friend, an old teacher — and ask them a few questions. Then come back and write up what you heard. If there's nobody you can ask, or you'd rather not, skip it. It's an extra.",
+        interviewQuestions: [
+          "What was I like when I was five or six?",
+          "What's a story about me you still tell people?",
+          "What did you notice about me back then that I might not know?",
+          "What's stayed the same about me?",
+        ],
+        prompt:
+          "Ask someone who knew you when you were little what you were like, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, and what was it like asking?",
+          "What did they tell you? Write down the bit you most want to remember, in their words if you can.",
+          "What surprised you — something you didn't know, or didn't expect them to have noticed?",
+          "What's one thing from it that still feels true about you now?",
+        ],
+        wrapUp:
+          "You've added someone else's view to your own story: the version of you that existed before you can remember.",
+        whyItMatters:
+          "Psychologists who study how young people build a life story have found it doesn't happen alone. Teenagers make sense of who they are partly through the stories other people tell about them, and with them. Hearing how someone saw you as a kid gives you material your own memory doesn't have, and shows you which parts of you have stayed constant.",
+        timeEstimate: "A conversation, then 5 minutes",
       },
     ],
   },
@@ -769,6 +807,34 @@ export const MISSIONS: Mission[] = [
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
       },
+      {
+        id: "conversation-what-matters",
+        type: "journal",
+        optional: true,
+        title: "What They Care About",
+        subtitle: "Optional · Talk to someone",
+        intro:
+          "Purpose is easier to find once you've seen what it looks like in someone else's life. Find an adult you respect — a parent, grandparent, coach, teacher, neighbour, boss — and ask what they care about and how they came to care about it. Then come back and write up what you heard. It's an optional extra.",
+        interviewQuestions: [
+          "What's something you've cared about for a long time?",
+          "How did it start — was there a moment?",
+          "What have you actually done about it?",
+          "Has caring about it ever cost you something?",
+        ],
+        prompt:
+          "Ask an adult you respect what they care about and how it started, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, and what do they care about?",
+          "How did it start for them? What got them caring?",
+          "What did they do about it — and what did it cost them, if anything?",
+          "What does their story tell you about the thing you care about?",
+        ],
+        wrapUp:
+          "You've seen what caring about something looks like over years rather than a week, including what it costs.",
+        whyItMatters:
+          "Research on youth purpose by William Damon and colleagues found that young people with a strong sense of purpose usually had adults around them who talked openly about what they cared about and why. Hearing how someone else's purpose started — often small, often by accident — makes your own feel more possible.",
+        timeEstimate: "A conversation, then 5 minutes",
+      },
     ],
   },
   {
@@ -1040,6 +1106,35 @@ export const MISSIONS: Mission[] = [
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
+      },
+      {
+        id: "conversation-family-story",
+        type: "journal",
+        optional: true,
+        title: "Where We Come From",
+        subtitle: "Optional · Talk to someone",
+        intro:
+          "Every family has stories about where it came from: who moved, what was hard, what got handed down. Ask a parent, grandparent or older relative to tell you one. If family isn't someone you can ask right now, a family friend or someone from your community works too — or skip it, it's an extra. Then come back and write up what you heard.",
+        interviewQuestions: [
+          "Where did our family come from, before here?",
+          "What was hard for them, and how did they get through it?",
+          "What did they hold onto that we still have?",
+          "What did you get from your own parents that you kept — and what did you change?",
+        ],
+        prompt:
+          "Ask an older relative to tell you a story about where your family comes from, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, and what story did they tell?",
+          "What was hard for the people in it, and how did they get through?",
+          "What got handed down — a habit, a value, a recipe, a way of doing things — that you can still see in your family?",
+          "Where do you see yourself in that story? What would you carry on, and what would you do differently?",
+        ],
+        skippableSteps: [1],
+        wrapUp:
+          "You've heard a chapter from before you were born. That's part of where you've come from too.",
+        whyItMatters:
+          "Researchers at Emory University, Marshall Duke and Robyn Fivush, found that teenagers who know more of their family's stories — where their grandparents grew up, what went wrong and how the family got through it — tend to have higher self-esteem, a stronger sense of control over their lives, and cope better with hard times. It isn't about having an impressive history. It's knowing you belong to something that has come through things before.",
+        timeEstimate: "A conversation, then 5 minutes",
       },
     ],
   },
@@ -1346,12 +1441,55 @@ export const MISSIONS: Mission[] = [
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
       },
+      {
+        id: "conversation-path",
+        type: "journal",
+        optional: true,
+        title: "How They Chose",
+        subtitle: "Optional · Talk to someone",
+        intro:
+          "Most adults didn't follow a straight line to where they are. Ask one — a parent, grandparent, older cousin, coach, someone whose work interests you — how they ended up doing what they do. Then come back and write up what you heard. It's an optional extra.",
+        interviewQuestions: [
+          "How did you end up doing what you do?",
+          "What did you nearly do instead?",
+          "What did you have to say no to?",
+          "What would you tell yourself at my age?",
+        ],
+        prompt:
+          "Ask an adult how they ended up doing what they do, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, and how did they end up where they are?",
+          "What did they nearly do instead, or have to give up?",
+          "What would they tell themselves at your age?",
+          "What does their path tell you about yours?",
+        ],
+        wrapUp:
+          "You've got a real path to set beside your own, wrong turns and all. Most paths have some.",
+        whyItMatters:
+          "Picturing your own future works better with other people's input. Cultural psychologists call it prolepsis: the people around you sketching possible futures for you out of their own experience. Hearing that someone's path had wrong turns and second chances also takes the pressure off getting the first choice perfect.",
+        timeEstimate: "A conversation, then 5 minutes",
+      },
     ],
   },
 ];
 
 export function getMission(id: number): Mission | undefined {
   return MISSIONS.find((m) => m.id === id);
+}
+
+/**
+ * The steps that make up a mission: everything except optional extras (the
+ * conversations) and locked placeholders. Every "X of Y steps", every "is this
+ * mission done" and every "what's next" counts these and only these.
+ */
+export function requiredSteps(m: Mission): Activity[] {
+  return m.activities.filter((a) => !a.locked && !a.optional);
+}
+
+/** How many of a mission's required steps are among the completed activity ids. */
+export function requiredDone(m: Mission, completedIds: Iterable<string>): number {
+  const done = new Set(completedIds);
+  return requiredSteps(m).filter((a) => done.has(a.id)).length;
 }
 
 export function getActivity(

@@ -326,9 +326,13 @@ export default function MeClient({
           <>
             {/* Signature strengths */}
             <div data-animate="2">
-              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
                 Your signature strengths
               </h2>
+              <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+                A snapshot from Strengths Mapping, not a fixed verdict. Strengths grow
+                with use, so retake it whenever it stops sounding like you.
+              </p>
               <div className="space-y-2">
                 {top5.map((k, i) => {
                   const s = STRENGTH_BY_KEY[k];
