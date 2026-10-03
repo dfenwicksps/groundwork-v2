@@ -128,7 +128,7 @@ const NAV_ITEMS = [
   {
     href: "/me",
     label: "Me",
-    match: (p: string) => p.startsWith("/me") || p.startsWith("/settings"),
+    match: (p: string) => p.startsWith("/me") || p.startsWith("/settings") || p.startsWith("/next"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle

@@ -9,6 +9,7 @@ import MissionsSummaryCard from "./MissionsSummaryCard";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
+import { whoToYou } from "@/lib/nextChapter";
 
 type RevisitEntry = {
   id: string;
@@ -56,6 +57,8 @@ interface Props {
   lifeStage: LifeStage;
   /** Present only once all four missions are done */
   missionSummary: MissionSummary | null;
+  /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
+  nextChapter: { who: string; due: boolean } | null;
 }
 
 const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
@@ -110,6 +113,7 @@ export default function DashboardClient({
   programWeek,
   lifeStage,
   missionSummary,
+  nextChapter,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -192,7 +196,28 @@ export default function DashboardClient({
       sub: `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
     });
   }
-  if (spine.futureFirst) {
+  // The next chapter: a planned conversation that's due comes first, for
+  // anyone; otherwise students for whom "what's next" is the live question are
+  // offered the plan until they've made one, then pathways and goals.
+  if (nextChapter?.due) {
+    alsoNow.push({
+      key: "next-chapter",
+      href: "/next#debrief",
+      icon: "→",
+      title: `Did you talk to ${truncate(whoToYou(nextChapter.who), 40)}?`,
+      sub: "Write down what you found out while it's fresh.",
+    });
+  } else if (spine.futureFirst && !nextChapter) {
+    alsoNow.push({
+      key: "next-chapter",
+      href: "/next",
+      icon: "→",
+      title: "Plan your next chapter",
+      sub: hasLeftSchool(lifeStage)
+        ? "Your options, the year you're hoping for, and who to ask."
+        : "Life after school: your options, the year you're hoping for, and who to ask.",
+    });
+  } else if (spine.futureFirst) {
     alsoNow.push({
       key: "future",
       href: "/me?tab=future",

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
@@ -274,6 +275,20 @@ export default async function DashboardPage() {
     allDone: weeksDone === PROGRAM_WEEKS.length,
   };
 
+  // The next-chapter plan: Home offers it to students for whom "what's next"
+  // is the live question, and nudges anyone who planned a conversation once
+  // its date comes round.
+  const { data: planRow } = await (supabase as any)
+    .from("journal_entries")
+    .select("response")
+    .eq("user_id", user.id)
+    .eq("activity_id", NEXT_CHAPTER_ACTIVITY_ID)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const plan = planRow?.response ? parseNextChapter(planRow.response as string) : null;
+  const nextChapter = plan ? { who: plan.who, due: talkDue(plan) } : null;
+
   return (
     <DashboardClient
       profile={profile}
@@ -288,6 +303,7 @@ export default async function DashboardPage() {
       lifeStage={lifeStage}
       missionSummary={summary}
       programWeek={programWeek}
+      nextChapter={nextChapter}
     />
   );
 }

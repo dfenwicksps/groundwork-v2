@@ -1387,6 +1387,7 @@ const SPECIAL_LABELS: Record<string, string> = {
   "story-reflection": "Story Reflection",
   "the-standard": "The Standard",
   "weekly-five": "The Weekly Five",
+  "next-chapter": "Your Next Chapter",
   [CHARACTER_CODE_ACTIVITY_ID]: "Character Code",
 };
 

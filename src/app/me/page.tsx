@@ -8,6 +8,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
+import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter } from "@/lib/nextChapter";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,15 @@ export default async function MePage() {
   if (!user) redirect("/auth");
 
   const db = supabase as any;
+  // Started alongside the rest; awaited where it's used.
+  const planQuery = db
+    .from("journal_entries")
+    .select("response")
+    .eq("user_id", user.id)
+    .eq("activity_id", NEXT_CHAPTER_ACTIVITY_ID)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   const [
     { data: profile },
@@ -149,6 +159,8 @@ export default async function MePage() {
     updated_at: c.updated_at as string,
   }));
 
+  const { data: planRow } = await planQuery;
+
   return (
     <MeClient
       userId={user.id}
@@ -176,6 +188,7 @@ export default async function MePage() {
       standardCheckins={standardCheckins}
       characterCode={responseToCode(codeRow?.response as string | undefined)}
       characterStory={responseToStory(codeRow?.response as string | undefined)}
+      nextChapter={planRow?.response ? parseNextChapter(planRow.response as string) : null}
       // The Standard ships in migration 004 — same graceful degradation as
       // featuresReady below, so students on an un-migrated database see
       // "coming soon" rather than a save-time error.
