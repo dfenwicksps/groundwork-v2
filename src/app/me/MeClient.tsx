@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { storySentence, type LifeStory } from "@/lib/program";
+import type { NextChapter } from "@/lib/nextChapter";
+import NextChapterSection from "./NextChapterSection";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 import { STRENGTH_BY_KEY, type Virtue } from "@/lib/strengths";
@@ -71,6 +73,7 @@ export default function MeClient({
   standardReady,
   characterCode,
   characterStory,
+  nextChapter,
   supportCount,
   featuresReady,
   lifeStage,
@@ -101,6 +104,8 @@ export default function MeClient({
   characterCode: string[];
   /** The one-sentence story the code opens with; null for older codes */
   characterStory: LifeStory | null;
+  /** The next-chapter plan, if one has been made (see /next) */
+  nextChapter: NextChapter | null;
   supportCount: number;
   featuresReady: boolean;
   lifeStage: LifeStage;
@@ -521,6 +526,8 @@ export default function MeClient({
         {/* Future — pathways + goals */}
         {hasProfile && tab === "future" && (
           <>
+            {/* The guided part of the tab: decide, and go and find out. */}
+            <NextChapterSection plan={nextChapter} />
             {/* The picture the pathways and goals below are for. */}
             <FutureSelfSection
               excerpt={futureSelf}

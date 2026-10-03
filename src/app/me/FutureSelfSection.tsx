@@ -6,7 +6,7 @@ import Link from "next/link";
  * The ordinary Tuesday at 21, surfaced where a student is actually thinking
  * about life after school.
  *
- * Future Self is step 1 of Mission 4 and stays there — this reads it back. It
+ * Future Self is step 2 of Mission 4 and stays there — this reads it back. It
  * was the last reflective mission step nothing downstream ever looked at, and
  * unlike the others it had no natural home in a program week: the weeks want
  * character and values material, and this is a picture of circumstances.
