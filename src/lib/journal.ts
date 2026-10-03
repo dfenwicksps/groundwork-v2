@@ -99,6 +99,12 @@ export function answerAt(
  * steps changed, or anything else unparseable. Showing a little extra is always
  * better than showing nothing.
  */
+/**
+ * Saved as the answer when a student chooses to leave a question out. It counts
+ * as an answer for the step, but there is nothing in it to read back.
+ */
+export const LEFT_OUT_ANSWER = "(Left this one out.)";
+
 export function answersOnly(
   missionId: number,
   activityId: string,
@@ -107,11 +113,14 @@ export function answersOnly(
   if (!response?.trim()) return "";
   const steps = getActivity(missionId, activityId)?.scaffoldingSteps;
   if (!steps?.length) return response.trim();
-  const answers = splitScaffoldedResponse(response, steps).filter((a) => a.trim());
+  const split = splitScaffoldedResponse(response, steps).filter((a) => a.trim());
+  const answers = split.filter((a) => a.trim() !== LEFT_OUT_ANSWER);
   // Single newline, not blank-line separated: a recall card clamps to a few
   // lines, and blank lines spend half that budget on whitespace — which was
   // dropping the last answer, usually the one that synthesises the rest.
-  return answers.length ? answers.join("\n") : response.trim();
+  if (answers.length) return answers.join("\n");
+  // Every question left out: nothing to read back. Unsplittable: show it whole.
+  return split.length ? "" : response.trim();
 }
 
 /**

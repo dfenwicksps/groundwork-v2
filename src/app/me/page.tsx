@@ -3,7 +3,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
 import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
-import { responseToCode, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
+import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
@@ -175,6 +175,7 @@ export default async function MePage() {
       becoming={becoming}
       standardCheckins={standardCheckins}
       characterCode={responseToCode(codeRow?.response as string | undefined)}
+      characterStory={responseToStory(codeRow?.response as string | undefined)}
       // The Standard ships in migration 004 — same graceful degradation as
       // featuresReady below, so students on an un-migrated database see
       // "coming soon" rather than a save-time error.

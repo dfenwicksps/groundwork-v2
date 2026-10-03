@@ -6,6 +6,7 @@ import {
   PROGRAM_WEEKS,
   parseDays,
   responseToCode,
+  responseToStory,
   commitmentToLines,
   CHARACTER_CODE_ACTIVITY_ID,
   CAPSTONE_SOURCES,
@@ -236,6 +237,7 @@ export default async function WeekPage({
       week={week}
       progress={progress}
       savedCode={responseToCode(codeRow?.response as string | undefined)}
+      savedStory={responseToStory(codeRow?.response as string | undefined)}
       compass={{
         strengths: strengths.map(strengthName),
         strengthKeys: strengths,

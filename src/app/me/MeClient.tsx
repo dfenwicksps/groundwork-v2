@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { storySentence, type LifeStory } from "@/lib/program";
 import AppShell from "@/components/layout/AppShell";
 import { cn } from "@/lib/utils";
 import { STRENGTH_BY_KEY, type Virtue } from "@/lib/strengths";
@@ -69,6 +70,7 @@ export default function MeClient({
   standardCheckins,
   standardReady,
   characterCode,
+  characterStory,
   supportCount,
   featuresReady,
   lifeStage,
@@ -97,6 +99,8 @@ export default function MeClient({
   standardCheckins: StandardCheckin[];
   standardReady: boolean;
   characterCode: string[];
+  /** The one-sentence story the code opens with; null for older codes */
+  characterStory: LifeStory | null;
   supportCount: number;
   featuresReady: boolean;
   lifeStage: LifeStage;
@@ -250,6 +254,14 @@ export default function MeClient({
               My Character Code
             </h2>
             <div className="card p-5">
+              {characterStory && (
+                <p
+                  className="text-ink leading-relaxed mb-4 pb-4 border-b border-border"
+                  style={{ fontFamily: "var(--font-story)" }}
+                >
+                  {storySentence(characterStory)}
+                </p>
+              )}
               <ol className="space-y-2.5">
                 {characterCode.map((c, i) => (
                   <li key={i} className="text-sm text-ink leading-relaxed flex gap-2.5">

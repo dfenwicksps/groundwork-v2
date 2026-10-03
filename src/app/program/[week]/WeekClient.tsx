@@ -24,6 +24,7 @@ import {
   type ProgramWeek,
   type WeekProgress,
   type WeekSource,
+  type LifeStory,
 } from "@/lib/program";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
@@ -53,6 +54,7 @@ export default function WeekClient({
   week,
   progress,
   savedCode,
+  savedStory,
   compass,
   becoming,
   sourceEntries,
@@ -68,6 +70,7 @@ export default function WeekClient({
   lifeStage: LifeStage;
   progress: WeekProgress | null;
   savedCode: string[];
+  savedStory: LifeStory | null;
   /** What the missions already produced — shown, not linked to */
   compass: Compass;
   /** The shared "Who I'm becoming" record — week 1's artefact lives here */
@@ -612,8 +615,9 @@ export default function WeekClient({
         )}
 
         {/* The other half of the evidence. The weeks supply behaviour; these
-            two mission steps supply what the student said they stand for and
-            the thread they found — writing the app had never read again. */}
+            mission steps supply the story — where the student has come from,
+            the thread they found, what they stand for, the direction they
+            named — in the order the code's story sentence runs. */}
         {week.week === 10 && capstone.length > 0 && (
           <div data-animate="3">
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
@@ -648,6 +652,7 @@ export default function WeekClient({
           <CharacterCodeBuilder
             userId={userId}
             saved={savedCode}
+            savedStory={savedStory}
             onSaved={async (commitments) => {
               // The code itself is the week's reflection — record it so week 10
               // completes and the program reads 10 of 10.

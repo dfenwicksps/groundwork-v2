@@ -14,7 +14,7 @@ import {
 import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS } from "@/lib/missions";
-import { splitScaffoldedResponse } from "@/lib/journal";
+import { splitScaffoldedResponse, LEFT_OUT_ANSWER as LEFT_OUT } from "@/lib/journal";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
@@ -63,8 +63,6 @@ interface Props {
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
 
 const OTHER_OPTION = "__other__";
-/** Saved as the answer when a student chooses to leave a question out. */
-const LEFT_OUT = "(Left this one out.)";
 
 function ModeToggle({
   mode,
