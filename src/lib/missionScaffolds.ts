@@ -166,6 +166,22 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   },
 
   // ── Mission 4 · Meaning ────────────────────────────────────────────────────
+  // Step 3 here is the sort (see inheritance.ts), which has its own UI, so it
+  // gets hints but no sentence stems.
+  "where-ive-come-from": {
+    stems: [
+      ["Chapter one is", "Then came", "The chapter I'm in now is called"],
+      ["The turning point was when", "Before it I was", "What it left in me is"],
+      [],
+      ["I'm reworking", "The part I'm keeping is", "What I'm changing is"],
+    ],
+    stuck: [
+      ["Chapters often start with a move, a new school, someone arriving or leaving, or a new obsession.", "Titles can be funny. 'The Minecraft Years' counts."],
+      ["It doesn't have to be dramatic. Small moments can shift a lot.", "If the big one is too much to write about, pick a smaller one, or leave this question out."],
+      ["Leave anything that doesn't apply to you unsorted.", "'Leave' isn't a verdict on the people who handed it to you. It just isn't yours to carry."],
+      ["Nothing marked Rework? Pick something you're keeping and say why it's yours now, not just theirs.", "Rework usually means keeping the reason behind it and changing how it shows up."],
+    ],
+  },
   "future-self": {
     stems: [
       ["On an ordinary Tuesday at 21 I'm", "I'm probably living", "The people around me are"],

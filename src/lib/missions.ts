@@ -64,6 +64,18 @@ export interface Activity {
   whyItMatters?: string;
   /** Estimated time to complete the activity */
   timeEstimate?: string;
+  /**
+   * Index of the scaffolding step answered by sorting what family and culture
+   * handed you (keep / rework / leave) rather than by writing. See
+   * src/lib/inheritance.ts.
+   */
+  sortStep?: number;
+  /**
+   * Steps that can be left out with one tap. For questions about the past,
+   * which can reach things a student isn't ready to write about: choosing not
+   * to answer is a reasonable answer, and the step still counts.
+   */
+  skippableSteps?: number[];
 }
 
 export interface Mission {
@@ -1041,11 +1053,42 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Weaving what you know about yourself into how you actually live.",
     description:
-      "Three missions in, you know more about yourself than you did at the start — who you are, what you care about, where you belong. This mission asks the final question: given all of that, what kind of life do you actually want to build? Not the life that would impress people. Not the one you think you should want. The one that would feel worth waking up inside. This is where exploration becomes intention.",
+      "Three missions in, you know more about yourself than you did at the start — who you are, what you care about, where you belong. This mission asks the final question: given all of that, what kind of life do you actually want to build? It starts by looking back, because every life gets built from somewhere. Not the life that would impress people. Not the one you think you should want. The one that would feel worth waking up inside. This is where exploration becomes intention.",
     colour: "#C2410C",
     colourLight: "#EA580C",
     textColour: "#FFFFFF",
     activities: [
+      {
+        id: "where-ive-come-from",
+        type: "journal",
+        title: "Where You've Come From",
+        subtitle: "Step 1 of 6 · Looking back",
+        intro:
+          "Every step so far has started from now. This one starts further back. Before you decide what kind of life to build, it helps to see what you're building from: the chapters you've already lived, a moment that changed you, and the things your family and culture handed you before you were old enough to choose. You decide how far back and how deep to go. If part of your past is painful, write around it or leave that question out — there's a button for it. And if this stirs something up, Get help is at the top of every screen.",
+        warmUp:
+          "Picture a photo of you at about seven. What would that kid be surprised by about you now — and what would they recognise straight away?",
+        prompt:
+          "Where have you come from — and what are you carrying forward from it?",
+        scenarios: [
+          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
+          "Somewhere in your story there's a before and an after — a move, a new school, a loss, a friendship, a win, something someone said that stuck. You're slightly different on the after side.",
+          "Before you could choose anything, you were handed a lot: how your family does money, arguments and feelings, what counts as doing well, where you're from, who people expect you to be. Some of it fits. Some doesn't. Some fits once you adjust it.",
+          "Reworking isn't rejecting. You might keep your family's work ethic but drop the never-resting part, or keep your culture's food and language while making up your own mind about one of its rules.",
+        ],
+        scaffoldingSteps: [
+          "If your life so far were a book, what would the chapters be called? Give each one a short title — three or four is plenty — and roughly when it was.",
+          "Pick one turning point — a moment when something shifted. What happened, and what did it leave in you that's still there now?",
+          "Everyone's handed things by their family and culture before they're old enough to choose. Sort what you were handed: keep it, rework it, or leave it.",
+          "Pick one thing you're reworking. What are you keeping from it, and what are you changing so it fits who you are now?",
+        ],
+        sortStep: 2,
+        skippableSteps: [1, 2, 3],
+        wrapUp:
+          "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: where it's heading, starting with an ordinary Tuesday at 21.",
+        whyItMatters:
+          "Identity researchers agree that who you are isn't only about the present — it's a story connecting where you've come from to where you're going. Erik Erikson noticed that young people build an identity by sorting through what they absorbed as kids: keeping some of it, reworking some, letting some go. Narrative researchers call the related skill autobiographical reasoning — linking past experiences to who you are now — and it's one of the main ways a steady sense of self gets built during the teens and early twenties.",
+        timeEstimate: "About 10 minutes",
+      },
       {
         id: "future-self",
         wrapUp:
@@ -1088,7 +1131,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Future Self",
-        subtitle: "Step 1 of 5 · Your future",
+        subtitle: "Step 2 of 6 · Your future",
         intro:
           "Identity isn't a fixed thing — it's a story you're always in the middle of writing. Before you can decide what kind of life to build, it helps to have a clear image of the life itself. Not a list of qualities and not a career goal — the actual shape of an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
@@ -1147,7 +1190,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Digital Self",
-        subtitle: "Step 2 of 5 · Your digital life",
+        subtitle: "Step 3 of 6 · Your digital life",
         intro:
           "You don't just exist in the physical world — you exist online too. And the version of you that shows up on screens isn't fake, but it is filtered. Algorithms decide what you see, platforms shape how you present yourself, and the gap between who you are online and who you are in person can tell you a lot about both. Before you can build the life you want, it's worth looking honestly at how much of your identity is being shaped by forces you didn't choose.",
         warmUp:
@@ -1208,9 +1251,9 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "The Through-Line",
-        subtitle: "Step 3 of 5 · Looking back",
+        subtitle: "Step 4 of 6 · The thread",
         intro:
-          "Mission 1 was about who you are — your strengths, your values, where you're most yourself. Mission 2 was about what you care about — what pulls you, what you have to contribute, who else shares that care. Mission 3 was about where you belong — the relationships that see you clearly, the ones that have shaped you most. This step asks the question that sits underneath all three: what's the thread running through it?",
+          "Mission 1 was about who you are — your strengths, your values, where you're most yourself. Mission 2 was about what you care about — what pulls you, what you have to contribute, who else shares that care. Mission 3 was about where you belong — the relationships that see you clearly, the ones that have shaped you most. And this mission began further back, with where you've come from. This step asks the question that sits underneath all of it: what's the thread running through it?",
         warmUp:
           "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
@@ -1269,7 +1312,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "A Life Worth Building",
-        subtitle: "Step 4 of 5 · Milestone",
+        subtitle: "Step 5 of 6 · Milestone",
         intro:
           "You've just named the thread. This letter is its other half: where that thread is going, what following it would actually cost, and why it's worth the cost anyway. Every step before this one looked backwards at what you found. This is the only one that looks forward — not a promise and not a plan, but a direction, written down while you can still see it clearly.",
         warmUp:
@@ -1294,7 +1337,7 @@ export const MISSIONS: Mission[] = [
           "One deliberate choice, made on purpose, is what all four missions look like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 5 of 5",
+        subtitle: "Step 6 of 6",
         intro:
           "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
         prompt:

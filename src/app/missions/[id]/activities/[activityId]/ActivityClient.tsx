@@ -20,6 +20,17 @@ import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
 import SupportCard from "@/components/help/SupportCard";
 import { mentionsCrisis } from "@/lib/help";
+import {
+  INHERITANCE_GROUPS,
+  INHERITANCE_ITEMS,
+  PILES,
+  SORT_MIN,
+  sortToText,
+  parseSort,
+  itemsIn,
+  type SortChoices,
+  type Pile,
+} from "@/lib/inheritance";
 import { storyHasFilm } from "@/components/stories/films";
 import {
   STRENGTH_SCENARIOS,
@@ -52,6 +63,8 @@ interface Props {
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
 
 const OTHER_OPTION = "__other__";
+/** Saved as the answer when a student chooses to leave a question out. */
+const LEFT_OUT = "(Left this one out.)";
 
 function ModeToggle({
   mode,
@@ -130,6 +143,133 @@ interface CompletedTurn {
   answer: string;
 }
 
+// ─── Shared: sorting what you were handed ─────────────────────────────────────
+// Keep / rework / leave for each thing on the list; tapping the chosen pile
+// again unsorts it. Anything unsorted doesn't apply. See lib/inheritance.ts.
+
+function InheritanceSort({
+  choices,
+  customItems,
+  accent,
+  onChoose,
+  onAdd,
+  onRemove,
+}: {
+  choices: SortChoices;
+  customItems: string[];
+  accent: string;
+  onChoose: (item: string, pile: Pile) => void;
+  onAdd: (item: string) => void;
+  onRemove: (item: string) => void;
+}) {
+  const [draft, setDraft] = useState("");
+  const inputId = useId();
+
+  function add() {
+    // ";" separates items in the saved answer, so it can't be part of one.
+    const item = draft.replace(/[;\n]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+    if (item.length < 2) return;
+    onAdd(item);
+    setDraft("");
+  }
+
+  function row(item: string, removable = false) {
+    const chosen = choices[item];
+    return (
+      <div key={item} role="group" aria-label={item} className="py-2.5 first:pt-0 last:pb-0">
+        <div className="flex items-start gap-2 mb-2">
+          <span className="flex-1 text-sm text-[--ink] leading-snug">{item}</span>
+          {removable && (
+            <button
+              type="button"
+              onClick={() => onRemove(item)}
+              aria-label={`Remove ${item}`}
+              className="text-[--ink-muted] hover:text-[--ink] text-sm leading-none px-1"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-3 gap-1.5">
+          {PILES.map(({ key, label }) => {
+            const sel = chosen === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onChoose(item, key)}
+                aria-pressed={sel}
+                className={cn(
+                  "py-1.5 rounded-lg border text-xs font-semibold transition-all",
+                  sel ? "text-white" : "bg-white text-[--ink-muted] border-[--border] hover:text-[--ink]"
+                )}
+                style={sel ? { background: accent, borderColor: accent } : undefined}
+              >
+                {sel && <span aria-hidden className="mr-1">✓</span>}
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div data-animate="3" className="space-y-3">
+      <div className="grid grid-cols-3 gap-1.5 text-center">
+        {PILES.map(({ key, heading, hint }) => (
+          <div key={key} className="rounded-xl bg-white border border-[--border] px-2 py-2">
+            <div className="text-xs font-bold text-[--ink]">{heading}</div>
+            <div className="text-xs text-[--ink-muted] leading-tight mt-0.5">{hint}</div>
+          </div>
+        ))}
+      </div>
+      {INHERITANCE_GROUPS.map((group) => (
+        <div key={group.title} className="card p-4">
+          <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-wider mb-2.5">
+            {group.title}
+          </div>
+          <div className="divide-y divide-[--border]">{group.items.map((item) => row(item))}</div>
+        </div>
+      ))}
+      <div className="card p-4">
+        <label htmlFor={inputId} className="block text-xs font-bold text-[--ink-muted] uppercase tracking-wider mb-2.5">
+          Something else you were handed
+        </label>
+        {customItems.length > 0 && (
+          <div className="divide-y divide-[--border] mb-3">{customItems.map((item) => row(item, true))}</div>
+        )}
+        <div className="flex gap-2">
+          <input
+            id={inputId}
+            type="text"
+            className="input text-sm flex-1"
+            placeholder="e.g. Always be early"
+            value={draft}
+            maxLength={60}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                add();
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={add}
+            disabled={draft.trim().length < 2}
+            className="btn btn-secondary px-4 rounded-xl text-sm"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ConversationalActivity({
   mission,
   activity,
@@ -182,7 +322,20 @@ function ConversationalActivity({
   const usingStarter = mode === "quick" && !!stepOptions;
   // Extended offers half-written sentences; "stuck" hints show at every tier.
   const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions);
-  const writingOther = !usingStarter || selectedOption === OTHER_OPTION;
+  // A sort step is answered by sorting, not writing (see lib/inheritance.ts).
+  const isSortStep = activity.sortStep === qIdx;
+  const [sortChoices, setSortChoices] = useState<SortChoices>({});
+  const [customItems, setCustomItems] = useState<string[]>([]);
+  const sortedCount = Object.keys(sortChoices).length;
+  const canLeaveOut = !!activity.skippableSteps?.includes(qIdx);
+  const writingOther = !isSortStep && (!usingStarter || selectedOption === OTHER_OPTION);
+
+  /** Restore the sort from a saved answer; anything off the list is the student's own. */
+  function loadSort(text: string) {
+    const choices = parseSort(text);
+    setSortChoices(choices);
+    setCustomItems(Object.keys(choices).filter((item) => !INHERITANCE_ITEMS.includes(item)));
+  }
 
   function changeMode(m: Tier) {
     if (m === mode) return;
@@ -240,7 +393,14 @@ function ConversationalActivity({
   function applyPrefill(idx: number) {
     const prev = prevAnswersRef.current[idx] || "";
     const opts = activity.starterOptions?.[idx];
-    if (mode === "quick" && opts) {
+    if (idx === activity.sortStep) {
+      loadSort(prev);
+      setSelectedOption(null);
+      setCurrent("");
+    } else if (prev === LEFT_OUT) {
+      setSelectedOption(null);
+      setCurrent("");
+    } else if (mode === "quick" && opts) {
       if (opts.includes(prev)) {
         setSelectedOption(prev);
         setCurrent("");
@@ -291,10 +451,13 @@ function ConversationalActivity({
       const raw = localStorage.getItem(draftKey);
       if (!raw) return;
       const d = JSON.parse(raw);
-      if (Array.isArray(d.turns) && (d.turns.length > 0 || d.current)) {
+      const hasSort = d.sort && Object.keys(d.sort).length > 0;
+      if (Array.isArray(d.turns) && (d.turns.length > 0 || d.current || hasSort)) {
         setTurns(d.turns);
         setQIdx(Math.min(d.qIdx ?? d.turns.length, questions.length - 1));
         setCurrent(d.current || "");
+        if (hasSort) setSortChoices(d.sort);
+        if (Array.isArray(d.custom)) setCustomItems(d.custom);
         setRestoredDraft(true);
       }
     } catch {
@@ -308,12 +471,12 @@ function ConversationalActivity({
     try {
       localStorage.setItem(
         draftKey,
-        JSON.stringify({ qIdx, turns, current, ts: Date.now() })
+        JSON.stringify({ qIdx, turns, current, sort: sortChoices, custom: customItems, ts: Date.now() })
       );
     } catch {
       // storage full/unavailable — non-fatal
     }
-  }, [qIdx, turns, current, phase, editing, draftKey]);
+  }, [qIdx, turns, current, sortChoices, customItems, phase, editing, draftKey]);
 
   function clearDraft() {
     try {
@@ -358,6 +521,7 @@ function ConversationalActivity({
   }, [qIdx, phase, writingOther]);
 
   function canSubmitCurrent() {
+    if (isSortStep) return sortedCount >= SORT_MIN;
     if (usingStarter) {
       if (selectedOption && selectedOption !== OTHER_OPTION) return true;
       if (selectedOption === OTHER_OPTION) return current.trim().length > 2;
@@ -369,11 +533,21 @@ function ConversationalActivity({
   async function handleNextQuestion() {
     if (!canSubmitCurrent()) return;
 
-    const answer =
-      usingStarter && selectedOption !== OTHER_OPTION
+    const answer = isSortStep
+      ? sortToText(sortChoices)
+      : usingStarter && selectedOption !== OTHER_OPTION
         ? selectedOption ?? ""
         : current.trim();
+    await advance(answer);
+  }
 
+  /** Choosing not to answer is an answer: saved as such, and the step still counts. */
+  async function leaveOut() {
+    if (!canLeaveOut || submitting) return;
+    await advance(LEFT_OUT);
+  }
+
+  async function advance(answer: string) {
     const newTurns = [...turns, { question: questions[qIdx], answer }];
     setCurrent("");
     setSelectedOption(null);
@@ -951,7 +1125,7 @@ function ConversationalActivity({
 
             {/* Previous answer — shown while editing AND on fresh re-runs, so
                 the user can always see what they said last time */}
-            {prevAnswersRef.current[qIdx] && (
+            {prevAnswersRef.current[qIdx] && !(isSortStep && editing) && (
               <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border]">
                 <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest mb-1">
                   {editing ? "Previously you " + (usingStarter ? "chose" : "wrote") : "Last time you said"}
@@ -961,6 +1135,72 @@ function ConversationalActivity({
                 </p>
               </div>
             )}
+
+            {/* What you were handed — sorted rather than written */}
+            {isSortStep && (
+              <InheritanceSort
+                choices={sortChoices}
+                customItems={customItems}
+                accent={mission.colour}
+                onChoose={(item, pile) =>
+                  setSortChoices((prev) => {
+                    const next = { ...prev };
+                    if (next[item] === pile) delete next[item];
+                    else next[item] = pile;
+                    return next;
+                  })
+                }
+                onAdd={(item) => {
+                  setCustomItems((prev) => (prev.includes(item) ? prev : [...prev, item]));
+                }}
+                onRemove={(item) => {
+                  setCustomItems((prev) => prev.filter((i) => i !== item));
+                  setSortChoices((prev) => {
+                    const next = { ...prev };
+                    delete next[item];
+                    return next;
+                  });
+                }}
+              />
+            )}
+
+            {/* The step after the sort works on one thing from it, so show the pile */}
+            {activity.sortStep !== undefined && qIdx === activity.sortStep + 1 && (() => {
+              const sorted = turns[activity.sortStep]?.answer;
+              const rework = itemsIn(sorted, "rework");
+              const shown = rework.length ? rework : itemsIn(sorted, "keep");
+              if (!shown.length) return null;
+              return (
+                <div
+                  data-animate="3"
+                  className="rounded-2xl p-4 bg-white border-2"
+                  style={{ borderColor: `${mission.colour}35` }}
+                >
+                  <div
+                    className="text-xs font-bold uppercase tracking-widest mb-2"
+                    style={{ color: mission.colour }}
+                  >
+                    {rework.length ? "You marked these to rework" : "Nothing to rework — here's what you're keeping"}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {shown.map((item) => (
+                      <span
+                        key={item}
+                        className="px-2.5 py-1 rounded-full text-xs font-semibold border"
+                        style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  {!rework.length && (
+                    <p className="text-xs text-[--ink-muted] mt-2 leading-relaxed">
+                      Pick one of these and say why it&apos;s yours now, not just theirs.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Starter mode: multiple-choice options */}
             {usingStarter && (
@@ -1078,9 +1318,27 @@ function ConversationalActivity({
                   />
                 )}
                 <div className="flex items-center gap-3">
-                  <p className="flex-1 text-xs text-[--ink-muted] leading-tight">
-                    {writingOther ? "" : "Pick the one that fits you best"}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-[--ink-muted] leading-tight">
+                      {isSortStep
+                        ? sortedCount >= SORT_MIN
+                          ? `${sortedCount} sorted. Leave the rest if they don't apply.`
+                          : `Sort at least ${SORT_MIN} to go on (${sortedCount} so far)`
+                        : writingOther
+                          ? ""
+                          : "Pick the one that fits you best"}
+                    </p>
+                    {canLeaveOut && (
+                      <button
+                        type="button"
+                        onClick={leaveOut}
+                        disabled={submitting}
+                        className="text-xs font-medium text-[--ink-muted] underline underline-offset-2 hover:text-[--ink] mt-1"
+                      >
+                        Leave this one out
+                      </button>
+                    )}
+                  </div>
                   <button
                     onClick={handleNextQuestion}
                     disabled={!canSubmitCurrent() || submitting}
