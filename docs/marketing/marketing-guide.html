@@ -1,0 +1,1252 @@
+<title>Groundwork Marketing Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=DM+Sans:opsz,wght@9..40,300..700&display=swap">
+
+<style>
+  /* ── Tokens ───────────────────────────────────────────────────────────────
+     Palette and typefaces are Groundwork's own (README.md § Design system):
+     Fraunces for display, DM Sans for body, over navy / teal / gold / sage.
+     Neutrals are biased toward the navy rather than left pure grey.        */
+  :root {
+    --ground:      #F8F8F6;
+    --surface:     #FFFFFF;
+    --sunk:        #F1F1ED;
+    --ink:         #17222E;
+    --ink-muted:   #57636F;
+    --ink-faint:   #8A939D;
+    --line:        #E3E3DC;
+    --line-strong: #CBCBC2;
+
+    --navy: #1B3A5C;
+    --teal: #24707F;
+    --gold: #9C7413;
+    --sage: #3F7350;
+    --rust: #9C3F2A;
+
+    --navy-wash: #EDF1F6;
+    --teal-wash: #E6F0F2;
+    --gold-wash: #F7F0DB;
+    --sage-wash: #E8F1EA;
+    --rust-wash: #F7EAE5;
+
+    --panel:         #1B3A5C;
+    --panel-ink:     #F4F5F2;
+    --panel-eyebrow: rgba(244,245,242,.62);
+
+    --shadow: 0 1px 2px rgba(23,34,46,.05), 0 10px 26px -14px rgba(23,34,46,.16);
+    --measure: 68ch;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0F1720;
+      --surface:     #17212B;
+      --sunk:        #131B23;
+      --ink:         #ECEDE8;
+      --ink-muted:   #9CA7B2;
+      --ink-faint:   #6F7C88;
+      --line:        #26313C;
+      --line-strong: #38444F;
+
+      --navy: #8FB2D2;
+      --teal: #5FB3C2;
+      --gold: #D7AC50;
+      --sage: #7CB08A;
+      --rust: #D4826B;
+
+      --navy-wash: #1A2735;
+      --teal-wash: #162B31;
+      --gold-wash: #2C2617;
+      --sage-wash: #182A1F;
+      --rust-wash: #2E1D18;
+
+      --panel:         #1A2735;
+      --panel-ink:     #ECEDE8;
+      --panel-eyebrow: #7C8896;
+
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 26px -14px rgba(0,0,0,.55);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0F1720;
+    --surface:     #17212B;
+    --sunk:        #131B23;
+    --ink:         #ECEDE8;
+    --ink-muted:   #9CA7B2;
+    --ink-faint:   #6F7C88;
+    --line:        #26313C;
+    --line-strong: #38444F;
+
+    --navy: #8FB2D2;
+    --teal: #5FB3C2;
+    --gold: #D7AC50;
+    --sage: #7CB08A;
+    --rust: #D4826B;
+
+    --navy-wash: #1A2735;
+    --teal-wash: #162B31;
+    --gold-wash: #2C2617;
+    --sage-wash: #182A1F;
+    --rust-wash: #2E1D18;
+
+    --panel:         #1A2735;
+    --panel-ink:     #ECEDE8;
+    --panel-eyebrow: #7C8896;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 26px -14px rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+
+  /* ── Base ───────────────────────────────────────────────────────────── */
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem) 6rem;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: Fraunces, ui-serif, Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    color: var(--navy);
+    text-wrap: balance;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  p { margin: 0; max-width: var(--measure); }
+  a { color: var(--teal); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+  strong { font-weight: 600; color: var(--ink); }
+  em { font-style: italic; }
+
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ── Masthead ───────────────────────────────────────────────────────── */
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    padding: clamp(3rem, 7vw, 5rem) 0 clamp(2.5rem, 5vw, 3.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .brandline {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  .glyph {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.375rem;
+    background: var(--navy);
+    color: var(--ground);
+    display: grid;
+    place-items: center;
+    font-family: Fraunces, serif;
+    font-size: 0.875rem;
+    flex: none;
+  }
+  .brandline span:last-child {
+    font-family: Fraunces, serif;
+    font-size: 1.0625rem;
+    color: var(--navy);
+  }
+
+  .masthead h1 {
+    font-size: clamp(2.3rem, 1.5rem + 3.2vw, 3.6rem);
+    max-width: 20ch;
+    letter-spacing: -0.02em;
+  }
+  .masthead h1 em { color: var(--teal); }
+
+  .standfirst {
+    font-size: 1.1875rem;
+    color: var(--ink-muted);
+    max-width: 58ch;
+  }
+
+  .masthead-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--ink-faint);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--line);
+    max-width: 58ch;
+  }
+
+  /* ── Section rhythm ─────────────────────────────────────────────────── */
+  section { padding-top: clamp(3rem, 6vw, 4.5rem); }
+  .sec-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .sec-head h2 { font-size: clamp(1.65rem, 1.3rem + 1.2vw, 2.15rem); }
+  .sec-head p { color: var(--ink-muted); }
+
+  h3 { font-size: 1.3125rem; }
+  h4 { font-size: 1.0625rem; }
+
+  .stack { display: flex; flex-direction: column; gap: 1rem; }
+  .stack-lg { display: flex; flex-direction: column; gap: 2rem; }
+
+  /* ── Cards ──────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .grid-2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+  .grid-3 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+
+  /* ── The pitch panel ────────────────────────────────────────────────── */
+  .pitch {
+    background: var(--panel);
+    border-radius: 0.875rem;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .pitch .eyebrow { color: var(--panel-eyebrow); }
+  .pitch p {
+    color: var(--panel-ink);
+    font-family: Fraunces, ui-serif, Georgia, serif;
+    font-size: clamp(1.2rem, 1rem + 0.7vw, 1.5rem);
+    line-height: 1.42;
+    max-width: 44ch;
+  }
+  .pitch .attrib { font-family: "DM Sans", sans-serif; font-size: 0.8125rem; color: var(--panel-eyebrow); }
+
+  /* ── The loop ───────────────────────────────────────────────────────── */
+  .loop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .loop-step {
+    flex: 1 1 12rem;
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    padding: 1rem 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .loop-step b {
+    font-family: Fraunces, serif;
+    font-weight: 500;
+    font-size: 1.0625rem;
+    color: var(--navy);
+  }
+  .loop-step span { font-size: 0.875rem; color: var(--ink-muted); }
+  .loop-arrow {
+    align-self: center;
+    color: var(--ink-faint);
+    font-size: 1.125rem;
+    padding: 0 0.125rem;
+  }
+  @media (max-width: 46rem) { .loop-arrow { display: none; } }
+
+  /* ── Mission cards ──────────────────────────────────────────────────── */
+  .mission {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--m);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+  .mission-top { display: flex; flex-direction: column; gap: 0.375rem; }
+  .mission .num { color: var(--m); font-weight: 600; font-size: 0.6875rem; letter-spacing: .14em; text-transform: uppercase; }
+  .mission h3 { color: var(--m); }
+  .mission .q {
+    font-family: Fraunces, serif;
+    font-style: italic;
+    font-size: 1.0625rem;
+    color: var(--ink-muted);
+  }
+  .mission dl { margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .mission dt {
+    font-size: 0.6875rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+  }
+  .mission dd { margin: 0; font-size: 0.9375rem; color: var(--ink-muted); }
+  .mission dd strong { color: var(--ink); }
+
+  .phase-tag {
+    align-self: flex-start;
+    font-size: 0.6875rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.25rem;
+    background: var(--sunk);
+    color: var(--ink-muted);
+    border: 1px solid var(--line);
+  }
+
+  /* ── Proof tiles ────────────────────────────────────────────────────── */
+  .proof {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .proof > div {
+    background: var(--surface);
+    padding: 1.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .proof .fig {
+    font-family: Fraunces, serif;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--teal);
+    font-variant-numeric: tabular-nums;
+  }
+  .proof .what { font-size: 0.9375rem; color: var(--ink); }
+  .proof .src { font-size: 0.75rem; color: var(--ink-faint); margin-top: auto; }
+
+  /* ── Week table ─────────────────────────────────────────────────────── */
+  .scroller { overflow-x: auto; border: 1px solid var(--line); border-radius: 0.75rem; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; min-width: 44rem; }
+  caption { caption-side: top; text-align: left; padding: 1rem 1.25rem 0; color: var(--ink-muted); font-size: 0.875rem; }
+  th, td { text-align: left; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-size: 0.6875rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    background: var(--sunk);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.wk { font-variant-numeric: tabular-nums; color: var(--ink-faint); font-weight: 600; width: 3.5rem; }
+  td.focus { color: var(--ink); font-weight: 500; }
+  td.does { color: var(--ink-muted); }
+
+  /* ── Verdict chips: the claim-strength system ───────────────────────── */
+  .verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+  }
+  .verdict::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: currentColor; flex: none; }
+  .v-say    { color: var(--sage); background: var(--sage-wash); }
+  .v-care   { color: var(--gold); background: var(--gold-wash); }
+  .v-never  { color: var(--rust); background: var(--rust-wash); }
+
+  .claim {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--c, var(--line-strong));
+    border-radius: 0.5rem;
+    background: var(--surface);
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .claim-say   { --c: var(--sage); }
+  .claim-care  { --c: var(--gold); }
+  .claim-never { --c: var(--rust); }
+  .claim .line { font-size: 1rem; color: var(--ink); font-weight: 500; }
+  .claim .why  { font-size: 0.875rem; color: var(--ink-muted); }
+  .claim .why cite { font-style: normal; color: var(--ink-faint); }
+
+  /* ── Audience blocks ────────────────────────────────────────────────── */
+  .aud {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .aud > header {
+    background: var(--sunk);
+    padding: 1rem 1.375rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .aud > header h3 { font-size: 1.1875rem; }
+  .aud > header .who { font-size: 0.8125rem; color: var(--ink-faint); }
+  .aud-body { padding: 1.375rem; display: flex; flex-direction: column; gap: 1rem; }
+  .lead-line {
+    font-family: Fraunces, serif;
+    font-size: 1.0625rem;
+    color: var(--ink);
+    line-height: 1.45;
+    border-left: 2px solid var(--teal);
+    padding-left: 0.875rem;
+  }
+  .aud ul { margin: 0; padding-left: 1.125rem; display: flex; flex-direction: column; gap: 0.4375rem; }
+  .aud li { font-size: 0.9375rem; color: var(--ink-muted); }
+  .aud li strong { color: var(--ink); }
+
+  /* ── Objections ─────────────────────────────────────────────────────── */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    padding: 0 1.25rem;
+  }
+  details + details { margin-top: 0.625rem; }
+  summary {
+    cursor: pointer;
+    padding: 1rem 0;
+    font-weight: 500;
+    color: var(--ink);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--ink-faint); font-size: 1.125rem; line-height: 1; }
+  details[open] summary::after { content: "\2212"; }
+  details[open] summary { border-bottom: 1px solid var(--line); }
+  .answer { padding: 1rem 0 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .answer p { font-size: 0.9375rem; color: var(--ink-muted); }
+
+  /* ── Copy blocks ────────────────────────────────────────────────────── */
+  .copyblock {
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    padding: 1.25rem 1.375rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .copyblock .eyebrow { color: var(--teal); }
+  .copyblock p, .copyblock li { font-size: 0.9375rem; }
+  .copyblock ul { margin: 0; padding-left: 1.125rem; display: flex; flex-direction: column; gap: 0.375rem; color: var(--ink-muted); }
+
+  /* ── References ─────────────────────────────────────────────────────── */
+  ol.refs { margin: 0; padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  ol.refs li { font-size: 0.875rem; color: var(--ink-muted); max-width: 76ch; line-height: 1.55; }
+  ol.refs li strong { color: var(--ink); font-weight: 500; }
+  .used-for { display: block; color: var(--ink-faint); font-size: 0.8125rem; margin-top: 0.125rem; }
+
+  .note {
+    background: var(--gold-wash);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--gold);
+    border-radius: 0.5rem;
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .note .eyebrow { color: var(--gold); }
+  .note p { font-size: 0.9375rem; color: var(--ink-muted); }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.8125rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  footer p { font-size: 0.8125rem; max-width: 72ch; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <!-- ══ Masthead ══════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="brandline"><span class="glyph">G</span><span>Groundwork</span></div>
+    <h1>What the missions and the ten weeks are <em>actually for</em></h1>
+    <p class="standfirst">
+      A marketing guide: what to claim about Groundwork, why finishing matters more
+      than starting, and which piece of research stands behind each sentence.
+    </p>
+    <div class="masthead-meta">
+      <span>For school partnerships, parent comms, and student-facing copy</span>
+      <span>Evidence checked September 2026</span>
+    </div>
+  </header>
+
+  <!-- ══ 1. The product in one breath ══════════════════════════════════ -->
+  <section id="what">
+    <div class="sec-head">
+      <span class="eyebrow">01 — The product in one breath</span>
+      <h2>Three parts, named the same way every time</h2>
+      <p>
+        Groundwork is a self-guided identity and character programme for teenagers.
+        Everything a student writes is private to them. There is no score, no streak,
+        no leaderboard, and no social feed. Use the three names below consistently —
+        inconsistent naming is the single biggest reason a demo loses a room.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="eyebrow">The deep dives</span>
+        <h3>Four missions</h3>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          One big question each, five steps per mission — four reflective activities
+          of 8–15 minutes, then a challenge carried through a week. Twenty steps in all.
+        </p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">The habit layer</span>
+        <h3>The ten-week Character Program</h3>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          One question a week and one thing to actually do. Ends in the Character
+          Code — five to seven commitments the student writes and keeps.
+        </p>
+      </div>
+      <div class="card">
+        <span class="eyebrow">The mirror</span>
+        <h3>The Standard</h3>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          Three outward-facing questions answered again and again, with the previous
+          answer visible while writing the next. Read back over months.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 2. The core claim ═════════════════════════════════════════════ -->
+  <section id="claim">
+    <div class="sec-head">
+      <span class="eyebrow">02 — The core claim</span>
+      <h2>Identity is the starting point. Character is the practice. Contribution is the evidence.</h2>
+      <p>
+        This is the sentence to lead with. It is not a slogan bolted on afterwards —
+        it is the actual architecture of the app, and every section below is a
+        different way of proving it.
+      </p>
+    </div>
+
+    <div class="stack-lg">
+      <div class="pitch">
+        <span class="eyebrow">The 40-second version</span>
+        <p>
+          Most wellbeing tools ask a teenager how they feel. Groundwork asks who they
+          are, then makes them go and act like it. The missions establish what a
+          student actually values and is good at. The ten weeks turn that into
+          behaviour someone else could observe. The result is not a mood score —
+          it's a document in their own handwriting they can still read at 18.
+        </p>
+        <span class="attrib">Use verbatim in a first meeting. It survives interruption at any sentence.</span>
+      </div>
+
+      <div class="loop">
+        <div class="loop-step">
+          <b>Work out who you want to be</b>
+          <span>Missions 1 &amp; 4 — strengths, values, the future self</span>
+        </div>
+        <span class="loop-arrow" aria-hidden="true">→</span>
+        <div class="loop-step">
+          <b>Name what that person values</b>
+          <span>Program weeks 1–2 — values become observable behaviours</span>
+        </div>
+        <span class="loop-arrow" aria-hidden="true">→</span>
+        <div class="loop-step">
+          <b>Practise the behaviour</b>
+          <span>Program weeks 3–9 — one lived challenge a week</span>
+        </div>
+        <span class="loop-arrow" aria-hidden="true">→</span>
+        <div class="loop-step">
+          <b>Check the impact on others</b>
+          <span>The Standard, the weekly five — repeated, not scored</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3. Why completion is the product ══════════════════════════════ -->
+  <section id="completion">
+    <div class="sec-head">
+      <span class="eyebrow">03 — The argument that matters most</span>
+      <h2>Why finishing is the product, not a nice-to-have</h2>
+      <p>
+        Every buyer will ask about engagement. The honest and more persuasive answer
+        is that Groundwork's benefits are structurally back-loaded: five of them do not
+        exist at all until a student completes the sequence. Lead with this.
+      </p>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <h4>1 — The order is the intervention</h4>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          The missions run explore → commit → integrate, the same progression Marcia
+          used to operationalise Erikson's adolescent identity stage.<sup>1,2</sup>
+          Mission 4 asks "what kind of life do I want?" — a question that produces
+          fantasy from a student who hasn't done Mission 1, and a decision from one
+          who has. Durlak and colleagues' meta-analysis of 213 school SEL programmes
+          found outcomes were moderated by whether the programme used sequenced,
+          active, focused and explicit practice — dosage and order, not content
+          alone, separated the programmes that worked.<sup>3</sup>
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>2 — Ten weeks is a dose, not a duration</h4>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          The programme runs seventy days. Lally and colleagues tracked ninety-six
+          people forming a daily behaviour and found the median time to automaticity
+          was sixty-six days, with occasional missed days doing no material
+          damage.<sup>4</sup> That is why the trackers in the app are grids rather
+          than streaks: a week with gaps still counts. A student who does weeks one
+          to three has read about character. A student who finishes has run a
+          behaviour long enough for it to start running itself.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>3 — The missions are load-bearing for the weeks</h4>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          Week 1 displays the strengths Mission 1 mapped and asks which five the
+          student wants at 25. Week 2 lays out their chosen values and asks for the
+          behaviour that proves each. Week 8 builds on the Support Circle. The weeks
+          don't reference the missions politely — several cannot be completed without
+          them. Completion isn't enforced by nagging; it's enforced by the material
+          being genuinely needed at the point it's needed.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>4 — The capstone only exists at the end</h4>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          The Character Code — five to seven commitments written in the present tense
+          as things the student <em>does</em> — is week 10. It is the artefact a
+          parent can be shown and a student can be held to, and there is no partial
+          version of it. Nine weeks of work produce no Code.
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>5 — The record is the intervention</h4>
+        <p style="font-size:.9375rem;color:var(--ink-muted)">
+          Revisits let a student reopen something they wrote months earlier, read it
+          whole, and answer one question: has this changed? There is no comparison to
+          other students and no score. But a revisit needs something to revisit —
+          spacing is set at a minimum of fourteen days precisely because nothing much
+          changes in a week. A student who completes builds the archive that makes
+          year two of the product work. One who dabbles has nothing to come back to.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 4. The four missions ══════════════════════════════════════════ -->
+  <section id="missions">
+    <div class="sec-head">
+      <span class="eyebrow">04 — Benefit by mission</span>
+      <h2>What each mission actually leaves behind</h2>
+      <p>
+        For each mission: the benefit in the language a buyer uses, and the research
+        that licenses the claim. The bolded outcome is the thing that exists after
+        the mission that did not exist before it.
+      </p>
+    </div>
+
+    <div class="grid-2">
+
+      <article class="mission" style="--m: var(--navy)">
+        <div class="mission-top">
+          <span class="num">Mission 01 — Identity</span>
+          <h3>What am I actually like?</h3>
+          <span class="q">Strengths, values, the mask, the letter</span>
+        </div>
+        <span class="phase-tag">Exploration</span>
+        <dl>
+          <div>
+            <dt>Leaves behind</dt>
+            <dd><strong>A ranked set of signature strengths and five named values</strong>, plus a written account of the gap between the private and public self.</dd>
+          </div>
+          <div>
+            <dt>Benefit line</dt>
+            <dd>A student who can name what they're good at in their own words has something to steer by when a decision gets hard — and something to say in an interview at 17.</dd>
+          </div>
+          <div>
+            <dt>Evidence</dt>
+            <dd>Built on the VIA classification of character strengths.<sup>5</sup> Acting from self-endorsed rather than externally pressured values is one of the most replicated findings in motivation research.<sup>6</sup> The mask activity draws on self-monitoring: some gap is healthy, a large one tracks with anxiety.<sup>7</sup></dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="mission" style="--m: var(--teal)">
+        <div class="mission-top">
+          <span class="num">Mission 02 — Purpose</span>
+          <h3>What do I care about?</h3>
+          <span class="q">The cause, the contribution, the people</span>
+        </div>
+        <span class="phase-tag">Commitment</span>
+        <dl>
+          <div>
+            <dt>Leaves behind</dt>
+            <dd><strong>A written commitment statement</strong> naming one specific thing the student could contribute, to one specific thing they care about.</dd>
+          </div>
+          <div>
+            <dt>Benefit line</dt>
+            <dd>The difference between a teenager who is busy and one who is going somewhere. Purpose is the strongest non-academic predictor a school can actually move.</dd>
+          </div>
+          <div>
+            <dt>Evidence</dt>
+            <dd>Damon's distinction between being engaged and being purposeful.<sup>8</sup> Purpose correlates with life satisfaction across adolescence and emerging adulthood.<sup>9</sup> A brief intervention giving learning a self-transcendent purpose raised maths and science GPA months later across four studies with 2,000+ students.<sup>10</sup></dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="mission" style="--m: var(--sage)">
+        <div class="mission-top">
+          <span class="num">Mission 03 — Connection</span>
+          <h3>Where do I belong?</h3>
+          <span class="q">Belonging vs fitting in, bridging, the people who shaped you</span>
+        </div>
+        <span class="phase-tag">Commitment</span>
+        <dl>
+          <div>
+            <dt>Leaves behind</dt>
+            <dd><strong>A named map of who shaped them and how</strong>, and a working distinction between the groups they perform for and the ones they're known in.</dd>
+          </div>
+          <div>
+            <dt>Benefit line</dt>
+            <dd>This is the mission that speaks directly to a wellbeing lead's actual caseload: the student who has friends and is still lonely.</dd>
+          </div>
+          <div>
+            <dt>Evidence</dt>
+            <dd>Social identity theory on group membership as a pillar of self.<sup>11</sup> Putnam's bridging-versus-bonding distinction underwrites the cross-difference activity.<sup>12</sup> McAdams: people who can say who shaped them hold a more coherent identity.<sup>13</sup> A brief belonging intervention halved a three-year GPA gap and improved self-reported health.<sup>14</sup></dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="mission" style="--m: var(--gold)">
+        <div class="mission-top">
+          <span class="num">Mission 04 — Meaning</span>
+          <h3>What kind of life do I want?</h3>
+          <span class="q">Future self, digital self, the through-line, the cost</span>
+        </div>
+        <span class="phase-tag">Integration</span>
+        <dl>
+          <div>
+            <dt>Leaves behind</dt>
+            <dd><strong>A concrete, dated picture of a specific ordinary day in their future</strong> — and a written answer to what they would trade for it.</dd>
+          </div>
+          <div>
+            <dt>Benefit line</dt>
+            <dd>Turns "what do you want to do after school?" from a question that produces panic into one that produces a sentence. Especially load-bearing for Year 12.</dd>
+          </div>
+          <div>
+            <dt>Evidence</dt>
+            <dd>Possible-selves research: vague future selves do almost nothing, specific ones move behaviour.<sup>15</sup> A possible-selves intervention with low-income Year 8 students improved grades, test scores and attendance and reduced misbehaviour, sustained over two years.<sup>16</sup></dd>
+          </div>
+        </dl>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ══ 5. The Character Program ══════════════════════════════════════ -->
+  <section id="program">
+    <div class="sec-head">
+      <span class="eyebrow">05 — The ten-week Character Program</span>
+      <h2>The part that has to be lived rather than written about</h2>
+      <p>
+        Every week ends in a challenge that happens off the screen. This is the
+        single most useful thing to demonstrate, because it is the opposite of what
+        buyers expect from an app — the app's own goal is to get the student off it
+        and into a corridor, a kitchen, a training session.
+      </p>
+    </div>
+
+    <div class="stack-lg">
+      <div class="scroller">
+        <table>
+          <caption>Ten weeks, ten questions, ten things to do. Weeks 1, 2, 3, 4 and 8 build directly on saved mission work.</caption>
+          <thead>
+            <tr><th scope="col">Wk</th><th scope="col">The question</th><th scope="col">What the student actually does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="wk">01</td><td class="focus">Who am I becoming?</td><td class="does">Chooses five character qualities they want people using about them at 25, and names the gap against the five they lead with now.</td></tr>
+            <tr><td class="wk">02</td><td class="focus">What do I stand for?</td><td class="does">Puts one observable behaviour next to each of their five values. A value without a behaviour is a preference.</td></tr>
+            <tr><td class="wk">03</td><td class="focus">Am I a contributor?</td><td class="does">One useful unasked-for thing a day, told to nobody. No posting it. Credit collected turns contribution into trade.</td></tr>
+            <tr><td class="wk">04</td><td class="focus">Can people trust me?</td><td class="does">Makes one small promise and keeps it every day for a week. Small and kept beats ambitious and dropped.</td></tr>
+            <tr><td class="wk">05</td><td class="focus">Do I do hard things?</td><td class="does">Names a personal hill — fitness, a skill, a conversation they've dodged — and works it four times.</td></tr>
+            <tr><td class="wk">06</td><td class="focus">What guides my choices?</td><td class="does">One real dilemma a day through three questions: what could happen, who could be harmed, what would a trustworthy person do.</td></tr>
+            <tr><td class="wk">07</td><td class="focus">Can I manage myself?</td><td class="does">Writes three "I'm the kind of person who…" statements and says them as facts, not goals.</td></tr>
+            <tr><td class="wk">08</td><td class="focus">Who is shaping me?</td><td class="does">Names three peers who lift them and two adults worth learning from, then spends deliberate time with them.</td></tr>
+            <tr><td class="wk">09</td><td class="focus">Do I leave room for inner work?</td><td class="does">Three screen-free half hours. Boredom is the mechanism here, not the failure state.</td></tr>
+            <tr><td class="wk">10</td><td class="focus">What will my character code be?</td><td class="does">Writes the Character Code: five to seven commitments for the year ahead, in the present tense, as things they do.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Why the challenges are shaped this way</h4>
+          <p style="font-size:.9375rem;color:var(--ink-muted)">
+            Weeks 4 and 5 make the student name their own promise or hill <em>before</em>
+            any tracker appears. That is an implementation intention — specifying the
+            when, where and how of a commitment in advance — which across 94 independent
+            tests produced a medium-to-large effect on goal attainment (d = .65).<sup>17</sup>
+            Week 7 converts self-control from a willpower problem into an identity
+            statement, because willpower depletes and self-concept doesn't. Week 3's
+            no-credit rule is not moralism: prompting preadolescents to perform acts of
+            kindness produced significantly larger gains in peer acceptance than a
+            matched control activity.<sup>18</sup>
+          </p>
+        </div>
+        <div class="card">
+          <h4>Why there is no streak</h4>
+          <p style="font-size:.9375rem;color:var(--ink-muted)">
+            The seven-day grid is a record, never a run to break, and a week can be
+            completed with gaps in it. Character is never scored in Groundwork, and
+            this is a deliberate design position worth stating out loud in a pitch:
+            scoring character invites impression management, which is precisely what
+            the questions exist to defeat. Each question in The Standard carries a
+            counterweight that surfaces once the student starts writing — <em>who
+            feels less safe around me?</em> — so the exercise stays a mirror rather
+            than a highlight reel.
+          </p>
+        </div>
+      </div>
+
+      <div class="note">
+        <span class="eyebrow">The demo move</span>
+        <p>
+          When you have ninety seconds, show week 3 and read the challenge aloud:
+          "one useful thing nobody asked you to do — and tell nobody." Then show the
+          Character Code from week 10. The gap between those two screens is the whole
+          product, and it lands without any explanation of the underlying frameworks.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 6. Proof points ═══════════════════════════════════════════════ -->
+  <section id="proof">
+    <div class="sec-head">
+      <span class="eyebrow">06 — The number bank</span>
+      <h2>Figures you can put on a slide</h2>
+      <p>
+        Each of these is checked against the source paper. Quote the measure as
+        written — the wording under each figure is the claim, not the headline above it.
+      </p>
+    </div>
+
+    <div class="proof">
+      <div>
+        <span class="fig">+11</span>
+        <span class="what">percentile-point gain in academic achievement for students in school-based SEL programmes, across 213 programmes and 270,034 students.</span>
+        <span class="src">Durlak et al., 2011<sup>3</sup></span>
+      </div>
+      <div>
+        <span class="fig">18 yrs</span>
+        <span class="what">the longest follow-up at which SEL participants still fared better than controls on skills, attitudes and wellbeing, across 82 programmes.</span>
+        <span class="src">Taylor et al., 2017<sup>19</sup></span>
+      </div>
+      <div>
+        <span class="fig">11 : 1</span>
+        <span class="what">average benefit–cost ratio across six SEL programmes — eleven dollars of measured benefit per dollar spent.</span>
+        <span class="src">Belfield et al., 2015<sup>20</sup></span>
+      </div>
+      <div>
+        <span class="fig">d = .65</span>
+        <span class="what">effect of forming an implementation intention on goal attainment, across 94 independent tests. The mechanism behind weeks 4 and 5.</span>
+        <span class="src">Gollwitzer &amp; Sheeran, 2006<sup>17</sup></span>
+      </div>
+      <div>
+        <span class="fig">66 days</span>
+        <span class="what">median time for a new daily behaviour to become automatic. The programme runs 70.</span>
+        <span class="src">Lally et al., 2010<sup>4</sup></span>
+      </div>
+      <div>
+        <span class="fig">52%</span>
+        <span class="what">reduction in a three-year GPA gap following a brief social-belonging intervention, with improved self-reported health at three years.</span>
+        <span class="src">Walton &amp; Cohen, 2011<sup>14</sup></span>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:1.25rem">
+      <span class="eyebrow">Read this before using the figures above</span>
+      <p>
+        None of these studies evaluated Groundwork. They establish that the
+        <em>categories</em> Groundwork works in — SEL, purpose, belonging,
+        implementation intentions — produce measurable effects when delivered well.
+        That is a legitimate and defensible thing to say. It is not the same as
+        "Groundwork raises grades by 11 percentile points", which would be false.
+        The wording in section 7 keeps the distinction visible.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ 7. Claim strength ═════════════════════════════════════════════ -->
+  <section id="claims">
+    <div class="sec-head">
+      <span class="eyebrow">07 — What we can and cannot say</span>
+      <h2>The claim ladder</h2>
+      <p>
+        Groundwork's own documentation marks which frameworks are named in the
+        research and which are only implied by it. Marketing should hold the same
+        line. Schools do due diligence, and one overreached sentence costs more than
+        it earns.
+      </p>
+    </div>
+
+    <div class="stack">
+      <div class="claim claim-say">
+        <span class="verdict v-say">Say it</span>
+        <p class="line">"Built on the VIA character strengths framework and social-emotional learning research."</p>
+        <p class="why">Accurate and already on the landing page. The strengths assessment is an indicative snapshot of the VIA classification, not the full survey — say "based on" and "indicative", never "validated" or "clinical". <cite>Refs 5, 3</cite></p>
+      </div>
+
+      <div class="claim claim-say">
+        <span class="verdict v-say">Say it</span>
+        <p class="line">"Every activity maps to one of the five CASEL competencies, and we can show you which."</p>
+        <p class="why">True and unusually easy to evidence — the mapping is documented activity by activity. This is the single most useful sentence in a conversation with a wellbeing lead or curriculum coordinator. <cite>Ref 21</cite></p>
+      </div>
+
+      <div class="claim claim-say">
+        <span class="verdict v-say">Say it</span>
+        <p class="line">"No teacher or parent can read a student's journal. That's a design decision, not a settings default."</p>
+        <p class="why">True and enforced in the schema's row-level security. Lead with it in parent communications rather than burying it — it is the objection you would otherwise spend the meeting on.</p>
+      </div>
+
+      <div class="claim claim-care">
+        <span class="verdict v-care">Say it carefully</span>
+        <p class="line">"Writing about yourself has measurable benefits."</p>
+        <p class="why">True but small. The best meta-analysis of experimental disclosure found an average effect of r = .075 across 146 randomised studies — real, cheap to deliver, and considerably smaller than earlier syntheses claimed. Say "a small, well-replicated benefit". Never imply it is therapeutic. <cite>Ref 22</cite></p>
+      </div>
+
+      <div class="claim claim-care">
+        <span class="verdict v-care">Say it carefully</span>
+        <p class="line">"Character education works."</p>
+        <p class="why">The evidence base is real but uneven in quality, and effective programmes share features — multi-year, whole-school, adult modelling — that a self-guided app does not supply on its own. Position Groundwork as the student-facing spine of a character programme, not a replacement for one. <cite>Ref 23</cite></p>
+      </div>
+
+      <div class="claim claim-care">
+        <span class="verdict v-care">Say it carefully</span>
+        <p class="line">"The programme is personalised to each student."</p>
+        <p class="why">It adapts on two real axes — identity processing style set at onboarding, and year level, which decides whether the missions or the weekly cadence leads. Describe those two things specifically. "Personalised" unqualified implies an adaptive engine that isn't there. <cite>Ref 24</cite></p>
+      </div>
+
+      <div class="claim claim-never">
+        <span class="verdict v-never">Never say</span>
+        <p class="line">Anything that positions Groundwork as therapy, treatment, or a mental-health intervention.</p>
+        <p class="why">The app says "this isn't a therapy app" on its own landing page and in settings, and directs students to Kids Helpline. Marketing must not contradict the product. This also keeps Groundwork out of a regulatory category it is not built for.</p>
+      </div>
+
+      <div class="claim claim-never">
+        <span class="verdict v-never">Never say</span>
+        <p class="line">Any figure from section 6 attributed to Groundwork itself.</p>
+        <p class="why">No outcome study of Groundwork exists yet. "Programmes of this kind have been shown to…" is defensible; "Groundwork delivers…" is not, until there is a pilot with pre/post data behind it.</p>
+      </div>
+
+      <div class="claim claim-never">
+        <span class="verdict v-never">Never say</span>
+        <p class="line">"Track your students' progress" to a teacher or school.</p>
+        <p class="why">There is no teacher dashboard and journals are private by design. Promising visibility that doesn't exist — and shouldn't — sets up a failed implementation. If a school needs oversight, sell completion counts, never content.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 8. Audiences ══════════════════════════════════════════════════ -->
+  <section id="audiences">
+    <div class="sec-head">
+      <span class="eyebrow">08 — Message by audience</span>
+      <h2>Three rooms, three different first sentences</h2>
+      <p>
+        The product doesn't change. The order of the benefits does. Each block below
+        opens with the line to actually use.
+      </p>
+    </div>
+
+    <div class="grid-3">
+
+      <div class="aud">
+        <header>
+          <h3>School leaders</h3>
+          <span class="who">Deputy principals, heads of wellbeing, curriculum coordinators</span>
+        </header>
+        <div class="aud-body">
+          <p class="lead-line">"You already run a character programme. This is the part your students do between your assemblies."</p>
+          <ul>
+            <li><strong>Maps to what they report on.</strong> Five CASEL competencies, activity by activity.</li>
+            <li><strong>No marking, no timetable.</strong> Self-guided, twenty mission steps plus a weekly cadence, at the student's pace.</li>
+            <li><strong>Age-appropriate by design.</strong> Years 7–9 lead with the weekly programme; Years 10–11 lead with missions; Year 12 leads with missions then next-year planning.</li>
+            <li><strong>Defensible.</strong> Every activity has a named framework behind it, and we'll tell you which claims are strong and which are indicative.</li>
+            <li><strong>Privacy is the offer, not the risk.</strong> Nobody reads student writing. That's why they write honestly.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="aud">
+        <header>
+          <h3>Parents</h3>
+          <span class="who">Reached through the school, at information evenings</span>
+        </header>
+        <div class="aud-body">
+          <p class="lead-line">"It asks your teenager to do one difficult thing a week, and it never shows you what they wrote."</p>
+          <ul>
+            <li><strong>It gets them off the screen.</strong> Every week ends in something lived — a promise kept, a conversation had, half an hour without a phone.</li>
+            <li><strong>Nothing is public.</strong> No feed, no followers, no comparison to other students, no score.</li>
+            <li><strong>It points back to you.</strong> Onboarding asks them to name a trusted adult; week 8 asks them to name two adults worth learning from and go and spend time with them.</li>
+            <li><strong>There's something to show for it.</strong> The Character Code at week 10 is a page a family can actually talk about.</li>
+            <li><strong>It's honest about what it isn't.</strong> Not therapy, and it says so.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="aud">
+        <header>
+          <h3>Students</h3>
+          <span class="who">In-app copy, assembly slides, anything they read themselves</span>
+        </header>
+        <div class="aud-body">
+          <p class="lead-line">"Figure out who you are. Build a life that matters."</p>
+          <ul>
+            <li><strong>Never explain the frameworks.</strong> The words "AI", "intervention" and "wellbeing" do not appear. Neither should a psychologist's name.</li>
+            <li><strong>Lead with the challenge, not the writing.</strong> "Do one useful thing nobody asked you to do, and tell nobody" recruits better than any description of reflection.</li>
+            <li><strong>Say the privacy plainly.</strong> "Nobody reads this. Not your teacher, not your parents."</li>
+            <li><strong>No pressure language.</strong> Nothing expires and nothing nags. Say that — it's true, and it's why they come back.</li>
+            <li><strong>Blank page is the enemy.</strong> Mention that every question can be answered by tapping, finishing a sentence, or writing your own.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ 9. Objections ═════════════════════════════════════════════════ -->
+  <section id="objections">
+    <div class="sec-head">
+      <span class="eyebrow">09 — Objection handling</span>
+      <h2>The five questions you will be asked</h2>
+    </div>
+
+    <details>
+      <summary><span>"How do we know they'll finish it?"</span></summary>
+      <div class="answer">
+        <p>Don't claim they all will. Say what makes finishing more likely: the year-level spine means a student is shown one thing to start, not two competing tracks; the weekly challenges are small and concrete rather than aspirational; nothing expires, so a missed week isn't a failed programme; and every open question can be answered by tapping a written answer, finishing a half-written sentence, or writing from scratch — so non-completion caused by not knowing how to start a sentence about yourself is designed out.</p>
+        <p>Then turn it around: ask what proportion of their current character programme's content students can still recall in March. Groundwork produces a document they keep.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span>"Isn't this just journalling?"</span></summary>
+      <div class="answer">
+        <p>No — and the difference is the half of the product that happens off the screen. Every mission ends in a challenge carried through a week. Every one of the ten programme weeks ends in something lived: a promise kept daily, four sessions on a chosen hill, three screen-free half hours, deliberate time with named people. The writing exists to make the action specific enough to be doable.</p>
+        <p>The honest add: the writing itself has a small, well-replicated benefit — not a large one. We don't sell the journalling as the mechanism.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span>"Our students already have too many apps."</span></summary>
+      <div class="answer">
+        <p>Agreed, and Groundwork is built to be a low-frequency one. There are no notifications, no streaks, and no daily engagement target — the app has nothing to gain from a student being on it. The weekly cadence is one question and one action; the mission steps run 8–15 minutes each, twenty of them across the whole programme.</p>
+        <p>If the school's real concern is screen time, week 9 is the answer: three screen-free half hours, with boredom named as the mechanism.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span>"What happens if a student writes something concerning?"</span></summary>
+      <div class="answer">
+        <p>Answer this one precisely and without spin, because getting it wrong is a safeguarding problem. Journals are private — no teacher or parent view exists. The app therefore does not and cannot function as a disclosure channel, and it says so: it states plainly that it isn't a therapy app, it surfaces Kids Helpline (1800 55 1800 in Australia), and onboarding asks the student to name a trusted adult before they begin.</p>
+        <p>What that means for a school: Groundwork sits inside your existing pastoral structure, it doesn't substitute for it. Any school deploying it should say so to students in the same breath.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary><span>"Where's the evidence it works?"</span></summary>
+      <div class="answer">
+        <p>Be straight: there is no outcome study of Groundwork itself yet. What exists is a design built activity-by-activity on named research — Erikson and Marcia for the sequence, VIA for strengths, self-determination theory for values, Damon for purpose, McAdams for narrative, possible selves for the future work, implementation intentions for the weekly commitments — and a large evidence base showing that programmes of this type produce measurable effects when they are sequenced, active, focused and explicit.</p>
+        <p>Then make the ask: a pilot cohort with pre/post measures. Schools respond well to being invited into the evidence rather than sold a claim, and it converts the weakest part of the pitch into a reason to sign.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══ 10. Copy blocks ═══════════════════════════════════════════════ -->
+  <section id="copy">
+    <div class="sec-head">
+      <span class="eyebrow">10 — Ready to use</span>
+      <h2>Copy blocks</h2>
+      <p>Written to the claim ladder in section 7. Cut freely; don't add.</p>
+    </div>
+
+    <div class="stack">
+      <div class="copyblock">
+        <span class="eyebrow">One line</span>
+        <p>Groundwork helps teenagers work out who they are — then asks them to go and act like it.</p>
+      </div>
+
+      <div class="copyblock">
+        <span class="eyebrow">Boilerplate — 60 words</span>
+        <p>
+          Groundwork is a self-guided identity and character programme for teenagers.
+          Four missions ask one big question each — identity, purpose, connection,
+          meaning. A ten-week programme turns the answers into weekly practice, each
+          week ending in something the student has to live rather than write about.
+          It ends in a Character Code they write themselves. Everything they write
+          stays private.
+        </p>
+      </div>
+
+      <div class="copyblock">
+        <span class="eyebrow">Cold email to a head of wellbeing — subject and body</span>
+        <p><strong>Subject:</strong> The part of your character programme students do on their own</p>
+        <p>
+          Most character programmes are strong on assemblies and thin on what happens
+          between them. Groundwork is the between-them part: four missions that map a
+          student's strengths, values and direction, then ten weeks that turn those
+          into weekly practice — one question, one thing to actually do, no scores and
+          no streaks. It ends with each student writing a Character Code of five to
+          seven commitments in their own words.
+        </p>
+        <p>
+          Two things worth knowing up front. Every activity maps to a CASEL
+          competency and I'm happy to send the mapping. And no teacher or parent can
+          read student writing — that's deliberate, and it's why they write honestly.
+        </p>
+        <p>
+          We don't have an outcome study yet, so I'd rather run a pilot with pre/post
+          measures than make a claim I can't support. Worth fifteen minutes?
+        </p>
+      </div>
+
+      <div class="copyblock">
+        <span class="eyebrow">Parent evening — three slides' worth</span>
+        <ul>
+          <li>Your teenager will be asked one question a week, and given one thing to do about it.</li>
+          <li>You will not be shown what they wrote. That's the point — it's why the answers are honest.</li>
+          <li>At the end there's a page they wrote themselves, called a Character Code. Ask them about that one.</li>
+        </ul>
+      </div>
+
+      <div class="copyblock">
+        <span class="eyebrow">Student-facing, for a poster or assembly slide</span>
+        <ul>
+          <li>Four questions. Ten weeks. One page you write at the end and actually mean.</li>
+          <li>This week: do one useful thing nobody asked you to do — and tell nobody.</li>
+          <li>Nobody reads this. Not your teacher. Not your parents.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ References ════════════════════════════════════════════════════ -->
+  <section id="refs">
+    <div class="sec-head">
+      <span class="eyebrow">References</span>
+      <h2>Sources</h2>
+      <p>
+        Items 1, 2, 5–8, 11–13, 15 and 24 are the frameworks Groundwork's activities
+        are built on. Items 3, 4, 9, 10, 14 and 16–23 are the empirical results quoted
+        in this guide. Verified September 2026.
+      </p>
+    </div>
+
+    <ol class="refs">
+      <li><strong>Erikson, E. H.</strong> (1968). <em>Identity: Youth and Crisis.</em> Norton.<span class="used-for">The adolescent stage the whole programme is organised around.</span></li>
+      <li><strong>Marcia, J. E.</strong> (1966). Development and validation of ego identity status. <em>Journal of Personality and Social Psychology, 3</em>(5), 551–558.<span class="used-for">Exploration → commitment, the mission sequence.</span></li>
+      <li><strong>Durlak, J. A., Weissberg, R. P., Dymnicki, A. B., Taylor, R. D., &amp; Schellinger, K. B.</strong> (2011). The impact of enhancing students' social and emotional learning: A meta-analysis of school-based universal interventions. <em>Child Development, 82</em>(1), 405–432. <a href="https://onlinelibrary.wiley.com/doi/10.1111/j.1467-8624.2010.01564.x">doi:10.1111/j.1467-8624.2010.01564.x</a><span class="used-for">213 programmes, 270,034 students, +11 percentile points; SAFE practice and implementation quality as moderators.</span></li>
+      <li><strong>Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W., &amp; Wardle, J.</strong> (2010). How are habits formed: Modelling habit formation in the real world. <em>European Journal of Social Psychology, 40</em>(6), 998–1009. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/ejsp.674">doi:10.1002/ejsp.674</a><span class="used-for">Median 66 days to automaticity, range 18–254; missed days not materially damaging.</span></li>
+      <li><strong>Peterson, C., &amp; Seligman, M. E. P.</strong> (2004). <em>Character Strengths and Virtues: A Handbook and Classification.</em> Oxford University Press.<span class="used-for">The VIA classification behind Strengths Mapping and week 1.</span></li>
+      <li><strong>Deci, E. L., &amp; Ryan, R. M.</strong> (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry, 11</em>(4), 227–268.<span class="used-for">Self-endorsed values and durable motivation — the Values Clarifier.</span></li>
+      <li><strong>Snyder, M.</strong> (1974). Self-monitoring of expressive behavior. <em>Journal of Personality and Social Psychology, 30</em>(4), 526–537.<span class="used-for">The private/public gap measured in The Mask Check.</span></li>
+      <li><strong>Damon, W.</strong> (2008). <em>The Path to Purpose: Helping Our Children Find Their Calling in Life.</em> Free Press.<span class="used-for">Engaged versus purposeful; contribution-based purpose, and The Standard.</span></li>
+      <li><strong>Bronk, K. C., Hill, P. L., Lapsley, D. K., Talib, T. L., &amp; Finch, H.</strong> (2009). Purpose, hope, and life satisfaction in three age groups. <em>The Journal of Positive Psychology, 4</em>(6), 500–510. <a href="https://www.tandfonline.com/doi/abs/10.1080/17439760903271439">doi:10.1080/17439760903271439</a><span class="used-for">Purpose and life satisfaction in adolescents and emerging adults.</span></li>
+      <li><strong>Yeager, D. S., Henderson, M. D., Paunesku, D., Walton, G. M., D'Mello, S., Spitzer, B. J., &amp; Duckworth, A. L.</strong> (2014). Boring but important: A self-transcendent purpose for learning fosters academic self-regulation. <em>Journal of Personality and Social Psychology, 107</em>(4), 559–580. <a href="https://web.stanford.edu/~paunesku/articles/yeager_2014.pdf">PDF</a><span class="used-for">Four studies, 2,000+ adolescents; brief purpose intervention raised maths and science GPA.</span></li>
+      <li><strong>Tajfel, H., &amp; Turner, J. C.</strong> (1979). An integrative theory of intergroup conflict. In W. G. Austin &amp; S. Worchel (Eds.), <em>The Social Psychology of Intergroup Relations.</em> Brooks/Cole.<span class="used-for">Social identity theory — Mission 3's belonging work.</span></li>
+      <li><strong>Putnam, R. D.</strong> (2000). <em>Bowling Alone: The Collapse and Revival of American Community.</em> Simon &amp; Schuster.<span class="used-for">Bridging versus bonding relationships — Across the Gap.</span></li>
+      <li><strong>McAdams, D. P., &amp; McLean, K. C.</strong> (2013). Narrative identity. <em>Current Directions in Psychological Science, 22</em>(3), 233–238.<span class="used-for">Autobiographical authorship — The People Who Shaped You.</span></li>
+      <li><strong>Walton, G. M., &amp; Cohen, G. L.</strong> (2011). A brief social-belonging intervention improves academic and health outcomes of minority students. <em>Science, 331</em>(6023), 1447–1451. <a href="https://www.science.org/doi/10.1126/science.1198364">doi:10.1126/science.1198364</a><span class="used-for">Three-year GPA gap reduced by 52%; improved self-reported health.</span></li>
+      <li><strong>Markus, H., &amp; Nurius, P.</strong> (1986). Possible selves. <em>American Psychologist, 41</em>(9), 954–969.<span class="used-for">The Future Self activity in Mission 4.</span></li>
+      <li><strong>Oyserman, D., Bybee, D., &amp; Terry, K.</strong> (2006). Possible selves and academic outcomes: How and when possible selves impel action. <em>Journal of Personality and Social Psychology, 91</em>(1), 188–204. <a href="https://sparq.stanford.edu/sites/g/files/sbiybj19021/files/media/file/oyserman_byeee_terry_2006.pdf">PDF</a><span class="used-for">141 intervention / 123 control Year 8 students; grades, test scores and attendance up, misbehaviour and depression down, sustained at two years.</span></li>
+      <li><strong>Gollwitzer, P. M., &amp; Sheeran, P.</strong> (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. <em>Advances in Experimental Social Psychology, 38</em>, 69–119.<span class="used-for">94 independent tests, d = .65 — the mechanism behind programme weeks 4 and 5.</span></li>
+      <li><strong>Layous, K., Nelson, S. K., Oberle, E., Schonert-Reichl, K. A., &amp; Lyubomirsky, S.</strong> (2012). Kindness counts: Prompting prosocial behavior in preadolescents boosts peer acceptance and well-being. <em>PLOS ONE, 7</em>(12), e51380. <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0051380">doi:10.1371/journal.pone.0051380</a><span class="used-for">19 classrooms; acts of kindness produced larger peer-acceptance gains than a matched control activity. Both groups improved in wellbeing — quote it that way.</span></li>
+      <li><strong>Taylor, R. D., Oberle, E., Durlak, J. A., &amp; Weissberg, R. P.</strong> (2017). Promoting positive youth development through school-based social and emotional learning interventions: A meta-analysis of follow-up effects. <em>Child Development, 88</em>(4), 1156–1171. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/cdev.12864">doi:10.1111/cdev.12864</a><span class="used-for">82 programmes, 97,406 students; follow-ups from 6 months to 18 years, benefits similar across race, SES and school location.</span></li>
+      <li><strong>Belfield, C., Bowden, A. B., Klapp, A., Levin, H., Shand, R., &amp; Zander, S.</strong> (2015). The economic value of social and emotional learning. <em>Journal of Benefit-Cost Analysis, 6</em>(3), 508–544. <a href="https://www.cambridge.org/core/journals/journal-of-benefit-cost-analysis/article/economic-value-of-social-and-emotional-learning/D9A12352A7CF1B39E9A2B7EA4C68F150">doi:10.1017/bca.2015.55</a><span class="used-for">Average 11:1 benefit–cost ratio across six programmes.</span></li>
+      <li><strong>CASEL.</strong> <em>The CASEL Framework: Five core social and emotional competencies.</em> Collaborative for Academic, Social, and Emotional Learning. <a href="https://casel.org/fundamentals-of-sel/what-is-the-casel-framework/">casel.org</a><span class="used-for">The five-competency mapping quoted to schools.</span></li>
+      <li><strong>Frattaroli, J.</strong> (2006). Experimental disclosure and its moderators: A meta-analysis. <em>Psychological Bulletin, 132</em>(6), 823–865.<span class="used-for">146 randomised studies, average r = .075 — the reason the expressive-writing claim is marked "say it carefully".</span></li>
+      <li><strong>Berkowitz, M. W., &amp; Bier, M. C.</strong> (2005). <em>What Works in Character Education: A Research-Driven Guide for Educators.</em> Character Education Partnership. <a href="https://wicharacter.org/wp-content/uploads/2023/10/what-works-in-CE-1.pdf">PDF</a><span class="used-for">109 studies; the features effective character programmes share — the basis for positioning Groundwork as a spine, not a substitute.</span></li>
+      <li><strong>Berzonsky, M. D.</strong> (1989). Identity style: Conceptualization and measurement. <em>Journal of Adolescent Research, 4</em>(3), 268–282.<span class="used-for">Informational, normative and diffuse-avoidant styles — the onboarding adaptation.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    <p>
+      Internal marketing guide. Product facts are drawn from the Groundwork
+      repository — <code>docs/frameworks.md</code>, <code>src/lib/missions.ts</code>,
+      <code>src/lib/program.ts</code>, <code>src/lib/standard.ts</code> and
+      <code>src/lib/spine.ts</code> — and reflect the build as at September 2026.
+      Re-check the claim ladder in section 7 whenever the product changes.
+    </p>
+    <p>
+      Groundwork is not a therapy app and should never be marketed as one. The Kids
+      Helpline number surfaced in the product (1800 55 1800) is Australian; localise
+      before marketing in another region.
+    </p>
+  </footer>
+
+</div>
