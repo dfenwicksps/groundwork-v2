@@ -6,6 +6,8 @@ import BuildStamp from "@/components/BuildStamp";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
+import DeviceLockSettings from "./DeviceLockSettings";
+import { clearLock } from "@/lib/deviceLock";
 import { cn } from "@/lib/utils";
 import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
 
@@ -112,8 +114,10 @@ export default function SettingsClient({
         setDeleting(false);
         return;
       }
-      // Account and all data are gone — end the (now-orphaned) session.
+      // Account and all data are gone — end the (now-orphaned) session, and
+      // drop this device's passcode, which guarded an account that's gone.
       await supabase.auth.signOut();
+      clearLock();
       router.push("/");
     } catch {
       setDeleteError("Couldn't reach the server. Check your connection and try again.");
@@ -333,6 +337,11 @@ export default function SettingsClient({
             <Link href="/privacy" className="text-teal hover:underline">Privacy policy</Link>
             <Link href="/terms" className="text-teal hover:underline">Terms</Link>
           </div>
+        </div>
+
+        {/* Device passcode */}
+        <div data-animate="4">
+          <DeviceLockSettings />
         </div>
 
         {/* Account actions */}

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
+import DeviceLock from "@/components/DeviceLock";
+import { LOCK_BOOT_SCRIPT } from "@/lib/deviceLock";
 
 // Self-hosted via next/font: no render-blocking Google CSS request, no flash
 // of unstyled text. The families are exposed as CSS variables that
@@ -62,8 +64,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${bricolage.variable} ${fraunces.variable} ${dmSans.variable}`}
     >
+      <head>
+        {/* Hides the page before first paint when this device has a passcode
+            and this tab hasn't been unlocked (lib/deviceLock.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: LOCK_BOOT_SCRIPT }} />
+      </head>
       <body className="min-h-screen bg-surface-muted antialiased">
         {children}
+        <DeviceLock />
       </body>
     </html>
   );

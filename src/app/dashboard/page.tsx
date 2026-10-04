@@ -5,7 +5,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
-import { MISSIONS, requiredSteps } from "@/lib/missions";
+import { MISSIONS, requiredSteps, isSensitiveActivity } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { MISSION_COUNT } from "@/lib/spine";
 import {
@@ -122,6 +122,8 @@ export default async function DashboardPage() {
 
   const eligible = revisitCandidates.filter((e) => {
     if (e.activity_id.endsWith("-revisit")) return false;
+    // Never offered on Home, where anyone glancing at the screen would see it.
+    if (isSensitiveActivity(e.activity_id)) return false;
     if (e.activity_id.endsWith("-debrief")) return false;
     // Without the link column we can't tell chains apart, so keep the old
     // once-only behaviour rather than nagging about an entry already revisited.
