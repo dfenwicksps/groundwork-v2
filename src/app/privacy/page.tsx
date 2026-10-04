@@ -100,7 +100,10 @@ export default function PrivacyPage() {
           instead. And whether or not they&apos;re on, the app checks what you
           saved for a few specific phrases, on your own device, without sending
           anything anywhere. Neither check is saved, flagged or seen by anyone:
-          it only changes what appears on your screen.
+          it only changes what appears on your screen. In the same way, if
+          several of your recent entries sound very hard on yourself, the app
+          may show a card suggesting a different move, worked out on your
+          device and never saved or sent.
         </p>
         <p>
           <strong>The nine-question check-in</strong> is optional. If you answer
