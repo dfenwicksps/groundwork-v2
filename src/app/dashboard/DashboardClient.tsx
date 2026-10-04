@@ -245,19 +245,14 @@ export default function DashboardClient({
     });
   } else if (
     checkin &&
-    endDue({
-      startAt: checkin.startAt,
-      endDone: checkin.endDone,
-      missionsDone,
-      codeWritten: programWeek.allDone,
-    })
+    endDue({ startAt: checkin.startAt, endDone: checkin.endDone })
   ) {
     alsoNow.push({
       key: "checkin",
       href: "/check-in",
       icon: "◕",
       title: "The check-in, one more time",
-      sub: "The same nine questions. See what's moved since you started.",
+      sub: "Ten weeks on: the same nine questions. See what's moved.",
     });
   }
 

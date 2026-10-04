@@ -44,5 +44,17 @@ export default async function OnboardingPage() {
     .eq("title", "The Version of Me at School")
     .maybeSingle();
 
-  return <OnboardingClient storyId={(story as { id: string } | null)?.id ?? null} />;
+  // The baseline check-in is only offered once its table exists (migration
+  // 013), so onboarding never shows a step that can't be saved.
+  const { error: checkinError } = await (supabase as any)
+    .from("outcome_checkins")
+    .select("id", { head: true, count: "exact" })
+    .eq("user_id", user.id);
+
+  return (
+    <OnboardingClient
+      storyId={(story as { id: string } | null)?.id ?? null}
+      checkinReady={!checkinError}
+    />
+  );
 }

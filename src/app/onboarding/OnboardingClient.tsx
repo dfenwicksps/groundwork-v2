@@ -15,6 +15,7 @@ import SupportCard from "@/components/help/SupportCard";
 import { markStoryActioned } from "@/lib/storyEngagement";
 import { mentionsCrisis } from "@/lib/help";
 import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
+import CheckinForm from "@/components/CheckinForm";
 
 const WHY_OPTIONS = [
   {
@@ -58,10 +59,12 @@ function gapOptions(stage: LifeStage | null): string[] {
 }
 
 /**
- * Two screens. The first asks the three things the app tailors itself by and
- * creates the profile. The second is a real piece of Groundwork: a one-minute
- * story and one question about it, so a new student reaches the actual thing
- * within about a minute of signing up.
+ * Up to three screens. The first asks the three things the app tailors itself
+ * by and creates the profile. The second is the nine-question check-in, taken
+ * here so it's a real baseline: before the story and before any mission (see
+ * lib/checkin.ts). It can be skipped, and is then offered from Home. The last
+ * is a real piece of Groundwork: a one-minute story and one question about it,
+ * so a new student reaches the actual thing within a couple of minutes.
  *
  * What used to sit between them moved to where it's used. Values are chosen
  * properly in Mission 1's Values Clarifier; a trusted person is added from the
@@ -69,9 +72,20 @@ function gapOptions(stage: LifeStage | null): string[] {
  * ever decided whether one activity opened its "why it matters" note, which is
  * one tap away for everyone.
  */
-export default function OnboardingClient({ storyId }: { storyId: string | null }) {
+export default function OnboardingClient({
+  storyId,
+  checkinReady,
+}: {
+  storyId: string | null;
+  checkinReady: boolean;
+}) {
   const router = useRouter();
-  const TOTAL_STEPS = storyId ? 2 : 1;
+  const steps = [
+    "profile",
+    ...(checkinReady ? ["checkin"] : []),
+    ...(storyId ? ["story"] : []),
+  ] as const;
+  const TOTAL_STEPS = steps.length;
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -152,9 +166,15 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
     if (resultsErr) console.error("Failed to save onboarding results:", resultsErr.message);
 
     setLoading(false);
-    if (storyId) setStep(2);
+    next();
+  }
+
+  function next() {
+    if (step < TOTAL_STEPS) setStep(step + 1);
     else router.push("/dashboard");
   }
+
+  const current = steps[step - 1];
 
   async function saveAnswer() {
     if (!gap || !storyId) return;
@@ -219,7 +239,7 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
       </div>
 
       {/* Step 1 */}
-      {step === 1 && (
+      {current === "profile" && (
         <div className="w-full max-w-md animate-fade-up">
           <div className="card p-8">
             <h1
@@ -229,7 +249,9 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
               Let&apos;s start with you.
             </h1>
             <p className="text-ink-muted text-sm mb-6">
-              Three quick questions, then a one-minute story. That&apos;s it.
+              {checkinReady
+                ? "Three quick questions, nine quick taps, then a one-minute story. That's it."
+                : "Three quick questions, then a one-minute story. That's it."}
             </p>
 
             <div className="space-y-5">
@@ -368,8 +390,36 @@ export default function OnboardingClient({ storyId }: { storyId: string | null }
         </div>
       )}
 
-      {/* Step 2 — the first real thing: a story, then one question about it */}
-      {step === 2 && storyId && (
+      {/* The baseline check-in, before anything else in the app */}
+      {current === "checkin" && (
+        <div className="w-full max-w-md animate-fade-up">
+          <h1
+            className="text-2xl text-navy mb-2"
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+          >
+            Where you&apos;re starting from.
+          </h1>
+          <p className="text-ink-muted text-sm mb-5 leading-relaxed">
+            Nine quick taps about how you see yourself today. No right answers. In ten
+            weeks you&apos;ll answer the same nine again and see what&apos;s moved.
+          </p>
+          <CheckinForm
+            wave="start"
+            context="onboarding"
+            submitLabel="Save and keep going"
+            onSaved={() => next()}
+          />
+          <button
+            onClick={next}
+            className="w-full text-center text-xs text-ink-muted hover:text-ink underline underline-offset-2 mt-4"
+          >
+            Skip for now. You can do it from Home later.
+          </button>
+        </div>
+      )}
+
+      {/* The first real thing: a story, then one question about it */}
+      {current === "story" && storyId && (
         <div className="w-full max-w-md animate-fade-up">
           <h1
             className="text-2xl text-navy mb-2"
