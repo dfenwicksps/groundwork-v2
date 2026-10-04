@@ -2,6 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
 import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
+import { answersOnly } from "@/lib/journal";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -138,6 +139,26 @@ export default async function ActivityPage({
     }
   }
 
+  // An earlier entry this step reads back (see Activity.recall), with the
+  // questions stripped so only the student's own words show.
+  let recalled: { label: string; text: string } | null = null;
+  if (activity.recall) {
+    const { data: recallRow } = await (supabase as any)
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", user.id)
+      .eq("activity_id", activity.recall.activityId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const text = answersOnly(
+      activity.recall.missionId,
+      activity.recall.activityId,
+      (recallRow as { response: string } | null)?.response
+    );
+    if (text) recalled = { label: activity.recall.label, text };
+  }
+
   // Saved VIA profile — lets a retake pre-fill the user's previous answers.
   let strengthProfile: {
     ranking: string[];
@@ -169,6 +190,7 @@ export default async function ActivityPage({
       pairedStory={pairedStory}
       compass={compass}
       strengthProfile={strengthProfile}
+      recalled={recalled}
     />
   );
 }

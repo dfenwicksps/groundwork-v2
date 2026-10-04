@@ -11,6 +11,7 @@ import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 import { whoToYou } from "@/lib/nextChapter";
 import { endDue } from "@/lib/checkin";
+import { isStoryActivity } from "@/lib/revisit";
 
 type RevisitEntry = {
   id: string;
@@ -198,7 +199,9 @@ export default function DashboardClient({
       href: `/revisit/${revisitEntry.id}`,
       icon: "↩",
       title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
-      sub: `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
+      sub: isStoryActivity(revisitEntry.activity_id)
+        ? `Written ${formatRelativeDate(revisitEntry.created_at)}. What would you add to your story now?`
+        : `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
     });
   }
   // The next chapter: a planned conversation that's due comes first, for

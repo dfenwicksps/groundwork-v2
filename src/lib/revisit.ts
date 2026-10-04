@@ -114,7 +114,31 @@ export function buildChain(
 // invites invention. Later, the distance is real and can be asked about
 // directly.
 
-export function revisitPrompts(sinceDays: number, isSecondOrLater: boolean): string[] {
+/**
+ * Steps that tell the story so far. Reading one back is the point where a life
+ * story gets updated, so their revisits ask that directly rather than whether
+ * the old answer "still feels true".
+ */
+const STORY_ACTIVITY_IDS = new Set(["chapters-so-far", "where-ive-come-from"]);
+
+export function isStoryActivity(activityId: string): boolean {
+  return STORY_ACTIVITY_IDS.has(activityId);
+}
+
+export function revisitPrompts(
+  sinceDays: number,
+  isSecondOrLater: boolean,
+  activityId?: string
+): string[] {
+  if (activityId && STORY_ACTIVITY_IDS.has(activityId)) {
+    return [
+      "What would you add to your story now? A new chapter, or one you'd call something else?",
+      "Is there a turning point you'd add, or one you see differently since you wrote this?",
+      activityId === "where-ive-come-from"
+        ? "If you sorted what you were handed again today, what would move between keep, rework and leave?"
+        : "What's the chapter you're in now called, and when did it start?",
+    ];
+  }
   if (sinceDays < 45) {
     return [
       "Does this still feel true? Has anything actually tested it since you wrote it?",

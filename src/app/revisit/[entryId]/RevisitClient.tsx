@@ -53,7 +53,7 @@ export default function RevisitClient({
 
   const eligibility = revisitEligibility(chain);
   const sinceOriginal = daysBetween(original.created_at, new Date());
-  const prompts = revisitPrompts(sinceOriginal, revisits.length > 0);
+  const prompts = revisitPrompts(sinceOriginal, revisits.length > 0, original.activity_id);
   const scaffold = revisitScaffold(sinceOriginal);
 
   async function handleSubmit() {

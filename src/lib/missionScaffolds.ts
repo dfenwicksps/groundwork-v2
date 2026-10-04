@@ -20,6 +20,16 @@ interface ActivityScaffold {
 
 export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   // ── Mission 1 · Identity ───────────────────────────────────────────────────
+  "chapters-so-far": {
+    stems: [
+      ["Chapter one:", "Then came", "After that,"],
+      ["The chapter I'm in now is called", "It's about", "It started when"],
+    ],
+    stuck: [
+      ["Chapters often start with a move, a new school, someone arriving or leaving, or a new obsession.", "Titles can be funny. 'The Minecraft Years' counts."],
+      ["Name it the way you'd name a TV episode, not a school report.", "It's fine if you don't know how this one ends yet. Nobody does."],
+    ],
+  },
   "mask-check": {
     stems: [
       ["With my friends I'm", "Around my family I'm more", "The biggest difference between the two is"],

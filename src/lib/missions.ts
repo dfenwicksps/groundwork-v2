@@ -86,6 +86,13 @@ export interface Activity {
    * student starts. The scaffolding steps are then the write-up afterwards.
    */
   interviewQuestions?: string[];
+  /**
+   * An earlier entry to read back inside this one: shown in the intro and above
+   * the scaffolding step at `step`, so the student answers with what they wrote
+   * before in front of them. Used where a question is deliberately asked twice,
+   * months apart, so the answer becomes how it has changed.
+   */
+  recall?: { activityId: string; missionId: number; label: string; step: number };
 }
 
 export interface Mission {
@@ -310,18 +317,41 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Looking inward without pressure to have it figured out yet.",
     description:
-      "Identity has three layers worth knowing: your inner compass (the self you feel from the inside), your public self (the version you show others), and your social self (the groups that shape who you are). This mission explores all three — mapping your strengths, naming what you value, and examining the gap between who you feel you are and who you present yourself to be. There are no right answers. The goal is honest self-knowledge, not a finished picture.",
+      "Identity has three layers worth knowing: your inner compass (the self you feel from the inside), your public self (the version you show others), and your social self (the groups that shape who you are). This mission starts with the story so far, then explores all three — mapping your strengths, naming what you value, and examining the gap between who you feel you are and who you present yourself to be. There are no right answers. The goal is honest self-knowledge, not a finished picture.",
     colour: "#4F46E5",
     colourLight: "#6366F1",
     textColour: "#FFFFFF",
     activities: [
+      {
+        id: "chapters-so-far",
+        type: "journal",
+        title: "Your Story So Far",
+        subtitle: "Step 1 of 6 · Where you've come from",
+        intro:
+          "Before mapping who you are now, a quick look at how you got here. Everyone's life so far falls into chapters: a move, a new school, someone arriving or leaving, a new obsession. Naming them takes two minutes and gives the rest of this mission something to stand on. Keep it light. You'll come back to this in Mission 4, when there's more to say. If you'd rather not go back there today, either question can be left out.",
+        prompt: "If your life so far were a book, what would the chapters be called?",
+        scenarios: [
+          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
+          "The episode playing right now has a title too \u2014 maybe one you'd only admit to yourself.",
+        ],
+        scaffoldingSteps: [
+          "If your life so far were a book, what would the chapters be called? Give three or four short titles, roughly in order.",
+          "What's the chapter you're in right now called, and what's it about?",
+        ],
+        skippableSteps: [0, 1],
+        wrapUp:
+          "That's your story so far, in chapter titles. You'll see them again in Mission 4, with more to add by then. Next: the strengths you've been building through all of it.",
+        whyItMatters:
+          "Identity researchers describe who you are as a life story: where you've come from, who you are now, and where you're going. A few chapter titles are enough to start it. Seeing your life in chapters also makes it easier to notice that the one you're in isn't the whole book.",
+        timeEstimate: "About 2 minutes",
+      },
       {
         id: "strengths-mapping",
         wrapUp:
           "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and the app will point back to them from here on. Next: the other half — the values underneath why those strengths matter to you.",
         type: "strengths_assessment",
         title: "Strengths Mapping",
-        subtitle: "Step 1 of 5 · Inner compass",
+        subtitle: "Step 2 of 6 · Inner compass",
         intro:
           "Here’s the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you’re naturally good at) and values (what actually matters to you). This step maps the first half. Psychologists have found that everyone’s character is a mix of the same 24 strengths — you just have more of some than others. Nobody can rank their own cold, so instead you’ll react to 18 quick everyday situations. Your reactions do the ranking for you.",
         warmUp:
@@ -338,7 +368,7 @@ export const MISSIONS: Mission[] = [
           "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
         type: "values_picker",
         title: "Values Clarifier",
-        subtitle: "Step 2 of 5 · Inner compass",
+        subtitle: "Step 3 of 6 · Inner compass",
         intro:
           "Strengths were the first half of your inner compass — this is the second half. Values are what you refuse to trade away, and together with your strengths they're what you'll steer by for the rest of this journey. 'What are your values?' is impossible to answer cold, so read the situations below first. Notice which ones tug at you — which make you go 'I'd hate that' or 'that'd really bother me'. That reaction is a value showing itself.",
         warmUp:
@@ -365,7 +395,7 @@ export const MISSIONS: Mission[] = [
           "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
         type: "journal",
         title: "The Mask Check",
-        subtitle: "Step 3 of 5 · Your public self",
+        subtitle: "Step 4 of 6 · Your public self",
         intro:
           "Your compass is built — strengths mapped, values chosen. Now we test it against the real world. Everyone wears slightly different versions of themselves in different rooms — that's normal, not fake. The question is which parts of your compass make it into every room, and which get hidden. The moments below will show you.",
         warmUp:
@@ -429,7 +459,7 @@ export const MISSIONS: Mission[] = [
           "That letter is the truest snapshot of you that exists anywhere \u2014 compass, masks and all. Nobody can mark it, judge it, or take it. Future-you will read it on a day they need it. One thing left: living one small piece of it out loud.",
         type: "milestone_letter",
         title: "Identity Letter",
-        subtitle: "Step 4 of 5 · Milestone",
+        subtitle: "Step 5 of 6 · Milestone",
         intro:
           "You've explored your inner compass — your strengths and values. You've examined your public self — where you perform versus where you're real. You've started to notice your social self — where you feel genuinely known versus where you belong on the surface. Now comes the step that holds all three together. This letter asks you to speak directly to yourself about who you actually are right now — and who you sense you're becoming.",
         warmUp:
@@ -493,7 +523,7 @@ export const MISSIONS: Mission[] = [
           "Accepting is the whole step \u2014 you've just turned self-knowledge into an experiment. Whatever happens this week is data, not a grade. Come back in a few days and tell yourself the truth about how it went.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 5 of 5",
+        subtitle: "Step 6 of 6",
         intro:
           "Everything so far has been noticing. This step is one small experiment in the real world — taking one thing you discovered about yourself and actually living it once, just to see what it feels like. You don't need to be certain and it doesn't need to go well. Noticing what happens is the whole point.",
         prompt:
@@ -1159,7 +1189,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You've Come From",
         subtitle: "Step 1 of 6 · Looking back",
         intro:
-          "Every step so far has started from now. This one starts further back. Before you decide what kind of life to build, it helps to see what you're building from: the chapters you've already lived, a moment that changed you, and the things your family and culture handed you before you were old enough to choose. You decide how far back and how deep to go. If part of your past is painful, write around it or leave that question out — there's a button for it. And if this stirs something up, Get help is at the top of every screen.",
+          "Back in Mission 1 you gave your story so far some chapter titles. This step goes further back and deeper. Before you decide what kind of life to build, it helps to see what you're building from: the chapters you've already lived, a moment that changed you, and the things your family and culture handed you before you were old enough to choose. You decide how far back and how deep to go. If part of your past is painful, write around it or leave that question out — there's a button for it. And if this stirs something up, Get help is at the top of every screen.",
         warmUp:
           "Picture a photo of you at about seven. What would that kid be surprised by about you now — and what would they recognise straight away?",
         prompt:
@@ -1171,13 +1201,14 @@ export const MISSIONS: Mission[] = [
           "Reworking isn't rejecting. You might keep your family's work ethic but drop the never-resting part, or keep your culture's food and language while making up your own mind about one of its rules.",
         ],
         scaffoldingSteps: [
-          "If your life so far were a book, what would the chapters be called? Give each one a short title — three or four is plenty — and roughly when it was.",
+          "If your life so far were a book, what would the chapters be called? If you named them in Mission 1, they're shown below: would you still call them that, or has a chapter been added since?",
           "Pick one turning point — a moment when something shifted. What happened, and what did it leave in you that's still there now?",
           "Everyone's handed things by their family and culture before they're old enough to choose. Sort what you were handed: keep it, rework it, or leave it.",
           "Pick one thing you're reworking. What are you keeping from it, and what are you changing so it fits who you are now?",
         ],
         sortStep: 2,
         skippableSteps: [1, 2, 3],
+        recall: { activityId: "chapters-so-far", missionId: 1, label: "Your chapters, from Mission 1", step: 0 },
         wrapUp:
           "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: where it's heading, starting with an ordinary Tuesday at 21.",
         whyItMatters:
