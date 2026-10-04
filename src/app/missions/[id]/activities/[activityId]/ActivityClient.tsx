@@ -14,7 +14,13 @@ import {
 import { scaffoldForStep } from "@/lib/missionScaffolds";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
-import { splitScaffoldedResponse, LEFT_OUT_ANSWER as LEFT_OUT } from "@/lib/journal";
+import {
+  splitScaffoldedResponse,
+  LEFT_OUT_ANSWER as LEFT_OUT,
+  smallStepOf,
+  withSmallStep,
+} from "@/lib/journal";
+import { hardOnSelfLately } from "@/lib/hardOnSelf";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
@@ -141,6 +147,165 @@ type ConvPhase = "intro" | "q" | "done";
 interface CompletedTurn {
   question: string;
   answer: string;
+}
+
+// ─── Shared: ending on something you can do ───────────────────────────────────
+// The done screen's last word is an action, not the thing the student was
+// turning over. Optional: tap one, write one, or ignore it.
+
+const SMALL_STEP_OPTIONS = [
+  "Tell one person one thing I wrote here",
+  "Do one small thing differently this week",
+  "Notice when this comes up, and jot it down",
+];
+
+function SmallStep({
+  accent,
+  entryId,
+  response,
+  onSaved,
+}: {
+  accent: string;
+  entryId: string;
+  response: string;
+  onSaved: (response: string) => void;
+}) {
+  const db = createClient() as any;
+  const saved = smallStepOf(response);
+  const [draft, setDraft] = useState("");
+  const [editing, setEditing] = useState(!saved);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputId = useId();
+
+  async function save(step: string) {
+    if (step.trim().length < 3) return;
+    setBusy(true);
+    setError(null);
+    const next = withSmallStep(response, step);
+    const { error: err } = await db
+      .from("journal_entries")
+      .update({ response: next, updated_at: new Date().toISOString() })
+      .eq("id", entryId);
+    setBusy(false);
+    if (err) {
+      setError("Couldn't save that. Try again in a moment.");
+      return;
+    }
+    onSaved(next);
+    setEditing(false);
+  }
+
+  if (!editing && saved) {
+    return (
+      <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${accent}35` }} data-animate="3">
+        <div className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: accent }}>
+          ✓ Your small step
+        </div>
+        <p className="text-sm text-[--ink] leading-relaxed">{saved}</p>
+        <button
+          onClick={() => {
+            setDraft(saved);
+            setEditing(true);
+          }}
+          className="text-xs text-[--teal] hover:underline mt-2"
+        >
+          Change it
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${accent}35` }} data-animate="3">
+      <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: accent }}>
+        Before you go: one small step
+      </div>
+      <p className="text-xs text-[--ink-muted] leading-relaxed mb-3">
+        What&apos;s one small thing you could do in the next week because of what you
+        just wrote? Optional, and it&apos;s saved with this entry.
+      </p>
+      <div className="space-y-1.5 mb-3">
+        {SMALL_STEP_OPTIONS.map((o) => (
+          <button
+            key={o}
+            type="button"
+            onClick={() => setDraft(o)}
+            aria-pressed={draft === o}
+            className={cn(
+              "w-full text-left px-3 py-2 rounded-xl border text-sm leading-relaxed transition-all",
+              draft === o ? "text-white" : "bg-white text-[--ink] border-[--border] hover:border-[rgba(0,0,0,0.18)]"
+            )}
+            style={draft === o ? { background: accent, borderColor: accent } : undefined}
+          >
+            {draft === o && <span aria-hidden className="mr-1.5">✓</span>}
+            {o}
+          </button>
+        ))}
+      </div>
+      <label htmlFor={inputId} className="sr-only">Your own small step</label>
+      <input
+        id={inputId}
+        type="text"
+        className="input text-sm mb-2"
+        value={draft}
+        maxLength={160}
+        onChange={(e) => setDraft(e.target.value)}
+        placeholder="Or write your own"
+      />
+      {error && (
+        <p role="alert" className="text-xs text-red-600 mb-2">
+          {error}
+        </p>
+      )}
+      <button
+        onClick={() => save(draft)}
+        disabled={draft.trim().length < 3 || busy}
+        className="btn btn-secondary w-full py-2.5 rounded-xl text-sm"
+      >
+        {busy ? "Saving…" : "Keep this step"}
+      </button>
+    </div>
+  );
+}
+
+// ─── Shared: when it's been heavy lately ──────────────────────────────────────
+// Shown when several recent entries read as hard on the self (lib/hardOnSelf).
+// It suggests a different move rather than another lap of the same thoughts.
+// Nothing about it is saved or sent.
+
+function GentleCheck() {
+  return (
+    <div
+      className="rounded-2xl p-5 mb-5 border"
+      style={{ background: "rgba(124,58,237,0.05)", borderColor: "rgba(124,58,237,0.2)" }}
+      data-animate="2"
+    >
+      <div className="text-sm font-semibold text-[--ink] mb-1.5">
+        You&apos;ve been hard on yourself lately.
+      </div>
+      <p className="text-sm text-[--ink-muted] leading-relaxed mb-3">
+        A few things you&apos;ve written recently sound like a verdict on yourself,
+        not just a rough day. Going over the same painful thoughts again and again
+        tends to make them feel truer, not clearer. That&apos;s how minds work, not
+        a flaw in you.
+      </p>
+      <ul className="text-sm text-[--ink] leading-relaxed space-y-1.5 mb-3 list-disc pl-5">
+        <li>Write one line to yourself the way you&apos;d say it to a friend who wrote this.</li>
+        <li>Do something for ten minutes instead: a walk, music, messaging someone.</li>
+        <li>
+          Talk it through with someone.{" "}
+          <Link href="/support" className="text-[--teal] underline">
+            People you can talk to
+          </Link>
+        </li>
+      </ul>
+      <p className="text-xs text-[--ink-muted] leading-relaxed">
+        Only you can see this. It&apos;s worked out on your device, and nothing is
+        saved or sent anywhere.
+      </p>
+    </div>
+  );
 }
 
 // ─── Shared: an earlier answer, read back ─────────────────────────────────────
@@ -445,6 +610,10 @@ function ConversationalActivity({
   const [supportNeeded, setSupportNeeded] = useState(false);
   const [restoredDraft, setRestoredDraft] = useState(false);
   const [existingResponse] = useState(existingEntry?.response || "");
+  // The entry as last saved, so the small step can be added to it in place.
+  const [latestResponse, setLatestResponse] = useState(existingEntry?.response || "");
+  // Set when several recent entries read as hard on the self (lib/hardOnSelf).
+  const [hardOnSelf, setHardOnSelf] = useState(false);
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
 
   // ── Draft persistence ── an activity takes 10-15 minutes; losing answers to
@@ -584,7 +753,8 @@ function ConversationalActivity({
     setSubmitting(true);
     setSaveError(null);
 
-    const finalResponse = buildResponse(allTurns);
+    // Editing keeps the small step the student already added.
+    const finalResponse = withSmallStep(buildResponse(allTurns), smallStepOf(latestResponse));
 
     let entryId = entryIdRef.current;
     if (entryId) {
@@ -622,7 +792,12 @@ function ConversationalActivity({
     // Saved for real — safe to drop the local draft now.
     clearDraft();
 
-    if (mentionsCrisis(finalResponse)) setSupportNeeded(true);
+    setLatestResponse(finalResponse);
+    if (mentionsCrisis(finalResponse)) {
+      setSupportNeeded(true);
+    } else {
+      checkHardOnSelf(finalResponse);
+    }
 
     // Request AI reflection async (non-blocking, with a timeout so the done
     // screen never shows an eternal spinner).
@@ -635,6 +810,21 @@ function ConversationalActivity({
     onComplete(finalResponse);
     setPhase("done");
     setSubmitting(false);
+  }
+
+  /**
+   * Reads the student's last few entries, on their device, to see whether this
+   * one is part of a run of being hard on themselves. Never saved or sent.
+   */
+  async function checkHardOnSelf(justWritten: string) {
+    const { data } = await db
+      .from("journal_entries")
+      .select("response")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(6);
+    const recent = ((data || []) as { response: string | null }[]).map((r) => r.response || "");
+    if (hardOnSelfLately(justWritten, recent)) setHardOnSelf(true);
   }
 
   async function fetchAiReflection(text: string, entryId: string) {
@@ -1546,6 +1736,17 @@ function ConversationalActivity({
                 </p>
               )}
             </div>
+          )}
+
+          {hardOnSelf && !supportNeeded && <GentleCheck />}
+
+          {!supportNeeded && entryIdRef.current && (
+            <SmallStep
+              accent={mission.colour}
+              entryId={entryIdRef.current}
+              response={latestResponse}
+              onSaved={setLatestResponse}
+            />
           )}
 
           {/* Primary continue actions — available immediately, never gated on

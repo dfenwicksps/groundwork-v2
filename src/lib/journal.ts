@@ -37,6 +37,9 @@ export function splitScaffoldedResponse(
   questions: string[]
 ): string[] {
   if (!saved) return [];
+  // The small step a student adds on the done screen sits after the last
+  // answer; it isn't part of any of them.
+  saved = withoutSmallStep(saved);
   if (questions.length <= 1) return [saved.trim()];
   return questions.map((q, i) => {
     const header = `${i + 1}. ${q}`;
@@ -111,6 +114,7 @@ export function answersOnly(
   response: string | null | undefined
 ): string {
   if (!response?.trim()) return "";
+  response = withoutSmallStep(response);
   const steps = getActivity(missionId, activityId)?.scaffoldingSteps;
   if (!steps?.length) return response.trim();
   const split = splitScaffoldedResponse(response, steps).filter((a) => a.trim());
@@ -134,4 +138,29 @@ export function clarifierValues(response: string | null | undefined): string[] {
     .split("\n")
     .map((l) => l.split(":")[0].trim())
     .filter(Boolean);
+}
+
+// ─── The small step ───────────────────────────────────────────────────────────
+// A reflective step ends on its done screen with one small thing the student
+// could do because of what they wrote, so they leave with an action rather
+// than only the thing they were turning over. It's optional, and saved on the
+// end of the entry as one labelled line.
+
+export const SMALL_STEP_LABEL = "One small step:";
+
+export function smallStepOf(response: string | null | undefined): string {
+  if (!response) return "";
+  const at = response.lastIndexOf(`\n\n${SMALL_STEP_LABEL}`);
+  return at === -1 ? "" : response.slice(at + SMALL_STEP_LABEL.length + 2).trim();
+}
+
+export function withoutSmallStep(response: string): string {
+  const at = response.lastIndexOf(`\n\n${SMALL_STEP_LABEL}`);
+  return at === -1 ? response : response.slice(0, at);
+}
+
+export function withSmallStep(response: string, step: string): string {
+  const base = withoutSmallStep(response);
+  const clean = step.replace(/\s*\n+\s*/g, " ").trim();
+  return clean ? `${base}\n\n${SMALL_STEP_LABEL} ${clean}` : base;
 }
