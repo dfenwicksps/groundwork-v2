@@ -1,0 +1,362 @@
+<title>Groundwork Parent Handout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=DM+Sans:opsz,wght@9..40,300..700&display=swap">
+
+<style>
+  /* ── Tokens: Groundwork's own palette and faces (README § Design system) ── */
+  :root {
+    --ground:  #EDEDE8;
+    --paper:   #FFFFFF;
+    --sunk:    #F4F4F0;
+    --ink:     #17222E;
+    --ink-mid: #4E5A66;
+    --ink-lt:  #7E8892;
+    --line:    #E0E0D8;
+    --navy:    #1B3A5C;
+    --teal:    #24707F;
+    --gold:    #8E6910;
+    --sage:    #3B6E4B;
+    --gold-wash: #F7F0DB;
+    --sage-wash: #E8F1EA;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:  #0D141B;
+      --paper:   #16202A;
+      --sunk:    #121A22;
+      --ink:     #ECEDE8;
+      --ink-mid: #9BA6B1;
+      --ink-lt:  #6D7A86;
+      --line:    #26313C;
+      --navy:    #8FB2D2;
+      --teal:    #5FB3C2;
+      --gold:    #D7AC50;
+      --sage:    #7CB08A;
+      --gold-wash: #2B2517;
+      --sage-wash: #172A1E;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:  #0D141B;
+    --paper:   #16202A;
+    --sunk:    #121A22;
+    --ink:     #ECEDE8;
+    --ink-mid: #9BA6B1;
+    --ink-lt:  #6D7A86;
+    --line:    #26313C;
+    --navy:    #8FB2D2;
+    --teal:    #5FB3C2;
+    --gold:    #D7AC50;
+    --sage:    #7CB08A;
+    --gold-wash: #2B2517;
+    --sage-wash: #172A1E;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Screen chrome: a toolbar above the sheet, hidden when printing ── */
+  .bar {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 1.25rem clamp(.75rem, 3vw, 1rem) .875rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+  .bar p { font-size: .8125rem; color: var(--ink-lt); margin: 0; max-width: 46ch; }
+  .bar button {
+    font: inherit;
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--paper);
+    background: var(--navy);
+    border: none;
+    border-radius: .375rem;
+    padding: .5rem 1rem;
+    cursor: pointer;
+  }
+  :root[data-theme="dark"] .bar button,
+  :root:not([data-theme="light"]) .bar button { color: var(--ground); }
+  .bar button:hover { opacity: .9; }
+  .bar button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  /* ── The sheet: exactly one A4 page ── */
+  .sheet {
+    max-width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 3rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 14mm 15mm 12mm;
+    display: flex;
+    flex-direction: column;
+    gap: 5.5mm;
+    box-shadow: 0 10px 30px -18px rgba(23,34,46,.4);
+  }
+
+  h1, h2, h3 {
+    font-family: Fraunces, ui-serif, Georgia, serif;
+    font-weight: 400;
+    color: var(--navy);
+    margin: 0;
+    line-height: 1.18;
+    text-wrap: balance;
+  }
+  p { margin: 0; }
+
+  /* ── Masthead ── */
+  .top { display: flex; flex-direction: column; gap: 2.5mm; }
+  .brand { display: flex; align-items: center; gap: .5rem; }
+  .glyph {
+    width: 1.375rem; height: 1.375rem; border-radius: .3125rem;
+    background: var(--navy); color: var(--paper);
+    display: grid; place-items: center;
+    font-family: Fraunces, serif; font-size: .75rem; flex: none;
+  }
+  :root[data-theme="dark"] .glyph,
+  :root:not([data-theme="light"]) .glyph { color: var(--ground); }
+  .brand span:last-child { font-family: Fraunces, serif; font-size: .9375rem; color: var(--navy); }
+  h1 { font-size: 25pt; letter-spacing: -.02em; max-width: 22ch; }
+  .standfirst { font-size: 10.5pt; color: var(--ink-mid); max-width: 62ch; }
+  .rule { height: 2px; background: var(--navy); opacity: .85; }
+
+  /* ── Body grid ── */
+  .cols { display: grid; grid-template-columns: 1.05fr .95fr; gap: 5mm 8mm; }
+  @media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+
+  .block { display: flex; flex-direction: column; gap: 2mm; }
+  h2 {
+    font-size: 12.5pt;
+    display: flex; align-items: baseline; gap: .5rem;
+  }
+  h2::before {
+    content: "";
+    width: .5rem; height: .5rem; border-radius: 50%;
+    background: var(--k, var(--teal)); flex: none;
+    transform: translateY(-1px);
+  }
+  .block p, .block li { font-size: 9.5pt; color: var(--ink-mid); }
+  .block ul { margin: 0; padding-left: 1rem; display: flex; flex-direction: column; gap: 1.4mm; }
+  .block li strong, .block p strong { color: var(--ink); font-weight: 600; }
+
+  /* ── The challenge strip: the app's own words ── */
+  .doing {
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    border-radius: .5rem;
+    padding: 4mm 5mm;
+    display: flex; flex-direction: column; gap: 2.5mm;
+  }
+  .doing .eyebrow {
+    font-size: 7.5pt; font-weight: 700; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink-lt);
+  }
+  .doing ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 6mm; }
+  @media (max-width: 700px) { .doing ol { grid-template-columns: 1fr; } }
+  .doing li { display: flex; gap: .5rem; font-size: 9pt; color: var(--ink-mid); }
+  .doing li b {
+    font-variant-numeric: tabular-nums;
+    color: var(--teal); font-weight: 600; flex: none; min-width: 3.4rem;
+    font-size: 8pt; letter-spacing: .04em; text-transform: uppercase;
+    padding-top: .1rem;
+  }
+
+  /* ── Emphasis panels ── */
+  .panel {
+    border-radius: .5rem;
+    padding: 4mm 5mm;
+    display: flex; flex-direction: column; gap: 1.5mm;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--k);
+  }
+  .panel.privacy { --k: var(--sage); background: var(--sage-wash); }
+  .panel.limits  { --k: var(--gold); background: var(--gold-wash); }
+  .panel h3 { font-size: 11pt; }
+  .panel p { font-size: 9.5pt; color: var(--ink-mid); }
+  .panel p strong { color: var(--ink); }
+
+  /* ── Conversation openers ── */
+  .openers { display: flex; flex-direction: column; gap: 2mm; }
+  .opener {
+    display: flex; gap: .625rem; align-items: flex-start;
+    border-top: 1px solid var(--line); padding-top: 2mm;
+  }
+  .opener:first-child { border-top: none; padding-top: 0; }
+  .opener .q {
+    font-family: Fraunces, serif; font-size: 10.5pt; color: var(--ink); line-height: 1.3;
+  }
+  .opener .a { font-size: 8.5pt; color: var(--ink-lt); }
+  .opener .mark {
+    font-family: Fraunces, serif; font-size: 13pt; color: var(--teal);
+    line-height: 1; flex: none; padding-top: .05rem;
+  }
+
+  footer {
+    margin-top: auto;
+    padding-top: 3mm;
+    border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem 2rem;
+  }
+  footer p { font-size: 8pt; color: var(--ink-lt); max-width: 64ch; }
+
+  /* ── Print: one A4 sheet, ink-aware ── */
+  @page { size: A4; margin: 0; }
+  @media print {
+    :root {
+      --ground: #FFFFFF; --paper: #FFFFFF; --sunk: #F4F4F0;
+      --ink: #14202B; --ink-mid: #3E4A56; --ink-lt: #6A757F;
+      --line: #C9C9C0; --navy: #1B3A5C; --teal: #1F6674;
+      --gold: #7C5B0C; --sage: #336041;
+      --gold-wash: #F8F2E0; --sage-wash: #EAF1EC;
+    }
+    body { background: #FFFFFF; }
+    .bar { display: none !important; }
+    .sheet {
+      margin: 0; border: none; box-shadow: none;
+      width: 210mm; min-height: 297mm; max-width: none;
+      padding: 13mm 15mm 10mm;
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    .doing, .panel { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    a { text-decoration: none; color: inherit; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+
+<div class="bar">
+  <p>Hand-out for parent evenings — one A4 page, prints in colour or mono.</p>
+  <button type="button" onclick="window.print()">Print this page</button>
+</div>
+
+<div class="sheet">
+
+  <div class="top">
+    <div class="brand"><span class="glyph">G</span><span>Groundwork</span></div>
+    <h1>What your teenager will actually be doing</h1>
+    <p class="standfirst">
+      Groundwork is a self-guided programme that helps teenagers work out who they
+      are — and then asks them to go and act like it. Four missions, ten weeks, and
+      one page they write themselves at the end. Here is what that means at home.
+    </p>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="cols">
+    <div class="block" style="--k: var(--navy)">
+      <h2>How it works</h2>
+      <p>
+        <strong>Four missions</strong> ask one big question each — who am I, what do I
+        care about, where do I belong, what kind of life do I want. Each is a few short
+        steps and an optional chat with someone — maybe you.
+      </p>
+      <p>
+        <strong>Ten weeks</strong> then turn those answers into practice. One question
+        a week, and one thing to actually do about it — away from the screen.
+      </p>
+    </div>
+
+    <div class="block" style="--k: var(--teal)">
+      <h2>What it isn't</h2>
+      <ul>
+        <li><strong>Not social.</strong> No feed, no followers, no profile, nothing public.</li>
+        <li><strong>Not scored.</strong> No marks, no streaks, no comparison with other students.</li>
+        <li><strong>Not demanding.</strong> Nothing expires and nothing nags. A missed week is not a failed programme.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="doing">
+    <span class="eyebrow">Some of the things they'll be asked to do — in the programme's own words</span>
+    <ol>
+      <li><b>Week 3</b><span>Do one useful thing nobody asked you to do — and tell nobody.</span></li>
+      <li><b>Week 4</b><span>Make one small promise and keep it every single day this week.</span></li>
+      <li><b>Week 5</b><span>Pick one personal hill and work on it four times. Not perfectly. Consistently.</span></li>
+      <li><b>Week 8</b><span>Name three peers who lift you and two adults worth learning from — then go and spend real time with them.</span></li>
+      <li><b>Week 9</b><span>Three half-hours with no screen at all. Boredom is the point, not the problem.</span></li>
+      <li><b>Week 10</b><span>Write your Character Code: your story in one sentence, then your commitments for the year.</span></li>
+    </ol>
+  </div>
+
+  <div class="cols">
+    <div class="panel privacy">
+      <h3>What you won't see</h3>
+      <p>
+        <strong>Nothing your teenager writes is visible to you, or to their teachers.</strong>
+        That is a deliberate design decision, not a setting someone forgot to change —
+        and it is the reason the answers are honest. That includes an optional step on
+        beliefs, gender and sexuality, which any student can skip.
+      </p>
+    </div>
+    <div class="panel limits">
+      <h3>What it is not for</h3>
+      <p>
+        <strong>Groundwork is not a therapy app and never claims to be.</strong> It says
+        so to students directly, and a "Need to talk?" button on every screen lists free
+        services, including Kids Helpline on <strong>1800 55 1800</strong>.
+        If something is heavy, it sends them to a person — not back into the app.
+      </p>
+    </div>
+  </div>
+
+  <div class="block" style="--k: var(--gold)">
+    <h2>The one thing you will see</h2>
+    <p>
+      At the end of the ten weeks your teenager writes a <strong>Character Code</strong>:
+      their story in one sentence, then five to seven commitments, written as
+      things they <em>do</em>, not things they'd like to be. It's theirs to share or not
+      — but it is the single best thing to ask about.
+    </p>
+  </div>
+
+  <div class="block" style="--k: var(--sage)">
+    <h2>Three ways to help</h2>
+    <div class="openers">
+      <div class="opener">
+        <span class="mark">&ldquo;</span>
+        <div>
+          <p class="q">What's the challenge this week?</p>
+          <p class="a">Better than "how's the app going?" — it asks about an action, which is easier to answer than a feeling.</p>
+        </div>
+      </div>
+      <div class="opener">
+        <span class="mark">&ldquo;</span>
+        <div>
+          <p class="q">Week 8 asks you to name two adults worth learning from. Did I make the list?</p>
+          <p class="a">Ask it lightly. The week is about deliberate time with people who shape you — you may already be one of them.</p>
+        </div>
+      </div>
+      <div class="opener">
+        <span class="mark">&ldquo;</span>
+        <div>
+          <p class="q">Don't tell me what you wrote — just tell me if it was hard.</p>
+          <p class="a">Signals that you understand the privacy is the point, which makes them far more likely to volunteer the rest.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      Groundwork · a self-guided identity and character programme for teenagers.
+      Built on the VIA character strengths framework and social-emotional learning research.
+    </p>
+    <p>Kids Helpline 1800 55 1800 · free, 24/7, for anyone aged 5–25</p>
+  </footer>
+
+</div>
