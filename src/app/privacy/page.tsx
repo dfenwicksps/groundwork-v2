@@ -105,9 +105,11 @@ export default function PrivacyPage() {
         <p>
           <strong>The nine-question check-in</strong> is optional. If you answer
           it, your answers are stored like everything else and shown back to you
-          next to your later ones. They may also be counted in totals, combined
-          with everyone else&apos;s and with names removed, to find out whether
-          Groundwork actually helps. Nobody looks at one person&apos;s answers.
+          next to your later ones, along with a note of how much of the app
+          you&apos;d done at the time. That is all they are used for. If we ever
+          want to count check-in answers in totals, with names removed, to find
+          out whether Groundwork actually helps, we will ask you first, and
+          a parent or carer too if you&apos;re under 16.
         </p>
         <p>
           No staff member reads your journal for interest or for research. We

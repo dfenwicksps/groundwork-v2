@@ -21,6 +21,23 @@
 // get permission from their authors, add the items as a new ITEM_SET and bump
 // the id: answers are stored with the set they were given under, so the two
 // are never mixed.
+//
+// How it's designed to be evaluable:
+//   - The start check-in is taken during onboarding, before any mission, so it
+//     is a real baseline. Taken later (from Home, after skipping), it is
+//     marked context "home" and its dose records how much was already done.
+//   - The end check-in is offered at a fixed time after the start, to every
+//     student, finished or not. Offering it only to finishers would compare
+//     the people most likely to have changed anyway.
+//   - Every check-in stores a dose snapshot (see Dose), so change can be read
+//     against how much of the app a student actually used. Without a
+//     comparison group, the dose-response pattern is the closest the data can
+//     come to separating the app from ordinary growing up.
+//
+// BEFORE ANY AGGREGATE ANALYSIS: answers are currently shown back to the
+// student and used for nothing else, and the privacy page says so. Counting
+// them in totals needs ethics review, a consent flow (with a parent or carer's
+// consent for under-16s), and an updated privacy page first.
 
 export const ITEM_SET = "groundwork-interim-v1";
 
@@ -82,24 +99,38 @@ export function score(answers: Answers): Scores {
   return out;
 }
 
-/** How long after the start check-in the end one is offered, at the earliest. */
-export const MIN_DAYS_BETWEEN = 28;
+/** Where a check-in was taken: during onboarding (a clean baseline) or later. */
+export type CheckinContext = "onboarding" | "home";
 
 /**
- * The end check-in is offered once a student has done the work it's meant to
- * measure (all four missions, or the Character Code that closes the ten weeks),
- * and at least four weeks after they started.
+ * How much of the app a student had used when they answered. Stored with every
+ * check-in so change can be read against use.
  */
-export function endDue(args: {
-  startAt: string | null;
-  endDone: boolean;
+export interface Dose {
+  /** Required mission steps done, across all four missions */
+  requiredStepsDone: number;
   missionsDone: number;
+  /** Program weeks completed */
+  weeksDone: number;
   codeWritten: boolean;
-  now?: Date;
-}): boolean {
-  const { startAt, endDone, missionsDone, codeWritten, now = new Date() } = args;
+  daysSinceJoined: number | null;
+}
+
+/**
+ * The end check-in opens this long after the start, for everyone. Ten weeks
+ * matches the program, so a student who starts the weeks straight away is
+ * asked again around the time they finish them.
+ */
+export const DAYS_TO_FOLLOW_UP = 70;
+
+export function endDue(args: { startAt: string | null; endDone: boolean; now?: Date }): boolean {
+  const { startAt, endDone, now = new Date() } = args;
   if (!startAt || endDone) return false;
-  if (missionsDone < 4 && !codeWritten) return false;
   const days = (now.getTime() - new Date(startAt).getTime()) / 86_400_000;
-  return days >= MIN_DAYS_BETWEEN;
+  return days >= DAYS_TO_FOLLOW_UP;
+}
+
+/** The date the end check-in opens, for telling a student when to expect it. */
+export function followUpDate(startAt: string): Date {
+  return new Date(new Date(startAt).getTime() + DAYS_TO_FOLLOW_UP * 86_400_000);
 }
