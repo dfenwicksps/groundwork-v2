@@ -1546,6 +1546,17 @@ export function requiredSteps(m: Mission): Activity[] {
   return m.activities.filter((a) => !a.locked && !a.optional);
 }
 
+/**
+ * Entries from the most sensitive steps (marked keepFromAi: beliefs, gender,
+ * sexuality), and revisits of them. These are never surfaced anywhere a glance
+ * at the screen could catch them: not suggested on Home, collapsed in the
+ * Journal, left off My story.
+ */
+export function isSensitiveActivity(activityId: string): boolean {
+  const base = activityId.replace(/-(revisit|debrief)$/, "");
+  return MISSIONS.some((m) => m.activities.some((a) => a.id === base && a.keepFromAi));
+}
+
 /** How long after finishing a mission Home suggests its conversation. */
 export const CONVERSATION_OFFER_DAYS = 30;
 

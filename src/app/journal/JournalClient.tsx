@@ -7,6 +7,7 @@ import {
   getActivityLabel,
   entryGroup,
   ENTRY_GROUP_LABELS,
+  isSensitiveActivity,
   type EntryGroup,
 } from "@/lib/missions";
 import { formatDate, isWithin24Hours, truncate, parseReflection } from "@/lib/utils";
@@ -24,6 +25,8 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
   const [filter, setFilter] = useState<EntryGroup | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  // Sensitive entries open in two taps: one to expand, one to show the words.
+  const [revealed, setRevealed] = useState<string | null>(null);
 
   const groupOf = (e: JournalEntry) => entryGroup(e.activity_id, e.mission_id);
   const byMission = filter
@@ -43,11 +46,14 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
 
   const q = search.trim().toLowerCase();
   const filtered = q
-    ? byMission.filter(
-        (e) =>
-          e.response.toLowerCase().includes(q) ||
-          e.prompt.toLowerCase().includes(q) ||
-          getActivityLabel(e.activity_id).toLowerCase().includes(q)
+    ? byMission.filter((e) =>
+        // A sensitive entry is found by its name, never by what's written in
+        // it, so a search can't surface those words on screen.
+        isSensitiveActivity(e.activity_id)
+          ? getActivityLabel(e.activity_id).toLowerCase().includes(q)
+          : e.response.toLowerCase().includes(q) ||
+            e.prompt.toLowerCase().includes(q) ||
+            getActivityLabel(e.activity_id).toLowerCase().includes(q)
       )
     : byMission;
 
@@ -157,13 +163,15 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
               const canEdit = isWithin24Hours(entry.created_at);
               const label =
                 getActivityLabel(entry.activity_id);
+              const sensitive = isSensitiveActivity(entry.activity_id);
 
               return (
                 <div key={entry.id} className="card overflow-hidden">
                   <button
-                    onClick={() =>
-                      setExpanded(isOpen ? null : entry.id)
-                    }
+                    onClick={() => {
+                      setExpanded(isOpen ? null : entry.id);
+                      setRevealed(null);
+                    }}
                     className="w-full p-4 text-left"
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -197,7 +205,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                           </div>
                           {!isOpen && (
                             <p className="text-xs text-ink-muted mt-1.5 line-clamp-2">
-                              {truncate(entry.response, 120)}
+                              {sensitive ? "Private · tap to show" : truncate(entry.response, 120)}
                             </p>
                           )}
                         </div>
@@ -223,7 +231,22 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                     </div>
                   </button>
 
-                  {isOpen && (
+                  {isOpen && sensitive && revealed !== entry.id && (
+                    <div className="px-4 pb-4 border-t border-surface-border pt-4">
+                      <p className="text-sm text-ink-muted leading-relaxed mb-3">
+                        This one stays hidden until you choose to show it, so it
+                        can&apos;t be caught by a glance at your screen.
+                      </p>
+                      <button
+                        onClick={() => setRevealed(entry.id)}
+                        className="btn btn-secondary text-sm py-2 px-4 rounded-xl"
+                      >
+                        Show it
+                      </button>
+                    </div>
+                  )}
+
+                  {isOpen && (!sensitive || revealed === entry.id) && (
                     <div className="px-4 pb-4 border-t border-surface-border pt-4">
                       <p className="text-sm text-ink-muted italic mb-3 leading-relaxed">
                         {entry.prompt}

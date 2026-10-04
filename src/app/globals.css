@@ -509,3 +509,8 @@ body {
     background-size: 200% 100%;
   }
 }
+
+/* Device passcode (lib/deviceLock.ts): while locked, only the code screen shows. */
+html.gw-locked body > *:not(#gw-lock) {
+  visibility: hidden !important;
+}
