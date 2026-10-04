@@ -52,7 +52,7 @@ export const INHERITANCE_GROUPS: { title: string; items: string[] }[] = [
   {
     title: "What's expected of you",
     items: [
-      "How boys or girls are supposed to be",
+      "What people expect of you because of your gender",
       "Your role in the family — the funny one, the responsible one…",
       "Who you're expected to become",
     ],
@@ -79,6 +79,16 @@ export function sortToText(choices: SortChoices): string {
     .join("\n");
 }
 
+/**
+ * Items whose wording has changed, so a sort saved under the old wording reads
+ * back as the same item rather than as one the student wrote themselves.
+ */
+const RENAMED: Record<string, string> = {
+  // A binary that doesn't fit every student, and gender-diverse young people
+  // are among those most affected by what it describes.
+  "How boys or girls are supposed to be": "What people expect of you because of your gender",
+};
+
 /** The reverse of sortToText. Unrecognised lines are ignored. */
 export function parseSort(text: string | null | undefined): SortChoices {
   const choices: SortChoices = {};
@@ -92,7 +102,7 @@ export function parseSort(text: string | null | undefined): SortChoices {
       .map((s) => s.trim())
       .filter(Boolean)
       .forEach((item) => {
-        choices[item] = pile.key;
+        choices[RENAMED[item] ?? item] = pile.key;
       });
   }
   return choices;

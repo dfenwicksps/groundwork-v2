@@ -20,6 +20,20 @@ interface ActivityScaffold {
 
 export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   // ── Mission 1 · Identity ───────────────────────────────────────────────────
+  "parts-of-you": {
+    stems: [
+      ["Something I believe that's really mine is", "Something I picked up but I'm not sure about is", "What I think is fair is"],
+      ["My gender matters to me", "What people expect of me is", "It fits with who I am"],
+      ["Right now I'm", "I haven't really thought about it, because", "Where I am with that is"],
+      ["What feels settled is", "What I'm still working out is", "I don't need to decide yet about"],
+    ],
+    stuck: [
+      ["It can be small: what you think about cheating, or whether people get what they deserve.", "A belief is yours if you'd still hold it after hearing the best case against it."],
+      ["It's fine if the honest answer is \u2018not much\u2019.", "Leave this one out if it doesn't feel right to answer here."],
+      ["\u2018Not thinking about it yet\u2019 is a complete answer.", "Leave this one out if it doesn't feel right to answer here."],
+      ["Unsure is a real answer, not a gap.", "Exploring something isn't the same as being lost in it."],
+    ],
+  },
   "chapters-so-far": {
     stems: [
       ["Chapter one:", "Then came", "After that,"],

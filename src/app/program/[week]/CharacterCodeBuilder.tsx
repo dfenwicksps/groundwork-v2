@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import {
@@ -142,16 +143,21 @@ export default function CharacterCodeBuilder({
             new version to add yours.
           </p>
         )}
-        <button
-          onClick={() => {
-            setLines(saved);
-            setStory(savedStory ?? EMPTY_STORY);
-            setEditing(true);
-          }}
-          className="text-xs text-teal hover:underline mt-3"
-        >
-          Write a new version
-        </button>
+        <div className="flex items-center gap-4 mt-3">
+          <button
+            onClick={() => {
+              setLines(saved);
+              setStory(savedStory ?? EMPTY_STORY);
+              setEditing(true);
+            }}
+            className="text-xs text-teal hover:underline"
+          >
+            Write a new version
+          </button>
+          <Link href="/story" className="text-xs text-teal hover:underline">
+            See your whole story →
+          </Link>
+        </div>
       </div>
     );
   }

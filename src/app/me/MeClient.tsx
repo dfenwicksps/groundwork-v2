@@ -251,6 +251,22 @@ export default function MeClient({
           </div>
         )}
 
+        {/* My story — past, present and future in one place (/story) */}
+        {hasProfile && tab === "profile" && (
+          <Link href="/story" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all" data-animate="2">
+            <span className="w-10 h-10 rounded-xl bg-navy text-white flex items-center justify-center flex-shrink-0" aria-hidden>
+              ✎
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-ink">My story</div>
+              <p className="text-xs text-ink-muted leading-relaxed">
+                Where you&apos;ve come from, who you are and where you&apos;re heading, in one place.
+              </p>
+            </div>
+            <span className="text-ink-muted" aria-hidden>→</span>
+          </Link>
+        )}
+
         {/* Character Code — the program's week-10 artefact, the strongest
             single statement of identity the student has made */}
         {hasProfile && tab === "profile" && characterCode.length > 0 && (
