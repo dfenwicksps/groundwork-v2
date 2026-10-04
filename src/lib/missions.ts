@@ -1546,6 +1546,36 @@ export function requiredSteps(m: Mission): Activity[] {
   return m.activities.filter((a) => !a.locked && !a.optional);
 }
 
+/** How long after finishing a mission Home suggests its conversation. */
+export const CONVERSATION_OFFER_DAYS = 30;
+
+/**
+ * The conversation step to suggest on Home, if any: from the most recently
+ * finished mission whose conversation hasn't been done, and only for a while
+ * after finishing it, so an optional extra never turns into a standing nag.
+ */
+export function conversationToOffer(
+  progress: { mission_id: number; activity_id: string; completed_at: string }[],
+  now: Date = new Date()
+): { mission: Mission; activity: Activity } | null {
+  const done = new Set(progress.map((p) => p.activity_id));
+  let best: { mission: Mission; activity: Activity; finishedAt: number } | null = null;
+  for (const m of MISSIONS) {
+    const conversation = m.activities.find((a) => a.optional && a.interviewQuestions?.length);
+    if (!conversation || done.has(conversation.id)) continue;
+    const required = requiredSteps(m);
+    if (!required.length || !required.every((a) => done.has(a.id))) continue;
+    const finishedAt = Math.max(
+      ...progress
+        .filter((p) => p.mission_id === m.id && required.some((a) => a.id === p.activity_id))
+        .map((p) => new Date(p.completed_at).getTime())
+    );
+    if ((now.getTime() - finishedAt) / 86_400_000 > CONVERSATION_OFFER_DAYS) continue;
+    if (!best || finishedAt > best.finishedAt) best = { mission: m, activity: conversation, finishedAt };
+  }
+  return best ? { mission: best.mission, activity: best.activity } : null;
+}
+
 /** How many of a mission's required steps are among the completed activity ids. */
 export function requiredDone(m: Mission, completedIds: Iterable<string>): number {
   const done = new Set(completedIds);

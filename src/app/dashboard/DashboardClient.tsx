@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MISSIONS, getActivityLabel, requiredSteps, requiredDone } from "@/lib/missions";
+import { MISSIONS, getActivityLabel, requiredSteps, requiredDone, conversationToOffer } from "@/lib/missions";
 import { formatRelativeDate, truncate } from "@/lib/utils";
 import type { UserProfile, MissionProgress, Challenge } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
@@ -215,7 +215,9 @@ export default function DashboardClient({
       title: `Did you talk to ${truncate(whoToYou(nextChapter.who), 40)}?`,
       sub: "Write down what you found out while it's fresh.",
     });
-  } else if (spine.futureFirst && !nextChapter) {
+  } else if ((spine.futureFirst || lifeStage === "middle") && !nextChapter) {
+    // Year 10–11 included: subject choice and the first thoughts about after
+    // school are when exploring before committing matters most.
     alsoNow.push({
       key: "next-chapter",
       href: "/next",
@@ -223,7 +225,9 @@ export default function DashboardClient({
       title: "Plan your next chapter",
       sub: hasLeftSchool(lifeStage)
         ? "Your options, the year you're hoping for, and who to ask."
-        : "Life after school: your options, the year you're hoping for, and who to ask.",
+        : lifeStage === "middle"
+          ? "Choosing subjects? Your options, the year you're hoping for, and who to ask."
+          : "Life after school: your options, the year you're hoping for, and who to ask.",
     });
   } else if (spine.futureFirst) {
     alsoNow.push({
@@ -234,6 +238,20 @@ export default function DashboardClient({
       sub: hasLeftSchool(lifeStage)
         ? "Where your strengths point, and your next concrete steps."
         : "Where your strengths point, and the first steps after school.",
+    });
+  }
+
+  // A finished mission's optional conversation, suggested for a month after
+  // finishing it (see conversationToOffer). It's otherwise only on the
+  // mission page, where few students look once a mission is done.
+  const conversation = conversationToOffer(progress);
+  if (conversation) {
+    alsoNow.push({
+      key: "conversation",
+      href: `/missions/${conversation.mission.id}/activities/${conversation.activity.id}`,
+      icon: "💬",
+      title: `An optional extra: ${conversation.activity.title}`,
+      sub: conversation.activity.prompt,
     });
   }
 

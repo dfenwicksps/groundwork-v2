@@ -161,7 +161,9 @@ export default function NextChapterClient({
           <p className="text-sm text-ink-muted leading-relaxed">
             {leftSchool
               ? "What's next, made concrete: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."
-              : "Life after school, made concrete: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."}
+              : lifeStage === "middle"
+                ? "Choosing subjects, or thinking past school: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."
+                : "Life after school, made concrete: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."}
           </p>
         </div>
 
