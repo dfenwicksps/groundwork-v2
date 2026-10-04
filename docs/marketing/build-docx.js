@@ -128,7 +128,7 @@ children.push(
   h1("Three parts, named the same way every time"),
   p("Groundwork is a self-guided identity and character programme for teenagers. Everything a student writes is private to them. There is no score, no streak, no leaderboard, and no social feed. Use the three names below consistently — inconsistent naming is the single biggest reason a demo loses a room."),
   h3("Four missions — the deep dives", NAVY),
-  p("One big question each: four or five reflective steps of 2–15 minutes, then a challenge carried through a week. Twenty-two steps in all, starting with a two-minute look at the story so far. Each mission also has an optional conversation with someone in the student's life."),
+  p("One big question each: four or five reflective steps of 2–15 minutes, then a challenge carried through a week. Twenty-two steps in all, starting with a two-minute look at the story so far. Each mission also has an optional conversation with someone in the student's life, which Home suggests for a month after the mission is finished."),
   h3("The ten-week Character Program — the habit layer", TEAL),
   p("One question a week and one thing to actually do. Ends in the Character Code — the student's story in one sentence, then five to seven commitments they write and keep."),
   h3("The Standard — the mirror", GOLD),
@@ -171,7 +171,7 @@ children.push(
   h3("4 — The capstone only exists at the end"),
   p("The Character Code is week 10: the student's story in one sentence — because of where they've come from, who they are, where they're heading — then five to seven commitments written in the present tense as things they *do*. It is the artefact a parent can be shown and a student can be held to, and there is no partial version of it. Nine weeks of work produce no Code."),
   h3("5 — The record is the intervention"),
-  p("Revisits let a student reopen something they wrote months earlier, read it whole, and say what has changed — for the story steps, what they would add to their story now. There is no comparison to other students and no score. But a revisit needs something to revisit — spacing is set at a minimum of fourteen days precisely because nothing much changes in a week. A student who completes builds the archive that makes year two of the product work. One who dabbles has nothing to come back to."),
+  p("Revisits let a student reopen something they wrote months earlier, read it whole, and say what has changed — for the story steps, what they would add to their story now. There is no comparison to other students and no score. But a revisit needs something to revisit — spacing is set at a minimum of fourteen days precisely because nothing much changes in a week. A student who completes builds the archive that makes year two of the product work. One who dabbles has nothing to come back to. *My story* gathers the archive into one page — where they've come from, who they are, where they're heading — and a year after the Character Code it asks for that year's version."),
 );
 
 // ── 04 ───────────────────────────────────────────────────────────────────
@@ -295,7 +295,7 @@ const auds = [
     lead:"“You already run a character programme. This is the part your students do between your assemblies.”",
     pts:["**Maps to what they report on.** Five CASEL competencies, activity by activity.",
          "**No marking, no timetable.** Self-guided, twenty-two mission steps plus a weekly cadence, at the student's pace.",
-         "**Age-appropriate by design.** Everyone starts with Mission 1, then the weeks run one at a time. Examples change with life stage, and Year 12s and school leavers get next-year planning — Your Next Chapter, pathways and goals — first.",
+         "**Age-appropriate by design.** Everyone starts with Mission 1, then the weeks run one at a time. Examples change with life stage. Year 10–11s are offered Your Next Chapter around subject choice, and Year 12s and school leavers get next-year planning — Your Next Chapter, pathways and goals — first.",
          "**Defensible.** Every activity has a named framework behind it, and we'll tell you which claims are strong and which are indicative.",
          "**Privacy is the offer, not the risk.** Nobody reads student writing. That's why they write honestly."] },
   { h:"Parents", who:"Reached through the school, at information evenings", col:TEAL,
@@ -303,7 +303,7 @@ const auds = [
     pts:["**It gets them off the screen.** Every week ends in something lived — a promise kept, a conversation had, half an hour without a phone.",
          "**Nothing is public.** No feed, no followers, no comparison to other students, no score.",
          "**It points back to you.** Each mission has an optional conversation — what they were like as a kid, where the family comes from, how you chose your path — and week 8 asks them to name two adults worth learning from and go and spend time with them.",
-         "**There's something to show for it.** The Character Code at week 10 — their story in one sentence and the commitments that follow — is a page a family can actually talk about.",
+         "**There's something to show for it.** The Character Code at week 10 — their story in one sentence and the commitments that follow — is a page a family can actually talk about, and My story puts the whole thing on one page they can choose to print.",
          "**It's honest about what it isn't.** Not therapy, and it says so."] },
   { h:"Students", who:"In-app copy, assembly slides, anything they read themselves", col:SAGE,
     lead:"“Figure out who you are. Build a life that matters.”",
@@ -337,23 +337,26 @@ const objections = [
     "Don't claim they all will. Say what makes finishing more likely: the app shows one thing to start — Mission 1, then one week at a time — not two competing tracks; the weekly challenges are small and concrete rather than aspirational; nothing expires, so a missed week isn't a failed programme; and most open questions can be answered by tapping a written answer, finishing a half-written sentence, or writing from scratch — so non-completion caused by not knowing how to start a sentence about yourself is designed out.",
     "Then turn it around: ask what proportion of their current character programme's content students can still recall in March. Groundwork produces a document they keep."] },
   { q:"“Isn't this just journalling?”", a:[
-    "No — and the difference is the half of the product that happens off the screen. Every mission ends in a challenge carried through a week. Every one of the ten programme weeks ends in something lived: a promise kept daily, four sessions on a chosen hill, three screen-free half hours, deliberate time with named people. The writing exists to make the action specific enough to be doable.",
+    "No — and the difference is the half of the product that happens off the screen. Every mission ends in a challenge carried through a week. Every one of the ten programme weeks ends in something lived: a promise kept daily, four sessions on a chosen hill, three screen-free half hours, deliberate time with named people. The writing exists to make the action specific enough to be doable, and every written step ends by asking for one small step to take in the next week.",
     "The honest add: the writing itself has a small, well-replicated benefit — not a large one. We don't sell the journalling as the mechanism."] },
   { q:"“Our students already have too many apps.”", a:[
     "Agreed, and Groundwork is built to be a low-frequency one. There are no notifications, no streaks, and no daily engagement target — the app has nothing to gain from a student being on it. The weekly cadence is one question and one action; the mission steps run 2–15 minutes each, twenty-two of them across the whole programme.",
     "If the school's real concern is screen time, week 9 is the answer: three screen-free half hours, with boredom named as the mechanism."] },
   { q:"“What happens if a student writes something concerning?”", a:[
-    "Answer this one precisely and without spin, because getting it wrong is a safeguarding problem. Journals are private — no teacher or parent view exists. The app therefore does not and cannot function as a disclosure channel, and it says so: it states plainly that it isn't a therapy app; a “Need to talk?” button on every screen lists free services, including Kids Helpline (1800 55 1800 in Australia); and if something a student writes sounds like they may be at risk, the app shows those services in place of its usual follow-up questions. That check is not saved, flagged or seen by anyone, so it is not a referral: it puts help in front of the student, not in front of an adult.",
+    "Answer this one precisely and without spin, because getting it wrong is a safeguarding problem. Journals are private — no teacher or parent view exists. The app therefore does not and cannot function as a disclosure channel, and it says so: it states plainly that it isn't a therapy app; a “Need to talk?” button on every screen lists free services, including Kids Helpline (1800 55 1800 in Australia); and if something a student writes sounds like they may be at risk, the app shows those services in place of its usual follow-up questions. That check is not saved, flagged or seen by anyone, so it is not a referral: it puts help in front of the student, not in front of an adult. In the same way, if several of a student's recent entries are very hard on themselves, the app suggests a different move — talking to someone, or ten minutes doing something else — again without saving or flagging anything.",
     "What that means for a school: Groundwork sits inside your existing pastoral structure, it doesn't substitute for it. Any school deploying it should say so to students in the same breath."] },
+  { q:"“Does it ask students about gender or sexuality?”", a:[
+    "Answer this one exactly, because it will be asked by parents as well as schools. Mission 1 has an optional step, Parts of Who You Are, that asks about beliefs, gender and sexuality, because they are part of working out who you are for many teenagers. It doesn't count towards the mission, every question in it can be left out, and the app says that sure, unsure and not-yet are all fine answers.",
+    "What a student writes there stays in their own account: it is never sent anywhere (not even for the app's AI follow-up questions), never appears on My story or anything printable, and nobody else can read it. The step points to QLife, a free Australian line for LGBTIQ+ people and anyone with questions about gender or sexuality. Don't describe it as a lesson or as guidance on either subject. It is a place to reflect, and it is optional."] },
   { q:"“Where's the evidence it works?”", a:[
     "Be straight: there is no outcome study of Groundwork itself yet. What exists is a design built activity-by-activity on named research — Erikson and Marcia for the sequence, VIA for strengths, self-determination theory for values, Damon for purpose, McAdams for narrative, possible selves for the future work, implementation intentions for the weekly commitments — and a large evidence base showing that programmes of this type produce measurable effects when they are sequenced, active, focused and explicit.",
-    "Then make the ask: a pilot cohort with pre/post measures. The app already runs a nine-question check-in at the start and ten weeks later that a pilot could use once it has ethics approval and consent, alongside validated measures. Schools respond well to being invited into the evidence rather than sold a claim, and it converts the weakest part of the pitch into a reason to sign."] },
+    "Then make the ask: a pilot cohort with pre/post measures. The app already runs a nine-question check-in during sign-up and again ten weeks later that a pilot could use once it has ethics approval and consent, alongside validated measures. Schools respond well to being invited into the evidence rather than sold a claim, and it converts the weakest part of the pitch into a reason to sign."] },
 ];
 
 children.push(
   new Paragraph({ children:[ new PageBreak() ] }),
   eyebrow("09 — Objection handling"),
-  h1("The five questions you will be asked"),
+  h1("The six questions you will be asked"),
 );
 for (const o of objections) {
   children.push(h3(o.q, NAVY), ...o.a.map((t) => p(t)));
