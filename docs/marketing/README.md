@@ -52,4 +52,4 @@ soffice --headless --convert-to pdf docs/marketing/Groundwork-Marketing-Guide.do
 `marketing-guide.html` and `build-docx.js` carry the same content in two forms and
 have to be edited together. The HTML is the reference copy — if they diverge, it wins.
 
-_Content current as at September 2026; references verified against source papers._
+_Product facts current as at October 2026; references verified against source papers (item 24 added October 2026)._

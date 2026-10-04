@@ -117,7 +117,7 @@ children.push(
   new Paragraph({ spacing:{ after:60 }, border:{ top:{ style:BorderStyle.SINGLE, size:6, color:LINE } },
     children:[ new TextRun({ text:"", size:2 }) ] }),
   new Paragraph({ spacing:{ before:80, after:0 }, children:[ new TextRun({
-    text:"For school partnerships, parent comms, and student-facing copy   ·   Evidence checked September 2026",
+    text:"For school partnerships, parent comms, and student-facing copy   ·   Product facts updated October 2026   ·   Evidence checked September 2026",
     font:SANS, size:17, color:FAINT }) ] }),
   rule(),
 );
@@ -128,9 +128,9 @@ children.push(
   h1("Three parts, named the same way every time"),
   p("Groundwork is a self-guided identity and character programme for teenagers. Everything a student writes is private to them. There is no score, no streak, no leaderboard, and no social feed. Use the three names below consistently — inconsistent naming is the single biggest reason a demo loses a room."),
   h3("Four missions — the deep dives", NAVY),
-  p("One big question each, five steps per mission: four reflective activities of 8–15 minutes, then a challenge carried through a week. Twenty steps in all."),
+  p("One big question each: four or five reflective steps of 2–15 minutes, then a challenge carried through a week. Twenty-two steps in all, starting with a two-minute look at the story so far. Each mission also has an optional conversation with someone in the student's life."),
   h3("The ten-week Character Program — the habit layer", TEAL),
-  p("One question a week and one thing to actually do. Ends in the Character Code — five to seven commitments the student writes and keeps."),
+  p("One question a week and one thing to actually do. Ends in the Character Code — the student's story in one sentence, then five to seven commitments they write and keep."),
   h3("The Standard — the mirror", GOLD),
   p("Three outward-facing questions answered again and again, with the previous answer visible while writing the next. Read back over months."),
 );
@@ -149,7 +149,7 @@ children.push(
   tbl([2400, 6626],
     ["The move", "Where it happens"],
     [
-      ["Work out who you want to be", "Missions 1 and 4 — strengths, values, the future self"],
+      ["Work out who you want to be", "Missions 1 and 4 — the story so far, strengths, values, the future self"],
       ["Name what that person values", "Program weeks 1–2 — values become observable behaviours"],
       ["Practise the behaviour", "Program weeks 3–9 — one lived challenge a week"],
       ["Check the impact on others", "The Standard and the weekly five — repeated, never scored"],
@@ -163,23 +163,23 @@ children.push(
   h1("Why finishing is the product, not a nice-to-have"),
   p("Every buyer will ask about engagement. The honest and more persuasive answer is that Groundwork's benefits are structurally back-loaded: five of them do not exist at all until a student completes the sequence. Lead with this."),
   h3("1 — The order is the intervention"),
-  p("The missions run explore → commit → integrate, the same progression Marcia used to operationalise Erikson's adolescent identity stage (refs 1, 2). Mission 4 asks “what kind of life do I want?” — a question that produces fantasy from a student who hasn't done Mission 1, and a decision from one who has. Durlak and colleagues' meta-analysis of 213 school SEL programmes found outcomes were moderated by whether the programme used sequenced, active, focused and explicit practice — dosage and order, not content alone, separated the programmes that worked (ref 3)."),
+  p("The missions move from exploring, to committing, to joining it all up — built on exploration and commitment, the two dimensions Marcia used to operationalise Erikson's adolescent identity stage (refs 1, 2). Mission 4 asks “what kind of life do I want?” — a question that produces fantasy from a student who hasn't done Mission 1, and a decision from one who has. Durlak and colleagues' meta-analysis of 213 school SEL programmes found outcomes were moderated by whether the programme used sequenced, active, focused and explicit practice — dosage and order, not content alone, separated the programmes that worked (ref 3)."),
   h3("2 — Ten weeks is a dose, not a duration"),
   p("The programme runs seventy days. Lally and colleagues tracked ninety-six people forming a daily behaviour and found the median time to automaticity was sixty-six days, with occasional missed days doing no material damage (ref 4). That is why the trackers in the app are grids rather than streaks: a week with gaps still counts. A student who does weeks one to three has read about character. A student who finishes has run a behaviour long enough for it to start running itself."),
   h3("3 — The missions are load-bearing for the weeks"),
-  p("Week 1 displays the strengths Mission 1 mapped and asks which five the student wants at 25. Week 2 lays out their chosen values and asks for the behaviour that proves each. Week 8 builds on the Support Circle. The weeks don't reference the missions politely — several cannot be completed without them. Completion isn't enforced by nagging; it's enforced by the material being genuinely needed at the point it's needed."),
+  p("Week 1 displays the strengths Mission 1 mapped and asks which five the student wants at 25. Week 2 lays out their chosen values and asks for the behaviour that proves each. Week 8 builds on Mission 3's map of who shaped them. The weeks don't reference the missions politely — several cannot be completed without them. Completion isn't enforced by nagging; it's enforced by the material being genuinely needed at the point it's needed."),
   h3("4 — The capstone only exists at the end"),
-  p("The Character Code — five to seven commitments written in the present tense as things the student *does* — is week 10. It is the artefact a parent can be shown and a student can be held to, and there is no partial version of it. Nine weeks of work produce no Code."),
+  p("The Character Code is week 10: the student's story in one sentence — because of where they've come from, who they are, where they're heading — then five to seven commitments written in the present tense as things they *do*. It is the artefact a parent can be shown and a student can be held to, and there is no partial version of it. Nine weeks of work produce no Code."),
   h3("5 — The record is the intervention"),
-  p("Revisits let a student reopen something they wrote months earlier, read it whole, and answer one question: has this changed? There is no comparison to other students and no score. But a revisit needs something to revisit — spacing is set at a minimum of fourteen days precisely because nothing much changes in a week. A student who completes builds the archive that makes year two of the product work. One who dabbles has nothing to come back to."),
+  p("Revisits let a student reopen something they wrote months earlier, read it whole, and say what has changed — for the story steps, what they would add to their story now. There is no comparison to other students and no score. But a revisit needs something to revisit — spacing is set at a minimum of fourteen days precisely because nothing much changes in a week. A student who completes builds the archive that makes year two of the product work. One who dabbles has nothing to come back to."),
 );
 
 // ── 04 ───────────────────────────────────────────────────────────────────
 const missions = [
-  { n:"Mission 01 — Identity", q:"What am I actually like?", sub:"Strengths, values, the mask, the letter", phase:"Exploration", col:NAVY,
-    left:"**A ranked set of signature strengths and five named values**, plus a written account of the gap between the private and public self.",
+  { n:"Mission 01 — Identity", q:"Who am I?", sub:"The story so far, strengths, values, the mask, the letter", phase:"Exploration", col:NAVY,
+    left:"**The chapters of their story so far, a snapshot of their signature strengths, and five named values**, plus a written account of the gap between the private and public self.",
     benefit:"A student who can name what they're good at in their own words has something to steer by when a decision gets hard — and something to say in an interview at 17.",
-    ev:"Built on the VIA classification of character strengths (ref 5). Acting from self-endorsed rather than externally pressured values is one of the most replicated findings in motivation research (ref 6). The mask activity draws on self-monitoring: some gap is healthy, a large one tracks with anxiety (ref 7)." },
+    ev:"Built on the VIA classification of character strengths (ref 5). Acting from self-endorsed rather than externally pressured values is one of the most replicated findings in motivation research (ref 6). The mask activity draws on self-monitoring: some gap is healthy, a large one tracks with anxiety (ref 7). The opening step starts the life story that narrative-identity research describes (ref 13)." },
   { n:"Mission 02 — Purpose", q:"What do I care about?", sub:"The cause, the contribution, the people", phase:"Commitment", col:TEAL,
     left:"**A written commitment statement** naming one specific thing the student could contribute, to one specific thing they care about.",
     benefit:"The difference between a teenager who is busy and one who is going somewhere. Purpose is the strongest non-academic predictor a school can actually move.",
@@ -187,11 +187,11 @@ const missions = [
   { n:"Mission 03 — Connection", q:"Where do I belong?", sub:"Belonging vs fitting in, bridging, the people who shaped you", phase:"Commitment", col:SAGE,
     left:"**A named map of who shaped them and how**, and a working distinction between the groups they perform for and the ones they're known in.",
     benefit:"This is the mission that speaks directly to a wellbeing lead's actual caseload: the student who has friends and is still lonely.",
-    ev:"Social identity theory on group membership as a pillar of self (ref 11). Putnam's bridging-versus-bonding distinction underwrites the cross-difference activity (ref 12). McAdams: people who can say who shaped them hold a more coherent identity (ref 13). A brief belonging intervention halved a three-year GPA gap and improved self-reported health (ref 14)." },
-  { n:"Mission 04 — Meaning", q:"What kind of life do I want?", sub:"Future self, digital self, the through-line, the cost", phase:"Integration", col:GOLD,
-    left:"**A concrete, dated picture of a specific ordinary day in their future** — and a written answer to what they would trade for it.",
-    benefit:"Turns “what do you want to do after school?” from a question that produces panic into one that produces a sentence. Especially load-bearing for Year 12.",
-    ev:"Possible-selves research: vague future selves do almost nothing, specific ones move behaviour (ref 15). A possible-selves intervention with low-income Year 8 students improved grades, test scores and attendance and reduced misbehaviour, sustained over two years (ref 16)." },
+    ev:"Social identity theory on group membership as a pillar of self (ref 11). Putnam's bridging-versus-bonding distinction underwrites the cross-difference activity (ref 12). McAdams: people who can say who shaped them hold a more coherent identity (ref 13). A brief belonging intervention halved a three-year GPA gap and improved self-reported health (ref 14). Its optional conversation asks an older relative where the family comes from: young people who know more of their family's stories report higher self-esteem and a stronger sense of control over their lives (ref 24)." },
+  { n:"Mission 04 — Meaning", q:"What kind of life do I want?", sub:"Where you've come from, future self, digital self, the through-line, the cost", phase:"Integration", col:GOLD,
+    left:"**A sorted account of what family and culture handed them — keep, rework or leave — and a concrete picture of an ordinary day in their future**, with a written answer to what they would trade for it.",
+    benefit:"Turns “what do you want to do after school?” from a question that produces panic into one that produces a sentence. Especially load-bearing for Year 12, who also get Your Next Chapter: the version of next year they're hoping for, the one they'd rather avoid, a step for each, and a conversation with someone already doing it.",
+    ev:"Possible-selves research: vague future selves do almost nothing, specific ones move behaviour (ref 15). A possible-selves intervention with low-income Year 8 students improved grades, test scores and attendance and reduced misbehaviour, sustained over two years (ref 16). The opening step is Erikson's: identity forms as a young person sorts what they were handed, keeping some, reworking some and setting some down (ref 1)." },
 ];
 
 children.push(
@@ -233,10 +233,10 @@ children.push(
     ["07","Can I manage myself?","Writes three “I'm the kind of person who…” statements and says them as facts, not goals."],
     ["08","Who is shaping me?","Names three peers who lift them and two adults worth learning from, then spends deliberate time with them."],
     ["09","Do I leave room for inner work?","Three screen-free half hours. Boredom is the mechanism here, not the failure state."],
-    ["10","What will my character code be?","Writes the Character Code: five to seven commitments for the year ahead, in the present tense, as things they do."],
+    ["10","What will my character code be?","Writes the Character Code: their story in one sentence, then five to seven commitments for the year ahead, in the present tense, as things they do."],
   ], { firstBold:true, size:18 }),
   new Paragraph({ spacing:{ before:80, after:120 }, children:[ new TextRun({
-    text:"Weeks 1, 2, 3, 4 and 8 build directly on saved mission work.", font:SANS, size:17, italics:true, color:FAINT }) ] }),
+    text:"Every week except week 7 builds directly on saved mission work.", font:SANS, size:17, italics:true, color:FAINT }) ] }),
   h3("Why the challenges are shaped this way"),
   p("Weeks 4 and 5 make the student name their own promise or hill *before* any tracker appears. That is an implementation intention — specifying the when, where and how of a commitment in advance — which across 94 independent tests produced a medium-to-large effect on goal attainment, d = .65 (ref 17). Week 7 converts self-control from a willpower problem into an identity statement, because willpower depletes and self-concept doesn't. Week 3's no-credit rule is not moralism: prompting preadolescents to perform acts of kindness produced significantly larger gains in peer acceptance than a matched control activity (ref 18)."),
   h3("Why there is no streak"),
@@ -281,7 +281,8 @@ children.push(
     ["SAY IT","“No teacher or parent can read a student's journal. That's a design decision, not a settings default.”","True and enforced in the schema's row-level security. Lead with it in parent communications rather than burying it — it is the objection you would otherwise spend the meeting on."],
     ["CAREFULLY","“Writing about yourself has measurable benefits.”","True but small. The best meta-analysis of experimental disclosure found an average effect of r = .075 across 146 randomised studies — real, cheap to deliver, and considerably smaller than earlier syntheses claimed. Say “a small, well-replicated benefit”. Never imply it is therapeutic. (ref 22)"],
     ["CAREFULLY","“Character education works.”","The evidence base is real but uneven in quality, and effective programmes share features — multi-year, whole-school, adult modelling — that a self-guided app does not supply on its own. Position Groundwork as the student-facing spine of a character programme, not a replacement for one. (ref 23)"],
-    ["CAREFULLY","“The programme is personalised to each student.”","It adapts on two real axes — identity processing style set at onboarding, and year level, which decides whether the missions or the weekly cadence leads. Describe those two things specifically. “Personalised” unqualified implies an adaptive engine that isn't there. (ref 24)"],
+    ["CAREFULLY","“The programme is personalised to each student.”","It adapts on one real axis: life stage, chosen at onboarding (Year 7–9, 10–11 or 12, just left school, or a few years out). That changes the examples, and for Year 12 and school leavers it puts next-year planning first. Everyone starts with Mission 1. Describe that specifically. “Personalised” unqualified implies an adaptive engine that isn't there."],
+    ["CAREFULLY","“Students get to see whether it's made a difference to them.”","A nine-question check-in at the start and again ten weeks later shows each student their own change. The questions are Groundwork's own wording, not a validated scale, and answers are only shown back to the student — they are not counted in totals without ethics review and consent. Never quote check-in results as evidence that Groundwork works."],
     ["NEVER","Anything that positions Groundwork as therapy, treatment, or a mental-health intervention.","The app says “this isn't a therapy app” on its own landing page and in settings, and directs students to Kids Helpline. Marketing must not contradict the product. This also keeps Groundwork out of a regulatory category it is not built for."],
     ["NEVER","Any figure from section 6 attributed to Groundwork itself.","No outcome study of Groundwork exists yet. “Programmes of this kind have been shown to…” is defensible; “Groundwork delivers…” is not, until there is a pilot with pre/post data behind it."],
     ["NEVER","“Track your students' progress”, said to a teacher or school.","There is no teacher dashboard and journals are private by design. Promising visibility that doesn't exist — and shouldn't — sets up a failed implementation. If a school needs oversight, sell completion counts, never content."],
@@ -293,24 +294,24 @@ const auds = [
   { h:"School leaders", who:"Deputy principals, heads of wellbeing, curriculum coordinators", col:NAVY,
     lead:"“You already run a character programme. This is the part your students do between your assemblies.”",
     pts:["**Maps to what they report on.** Five CASEL competencies, activity by activity.",
-         "**No marking, no timetable.** Self-guided, twenty mission steps plus a weekly cadence, at the student's pace.",
-         "**Age-appropriate by design.** Years 7–9 lead with the weekly programme; Years 10–11 lead with missions; Year 12 leads with missions then next-year planning.",
+         "**No marking, no timetable.** Self-guided, twenty-two mission steps plus a weekly cadence, at the student's pace.",
+         "**Age-appropriate by design.** Everyone starts with Mission 1, then the weeks run one at a time. Examples change with life stage, and Year 12s and school leavers get next-year planning — Your Next Chapter, pathways and goals — first.",
          "**Defensible.** Every activity has a named framework behind it, and we'll tell you which claims are strong and which are indicative.",
          "**Privacy is the offer, not the risk.** Nobody reads student writing. That's why they write honestly."] },
   { h:"Parents", who:"Reached through the school, at information evenings", col:TEAL,
     lead:"“It asks your teenager to do one difficult thing a week, and it never shows you what they wrote.”",
     pts:["**It gets them off the screen.** Every week ends in something lived — a promise kept, a conversation had, half an hour without a phone.",
          "**Nothing is public.** No feed, no followers, no comparison to other students, no score.",
-         "**It points back to you.** Onboarding asks them to name a trusted adult; week 8 asks them to name two adults worth learning from and go and spend time with them.",
-         "**There's something to show for it.** The Character Code at week 10 is a page a family can actually talk about.",
+         "**It points back to you.** Each mission has an optional conversation — what they were like as a kid, where the family comes from, how you chose your path — and week 8 asks them to name two adults worth learning from and go and spend time with them.",
+         "**There's something to show for it.** The Character Code at week 10 — their story in one sentence and the commitments that follow — is a page a family can actually talk about.",
          "**It's honest about what it isn't.** Not therapy, and it says so."] },
   { h:"Students", who:"In-app copy, assembly slides, anything they read themselves", col:SAGE,
     lead:"“Figure out who you are. Build a life that matters.”",
-    pts:["**Never explain the frameworks.** The words “AI”, “intervention” and “wellbeing” do not appear. Neither should a psychologist's name.",
+    pts:["**Keep the frameworks out of student copy.** The app explains the research in an optional “The idea behind this” panel for anyone who wants it; posters and slides shouldn't. Never say “intervention”.",
          "**Lead with the challenge, not the writing.** “Do one useful thing nobody asked you to do, and tell nobody” recruits better than any description of reflection.",
          "**Say the privacy plainly.** “Nobody reads this. Not your teacher, not your parents.”",
          "**No pressure language.** Nothing expires and nothing nags. Say that — it's true, and it's why they come back.",
-         "**Blank page is the enemy.** Mention that every question can be answered by tapping, finishing a sentence, or writing your own."] },
+         "**Blank page is the enemy.** Mention that most questions can be answered by tapping, finishing a sentence, or writing your own, and that the hard ones can be left out."] },
 ];
 
 children.push(
@@ -333,20 +334,20 @@ for (const a of auds) {
 // ── 09 ───────────────────────────────────────────────────────────────────
 const objections = [
   { q:"“How do we know they'll finish it?”", a:[
-    "Don't claim they all will. Say what makes finishing more likely: the year-level spine means a student is shown one thing to start, not two competing tracks; the weekly challenges are small and concrete rather than aspirational; nothing expires, so a missed week isn't a failed programme; and every open question can be answered by tapping a written answer, finishing a half-written sentence, or writing from scratch — so non-completion caused by not knowing how to start a sentence about yourself is designed out.",
+    "Don't claim they all will. Say what makes finishing more likely: the app shows one thing to start — Mission 1, then one week at a time — not two competing tracks; the weekly challenges are small and concrete rather than aspirational; nothing expires, so a missed week isn't a failed programme; and most open questions can be answered by tapping a written answer, finishing a half-written sentence, or writing from scratch — so non-completion caused by not knowing how to start a sentence about yourself is designed out.",
     "Then turn it around: ask what proportion of their current character programme's content students can still recall in March. Groundwork produces a document they keep."] },
   { q:"“Isn't this just journalling?”", a:[
     "No — and the difference is the half of the product that happens off the screen. Every mission ends in a challenge carried through a week. Every one of the ten programme weeks ends in something lived: a promise kept daily, four sessions on a chosen hill, three screen-free half hours, deliberate time with named people. The writing exists to make the action specific enough to be doable.",
     "The honest add: the writing itself has a small, well-replicated benefit — not a large one. We don't sell the journalling as the mechanism."] },
   { q:"“Our students already have too many apps.”", a:[
-    "Agreed, and Groundwork is built to be a low-frequency one. There are no notifications, no streaks, and no daily engagement target — the app has nothing to gain from a student being on it. The weekly cadence is one question and one action; the mission steps run 8–15 minutes each, twenty of them across the whole programme.",
+    "Agreed, and Groundwork is built to be a low-frequency one. There are no notifications, no streaks, and no daily engagement target — the app has nothing to gain from a student being on it. The weekly cadence is one question and one action; the mission steps run 2–15 minutes each, twenty-two of them across the whole programme.",
     "If the school's real concern is screen time, week 9 is the answer: three screen-free half hours, with boredom named as the mechanism."] },
   { q:"“What happens if a student writes something concerning?”", a:[
-    "Answer this one precisely and without spin, because getting it wrong is a safeguarding problem. Journals are private — no teacher or parent view exists. The app therefore does not and cannot function as a disclosure channel, and it says so: it states plainly that it isn't a therapy app, it surfaces Kids Helpline (1800 55 1800 in Australia), and onboarding asks the student to name a trusted adult before they begin.",
+    "Answer this one precisely and without spin, because getting it wrong is a safeguarding problem. Journals are private — no teacher or parent view exists. The app therefore does not and cannot function as a disclosure channel, and it says so: it states plainly that it isn't a therapy app; a “Need to talk?” button on every screen lists free services, including Kids Helpline (1800 55 1800 in Australia); and if something a student writes sounds like they may be at risk, the app shows those services in place of its usual follow-up questions. That check is not saved, flagged or seen by anyone, so it is not a referral: it puts help in front of the student, not in front of an adult.",
     "What that means for a school: Groundwork sits inside your existing pastoral structure, it doesn't substitute for it. Any school deploying it should say so to students in the same breath."] },
   { q:"“Where's the evidence it works?”", a:[
     "Be straight: there is no outcome study of Groundwork itself yet. What exists is a design built activity-by-activity on named research — Erikson and Marcia for the sequence, VIA for strengths, self-determination theory for values, Damon for purpose, McAdams for narrative, possible selves for the future work, implementation intentions for the weekly commitments — and a large evidence base showing that programmes of this type produce measurable effects when they are sequenced, active, focused and explicit.",
-    "Then make the ask: a pilot cohort with pre/post measures. Schools respond well to being invited into the evidence rather than sold a claim, and it converts the weakest part of the pitch into a reason to sign."] },
+    "Then make the ask: a pilot cohort with pre/post measures. The app already runs a nine-question check-in at the start and ten weeks later that a pilot could use once it has ethics approval and consent, alongside validated measures. Schools respond well to being invited into the evidence rather than sold a claim, and it converts the weakest part of the pitch into a reason to sign."] },
 ];
 
 children.push(
@@ -368,12 +369,12 @@ children.push(
   callout(null, ["Groundwork helps teenagers work out who they are — then asks them to go and act like it."], TEAL, SUNK),
   new Paragraph({ spacing:{ after:60 } }),
   h3("Boilerplate — 60 words"),
-  callout(null, ["Groundwork is a self-guided identity and character programme for teenagers. Four missions ask one big question each — identity, purpose, connection, meaning. A ten-week programme turns the answers into weekly practice, each week ending in something the student has to live rather than write about. It ends in a Character Code they write themselves. Everything they write stays private."], TEAL, SUNK),
+  callout(null, ["Groundwork is a self-guided identity and character programme for teenagers. Four missions ask one big question each — identity, purpose, connection, meaning. A ten-week programme turns the answers into weekly practice, each week ending in something the student has to live rather than write about. It ends in a Character Code: their story in one sentence, and the commitments that follow. Everything they write stays private."], TEAL, SUNK),
   new Paragraph({ spacing:{ after:60 } }),
   h3("Cold email to a head of wellbeing"),
   callout(null, [
     "**Subject:** The part of your character programme students do on their own",
-    "Most character programmes are strong on assemblies and thin on what happens between them. Groundwork is the between-them part: four missions that map a student's strengths, values and direction, then ten weeks that turn those into weekly practice — one question, one thing to actually do, no scores and no streaks. It ends with each student writing a Character Code of five to seven commitments in their own words.",
+    "Most character programmes are strong on assemblies and thin on what happens between them. Groundwork is the between-them part: four missions that map a student's strengths, values and direction, then ten weeks that turn those into weekly practice — one question, one thing to actually do, no scores and no streaks. It ends with each student writing a Character Code: their story in one sentence, then five to seven commitments in their own words.",
     "Two things worth knowing up front. Every activity maps to a CASEL competency and I'm happy to send the mapping. And no teacher or parent can read student writing — that's deliberate, and it's why they write honestly.",
     "We don't have an outcome study yet, so I'd rather run a pilot with pre/post measures than make a claim I can't support. Worth fifteen minutes?",
   ], TEAL, SUNK),
@@ -393,10 +394,10 @@ children.push(
   new Paragraph({ children:[ new PageBreak() ] }),
   eyebrow("References"),
   h1("Sources"),
-  p("Items 1, 2, 5–8, 11–13, 15 and 24 are the frameworks Groundwork's activities are built on. Items 3, 4, 9, 10, 14 and 16–23 are the empirical results quoted in this guide. Verified September 2026."),
+  p("Items 1, 2, 5–8, 11–13 and 15 are the frameworks Groundwork's activities are built on. Items 3, 4, 9, 10, 14 and 16–24 are the empirical results quoted in this guide. Verified September 2026; item 24 added October 2026."),
   ...[
-    ["Erikson, E. H. (1968). *Identity: Youth and Crisis.* Norton.","The adolescent stage the whole programme is organised around."],
-    ["Marcia, J. E. (1966). Development and validation of ego identity status. *Journal of Personality and Social Psychology, 3*(5), 551–558.","Exploration → commitment, the mission sequence."],
+    ["Erikson, E. H. (1968). *Identity: Youth and Crisis.* Norton.","The adolescent stage the whole programme is organised around, and the keep / rework / leave sort in Mission 4."],
+    ["Marcia, J. E. (1966). Development and validation of ego identity status. *Journal of Personality and Social Psychology, 3*(5), 551–558.","Exploration and commitment, the two dimensions the missions are built on."],
     ["Durlak, J. A., Weissberg, R. P., Dymnicki, A. B., Taylor, R. D., & Schellinger, K. B. (2011). The impact of enhancing students' social and emotional learning: A meta-analysis of school-based universal interventions. *Child Development, 82*(1), 405–432. doi:10.1111/j.1467-8624.2010.01564.x","213 programmes, 270,034 students, +11 percentile points; SAFE practice and implementation quality as moderators."],
     ["Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W., & Wardle, J. (2010). How are habits formed: Modelling habit formation in the real world. *European Journal of Social Psychology, 40*(6), 998–1009. doi:10.1002/ejsp.674","Median 66 days to automaticity, range 18–254; missed days not materially damaging."],
     ["Peterson, C., & Seligman, M. E. P. (2004). *Character Strengths and Virtues: A Handbook and Classification.* Oxford University Press.","The VIA classification behind Strengths Mapping and week 1."],
@@ -407,10 +408,10 @@ children.push(
     ["Yeager, D. S., Henderson, M. D., Paunesku, D., Walton, G. M., D'Mello, S., Spitzer, B. J., & Duckworth, A. L. (2014). Boring but important: A self-transcendent purpose for learning fosters academic self-regulation. *Journal of Personality and Social Psychology, 107*(4), 559–580.","Four studies, 2,000+ adolescents; brief purpose intervention raised maths and science GPA."],
     ["Tajfel, H., & Turner, J. C. (1979). An integrative theory of intergroup conflict. In W. G. Austin & S. Worchel (Eds.), *The Social Psychology of Intergroup Relations.* Brooks/Cole.","Social identity theory — Mission 3's belonging work."],
     ["Putnam, R. D. (2000). *Bowling Alone: The Collapse and Revival of American Community.* Simon & Schuster.","Bridging versus bonding relationships — Across the Gap."],
-    ["McAdams, D. P., & McLean, K. C. (2013). Narrative identity. *Current Directions in Psychological Science, 22*(3), 233–238.","Autobiographical authorship — The People Who Shaped You."],
+    ["McAdams, D. P., & McLean, K. C. (2013). Narrative identity. *Current Directions in Psychological Science, 22*(3), 233–238.","Autobiographical authorship — Your Story So Far, The People Who Shaped You, and the Character Code's story sentence."],
     ["Walton, G. M., & Cohen, G. L. (2011). A brief social-belonging intervention improves academic and health outcomes of minority students. *Science, 331*(6023), 1447–1451. doi:10.1126/science.1198364","Three-year GPA gap reduced by 52%; improved self-reported health."],
     ["Markus, H., & Nurius, P. (1986). Possible selves. *American Psychologist, 41*(9), 954–969.","The Future Self activity in Mission 4."],
-    ["Oyserman, D., Bybee, D., & Terry, K. (2006). Possible selves and academic outcomes: How and when possible selves impel action. *Journal of Personality and Social Psychology, 91*(1), 188–204.","141 intervention / 123 control Year 8 students; grades, test scores and attendance up, misbehaviour and depression down, sustained at two years."],
+    ["Oyserman, D., Bybee, D., & Terry, K. (2006). Possible selves and academic outcomes: How and when possible selves impel action. *Journal of Personality and Social Psychology, 91*(1), 188–204.","141 intervention / 123 control Year 8 students; grades, test scores and attendance up, misbehaviour and depression down, sustained at two years. Also the basis for Your Next Chapter."],
     ["Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. *Advances in Experimental Social Psychology, 38*, 69–119.","94 independent tests, d = .65 — the mechanism behind programme weeks 4 and 5."],
     ["Layous, K., Nelson, S. K., Oberle, E., Schonert-Reichl, K. A., & Lyubomirsky, S. (2012). Kindness counts: Prompting prosocial behavior in preadolescents boosts peer acceptance and well-being. *PLOS ONE, 7*(12), e51380. doi:10.1371/journal.pone.0051380","19 classrooms; acts of kindness produced larger peer-acceptance gains than a matched control activity. Both groups improved in wellbeing — quote it that way."],
     ["Taylor, R. D., Oberle, E., Durlak, J. A., & Weissberg, R. P. (2017). Promoting positive youth development through school-based social and emotional learning interventions: A meta-analysis of follow-up effects. *Child Development, 88*(4), 1156–1171. doi:10.1111/cdev.12864","82 programmes, 97,406 students; follow-ups from 6 months to 18 years, benefits similar across race, SES and school location."],
@@ -418,10 +419,10 @@ children.push(
     ["CASEL. *The CASEL Framework: Five core social and emotional competencies.* Collaborative for Academic, Social, and Emotional Learning. casel.org","The five-competency mapping quoted to schools."],
     ["Frattaroli, J. (2006). Experimental disclosure and its moderators: A meta-analysis. *Psychological Bulletin, 132*(6), 823–865.","146 randomised studies, average r = .075 — the reason the expressive-writing claim is marked “say it carefully”."],
     ["Berkowitz, M. W., & Bier, M. C. (2005). *What Works in Character Education: A Research-Driven Guide for Educators.* Character Education Partnership.","109 studies; the features effective character programmes share — the basis for positioning Groundwork as a spine, not a substitute."],
-    ["Berzonsky, M. D. (1989). Identity style: Conceptualization and measurement. *Journal of Adolescent Research, 4*(3), 268–282.","Informational, normative and diffuse-avoidant styles — the onboarding adaptation."],
+    ["Duke, M. P., Lazarus, A., & Fivush, R. (2008). Knowledge of family history as a clinically useful index of psychological well-being and prognosis: A brief report. *Psychotherapy: Theory, Research, Practice, Training, 45*(2), 268–272.","Knowing more family stories goes with higher self-esteem and a stronger sense of control — Mission 3's optional conversation."],
   ].flatMap(([t, n], i) => ref(i + 1, t, n)),
   rule(),
-  p("Internal marketing guide. Product facts are drawn from the Groundwork repository — docs/frameworks.md, src/lib/missions.ts, src/lib/program.ts, src/lib/standard.ts and src/lib/spine.ts — and reflect the build as at September 2026. Re-check the claim ladder in section 7 whenever the product changes.", { size:18, color:FAINT }),
+  p("Internal marketing guide. Product facts are drawn from the Groundwork repository — docs/frameworks.md, src/lib/missions.ts, src/lib/program.ts, src/lib/standard.ts and src/lib/spine.ts — and reflect the build as at October 2026. Re-check the claim ladder in section 7 whenever the product changes.", { size:18, color:FAINT }),
   p("Groundwork is not a therapy app and should never be marketed as one. The Kids Helpline number surfaced in the product (1800 55 1800) is Australian; localise before marketing in another region.", { size:18, color:FAINT }),
 );
 
