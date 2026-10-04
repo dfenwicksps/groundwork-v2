@@ -801,7 +801,7 @@ function ConversationalActivity({
 
     // Request AI reflection async (non-blocking, with a timeout so the done
     // screen never shows an eternal spinner).
-    if (finalResponse.length > 20 && entryId) {
+    if (finalResponse.length > 20 && entryId && !activity.keepFromAi) {
       fetchAiReflection(finalResponse, entryId);
     } else {
       setReflectionFailed(true);
@@ -1852,7 +1852,7 @@ function ConversationalActivity({
 
           {/* Non-blocking note while the reflection generates — with an honest
               fallback once it fails or times out, so no eternal spinner. */}
-          {!supportNeeded && !aiReflection && turns.length > 0 && (
+          {!supportNeeded && !aiReflection && turns.length > 0 && !activity.keepFromAi && (
             <div
               role="status"
               className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white"

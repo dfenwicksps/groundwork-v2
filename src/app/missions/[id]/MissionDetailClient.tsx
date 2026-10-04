@@ -33,7 +33,7 @@ export default function MissionDetailClient({
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [restarting, setRestarting] = useState(false);
 
-  // Optional extras (the conversations) never count towards the mission.
+  // Optional extras (the conversations, Parts of Who You Are) never count towards the mission.
   const totalUnlocked = requiredSteps(mission).length;
   const totalCompleted = requiredDone(mission, completedActivities);
   const progressPct = Math.round((totalCompleted / totalUnlocked) * 100);
@@ -183,11 +183,13 @@ export default function MissionDetailClient({
                       {idx === firstOptionalIdx && (
                         <div className="pt-3 pb-1 px-0.5">
                           <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-                            Optional extra
+                            {mission.activities.filter((a) => a.optional).length > 1
+                              ? "Optional extras"
+                              : "Optional extra"}
                           </div>
                           <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
-                            A conversation with someone in your life. It doesn&apos;t count
-                            towards the mission, but it&apos;s often the part people remember.
+                            These don&apos;t count towards the mission. Do them when
+                            you&apos;re ready, or not at all.
                           </p>
                         </div>
                       )}
@@ -270,7 +272,7 @@ export default function MissionDetailClient({
                                 <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             ) : activity.optional ? (
-                              <span aria-hidden>💬</span>
+                              <span aria-hidden>{activity.interviewQuestions ? "💬" : "✦"}</span>
                             ) : (
                               <span>{idx + 1}</span>
                             )}

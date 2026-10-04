@@ -93,6 +93,12 @@ export interface Activity {
    * months apart, so the answer becomes how it has changed.
    */
   recall?: { activityId: string; missionId: number; label: string; step: number };
+  /**
+   * Never sent to the AI for follow-up questions. For the most sensitive
+   * writing in the app (beliefs, gender, sexuality), which stays in the
+   * student's own account. The on-device crisis check still runs.
+   */
+  keepFromAi?: boolean;
 }
 
 export interface Mission {
@@ -531,6 +537,29 @@ export const MISSIONS: Mission[] = [
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
+      },
+      {
+        id: "parts-of-you",
+        type: "journal",
+        optional: true,
+        title: "Parts of Who You Are",
+        subtitle: "Optional · Beliefs, gender, sexuality",
+        intro:
+          "Some parts of who you are are big questions for some people and barely questions at all for others: what you believe, your gender, who you're attracted to. You might be sure, still working it out, not thinking about it yet, or not ready to put it into words. All of those are fine, and every question here can be left out. What you write stays in your account and is never sent anywhere, not even for follow-up questions. If other people use this device, leave out anything you'd rather not have here. If something comes up that's hard, Get help at the top of the screen lists people to talk to, including QLife, for LGBTIQ+ people and anyone with questions about gender or sexuality.",
+        prompt: "What do you believe, and how do gender and sexuality fit into who you are?",
+        scaffoldingSteps: [
+          "What do you believe about the big questions — religion or spirituality, what's fair, how the world should work? Which of those beliefs feel like yours, and which did you just pick up?",
+          "How does your gender fit with who you are? How much does it matter to you, and how does it sit with what people expect of you?",
+          "For a lot of people, who they're attracted to (or whether they're attracted to anyone) is part of working out who they are. Where are you with that — sure, unsure, or not thinking about it yet?",
+          "Looking back over what you wrote, what feels settled, and what are you still working out?",
+        ],
+        skippableSteps: [0, 1, 2, 3],
+        keepFromAi: true,
+        wrapUp:
+          "However much or little you wrote, that took some honesty. Settled, unsure and not-yet are all real places to be, and none of them is the finish line.",
+        whyItMatters:
+          "Identity researchers look at several areas a person works out over time: beliefs and worldview, relationships, and gender and sexuality among them. People often explore these at different speeds, and being unsure is a normal part of exploring, not a problem to fix. Naming where you are in each, without pressure to decide, is the kind of reflection that research links to a clearer sense of self.",
+        timeEstimate: "About 5 minutes",
       },
       {
         id: "conversation-who-i-was",
