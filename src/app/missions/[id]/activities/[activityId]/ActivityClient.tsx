@@ -58,6 +58,8 @@ interface Props {
     ranking: string[];
     answers: { most: (string | null)[]; least: (string | null)[] } | null;
   } | null;
+  /** An earlier entry this step reads back (Activity.recall) */
+  recalled?: { label: string; text: string } | null;
 }
 
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
@@ -139,6 +141,21 @@ type ConvPhase = "intro" | "q" | "done";
 interface CompletedTurn {
   question: string;
   answer: string;
+}
+
+// ─── Shared: an earlier answer, read back ─────────────────────────────────────
+
+function RecallCard({ recalled, accent }: { recalled: { label: string; text: string }; accent: string }) {
+  return (
+    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${accent}35` }}>
+      <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: accent }}>
+        {recalled.label}
+      </div>
+      <blockquote className="text-sm text-[--ink] leading-relaxed border-l-2 pl-3 whitespace-pre-line" style={{ borderColor: `${accent}55` }}>
+        {recalled.text}
+      </blockquote>
+    </div>
+  );
 }
 
 // ─── Shared: sorting what you were handed ─────────────────────────────────────
@@ -276,11 +293,13 @@ function ConversationalActivity({
   previousResponse,
   pairedStory,
   compass,
+  recalled,
   onComplete,
 }: {
   mission: Mission;
   activity: Activity;
   userId: string;
+  recalled?: { label: string; text: string } | null;
   existingEntry: JournalEntry | null;
   /** Latest saved response even when the step isn't marked complete (e.g.
       after a mission restart) — shown as a reference, never auto-filled. */
@@ -829,6 +848,9 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* An earlier answer this step builds on, read back in the student's own words */}
+            {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
+
             {/* A conversation step: the questions to take with you, before the write-up */}
             {activity.interviewQuestions && activity.interviewQuestions.length > 0 && (
               <div
@@ -1162,6 +1184,10 @@ function ConversationalActivity({
                   &ldquo;{prevAnswersRef.current[qIdx]}&rdquo;
                 </p>
               </div>
+            )}
+
+            {recalled && activity.recall?.step === qIdx && (
+              <RecallCard recalled={recalled} accent={mission.colour} />
             )}
 
             {/* What you were handed — sorted rather than written */}
@@ -2761,6 +2787,7 @@ export default function ActivityClient({
   pairedStory,
   compass,
   strengthProfile,
+  recalled,
 }: Props) {
   const db = createClient() as any;
 
@@ -2883,6 +2910,7 @@ export default function ActivityClient({
       previousResponse={existingEntry?.response ?? null}
       pairedStory={pairedStory}
       compass={compass}
+      recalled={recalled}
       onComplete={() => handleComplete()}
     />
   );
