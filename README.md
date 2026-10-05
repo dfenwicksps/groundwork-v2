@@ -237,6 +237,22 @@ Phases not yet built (from the original spec):
 
 ---
 
+## Completion counts
+
+To see where students stop, run migration `015_completion_counts.sql`, then:
+
+```bash
+npm run report:completion
+```
+
+It prints totals only: sign-ups, each mission step and each program week. Counts under five are
+shown as "fewer than 5". It reads `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the
+environment or `.env.local`, and it won't run before `COUNTS_START` in `src/lib/completionCounts.ts`,
+because students were told about the counts in the app (and on the privacy page) two weeks before they
+could be read.
+
+---
+
 ## Notes for school pilot
 
 When running this as a school pilot:

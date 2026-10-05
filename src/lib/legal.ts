@@ -14,7 +14,7 @@ export const OPERATOR = {
   /** Where the operator is based — sets the governing law for the terms. */
   jurisdiction: "Queensland, Australia",
   /** Last substantive revision of the policy text. */
-  lastUpdated: "30 August 2026",
+  lastUpdated: "6 October 2026",
 };
 
 /** Minimum age to hold an account at all. */

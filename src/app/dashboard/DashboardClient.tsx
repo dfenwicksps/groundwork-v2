@@ -7,6 +7,7 @@ import { formatRelativeDate, truncate } from "@/lib/utils";
 import type { UserProfile, MissionProgress, Challenge } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import MissionsSummaryCard from "./MissionsSummaryCard";
+import PolicyNotice from "./PolicyNotice";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
@@ -308,6 +309,8 @@ export default function DashboardClient({
             </p>
           )}
         </div>
+
+        <PolicyNotice joinedAt={profile.created_at} />
 
         {/* Up next — the one thing to do */}
         <section data-animate="2" aria-labelledby="up-next">

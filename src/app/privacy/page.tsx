@@ -177,6 +177,22 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
+      <Section heading="What we count">
+        <Plainly>
+          How many students finish each step, as totals. Never what you wrote, and
+          never who.
+        </Plainly>
+        <p>
+          To see where Groundwork loses people, and fix it, we count how many
+          students have signed up, finished each mission step, and started and
+          finished each week of the program. They&apos;re totals across everyone,
+          worked out from the progress the app already keeps: no names, no emails,
+          nothing you wrote, and no way to tell which student finished what. Any
+          count smaller than five is shown as &ldquo;fewer than five&rdquo;, so a
+          small group can&apos;t be picked out. Nobody outside Groundwork sees them.
+        </p>
+      </Section>
+
       <Section heading="Getting your stuff back, or deleting it">
         <Plainly>Ask, and we&apos;ll send you everything or delete everything.</Plainly>
         <p>
