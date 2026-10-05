@@ -463,6 +463,10 @@ function ConversationalActivity({
   const [latestResponse, setLatestResponse] = useState(existingEntry?.response || "");
   // Set when several recent entries read as hard on the self (lib/hardOnSelf).
   const [hardOnSelf, setHardOnSelf] = useState(false);
+  // Year 7–9 open each question's scene with a tap; it closes again on the next question.
+  const tapForScenes = lifeStage === "junior";
+  const [scenarioOpen, setScenarioOpen] = useState(false);
+  useEffect(() => setScenarioOpen(false), [qIdx]);
   const entryIdRef = useRef<string | null>(existingEntry?.id || null);
 
   // ── Draft persistence ── an activity takes 10-15 minutes; losing answers to
@@ -993,13 +997,15 @@ function ConversationalActivity({
               </div>
             )}
 
-            {/* What's coming */}
+            {/* What's coming. Collapsed: the questions come one at a time
+                anyway, and listing them all here doubled the reading before
+                the first one. Open it to see them in advance. */}
             {questions.length > 1 && (
-              <div className="mb-5 px-1">
-                <p className="text-xs text-[--ink-muted] mb-2 font-medium">
-                  {questions.length} questions, answer them in order:
-                </p>
-                <ol className="space-y-1.5">
+              <details className="mb-5 px-1">
+                <summary className="text-xs text-[--ink-muted] font-medium cursor-pointer">
+                  {questions.length} questions, one at a time. See them all
+                </summary>
+                <ol className="space-y-1.5 mt-2">
                   {questions.map((q, i) => (
                     <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
                       <span
@@ -1012,7 +1018,7 @@ function ConversationalActivity({
                     </li>
                   ))}
                 </ol>
-              </div>
+              </details>
             )}
 
             {/* Resumed draft notice */}
@@ -1165,10 +1171,12 @@ function ConversationalActivity({
             {/* Anchor for scrolling a new question's top into view */}
             <div ref={questionTopRef} style={{ scrollMarginTop: "1rem" }} />
 
-            {/* Scenario setup — Mission 1 scenario-driven steps. Shown above
-                the question so teens react to a concrete situation rather than
-                introspect from a blank page. */}
-            {activity.scenarios?.[qIdx] && (
+            {/* Scenario setup. Shown above the question so students react to a
+                concrete situation rather than introspect from a blank page.
+                For Year 7–9 it waits behind a tap: a scene of about fifty words
+                before every question doubled what a younger reader had to get
+                through, so it's there for anyone who wants an example. */}
+            {activity.scenarios?.[qIdx] && (scenarioOpen || !tapForScenes ? (
               <div
                 data-animate="1"
                 className="rounded-2xl p-4 border"
@@ -1187,7 +1195,17 @@ function ConversationalActivity({
                   {activity.scenarios[qIdx]}
                 </p>
               </div>
-            )}
+            ) : (
+              <button
+                type="button"
+                data-animate="1"
+                onClick={() => setScenarioOpen(true)}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-1"
+                style={{ color: mission.colour }}
+              >
+                <span aria-hidden>✦</span> Picture this: tap for an example
+              </button>
+            ))}
 
             {/* Current question */}
             <div data-animate="2" className="question-card">

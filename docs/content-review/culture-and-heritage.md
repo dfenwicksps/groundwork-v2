@@ -29,7 +29,7 @@ The wording below was written by the developer alone. It should be reviewed, and
 
 ### Intro (shown before the questions)
 
-> Culture can mean a lot of things: where your family is from, a language, a faith, food, Country, traditions, a community you belong to, or just the way things are done at your place. Some people have one culture, some have several, some are still finding theirs, and some feel they don't have one at all. All of those are real places to start. Every question here can be left out, and none of it is a test of how much you know. What you write stays in your account and is never sent anywhere, not even for follow-up questions. If something here is hard, Get help at the top of the screen lists people to talk to, including 13YARN for Aboriginal and Torres Strait Islander people.
+> Culture can mean where your family is from, a language, a faith, food, Country, traditions, or just the way things are done at your place. You might have one, several, be finding yours, or feel you don't have one. All of those are real places to start. Every question can be left out, and none of it is a test. What you write stays in your account and is never sent anywhere. If something's hard, Get help lists people to talk to, including 13YARN for Aboriginal and Torres Strait Islander people.
 
 **For reviewers:**
 - Does any group feel left out or singled out?
