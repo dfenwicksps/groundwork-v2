@@ -923,6 +923,16 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* Another way in, so having nobody to ask never means being stuck */}
+            {activity.alternative && (
+              <div className="rounded-2xl p-4 mb-5 bg-white border border-[--border]">
+                <div className="text-xs font-bold text-[--ink-muted] uppercase tracking-widest mb-1.5">
+                  Another way to do it
+                </div>
+                <p className="text-sm text-[--ink] leading-relaxed">{activity.alternative}</p>
+              </div>
+            )}
+
             {/* Story — read inline, inside the activity */}
             {pairedStory && (
               <div
@@ -1042,7 +1052,7 @@ function ConversationalActivity({
               {restoredDraft
                 ? "Continue where you left off →"
                 : activity.interviewQuestions?.length
-                ? "I've had the conversation →"
+                ? "I've done it. Write it up →"
                 : usingStarter
                 ? "Begin →"
                 : questions.length === 1
@@ -2877,8 +2887,9 @@ export default function ActivityClient({
         { onConflict: "user_id,mission_id,activity_id", ignoreDuplicates: true }
       );
 
-      // Optional extras are recorded like any step but never count towards
-      // finishing the mission, so count the required ones by id.
+      // Optional extras (Parts of Who You Are, Culture and Heritage) are
+      // recorded like any step but never count towards finishing the
+      // mission, so count the required ones by id.
       const totalActivities = requiredSteps(mission).length;
       const { data: doneRows } = await db
         .from("mission_progress")

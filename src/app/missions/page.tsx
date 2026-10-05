@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
-import { MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
+import { MISSIONS, requiredSteps, requiredDone, missionFinished, type ProgressRow } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { spineFor } from "@/lib/spine";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -27,10 +27,10 @@ export default async function MissionsIndexPage() {
   const db = supabase as any;
   const [{ data: profileRaw }, { data: progressRaw }] = await Promise.all([
     db.from("users").select("active_mission").eq("id", user.id).single(),
-    db.from("mission_progress").select("mission_id, activity_id").eq("user_id", user.id),
+    db.from("mission_progress").select("mission_id, activity_id, completed_at").eq("user_id", user.id),
   ]);
 
-  const rows = (progressRaw || []) as { mission_id: number; activity_id: string }[];
+  const rows = (progressRaw || []) as ProgressRow[];
   const activeMission =
     (profileRaw as { active_mission?: number } | null)?.active_mission ?? 1;
 
@@ -50,7 +50,7 @@ export default async function MissionsIndexPage() {
       strands: m.strands,
       done,
       total,
-      complete: total > 0 && done >= total,
+      complete: missionFinished(m, rows),
     };
   });
 

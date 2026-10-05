@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { MISSIONS, getActivityLabel, requiredSteps, requiredDone, conversationToOffer } from "@/lib/missions";
+import { getActivityLabel, conversationToOffer } from "@/lib/missions";
+import { missionsCompleted } from "@/lib/missionProgress";
 import { formatRelativeDate, truncate } from "@/lib/utils";
 import type { UserProfile, MissionProgress, Challenge } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
@@ -75,14 +76,6 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   4: "meaning-challenge",
 };
 
-function missionsComplete(progress: MissionProgress[]): number {
-  return MISSIONS.filter((m) => {
-    const total = requiredSteps(m).length;
-    const ids = progress.filter((p) => p.mission_id === m.id).map((p) => p.activity_id);
-    return total > 0 && requiredDone(m, ids) >= total;
-  }).length;
-}
-
 function Arrow({ className = "" }: { className?: string }) {
   return (
     <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className={className}>
@@ -128,7 +121,7 @@ export default function DashboardClient({
   const hour = new Date().getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const missionsDone = missionsComplete(progress);
+  const missionsDone = missionsCompleted(progress);
 
   const upNext =
     spine.lead === "mission" && nextMissionStep ? (
@@ -237,16 +230,16 @@ export default function DashboardClient({
     });
   }
 
-  // 4. A finished mission's optional conversation, suggested for a month after
-  // finishing it (see conversationToOffer). It's otherwise only on the
-  // mission page, where few students look once a mission is done.
+  // 4. The conversation of a mission finished before conversations counted,
+  // suggested for a month after finishing it (see conversationToOffer). For
+  // everyone else it's a step in the mission, so "Up next" offers it.
   const conversation = conversationToOffer(progress);
   if (conversation) {
     alsoNow.push({
       key: "conversation",
       href: `/missions/${conversation.mission.id}/activities/${conversation.activity.id}`,
       icon: "💬",
-      title: `An optional extra: ${conversation.activity.title}`,
+      title: `Talk to someone: ${conversation.activity.title}`,
       sub: conversation.activity.prompt,
     });
   }

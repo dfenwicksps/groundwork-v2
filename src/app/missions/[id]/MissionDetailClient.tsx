@@ -33,7 +33,7 @@ export default function MissionDetailClient({
   const [confirmingRestart, setConfirmingRestart] = useState(false);
   const [restarting, setRestarting] = useState(false);
 
-  // Optional extras (the conversations, Parts of Who You Are) never count towards the mission.
+  // Optional extras (Parts of Who You Are, Culture and Heritage) never count towards the mission.
   const totalUnlocked = requiredSteps(mission).length;
   const totalCompleted = requiredDone(mission, completedActivities);
   const progressPct = Math.round((totalCompleted / totalUnlocked) * 100);

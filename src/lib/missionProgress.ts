@@ -1,4 +1,4 @@
-import { MISSIONS, requiredSteps, requiredDone } from "./missions";
+import { MISSIONS, missionFinished, type ProgressRow } from "./missions";
 
 /**
  * How many of the four missions are fully complete.
@@ -6,34 +6,16 @@ import { MISSIONS, requiredSteps, requiredDone } from "./missions";
  * The spine holds the ten-week program back until this reaches four — the
  * missions are the foundation, the program is where what they surfaced gets
  * grown and embedded. Locked activities don't count towards a mission's total,
- * matching how the dashboard's mission cards already measure progress.
+ * matching how the dashboard's mission cards already measure progress. A
+ * mission finished before its conversation counted stays finished (see
+ * missionFinished).
  */
 /** Whether one specific mission is finished. */
-export function missionComplete(
-  progress: { mission_id: number; activity_id: string }[],
-  missionId: number
-): boolean {
+export function missionComplete(progress: ProgressRow[], missionId: number): boolean {
   const m = MISSIONS.find((x) => x.id === missionId);
-  if (!m) return false;
-  const total = requiredSteps(m).length;
-  if (!total) return false;
-  const done = requiredDone(
-    m,
-    progress.filter((p) => p.mission_id === missionId).map((p) => p.activity_id)
-  );
-  return done >= total;
+  return !!m && missionFinished(m, progress);
 }
 
-export function missionsCompleted(
-  progress: { mission_id: number; activity_id: string }[]
-): number {
-  return MISSIONS.filter((m) => {
-    const total = requiredSteps(m).length;
-    if (!total) return false;
-    const done = requiredDone(
-      m,
-      progress.filter((p) => p.mission_id === m.id).map((p) => p.activity_id)
-    );
-    return done >= total;
-  }).length;
+export function missionsCompleted(progress: ProgressRow[]): number {
+  return MISSIONS.filter((m) => missionFinished(m, progress)).length;
 }

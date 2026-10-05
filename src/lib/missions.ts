@@ -78,7 +78,8 @@ export interface Activity {
   skippableSteps?: number[];
   /**
    * An optional extra: shown at the end of the mission, never counted towards
-   * finishing it, never offered as "next". The conversation steps are these.
+   * finishing it, never offered as "next". Parts of Who You Are and Culture
+   * and Heritage are these; the conversations used to be.
    */
   optional?: boolean;
   /**
@@ -86,6 +87,12 @@ export interface Activity {
    * student starts. The scaffolding steps are then the write-up afterwards.
    */
   interviewQuestions?: string[];
+  /**
+   * For a conversation step: another way to do it, for a student with nobody
+   * they can (or want to) ask. Shown beside the questions, so having nobody
+   * never means being stuck.
+   */
+  alternative?: string;
   /**
    * An earlier entry to read back inside this one: shown in the intro and above
    * the scaffolding step at `step`, so the student answers with what they wrote
@@ -342,7 +349,7 @@ export const MISSIONS: Mission[] = [
         id: "chapters-so-far",
         type: "journal",
         title: "Your Story So Far",
-        subtitle: "Step 1 of 6 · Where you've come from",
+        subtitle: "Step 1 of 7 · Where you've come from",
         intro:
           "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this in Mission 4, and either question can be left out.",
         prompt: "If your life so far were a book, what would the chapters be called?",
@@ -367,7 +374,7 @@ export const MISSIONS: Mission[] = [
           "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and the app will point back to them from here on. Next: the other half — the values underneath why those strengths matter to you.",
         type: "strengths_assessment",
         title: "Strengths Mapping",
-        subtitle: "Step 2 of 6 · Inner compass",
+        subtitle: "Step 2 of 7 · Inner compass",
         intro:
           "This mission builds your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you. This step maps your strengths. Ranking yourself cold is hard, so you'll react to 18 quick everyday situations instead, and your reactions do the ranking.",
         warmUp:
@@ -384,7 +391,7 @@ export const MISSIONS: Mission[] = [
           "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
         type: "values_picker",
         title: "Values Clarifier",
-        subtitle: "Step 3 of 6 · Inner compass",
+        subtitle: "Step 3 of 7 · Inner compass",
         intro:
           "Strengths were the first half of your compass. Values are the second: what you refuse to trade away. 'What are your values?' is hard to answer cold, so read the situations first and notice which ones tug at you. That reaction is a value showing itself.",
         warmUp:
@@ -411,7 +418,7 @@ export const MISSIONS: Mission[] = [
           "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
         type: "journal",
         title: "The Mask Check",
-        subtitle: "Step 4 of 6 · Your public self",
+        subtitle: "Step 4 of 7 · Your public self",
         intro:
           "Your compass is built — strengths mapped, values chosen. Now we test it against the real world. Everyone wears slightly different versions of themselves in different rooms — that's normal, not fake. The question is which parts of your compass make it into every room, and which get hidden. The moments below will show you.",
         warmUp:
@@ -475,7 +482,7 @@ export const MISSIONS: Mission[] = [
           "That letter is the truest snapshot of you that exists anywhere \u2014 compass, masks and all. Nobody can mark it, judge it, or take it. Future-you will read it on a day they need it. One thing left: living one small piece of it out loud.",
         type: "milestone_letter",
         title: "Identity Letter",
-        subtitle: "Step 5 of 6 · Milestone",
+        subtitle: "Step 5 of 7 · Milestone",
         intro:
           "You've mapped your strengths and values, and seen where you perform and where you're real. This letter holds it together: you, writing to yourself about who you are right now, and who you sense you're becoming.",
         warmUp:
@@ -539,7 +546,7 @@ export const MISSIONS: Mission[] = [
           "Accepting is the whole step \u2014 you've just turned self-knowledge into an experiment. Whatever happens this week is data, not a grade. Come back in a few days and tell yourself the truth about how it went.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 6 of 6",
+        subtitle: "Step 6 of 7",
         intro:
           "Everything so far has been noticing. This step is one small experiment in the real world — taking one thing you discovered about yourself and actually living it once, just to see what it feels like. You don't need to be certain and it doesn't need to go well. Noticing what happens is the whole point.",
         prompt:
@@ -547,6 +554,35 @@ export const MISSIONS: Mission[] = [
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
+      },
+      {
+        id: "conversation-who-i-was",
+        type: "journal",
+        title: "Who Was I?",
+        subtitle: "Step 7 of 7 · Talk to someone",
+        intro:
+          "Part of who you are comes from the stories other people tell about you. This step is a conversation: ask someone who knew you when you were small, like a parent, grandparent, older sibling or old teacher, a few questions. Then come back and write up what you heard.",
+        alternative:
+          "Nobody who knew you then that you can ask, or you'd rather not? Go through old photos, videos, school reports or birthday cards instead, or ask a teacher, coach or friend who's known you a few years. Answer the questions from what you find.",
+        interviewQuestions: [
+          "What was I like when I was five or six?",
+          "What's a story about me you still tell people?",
+          "What did you notice about me back then that I might not know?",
+          "What's stayed the same about me?",
+        ],
+        prompt:
+          "Ask someone who knew you when you were little what you were like, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, or what did you look through instead, and what was it like?",
+          "What did they tell you? Write down the bit you most want to remember, in their words if you can.",
+          "What surprised you — something you didn't know, or didn't expect them to have noticed?",
+          "What's one thing from it that still feels true about you now?",
+        ],
+        wrapUp:
+          "You've added someone else's view to your own story: the version of you that existed before you can remember.",
+        whyItMatters:
+          "Psychologists who study how young people build a life story have found it doesn't happen alone. Teenagers make sense of who they are partly through the stories other people tell about them, and with them. Hearing how someone saw you as a kid gives you material your own memory doesn't have, and shows you which parts of you have stayed constant.",
+        timeEstimate: "A conversation, then 5 minutes",
       },
       {
         id: "parts-of-you",
@@ -570,34 +606,6 @@ export const MISSIONS: Mission[] = [
         whyItMatters:
           "Identity researchers look at several areas a person works out over time: beliefs and worldview, relationships, and gender and sexuality among them. People often explore these at different speeds, and being unsure is a normal part of exploring, not a problem to fix. Naming where you are in each, without pressure to decide, is the kind of reflection that research links to a clearer sense of self.",
         timeEstimate: "About 5 minutes",
-      },
-      {
-        id: "conversation-who-i-was",
-        type: "journal",
-        optional: true,
-        title: "Who Was I?",
-        subtitle: "Optional · Talk to someone",
-        intro:
-          "Part of who you are comes from the stories other people tell about you. This step is a conversation: ask someone who knew you when you were small, like a parent, grandparent, older sibling or old teacher, a few questions. Then come back and write up what you heard. Nobody to ask, or you'd rather not? Skip it. It's an extra.",
-        interviewQuestions: [
-          "What was I like when I was five or six?",
-          "What's a story about me you still tell people?",
-          "What did you notice about me back then that I might not know?",
-          "What's stayed the same about me?",
-        ],
-        prompt:
-          "Ask someone who knew you when you were little what you were like, then write up what you heard.",
-        scaffoldingSteps: [
-          "Who did you talk to, and what was it like asking?",
-          "What did they tell you? Write down the bit you most want to remember, in their words if you can.",
-          "What surprised you — something you didn't know, or didn't expect them to have noticed?",
-          "What's one thing from it that still feels true about you now?",
-        ],
-        wrapUp:
-          "You've added someone else's view to your own story: the version of you that existed before you can remember.",
-        whyItMatters:
-          "Psychologists who study how young people build a life story have found it doesn't happen alone. Teenagers make sense of who they are partly through the stories other people tell about them, and with them. Hearing how someone saw you as a kid gives you material your own memory doesn't have, and shows you which parts of you have stayed constant.",
-        timeEstimate: "A conversation, then 5 minutes",
       },
     ],
   },
@@ -658,7 +666,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "What Matters",
-        subtitle: "Step 1 of 5 · Your motivated self",
+        subtitle: "Step 1 of 6 · Your motivated self",
         intro:
           "Mission 1 looked inward. This one looks outward. Purpose often starts with a quiet anger or a pull: something in the world that bothers you, or something you keep coming back to. This step is about naming that thing honestly.",
         warmUp:
@@ -720,7 +728,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "The Contribution Map",
-        subtitle: "Step 2 of 5 · Your motivated self",
+        subtitle: "Step 2 of 6 · Your motivated self",
         intro:
           "Knowing what matters to you is one thing. This step asks what you, in particular, could bring to it. Purpose built on your real strengths lasts longer than purpose picked at random. Not sure yet? That's a real answer. Write about where you're unsure, not just where you're confident.",
         warmUp:
@@ -779,7 +787,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "The Other Side",
-        subtitle: "Step 3 of 5 · Your people",
+        subtitle: "Step 3 of 6 · Your people",
         intro:
           "Purpose gets real when you realise you're not alone in caring. There are people — in your life, in history, in communities you haven't found yet — who care about the same things you do. This step asks you to find one of them and pay attention to what their story tells you about yours.",
         warmUp:
@@ -841,7 +849,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "Commitment Statement",
-        subtitle: "Step 4 of 5 · Milestone",
+        subtitle: "Step 4 of 6 · Milestone",
         intro:
           "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
         warmUp:
@@ -867,7 +875,7 @@ export const MISSIONS: Mission[] = [
           "Challenge accepted. Purpose only becomes real when it costs you a little effort \u2014 this week you'll find out what one small act in its direction feels like.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 5 of 5",
+        subtitle: "Step 5 of 6",
         intro:
           "Commitment isn't proven by what you say — it's tested by what you actually do. This challenge asks you to take one real step toward what you care about. Not a grand gesture. Just the smallest version of genuine engagement that feels real to you.",
         prompt:
@@ -879,11 +887,12 @@ export const MISSIONS: Mission[] = [
       {
         id: "conversation-what-matters",
         type: "journal",
-        optional: true,
         title: "What They Care About",
-        subtitle: "Optional · Talk to someone",
+        subtitle: "Step 6 of 6 · Talk to someone",
         intro:
-          "Purpose is easier to find once you've seen what it looks like in someone else's life. Find an adult you respect — a parent, grandparent, coach, teacher, neighbour, boss — and ask what they care about and how they came to care about it. Then come back and write up what you heard. It's an optional extra.",
+          "Purpose is easier to find once you've seen what it looks like in someone else's life. Find an adult you respect — a parent, grandparent, coach, teacher, neighbour, boss — and ask what they care about and how they came to care about it. Then come back and write up what you heard.",
+        alternative:
+          "Nobody you can ask? A teacher, coach, youth worker or school counsellor counts. Or find an interview, video or article where someone talks about a cause they've spent years on, and answer the questions from that.",
         interviewQuestions: [
           "What's something you've cared about for a long time?",
           "How did it start — was there a moment?",
@@ -893,7 +902,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "Ask an adult you respect what they care about and how it started, then write up what you heard.",
         scaffoldingSteps: [
-          "Who did you talk to, and what do they care about?",
+          "Who did you talk to, or whose story did you find instead, and what do they care about?",
           "How did it start for them? What got them caring?",
           "What did they do about it — and what did it cost them, if anything?",
           "What does their story tell you about the thing you care about?",
@@ -963,7 +972,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Where You Belong",
-        subtitle: "Step 1 of 5 · Your social self",
+        subtitle: "Step 1 of 6 · Your social self",
         intro:
           "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself.",
         warmUp:
@@ -1023,7 +1032,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Fitting In vs. Belonging",
-        subtitle: "Step 2 of 5 · Your social self",
+        subtitle: "Step 2 of 6 · Your social self",
         intro:
           "There's a difference between fitting in and belonging — and it matters. Fitting in means changing yourself so that a group accepts you. Belonging means being accepted as yourself. They can look the same from the outside, but they feel very different from the inside. This step asks you to tell them apart in your own life.",
         warmUp:
@@ -1082,7 +1091,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Across the Gap",
-        subtitle: "Step 3 of 5 · Your social self",
+        subtitle: "Step 3 of 6 · Your social self",
         intro:
           "The relationships that shape us most aren't always the easy ones. Some matter because the other person sees the world differently: a grandparent, someone from another background, someone you've argued with. Connection across that gap is a different kind of belonging, and it leaves a different mark.",
         warmUp:
@@ -1142,7 +1151,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "The People Who Shaped You",
-        subtitle: "Step 4 of 5 · Milestone",
+        subtitle: "Step 4 of 6 · Milestone",
         intro:
           "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly.",
         warmUp:
@@ -1167,7 +1176,7 @@ export const MISSIONS: Mission[] = [
           "Reaching toward someone first is how belonging actually gets built \u2014 nobody drifts into it. Whatever happens this week, you'll learn something about connection you can't learn by waiting.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 5 of 5",
+        subtitle: "Step 5 of 6",
         intro:
           "Belonging isn't passive. It's built — slowly, through small acts of reaching toward people. This challenge asks you to take one small step toward genuine connection: not a grand gesture, but something real. Notice what happens when you actually try.",
         prompt:
@@ -1175,6 +1184,36 @@ export const MISSIONS: Mission[] = [
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
+      },
+      {
+        id: "conversation-family-story",
+        type: "journal",
+        title: "Where We Come From",
+        subtitle: "Step 6 of 6 · Talk to someone",
+        intro:
+          "Every family has stories: who moved, what was hard, what got handed down. Ask a parent, grandparent or older relative to tell you one. Then come back and write up what you heard.",
+        alternative:
+          "If family isn't someone you can ask right now, a carer, a family friend, an Elder or someone from your community works too. Or find out the story of a place you're connected to: where you were born, or where your family or community comes from.",
+        interviewQuestions: [
+          "Where did our family come from, before here?",
+          "What was hard for them, and how did they get through it?",
+          "What did they hold onto that we still have?",
+          "What did you get from your own parents that you kept — and what did you change?",
+        ],
+        prompt:
+          "Ask an older relative to tell you a story about where your family comes from, then write up what you heard.",
+        scaffoldingSteps: [
+          "Who did you talk to, or what did you find out instead? What's the story?",
+          "What was hard for the people in it, and how did they get through?",
+          "What got handed down — a habit, a value, a recipe, a way of doing things — that you can still see in your family?",
+          "Where do you see yourself in that story? What would you carry on, and what would you do differently?",
+        ],
+        skippableSteps: [1],
+        wrapUp:
+          "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in this mission.",
+        whyItMatters:
+          "Researchers at Emory University, Marshall Duke and Robyn Fivush, found that teenagers who know more of their family's stories — where their grandparents grew up, what went wrong and how the family got through it — tend to have higher self-esteem, a stronger sense of control over their lives, and cope better with hard times. It isn't about having an impressive history. It's knowing you belong to something that has come through things before.",
+        timeEstimate: "A conversation, then 5 minutes",
       },
       {
         // Drafted without community input. The wording is meant to be reviewed
@@ -1202,35 +1241,6 @@ export const MISSIONS: Mission[] = [
           "Research with young people from many backgrounds, including work by Adriana Uma\u00f1a-Taylor and colleagues, finds that exploring your cultural or ethnic background and feeling good about it go along with stronger self-esteem and wellbeing, and some studies find it helps young people cope with being treated unfairly. It isn't about how much you already know or how cultural you seem. It's about taking an interest and deciding what it means to you.",
         timeEstimate: "About 5 minutes",
       },
-      {
-        id: "conversation-family-story",
-        type: "journal",
-        optional: true,
-        title: "Where We Come From",
-        subtitle: "Optional · Talk to someone",
-        intro:
-          "Every family has stories: who moved, what was hard, what got handed down. Ask a parent, grandparent or older relative to tell you one. A family friend or someone from your community works too, or skip it, it's an extra. Then come back and write up what you heard.",
-        interviewQuestions: [
-          "Where did our family come from, before here?",
-          "What was hard for them, and how did they get through it?",
-          "What did they hold onto that we still have?",
-          "What did you get from your own parents that you kept — and what did you change?",
-        ],
-        prompt:
-          "Ask an older relative to tell you a story about where your family comes from, then write up what you heard.",
-        scaffoldingSteps: [
-          "Who did you talk to, and what story did they tell?",
-          "What was hard for the people in it, and how did they get through?",
-          "What got handed down — a habit, a value, a recipe, a way of doing things — that you can still see in your family?",
-          "Where do you see yourself in that story? What would you carry on, and what would you do differently?",
-        ],
-        skippableSteps: [1],
-        wrapUp:
-          "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is another optional extra in this mission.",
-        whyItMatters:
-          "Researchers at Emory University, Marshall Duke and Robyn Fivush, found that teenagers who know more of their family's stories — where their grandparents grew up, what went wrong and how the family got through it — tend to have higher self-esteem, a stronger sense of control over their lives, and cope better with hard times. It isn't about having an impressive history. It's knowing you belong to something that has come through things before.",
-        timeEstimate: "A conversation, then 5 minutes",
-      },
     ],
   },
   {
@@ -1252,7 +1262,7 @@ export const MISSIONS: Mission[] = [
         id: "where-ive-come-from",
         type: "journal",
         title: "Where You've Come From",
-        subtitle: "Step 1 of 6 · Looking back",
+        subtitle: "Step 1 of 7 · Looking back",
         intro:
           "In Mission 1 you named some chapters. This step goes further back: the chapters you've lived, a moment that changed you, and what your family and culture handed you before you could choose. You decide how deep to go. If part of it is painful, write around it or leave that question out. Get help is at the top of every screen.",
         warmUp:
@@ -1322,7 +1332,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Future Self",
-        subtitle: "Step 2 of 6 · Your future",
+        subtitle: "Step 2 of 7 · Your future",
         intro:
           "Before deciding what life to build, it helps to picture it. Not a list of qualities or a career, but an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
@@ -1381,7 +1391,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Digital Self",
-        subtitle: "Step 3 of 6 · Your digital life",
+        subtitle: "Step 3 of 7 · Your digital life",
         intro:
           "There's a version of you online too. It isn't fake, but it is filtered: algorithms pick what you see, and platforms shape how you show yourself. This step looks honestly at how much of who you are online was chosen by you, and how much by the feed.",
         warmUp:
@@ -1442,7 +1452,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "The Through-Line",
-        subtitle: "Step 4 of 6 · The thread",
+        subtitle: "Step 4 of 7 · The thread",
         intro:
           "You've looked at who you are, what you care about, where you belong, and where you've come from. This step asks what sits underneath all of it: the thread running through.",
         warmUp:
@@ -1505,7 +1515,7 @@ export const MISSIONS: Mission[] = [
         title: "A Life Worth Building",
         // The letter is where the thread goes, so the thread sits above its first question.
         recall: { activityId: "the-through-line", missionId: 4, label: "The thread you found", step: 0, answer: 3 },
-        subtitle: "Step 5 of 6 · Milestone",
+        subtitle: "Step 5 of 7 · Milestone",
         intro:
           "You've named the thread. This letter is its other half: where it's going, what following it would cost, and why it's worth it. It's the one step that looks forward. Not a promise or a plan, just a direction, written down while you can still see it clearly.",
         warmUp:
@@ -1530,7 +1540,7 @@ export const MISSIONS: Mission[] = [
           "One deliberate choice, made on purpose, is what all four missions look like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
         type: "challenge",
         title: "Mission Challenge",
-        subtitle: "Step 6 of 6",
+        subtitle: "Step 6 of 7",
         intro:
           "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
         prompt:
@@ -1542,11 +1552,12 @@ export const MISSIONS: Mission[] = [
       {
         id: "conversation-path",
         type: "journal",
-        optional: true,
         title: "How They Chose",
-        subtitle: "Optional · Talk to someone",
+        subtitle: "Step 7 of 7 · Talk to someone",
         intro:
-          "Most adults didn't follow a straight line to where they are. Ask one — a parent, grandparent, older cousin, coach, someone whose work interests you — how they ended up doing what they do. Then come back and write up what you heard. It's an optional extra.",
+          "Most adults didn't follow a straight line to where they are. Ask one — a parent, grandparent, older cousin, coach, someone whose work interests you — how they ended up doing what they do. Then come back and write up what you heard.",
+        alternative:
+          "Nobody you can ask? A teacher, coach or careers adviser counts. Or find an interview, video or podcast where someone talks about how they got into work that interests you, and answer the questions from that.",
         interviewQuestions: [
           "How did you end up doing what you do?",
           "What did you nearly do instead?",
@@ -1556,7 +1567,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "Ask an adult how they ended up doing what they do, then write up what you heard.",
         scaffoldingSteps: [
-          "Who did you talk to, and how did they end up where they are?",
+          "Who did you talk to, or whose story did you find instead, and how did they end up where they are?",
           "What did they nearly do instead, or have to give up?",
           "What would they tell themselves at your age?",
           "What does their path tell you about yours?",
@@ -1576,12 +1587,54 @@ export function getMission(id: number): Mission | undefined {
 }
 
 /**
- * The steps that make up a mission: everything except optional extras (the
- * conversations) and locked placeholders. Every "X of Y steps", every "is this
- * mission done" and every "what's next" counts these and only these.
+ * The steps that make up a mission: everything except optional extras (Parts
+ * of Who You Are, Culture and Heritage) and locked placeholders. Every "X of Y
+ * steps" and every "what's next" counts these and only these. Whether a
+ * mission is finished is missionFinished, which allows for the change below.
  */
 export function requiredSteps(m: Mission): Activity[] {
   return m.activities.filter((a) => !a.locked && !a.optional);
+}
+
+/** A mission's conversation step: the one with questions to take to someone. */
+export function conversationStep(m: Mission): Activity | undefined {
+  return m.activities.find((a) => a.interviewQuestions?.length);
+}
+
+/**
+ * Each mission's conversation was an optional extra until this date, and has
+ * been its last step since. Picturing a future, and making sense of a past,
+ * with the input of people around you is part of the work, not a bonus.
+ */
+export const CONVERSATIONS_REQUIRED_FROM = "2026-10-06T00:00:00Z";
+
+export interface ProgressRow {
+  mission_id: number;
+  activity_id: string;
+  completed_at: string;
+}
+
+/**
+ * Whether a mission is finished: every step done, or every step but the
+ * conversation done before the conversation counted. Nobody loses a mission
+ * they'd already completed; they're offered its conversation instead (see
+ * conversationToOffer).
+ */
+export function missionFinished(m: Mission, rows: ProgressRow[]): boolean {
+  const mine = rows.filter((r) => r.mission_id === m.id);
+  const done = new Set(mine.map((r) => r.activity_id));
+  const steps = requiredSteps(m);
+  if (!steps.length) return false;
+  if (steps.every((a) => done.has(a.id))) return true;
+  const conversation = conversationStep(m);
+  const others = steps.filter((a) => a !== conversation);
+  if (!conversation || !others.every((a) => done.has(a.id))) return false;
+  const finishedAt = Math.max(
+    ...mine
+      .filter((r) => others.some((a) => a.id === r.activity_id))
+      .map((r) => new Date(r.completed_at).getTime())
+  );
+  return finishedAt < new Date(CONVERSATIONS_REQUIRED_FROM).getTime();
 }
 
 /**
@@ -1599,21 +1652,23 @@ export function isSensitiveActivity(activityId: string): boolean {
 export const CONVERSATION_OFFER_DAYS = 30;
 
 /**
- * The conversation step to suggest on Home, if any: from the most recently
- * finished mission whose conversation hasn't been done, and only for a while
- * after finishing it, so an optional extra never turns into a standing nag.
+ * The conversation step to suggest on Home, if any: for a mission finished
+ * before conversations counted (missionFinished) whose conversation hasn't
+ * been done, and only for a while after finishing it, so it never turns into a
+ * standing nag. For anyone else the conversation is a step in the mission, so
+ * "Up next" offers it.
  */
 export function conversationToOffer(
-  progress: { mission_id: number; activity_id: string; completed_at: string }[],
+  progress: ProgressRow[],
   now: Date = new Date()
 ): { mission: Mission; activity: Activity } | null {
   const done = new Set(progress.map((p) => p.activity_id));
   let best: { mission: Mission; activity: Activity; finishedAt: number } | null = null;
   for (const m of MISSIONS) {
-    const conversation = m.activities.find((a) => a.optional && a.interviewQuestions?.length);
+    const conversation = conversationStep(m);
     if (!conversation || done.has(conversation.id)) continue;
-    const required = requiredSteps(m);
-    if (!required.length || !required.every((a) => done.has(a.id))) continue;
+    if (!missionFinished(m, progress)) continue;
+    const required = requiredSteps(m).filter((a) => a !== conversation);
     const finishedAt = Math.max(
       ...progress
         .filter((p) => p.mission_id === m.id && required.some((a) => a.id === p.activity_id))
