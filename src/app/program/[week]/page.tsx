@@ -11,6 +11,7 @@ import {
   commitmentToLines,
   CHARACTER_CODE_ACTIVITY_ID,
   CAPSTONE_SOURCES,
+  type StoryPart,
   type WeekProgress,
 } from "@/lib/program";
 import { topStrengths, strengthName } from "@/lib/strengths";
@@ -21,7 +22,7 @@ import {
   EMPTY_BECOMING,
 } from "@/lib/becoming";
 import { responseToHabits } from "@/lib/habits";
-import { answersOnly } from "@/lib/journal";
+import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 
 export const dynamic = "force-dynamic";
@@ -197,6 +198,26 @@ export default async function WeekPage({
         })).filter((c) => !!c.excerpt?.trim())
       : [];
 
+  // Week 10 only: the one earlier answer each part of the story sentence
+  // repeats, shown beside it. The capstone cards above hold whole entries,
+  // clamped, and the thread is the last answer in its entry, so it was the
+  // part most often cut off.
+  const pick = (missionId: number, activityId: string, i: number) => {
+    const a = answerAt(missionId, activityId, latestEntry.get(activityId), i);
+    return a && a !== LEFT_OUT_ANSWER ? a : null;
+  };
+  const storyEarlier: Partial<Record<StoryPart, { label: string; text: string }>> = {};
+  if (week.week === 10) {
+    const turning = pick(4, "where-ive-come-from", 1);
+    const chapters = pick(4, "where-ive-come-from", 0);
+    const thread = pick(4, "the-through-line", 3);
+    const direction = pick(4, "meaning-letter", 0);
+    if (turning) storyEarlier.from = { label: "Your turning point, from Mission 4", text: turning };
+    else if (chapters) storyEarlier.from = { label: "Your chapters, from Mission 4", text: chapters };
+    if (thread) storyEarlier.am = { label: "The thread you found, in Mission 4", text: thread };
+    if (direction) storyEarlier.heading = { label: "The direction you named, in Mission 4", text: direction };
+  }
+
   const becoming = becomingRow
     ? parseBecoming((becomingRow as { response: string }).response)
     : EMPTY_BECOMING;
@@ -248,6 +269,7 @@ export default async function WeekPage({
       becoming={becoming}
       sourceEntries={sourceEntries}
       capstone={capstone}
+      storyEarlier={storyEarlier}
       suggestedQualities={suggestedQualities}
       earlier={earlier}
       lifeStage={lifeStage}

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
-import { answersOnly } from "@/lib/journal";
+import { answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { NEXT_CHAPTER_ACTIVITY_ID } from "@/lib/nextChapter";
 import NextChapterClient from "./NextChapterClient";
 
@@ -31,12 +31,16 @@ export default async function NextChapterPage() {
     latest("future-self"),
   ]);
 
+  // The Tuesday itself (Future Self's first answer), which is what the hoped-for
+  // version of next year should be heading towards.
+  const tuesday = answerAt(4, "future-self", futureSelfRow?.response as string | undefined, 0);
+
   return (
     <NextChapterClient
       userId={user.id}
       lifeStage={lifeStage}
       saved={(planRow as { id: string; response: string } | null) ?? null}
-      futureSelf={answersOnly(4, "future-self", futureSelfRow?.response as string | undefined) || null}
+      futureSelf={tuesday && tuesday !== LEFT_OUT_ANSWER ? tuesday : null}
     />
   );
 }

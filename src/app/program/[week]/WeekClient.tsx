@@ -25,6 +25,7 @@ import {
   type WeekProgress,
   type WeekSource,
   type LifeStory,
+  type StoryPart,
 } from "@/lib/program";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
@@ -63,6 +64,7 @@ export default function WeekClient({
   becoming,
   sourceEntries,
   capstone,
+  storyEarlier,
   suggestedQualities,
   earlier,
   lifeStage,
@@ -90,6 +92,8 @@ export default function WeekClient({
     href: string;
     excerpt: string | null;
   }[];
+  /** Week 10 only: the earlier answer each part of the story sentence repeats */
+  storyEarlier: Partial<Record<StoryPart, { label: string; text: string }>>;
   /** VIA keys the habit check flagged, for week 1's picker */
   suggestedQualities: string[];
   /** Week 10 only: the artefacts weeks 1, 2, 7 and 8 made */
@@ -683,6 +687,7 @@ export default function WeekClient({
             userId={userId}
             saved={savedCode}
             savedStory={savedStory}
+            earlier={storyEarlier}
             onSaved={async (commitments) => {
               // The code itself is the week's reflection — record it so week 10
               // completes and the program reads 10 of 10.

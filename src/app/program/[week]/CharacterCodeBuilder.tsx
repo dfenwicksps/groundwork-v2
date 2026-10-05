@@ -41,10 +41,13 @@ export default function CharacterCodeBuilder({
   userId,
   saved,
   savedStory,
+  earlier = {},
   onSaved,
 }: {
   userId: string;
   saved: string[];
+  /** What the student already wrote that each part of the sentence repeats */
+  earlier?: Partial<Record<StoryPart, { label: string; text: string }>>;
   /** Null for a code written before the story was part of it */
   savedStory: LifeStory | null;
   /** Writing the code is what completes week 10 — there's no separate reflection. */
@@ -187,6 +190,14 @@ export default function CharacterCodeBuilder({
                 {p.lead}…
                 <span className="ml-1.5 text-xs font-normal text-ink-muted">{p.label}</span>
               </label>
+              {earlier[p.key] && (
+                <div className="rounded-xl bg-surface-muted px-3 py-2 mb-2">
+                  <div className="text-xs font-semibold text-ink-muted mb-0.5">{earlier[p.key]!.label}</div>
+                  <p className="text-xs text-ink leading-relaxed whitespace-pre-line line-clamp-4">
+                    {earlier[p.key]!.text}
+                  </p>
+                </div>
+              )}
               <ScaffoldedInput
                 id={`${fieldId}-${p.key}`}
                 value={story[p.key]}
