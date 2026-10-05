@@ -65,6 +65,9 @@ interface Props {
   checkin: { startAt: string | null; endDone: boolean } | null;
 }
 
+/** Home's "Also now" shows at most this many, so it never outweighs "Up next". */
+const ALSO_NOW_MAX = 2;
+
 const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   1: "weekly-challenge",
   2: "purpose-challenge",
@@ -183,30 +186,13 @@ export default function DashboardClient({
     );
 
   // Only what's time-sensitive or specific to them — never a second "to do".
+  // Built in priority order and cut to ALSO_NOW_MAX, so "Up next" stays the
+  // one thing to do and this never grows into a list. Whatever's cut waits its
+  // turn: the challenge, conversation and plan are still there when the first
+  // two are dealt with, and a revisit keeps.
   const alsoNow: { key: string; href: string; icon: string; title: string; sub: string }[] = [];
-  if (challenge) {
-    alsoNow.push({
-      key: "challenge",
-      href: `/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`,
-      icon: "⚑",
-      title: "Check in on your mission challenge",
-      sub: `Started ${formatRelativeDate(challenge.issued_at)} · ${truncate(challenge.challenge_text, 70)}`,
-    });
-  }
-  if (revisitEntry) {
-    alsoNow.push({
-      key: "revisit",
-      href: `/revisit/${revisitEntry.id}`,
-      icon: "↩",
-      title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
-      sub: isStoryActivity(revisitEntry.activity_id)
-        ? `Written ${formatRelativeDate(revisitEntry.created_at)}. What would you add to your story now?`
-        : `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
-    });
-  }
-  // The next chapter: a planned conversation that's due comes first, for
-  // anyone; otherwise students for whom "what's next" is the live question are
-  // offered the plan until they've made one, then pathways and goals.
+
+  // 1. A planned conversation that's happened: what they found out fades fast.
   if (nextChapter?.due) {
     alsoNow.push({
       key: "next-chapter",
@@ -215,47 +201,10 @@ export default function DashboardClient({
       title: `Did you talk to ${truncate(whoToYou(nextChapter.who), 40)}?`,
       sub: "Write down what you found out while it's fresh.",
     });
-  } else if ((spine.futureFirst || lifeStage === "middle") && !nextChapter) {
-    // Year 10–11 included: subject choice and the first thoughts about after
-    // school are when exploring before committing matters most.
-    alsoNow.push({
-      key: "next-chapter",
-      href: "/next",
-      icon: "→",
-      title: "Plan your next chapter",
-      sub: hasLeftSchool(lifeStage)
-        ? "Your options, the year you're hoping for, and who to ask."
-        : lifeStage === "middle"
-          ? "Choosing subjects? Your options, the year you're hoping for, and who to ask."
-          : "Life after school: your options, the year you're hoping for, and who to ask.",
-    });
-  } else if (spine.futureFirst) {
-    alsoNow.push({
-      key: "future",
-      href: "/me?tab=future",
-      icon: "→",
-      title: "Pathways and goals",
-      sub: hasLeftSchool(lifeStage)
-        ? "Where your strengths point, and your next concrete steps."
-        : "Where your strengths point, and the first steps after school.",
-    });
   }
 
-  // A finished mission's optional conversation, suggested for a month after
-  // finishing it (see conversationToOffer). It's otherwise only on the
-  // mission page, where few students look once a mission is done.
-  const conversation = conversationToOffer(progress);
-  if (conversation) {
-    alsoNow.push({
-      key: "conversation",
-      href: `/missions/${conversation.mission.id}/activities/${conversation.activity.id}`,
-      icon: "💬",
-      title: `An optional extra: ${conversation.activity.title}`,
-      sub: conversation.activity.prompt,
-    });
-  }
-
-  // The check-in comes last: it's for later, and nothing else on Home waits on it.
+  // 2. The check-in: a start only counts if it's taken early, and the end only
+  // once it's due.
   if (checkin && !checkin.startAt) {
     alsoNow.push({
       key: "checkin",
@@ -276,6 +225,74 @@ export default function DashboardClient({
       sub: "Ten weeks on: the same nine questions. See what's moved.",
     });
   }
+
+  // 3. A challenge under way, which is happening out in their week.
+  if (challenge) {
+    alsoNow.push({
+      key: "challenge",
+      href: `/missions/${challenge.mission_id}/activities/${MISSION_CHALLENGE_ACTIVITY[challenge.mission_id] ?? "weekly-challenge"}`,
+      icon: "⚑",
+      title: "Check in on your mission challenge",
+      sub: `Started ${formatRelativeDate(challenge.issued_at)} · ${truncate(challenge.challenge_text, 70)}`,
+    });
+  }
+
+  // 4. A finished mission's optional conversation, suggested for a month after
+  // finishing it (see conversationToOffer). It's otherwise only on the
+  // mission page, where few students look once a mission is done.
+  const conversation = conversationToOffer(progress);
+  if (conversation) {
+    alsoNow.push({
+      key: "conversation",
+      href: `/missions/${conversation.mission.id}/activities/${conversation.activity.id}`,
+      icon: "💬",
+      title: `An optional extra: ${conversation.activity.title}`,
+      sub: conversation.activity.prompt,
+    });
+  }
+
+  // 5. The next chapter, for students for whom "what's next" is the live
+  // question: the plan until they've made one, then pathways and goals.
+  if ((spine.futureFirst || lifeStage === "middle") && !nextChapter) {
+    // Year 10–11 included: subject choice and the first thoughts about after
+    // school are when exploring before committing matters most.
+    alsoNow.push({
+      key: "next-chapter",
+      href: "/next",
+      icon: "→",
+      title: "Plan your next chapter",
+      sub: hasLeftSchool(lifeStage)
+        ? "Your options, the year you're hoping for, and who to ask."
+        : lifeStage === "middle"
+          ? "Choosing subjects? Your options, the year you're hoping for, and who to ask."
+          : "Life after school: your options, the year you're hoping for, and who to ask.",
+    });
+  } else if (!nextChapter?.due && spine.futureFirst) {
+    alsoNow.push({
+      key: "future",
+      href: "/me?tab=future",
+      icon: "→",
+      title: "Pathways and goals",
+      sub: hasLeftSchool(lifeStage)
+        ? "Where your strengths point, and your next concrete steps."
+        : "Where your strengths point, and the first steps after school.",
+    });
+  }
+
+  // 6. Looking back at an old entry. Never urgent, so it waits for a quiet week.
+  if (revisitEntry) {
+    alsoNow.push({
+      key: "revisit",
+      href: `/revisit/${revisitEntry.id}`,
+      icon: "↩",
+      title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
+      sub: isStoryActivity(revisitEntry.activity_id)
+        ? `Written ${formatRelativeDate(revisitEntry.created_at)}. What would you add to your story now?`
+        : `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
+    });
+  }
+
+  const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX);
 
   return (
     <AppShell>
@@ -303,13 +320,13 @@ export default function DashboardClient({
         </section>
 
         {/* Also now */}
-        {alsoNow.length > 0 && (
+        {shownAlsoNow.length > 0 && (
           <section data-animate="3" aria-labelledby="also-now">
             <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
               Also now
             </h2>
             <div className="space-y-2">
-              {alsoNow.map((row) => (
+              {shownAlsoNow.map((row) => (
                 <Link
                   key={row.key}
                   href={row.href}
