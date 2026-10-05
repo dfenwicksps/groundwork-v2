@@ -6,7 +6,7 @@ the product is built on — this directory records what may be *claimed* about i
 
 | File | What it is |
 | --- | --- |
-| `marketing-guide.html` | The extended guide. Ten sections: positioning, benefit by mission, the ten weeks, the number bank, the claim ladder, messaging by audience, objection handling, copy blocks, 24 references. |
+| `marketing-guide.html` | The extended guide. Ten sections: positioning, benefit by mission, the ten weeks, the number bank, the claim ladder, messaging by audience, objection handling, copy blocks, 25 references. |
 | `Groundwork-Marketing-Guide.docx` | The same guide as a Word document, for sending to people who won't open an HTML file. Generated — edit the source, not this. |
 | `build-docx.js` | Generates the `.docx`. See below. |
 | `parent-onepager.html` | A single A4 handout for parent evenings. Prints from the browser; the print stylesheet swaps in an ink-aware palette so it also reads in mono. |
@@ -52,4 +52,4 @@ soffice --headless --convert-to pdf docs/marketing/Groundwork-Marketing-Guide.do
 `marketing-guide.html` and `build-docx.js` carry the same content in two forms and
 have to be edited together. The HTML is the reference copy — if they diverge, it wins.
 
-_Product facts current as at October 2026; references verified against source papers (item 24 added October 2026)._
+_Product facts current as at October 2026; references verified against source papers (items 24 and 25 added October 2026)._
