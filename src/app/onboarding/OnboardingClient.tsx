@@ -60,11 +60,18 @@ function gapOptions(stage: LifeStage | null): string[] {
 
 /**
  * Up to three screens. The first asks the three things the app tailors itself
- * by and creates the profile. The second is the nine-question check-in, taken
- * here so it's a real baseline: before the story and before any mission (see
- * lib/checkin.ts). It can be skipped, and is then offered from Home. The last
- * is a real piece of Groundwork: a one-minute story and one question about it,
- * so a new student reaches the actual thing within a couple of minutes.
+ * by and creates the profile. The second is a real piece of Groundwork: a
+ * one-minute story and one question about it, so a new student reaches the
+ * actual thing within a minute or two. The last is the nine-question check-in,
+ * taken here so it's a real baseline: before any mission (see lib/checkin.ts).
+ * It can be skipped, and is then offered from Home.
+ *
+ * The check-in used to come before the story, so the baseline was untouched by
+ * anything in the app. But nine self-ratings as the first thing a new student
+ * meets made the first minute a questionnaire rather than Priya, and a
+ * one-minute film is a small thing to have seen before answering.
+ * Anyone whose story answer raises a concern is shown help and sent home
+ * rather than on to a questionnaire.
  *
  * What used to sit between them moved to where it's used. Values are chosen
  * properly in Mission 1's Values Clarifier; a trusted person is added from the
@@ -82,8 +89,8 @@ export default function OnboardingClient({
   const router = useRouter();
   const steps = [
     "profile",
-    ...(checkinReady ? ["checkin"] : []),
     ...(storyId ? ["story"] : []),
+    ...(checkinReady ? ["checkin"] : []),
   ] as const;
   const TOTAL_STEPS = steps.length;
 
@@ -175,6 +182,7 @@ export default function OnboardingClient({
   }
 
   const current = steps[step - 1];
+  const isLast = step === TOTAL_STEPS;
 
   async function saveAnswer() {
     if (!gap || !storyId) return;
@@ -200,7 +208,7 @@ export default function OnboardingClient({
       setSupportNeeded(true);
       return;
     }
-    router.push("/dashboard");
+    next();
   }
 
   const progressWidth = `${(step / TOTAL_STEPS) * 100}%`;
@@ -250,7 +258,7 @@ export default function OnboardingClient({
             </h1>
             <p className="text-ink-muted text-sm mb-6">
               {checkinReady
-                ? "Three quick questions, nine quick taps, then a one-minute story. That's it."
+                ? "Three quick questions, a one-minute story, then nine quick taps. That's it."
                 : "Three quick questions, then a one-minute story. That's it."}
             </p>
 
@@ -390,7 +398,7 @@ export default function OnboardingClient({
         </div>
       )}
 
-      {/* The baseline check-in, before anything else in the app */}
+      {/* The baseline check-in, after the story and before any mission */}
       {current === "checkin" && (
         <div className="w-full max-w-md animate-fade-up">
           <h1
@@ -406,7 +414,7 @@ export default function OnboardingClient({
           <CheckinForm
             wave="start"
             context="onboarding"
-            submitLabel="Save and keep going"
+            submitLabel={isLast ? "Save and go to my dashboard" : "Save and keep going"}
             onSaved={() => next()}
           />
           <button
@@ -488,10 +496,10 @@ export default function OnboardingClient({
                   disabled={!gap || saving}
                   className="btn btn-primary w-full mt-5"
                 >
-                  {saving ? "Saving…" : "Save and go to my dashboard"}
+                  {saving ? "Saving…" : isLast ? "Save and go to my dashboard" : "Save and keep going"}
                 </button>
                 <button
-                  onClick={() => router.push("/dashboard")}
+                  onClick={next}
                   className="block w-full text-center text-sm text-ink-muted hover:text-ink mt-3"
                 >
                   Skip for now

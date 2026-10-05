@@ -24,7 +24,8 @@
 //
 // How it's designed to be evaluable:
 //   - The start check-in is taken during onboarding, before any mission, so it
-//     is a real baseline. Taken later (from Home, after skipping), it is
+//     is a real baseline. It comes after the one-minute onboarding story, so
+//     that much of the app has been seen. Taken later (from Home, after skipping), it is
 //     marked context "home" and its dose records how much was already done.
 //   - The end check-in is offered at a fixed time after the start, to every
 //     student, finished or not. Offering it only to finishers would compare
