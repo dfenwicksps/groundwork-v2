@@ -22,6 +22,20 @@ interface ActivityScaffold {
 
 export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   // ── Mission 1 · Identity ───────────────────────────────────────────────────
+  "culture-and-heritage": {
+    stems: [
+      ["My family is from", "I'd describe my background as", "I'm still working out"],
+      ["Something I'm proud of is", "I feel part of it when", "Something we do that I love is"],
+      ["I play it down when", "I don't have to explain it with", "I can just be it when"],
+      ["I'd like to know more about", "Someone who could tell me is", "I could start by"],
+    ],
+    stuck: [
+      ["Mixed, unsure and \"just Australian\" are all real answers.", "You could start with a grandparent, a place, a language or a food."],
+      ["It can be small: a recipe, a word, a song, the way your family celebrates.", "Who in your family or community carries it?"],
+      ["If someone has treated you badly because of your background, that's on them, not you.", "Think in rooms, like the Mask Check: which ones, and with whom?"],
+      ["A relative, an Elder, a community group, a language class, a library.", "One question to one person is a real start."],
+    ],
+  },
   "parts-of-you": {
     stems: [
       ["Something I believe that's really mine is", "Something I picked up but I'm not sure about is", "What I think is fair is"],
