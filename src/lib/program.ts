@@ -617,6 +617,23 @@ export const WEEK_BY_NUMBER: Record<number, ProgramWeek> = Object.fromEntries(
   PROGRAM_WEEKS.map((w) => [w.week, w])
 );
 
+/**
+ * A week as this student should see it. Week 1 is written as "five qualities
+ * at 25", which is a direction at fifteen and almost the present at
+ * twenty-three, so the age moves with them (see becomingAge).
+ */
+export function weekForStage(week: ProgramWeek, stage: LifeStage): ProgramWeek {
+  const age = becomingAge(stage);
+  if (week.week !== 1 || age === 25) return week;
+  const at = (t: string) => t.replace(/\bat 25\b/g, `at ${age}`);
+  return {
+    ...week,
+    challenge: { ...week.challenge, title: at(week.challenge.title), description: at(week.challenge.description) },
+    sources: week.sources?.map((s) => ({ ...s, soWhat: s.soWhat && at(s.soWhat) })),
+    artefact: week.artefact && { ...week.artefact, heading: at(week.artefact.heading), blurb: at(week.artefact.blurb) },
+  };
+}
+
 // ─── The weekly five ──────────────────────────────────────────────────────────
 // The whole program compressed into five questions a student can return to
 // every week, forever, after the ten weeks are done. The Standard's three-part
@@ -980,7 +997,7 @@ export function responseToStory(response: string | null | undefined): LifeStory 
 // scaffolding. See src/lib/scaffold.ts for what the three tiers mean.
 
 import type { Scaffold } from "./scaffold";
-import type { LifeStage } from "./lifeStage";
+import { becomingAge, type LifeStage } from "./lifeStage";
 
 /** The weekly five — the prompts a student answers most often, so scaffolded hardest. */
 export const WEEKLY_SCAFFOLDS: Record<Strand, Scaffold> = {

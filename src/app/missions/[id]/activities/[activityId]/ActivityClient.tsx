@@ -12,6 +12,7 @@ import {
   type Tier,
 } from "@/lib/scaffold";
 import { scaffoldForStep } from "@/lib/missionScaffolds";
+import type { LifeStage } from "@/lib/lifeStage";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
 import {
@@ -66,6 +67,8 @@ interface Props {
   } | null;
   /** An earlier entry this step reads back (Activity.recall) */
   recalled?: { label: string; text: string } | null;
+  /** Where the student is, for the hints and sentence starters */
+  lifeStage: LifeStage;
 }
 
 // ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
@@ -459,12 +462,14 @@ function ConversationalActivity({
   pairedStory,
   compass,
   recalled,
+  lifeStage,
   onComplete,
 }: {
   mission: Mission;
   activity: Activity;
   userId: string;
   recalled?: { label: string; text: string } | null;
+  lifeStage: LifeStage;
   existingEntry: JournalEntry | null;
   /** Latest saved response even when the step isn't marked complete (e.g.
       after a mission restart) — shown as a reference, never auto-filled. */
@@ -503,7 +508,7 @@ function ConversationalActivity({
   const stepOptions = activity.starterOptions?.[qIdx];
   const usingStarter = mode === "quick" && !!stepOptions;
   // Extended offers half-written sentences; "stuck" hints show at every tier.
-  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions);
+  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions, lifeStage);
   // A sort step is answered by sorting, not writing (see lib/inheritance.ts).
   const isSortStep = activity.sortStep === qIdx;
   const [sortChoices, setSortChoices] = useState<SortChoices>({});
@@ -2989,6 +2994,7 @@ export default function ActivityClient({
   compass,
   strengthProfile,
   recalled,
+  lifeStage,
 }: Props) {
   const db = createClient() as any;
 
@@ -3112,6 +3118,7 @@ export default function ActivityClient({
       pairedStory={pairedStory}
       compass={compass}
       recalled={recalled}
+      lifeStage={lifeStage}
       onComplete={() => handleComplete()}
     />
   );

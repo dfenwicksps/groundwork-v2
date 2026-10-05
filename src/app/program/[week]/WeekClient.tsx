@@ -29,7 +29,7 @@ import {
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { QUALITIES_COUNT, type Becoming } from "@/lib/becoming";
 import { withReturn } from "@/lib/returnTo";
-import type { LifeStage } from "@/lib/lifeStage";
+import { becomingAge, type LifeStage } from "@/lib/lifeStage";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 import { mentionsCrisis } from "@/lib/help";
 import SupportCard from "@/components/help/SupportCard";
@@ -540,6 +540,7 @@ export default function WeekClient({
             currentTop={compass.strengthKeys}
             suggested={suggestedQualities}
             variant="program"
+            age={becomingAge(lifeStage)}
             strengthsHref={withReturn(
               "/missions/1/activities/strengths-mapping",
               week.week

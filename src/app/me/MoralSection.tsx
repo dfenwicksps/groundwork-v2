@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import {
-  MORAL_SCENARIOS,
   MORAL_STYLES,
+  scenariosFor,
   scoreMoral,
   type MoralStyle,
 } from "@/lib/moral";
+import type { LifeStage } from "@/lib/lifeStage";
 
 interface Profile {
   primary_style: string;
@@ -27,19 +28,22 @@ interface Profile {
 export default function MoralSection({
   userId,
   profile,
+  lifeStage,
 }: {
   userId: string;
   profile: Profile | null;
+  lifeStage: LifeStage;
 }) {
+  const scenarios = scenariosFor(lifeStage);
   const router = useRouter();
   const db = createClient() as any;
 
   const [taking, setTaking] = useState(false);
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<(MoralStyle | null)[]>(() =>
-    profile?.answers && profile.answers.length === MORAL_SCENARIOS.length
+    profile?.answers && profile.answers.length === scenarios.length
       ? [...profile.answers]
-      : MORAL_SCENARIOS.map(() => null)
+      : scenarios.map(() => null)
   );
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -49,7 +53,7 @@ export default function MoralSection({
   const secondaryInfo =
     local?.secondary_style ? MORAL_STYLES[local.secondary_style as MoralStyle] : null;
 
-  const isLast = idx === MORAL_SCENARIOS.length - 1;
+  const isLast = idx === scenarios.length - 1;
   const canAdvance = answers[idx] != null;
 
   function choose(style: MoralStyle) {
@@ -102,7 +106,7 @@ export default function MoralSection({
 
   // ── Quiz in progress ──
   if (taking) {
-    const sc = MORAL_SCENARIOS[idx];
+    const sc = scenarios[idx];
     return (
       <div data-animate="4">
         <div className="flex items-center justify-between mb-3">
@@ -110,7 +114,7 @@ export default function MoralSection({
             Your moral compass
           </h2>
           <span className="text-xs text-ink-muted">
-            {idx + 1} of {MORAL_SCENARIOS.length}
+            {idx + 1} of {scenarios.length}
           </span>
         </div>
         <div className="card p-5">

@@ -1,4 +1,6 @@
 import type { Scaffold } from "./scaffold";
+import type { LifeStage } from "./lifeStage";
+import { futureSelfLine } from "./stageContent";
 
 // ─── Mission scaffolds ────────────────────────────────────────────────────────
 // Missions already ship `starterOptions` — complete answers to tap — which the
@@ -271,12 +273,16 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
 export function scaffoldForStep(
   activityId: string,
   stepIndex: number,
-  starterOptions?: string[][]
+  starterOptions?: string[][],
+  stage?: LifeStage
 ): Scaffold {
   const s = MISSION_SCAFFOLDS[activityId];
+  // The Future Self's age moves with the student; its hints name that age.
+  const line = (t: string) =>
+    stage && activityId === "future-self" ? futureSelfLine(t, stage) : t;
   return {
     quick: starterOptions?.[stepIndex],
-    stems: s?.stems[stepIndex],
-    stuck: s?.stuck[stepIndex],
+    stems: s?.stems[stepIndex]?.map(line),
+    stuck: s?.stuck[stepIndex]?.map(line),
   };
 }

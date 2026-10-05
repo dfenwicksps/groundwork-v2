@@ -778,7 +778,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "Who else cares about what you care about? Find one person — in your life, in a story, in history — who is connected to what matters to you. What does their experience tell you about your own?",
         scaffoldingSteps: [
-          "Who in your personal life — even loosely — cares about the same thing? A friend, family member, teacher, or someone you've noticed?",
+          "Who in your personal life — even loosely — cares about the same thing? A friend, family member, teacher, workmate, or someone you've noticed?",
           "Is there a community, movement, or group that exists around this cause? What do you know about it?",
           "What does it feel like to know that others care about this too — not just you? Does it change how seriously you take your own caring?",
           "Is there a kind of person you'd want to be connected to through this cause? What would that community look like, and what would your place in it be?",
@@ -1017,7 +1017,7 @@ export const MISSIONS: Mission[] = [
         intro:
           "There's a difference between fitting in and belonging — and it matters. Fitting in means changing yourself so that a group accepts you. Belonging means being accepted as yourself. They can look the same from the outside, but they feel very different from the inside. This step asks you to tell them apart in your own life.",
         warmUp:
-          "Think about a group you're part of — a friend group, a team, a class, a community. Do you feel like you belong there, or do you feel like you fit in? Is there a difference, in your experience, between the two?",
+          "Think about a group you're part of — a friend group, a team, a class or workplace, a community. Do you feel like you belong there, or do you feel like you fit in? Is there a difference, in your experience, between the two?",
         prompt:
           "Describe a situation where you feel you genuinely belong — and one where you're just fitting in. What's the difference between how those feel?",
         scaffoldingSteps: [
@@ -1044,8 +1044,8 @@ export const MISSIONS: Mission[] = [
           [
             "A grandparent or much older relative",
             "Someone whose beliefs are basically opposite to mine",
-            "A teammate or classmate from a different world",
-            "An adult \u2014 coach, teacher, boss \u2014 who's nothing like me",
+            "A teammate, classmate or workmate from a different world",
+            "Someone older \u2014 a coach, teacher or boss \u2014 who's nothing like me",
             "Someone I clashed with before I understood them",
           ],
           [
@@ -1103,7 +1103,7 @@ export const MISSIONS: Mission[] = [
         starterOptions: [
           [
             "A parent or family member who never gave up on me",
-            "A coach or teacher who saw something before I did",
+            "A coach, teacher or boss who saw something before I did",
             "A friend who changed how I treat people",
             "Someone whose belief in me raised my own",
             "Someone whose example I'm quietly copying",

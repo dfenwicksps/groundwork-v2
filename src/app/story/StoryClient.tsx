@@ -161,7 +161,7 @@ export default function StoryClient({ story }: { story: MyStory }) {
         </Part>
 
         <Part number="3" title="Where I'm heading" blurb="A picture of the future, a direction, and what you do about it now.">
-          <Piece label="An ordinary Tuesday at 21" empty={{ href: "/missions/4/activities/future-self", text: "Picture it in Mission 4" }}>
+          <Piece label="An ordinary Tuesday, a few years on" empty={{ href: "/missions/4/activities/future-self", text: "Picture it in Mission 4" }}>
             {future.tuesday}
           </Piece>
           <Piece label="The direction" empty={{ href: "/missions/4/activities/meaning-letter", text: "Name it in Mission 4" }}>

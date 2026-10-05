@@ -20,7 +20,7 @@ import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
 import JourneyStrip from "./JourneyStrip";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
-import { futureFirst, type LifeStage } from "@/lib/lifeStage";
+import { becomingAge, futureFirst, type LifeStage } from "@/lib/lifeStage";
 import type { MoralStyle } from "@/lib/moral";
 import { toStrengthKey, type Becoming } from "@/lib/becoming";
 import type { StandardCheckin } from "@/lib/standard";
@@ -494,7 +494,7 @@ export default function MeClient({
             />
             <HabitsSection userId={userId} saved={habitSaved} />
             {featuresReady ? (
-              <MoralSection userId={userId} profile={moralProfile} />
+              <MoralSection userId={userId} profile={moralProfile} lifeStage={lifeStage} />
             ) : (
               soonNote
             )}
@@ -526,6 +526,7 @@ export default function MeClient({
               )}
               variant="profile"
               hasGoals={goals.length > 0}
+              age={becomingAge(lifeStage)}
             />
             {featuresReady && (
               <PracticeSection
