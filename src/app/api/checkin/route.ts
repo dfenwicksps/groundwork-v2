@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
-import { MISSIONS, requiredDone } from "@/lib/missions";
+import { MISSIONS, requiredDone, type ProgressRow } from "@/lib/missions";
 import { missionsCompleted } from "@/lib/missionProgress";
 import { CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import {
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     lifeStage,
   ] = await Promise.all([
     db.from("outcome_checkins").select("wave, created_at").eq("user_id", user.id),
-    db.from("mission_progress").select("mission_id, activity_id").eq("user_id", user.id),
+    db.from("mission_progress").select("mission_id, activity_id, completed_at").eq("user_id", user.id),
     db.from("program_progress").select("week, completed_at").eq("user_id", user.id),
     db
       .from("journal_entries")
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Not due yet" }, { status: 409 });
   }
 
-  const progressRows = (progress || []) as { mission_id: number; activity_id: string }[];
+  const progressRows = (progress || []) as ProgressRow[];
   const joined = (profile as { created_at?: string } | null)?.created_at;
   const dose: Dose = {
     requiredStepsDone: MISSIONS.reduce(

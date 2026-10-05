@@ -6,7 +6,7 @@ import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { STORY_PARAGRAPH_ACTIVITY_ID } from "@/lib/myStory";
-import { MISSIONS, requiredSteps, isSensitiveActivity } from "@/lib/missions";
+import { MISSIONS, requiredSteps, isSensitiveActivity, missionFinished, type ProgressRow } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { MISSION_COUNT } from "@/lib/spine";
 import {
@@ -154,10 +154,10 @@ export default async function DashboardPage() {
 
   // The next mission step: the first unfinished step of the first unfinished
   // mission. Home's "Up next" offers it while the missions lead.
+  // A mission finished before its conversation counted is skipped here; Home
+  // offers that conversation separately (conversationToOffer).
   const completedIds = new Set(progressRows.map((p) => p.activity_id));
-  const nextMission = MISSIONS.find((m) =>
-    requiredSteps(m).some((a) => !completedIds.has(a.id))
-  );
+  const nextMission = MISSIONS.find((m) => !missionFinished(m, progressRows));
   const nextActivity = nextMission
     ? requiredSteps(nextMission).find((a) => !completedIds.has(a.id))
     : undefined;
@@ -206,10 +206,7 @@ export default async function DashboardPage() {
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
-  const missionRows = (progress || []) as {
-    mission_id: number;
-    activity_id: string;
-  }[];
+  const missionRows = (progress || []) as ProgressRow[];
   const missionsDone = missionsCompleted(missionRows);
   const spine = spineFor(lifeStage, missionsDone, missionComplete(missionRows, 1));
 

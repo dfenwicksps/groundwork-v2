@@ -5,7 +5,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { PROGRAM_WEEKS } from "@/lib/program";
-import { MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
+import { MISSIONS, requiredSteps, requiredDone, missionFinished, type ProgressRow } from "@/lib/missions";
 import { parseDays, type WeekProgress, type Strand } from "@/lib/program";
 import type { WeeklyCheckin } from "./WeeklyFiveSection";
 
@@ -46,7 +46,7 @@ export default async function ProgramPage() {
       .limit(12),
     db
       .from("mission_progress")
-      .select("mission_id, activity_id")
+      .select("mission_id, activity_id, completed_at")
       .eq("user_id", user.id),
     // Which mission writing exists, so the week list can say which weeks are
     // waiting on which mission rather than only telling them once they're in.
@@ -60,10 +60,7 @@ export default async function ProgramPage() {
   // The program is the practice layer that follows the four missions, so its
   // own page has to know how much of the foundation is laid before it offers a
   // week. It never blocks — it just stops pretending week 1 is step one.
-  const missionRows = (missionRaw || []) as {
-    mission_id: number;
-    activity_id: string;
-  }[];
+  const missionRows = (missionRaw || []) as ProgressRow[];
   const lifeStage = await getLifeStage(supabase, user.id);
   const spine = spineFor(
     lifeStage,
@@ -73,14 +70,7 @@ export default async function ProgramPage() {
 
   // Which missions are still outstanding, for the "finish these first" card.
   const doneByMission = new Set(
-    MISSIONS.filter((m) => {
-      const total = requiredSteps(m).length;
-      const done = requiredDone(
-        m,
-        missionRows.filter((r) => r.mission_id === m.id).map((r) => r.activity_id)
-      );
-      return total > 0 && done >= total;
-    }).map((m) => m.id)
+    MISSIONS.filter((m) => missionFinished(m, missionRows)).map((m) => m.id)
   );
   const outstanding = MISSIONS.filter((m) => !doneByMission.has(m.id)).map((m) => {
     const total = requiredSteps(m).length;
