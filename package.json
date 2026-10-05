@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "report:completion": "npx --yes tsx scripts/completion-report.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
