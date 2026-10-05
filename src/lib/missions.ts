@@ -95,8 +95,10 @@ export interface Activity {
   recall?: { activityId: string; missionId: number; label: string; step: number };
   /**
    * Never sent to the AI for follow-up questions. For the most sensitive
-   * writing in the app (beliefs, gender, sexuality), which stays in the
-   * student's own account. The on-device crisis check still runs.
+   * writing in the app (beliefs, gender, sexuality, culture and heritage),
+   * which stays in the student's own account; culture also because a model's
+   * follow-up questions about it can slide into stereotype. The on-device
+   * crisis check still runs.
    */
   keepFromAi?: boolean;
 }
@@ -1167,6 +1169,32 @@ export const MISSIONS: Mission[] = [
         timeEstimate: "5 minutes to start",
       },
       {
+        // Drafted without community input. The wording is meant to be reviewed
+        // and changed by people from the communities it speaks to; see
+        // docs/content-review/culture-and-heritage.md.
+        id: "culture-and-heritage",
+        type: "journal",
+        optional: true,
+        title: "Culture and Heritage",
+        subtitle: "Optional · Where you're from",
+        intro:
+          "Culture can mean a lot of things: where your family is from, a language, a faith, food, Country, traditions, a community you belong to, or just the way things are done at your place. Some people have one culture, some have several, some are still finding theirs, and some feel they don't have one at all. All of those are real places to start. Every question here can be left out, and none of it is a test of how much you know. What you write stays in your account and is never sent anywhere, not even for follow-up questions. If something here is hard, Get help at the top of the screen lists people to talk to, including 13YARN for Aboriginal and Torres Strait Islander people.",
+        prompt: "What does your culture or background mean to you?",
+        scaffoldingSteps: [
+          "In your own words, where are you and your family from? It might be one culture, a few, a mix, a faith community, Country, a place, or something you're still working out.",
+          "What's something from your culture or background that you're proud of, or that feels good to be part of? A person, a tradition, a language, food, a way of seeing things.",
+          "Is there anywhere you feel you have to explain, play down or hide that part of you? What's that like, and where can you just be it?",
+          "What would you like to know or understand better about where you're from? Who could you learn it from?",
+        ],
+        skippableSteps: [0, 1, 2, 3],
+        keepFromAi: true,
+        wrapUp:
+          "However much you know about where you're from, you've just thought about it on purpose. That's how a background you were handed starts to become something you've chosen. Plenty of people keep learning about theirs their whole lives.",
+        whyItMatters:
+          "Research with young people from many backgrounds, including work by Adriana Uma\u00f1a-Taylor and colleagues, finds that exploring your cultural or ethnic background and feeling good about it go along with stronger self-esteem and wellbeing, and some studies find it helps young people cope with being treated unfairly. It isn't about how much you already know or how cultural you seem. It's about taking an interest and deciding what it means to you.",
+        timeEstimate: "About 5 minutes",
+      },
+      {
         id: "conversation-family-story",
         type: "journal",
         optional: true,
@@ -1190,7 +1218,7 @@ export const MISSIONS: Mission[] = [
         ],
         skippableSteps: [1],
         wrapUp:
-          "You've heard a chapter from before you were born. That's part of where you've come from too.",
+          "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is another optional extra in this mission.",
         whyItMatters:
           "Researchers at Emory University, Marshall Duke and Robyn Fivush, found that teenagers who know more of their family's stories — where their grandparents grew up, what went wrong and how the family got through it — tend to have higher self-esteem, a stronger sense of control over their lives, and cope better with hard times. It isn't about having an impressive history. It's knowing you belong to something that has come through things before.",
         timeEstimate: "A conversation, then 5 minutes",
@@ -1548,7 +1576,7 @@ export function requiredSteps(m: Mission): Activity[] {
 
 /**
  * Entries from the most sensitive steps (marked keepFromAi: beliefs, gender,
- * sexuality), and revisits of them. These are never surfaced anywhere a glance
+ * sexuality, culture and heritage), and revisits of them. These are never surfaced anywhere a glance
  * at the screen could catch them: not suggested on Home, collapsed in the
  * Journal, left off My story.
  */

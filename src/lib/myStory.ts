@@ -12,7 +12,8 @@ import { parseNextChapter, NEXT_CHAPTER_ACTIVITY_ID } from "./nextChapter";
 // parts of that story. It reads only; every piece links back to where it's
 // written, and writing a newer answer there updates the story.
 //
-// Deliberately left out: Parts of Who You Are (beliefs, gender, sexuality).
+// Deliberately left out: Parts of Who You Are (beliefs, gender, sexuality) and
+// Culture and Heritage.
 // This page is built to be printed or shown to someone, and those answers
 // should never end up on it by default.
 
