@@ -13,7 +13,7 @@
 // crisis check's job (lib/help.ts), which takes priority.
 
 const PATTERNS: RegExp[] = [
-  /\bi(?:'m| am)\s+(?:so\s+|just\s+|such\s+)?(?:useless|worthless|stupid|pathetic|a failure|a loser|a burden|a disappointment|not good enough|never good enough|broken|unlovable|disgusting)\b/i,
+  /\bi(?:'m| am)\s+(?:so\s+|just\s+|such\s+)?(?:useless|worthless|stupid|pathetic|a failure|a loser|a burden|a disappointment|not good enough|never good enough|broken|unlovable|disgusting|trash|garbage|a waste of space|a joke|a mess)\b/i,
   /\bi hate (?:myself|me|who i am|everything about me)\b/i,
   /\b(?:nobody|no one|no-one) (?:likes|cares about|wants|would miss|gets) me\b/i,
   /\beveryone (?:hates|is sick of|would be better off without) me\b/i,

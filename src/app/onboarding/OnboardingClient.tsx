@@ -12,6 +12,7 @@ import {
 } from "@/lib/lifeStage";
 import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
 import SupportCard from "@/components/help/SupportCard";
+import GetHelpButton from "@/components/help/GetHelpButton";
 import { markStoryActioned } from "@/lib/storyEngagement";
 import { mentionsCrisis } from "@/lib/help";
 import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
@@ -215,6 +216,10 @@ export default function OnboardingClient({
 
   return (
     <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
+      {/* Help is a tap away from the first screen: the story question below is
+          the first thing a new student writes, and help shouldn't depend on
+          the crisis check catching how they put it. */}
+      <GetHelpButton variant="floating" />
       {/* Progress */}
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between text-xs text-ink-muted mb-2">

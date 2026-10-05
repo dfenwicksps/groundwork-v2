@@ -51,9 +51,28 @@ export const EMERGENCY = { tel: "000", display: "000" };
 // the support card. Kept to explicit phrasings, so a reflection about a hard
 // week doesn't trip it — a false positive costs a kind card, a miss costs more,
 // but a card that appears for everything stops being read.
+//
+// English only, and written by adults: it will miss how many young people
+// actually say these things. docs/content-review/phrase-lists.md is the plan
+// for building it with them, and `npm run check:phrases` tests every pattern
+// against phrases it must and mustn't match. Add a test case with any change.
 const CRISIS_PATTERNS: RegExp[] = [
   /\bsuicid/i,
   /\bkill(ing)? my ?self\b/i,
+  // How it's said online, where platforms filter the plain words: "kms" (kill
+  // myself), "unalive", "sewerslide". "kms" only after a word of intent, since
+  // on its own it's also kilometres ("ran 5 kms").
+  /\b(gonna|going to|want to|wanna|about to|i'?ll|might|could just|literally) kms\b/i,
+  /\bun-?aliv(e|ing)( my ?self)?\b/i,
+  /\bsewer ?slide\b/i,
+  // Being told to: "kys" (kill yourself) is what bullying says.
+  /\bkys\b/i,
+  /\bend(ing)? my ?self\b/i,
+  /\b(take|taking|took) my (own )?life\b/i,
+  // Not wanting to be here, said without the words above.
+  /\bwish (i|I) (was|were) dead\b/i,
+  /\bwish i (wasn'?t|weren'?t|was never|had never been) (here|alive|born)\b/i,
+  /\b(don'?t|do not) want to wake up\b/i,
   /\bend (it all|my life)\b/i,
   /\b(want|wanted|wanting) to die\b/i,
   /\bdon'?t want to (be alive|live|exist|be here anymore)\b/i,
