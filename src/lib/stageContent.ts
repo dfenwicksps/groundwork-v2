@@ -6,9 +6,17 @@
 // versions of just those lines, so nobody who has left school is asked who
 // they are "in class", or told to imagine being the age they already are.
 //
+// Year 7–9 get their own versions too, for a different reason: not the
+// setting but the demand. Finding one theme across your whole life is a skill
+// that mostly arrives in late adolescence (Habermas & Bluck, 2000), and a
+// future nine years off is too far to picture concretely. So the youngest
+// students get a nearer future and a more concrete version of the thread,
+// which they can leave out.
+//
 // Only wording changes, never the shape: the same number of questions in the
 // same order, so saved entries, recall and the journal read the same whatever
-// stage a student was at when they wrote them.
+// stage a student was at when they wrote them. (Which questions can be left
+// out may change; that doesn't affect how an entry reads.)
 
 import type { Activity } from "./missions";
 import { futureSelfAge, hasLeftSchool, type LifeStage } from "./lifeStage";
@@ -17,6 +25,9 @@ import { futureSelfAge, hasLeftSchool, type LifeStage } from "./lifeStage";
 interface StageLines {
   prompt?: string;
   warmUp?: string;
+  /** Replacements by index for the questions themselves */
+  steps?: Record<number, string>;
+  skippableSteps?: number[];
   /** Replacements by index; the rest stay as written. */
   scenarios?: Record<number, string>;
   starterOptions?: Record<number, string[]>;
@@ -61,6 +72,33 @@ const LEFT_SCHOOL: Record<string, StageLines> = {
   },
 };
 
+const JUNIOR: Record<string, StageLines> = {
+  "future-self": {
+    starterOptions: {
+      0: [
+        "In Year 10 or 11, doing subjects I actually picked",
+        "Known for something I'm properly into",
+        "With a part-time job and some money of my own",
+        "Surrounded by a small crew of real friends",
+        "Honestly can't picture it \u2014 and maybe that's okay",
+      ],
+      2: [
+        "The friends I have now \u2014 the real ones",
+        "Being close to my family",
+        "The thing I do that isn't for marks",
+        "A place I love going to",
+        "Having people I can turn up to unannounced",
+      ],
+    },
+  },
+  "the-through-line": {
+    steps: {
+      3: "Look back at those three answers. Is there one thing that shows up in more than one \u2014 a strength, something you care about, a kind of person you're drawn to? Say it in one sentence. If nothing joins up yet, that's normal at your age: write the closest one, or leave it out. My story will ask again next year.",
+    },
+    skippableSteps: [3],
+  },
+};
+
 /** Moves the Future Self's age with the student (see futureSelfAge). */
 function atAge(text: string | undefined, age: number): string | undefined {
   return text && age !== 21 ? text.replace(/\b21\b/g, String(age)) : text;
@@ -72,6 +110,10 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
     ...activity,
     prompt: lines.prompt ?? activity.prompt,
     warmUp: lines.warmUp ?? activity.warmUp,
+    scaffoldingSteps: activity.scaffoldingSteps?.map((s, i) => lines.steps?.[i] ?? s),
+    skippableSteps: lines.skippableSteps
+      ? Array.from(new Set([...(activity.skippableSteps ?? []), ...lines.skippableSteps]))
+      : activity.skippableSteps,
     scenarios: activity.scenarios?.map((s, i) => lines.scenarios?.[i] ?? s),
     starterOptions: activity.starterOptions?.map((o, i) => lines.starterOptions?.[i] ?? o),
   };
@@ -79,7 +121,11 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
 
 /** The activity as this student should see it. */
 export function activityForStage(activity: Activity, stage: LifeStage): Activity {
-  let a = hasLeftSchool(stage) ? withLines(activity, LEFT_SCHOOL[activity.id]) : activity;
+  let a = hasLeftSchool(stage)
+    ? withLines(activity, LEFT_SCHOOL[activity.id])
+    : stage === "junior"
+      ? withLines(activity, JUNIOR[activity.id])
+      : activity;
 
   const age = futureSelfAge(stage);
   if (a.id === "future-self") {
@@ -102,5 +148,8 @@ export function futureSelfLine(text: string, stage: LifeStage): string {
   const age = futureSelfAge(stage);
   if (age === 21) return text;
   // "between 15 and 21" is a school student's span; anyone else starts now.
-  return text.replace(/between 15 and 21/, `between now and ${age}`).replace(/\b21\b/g, String(age));
+  return text
+    .replace(/between 15 and 21/, `between now and ${age}`)
+    .replace(/for six years/, "for a few years")
+    .replace(/\b21\b/g, String(age));
 }

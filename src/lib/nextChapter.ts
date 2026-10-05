@@ -5,7 +5,9 @@ import { hasLeftSchool, type LifeStage } from "./lifeStage";
 // question is concrete: uni or TAFE, which course, which job, whether to move
 // out. The rest of the app kept saying "not a job"; pathways and goals sat on
 // the Me tab outside any guided flow, and nothing helped a student weigh the
-// options or go and find out.
+// options or go and find out. Younger students get the same shape at a nearer
+// distance: subject choice for Year 10–11, next year at school for Year 7–9
+// (see nextChapterCopy).
 //
 // This is that guided flow, built from the possible-selves research:
 //   - picture the version of next year you're hoping for, and the version
@@ -43,8 +45,22 @@ const LEFT_SCHOOL_OPTIONS = [
   "No idea yet, honestly",
 ];
 
+// Year 7–9: next year is still school, and the possible-selves work that has
+// changed behaviour at this age kept the future that near and that concrete
+// (Oyserman's School-to-Jobs, with 13 and 14 year olds): next year's hoped-for
+// and feared self, a strategy for each, and help from people around them.
+const JUNIOR_OPTIONS = [
+  "Choosing electives for next year",
+  "Moving up a year, or to a new school",
+  "Trying something new: a team, a band, a club",
+  "Getting better at something I already do",
+  "Friendships changing",
+  "No idea yet, honestly",
+];
+
 export function optionsFor(stage: LifeStage): string[] {
   if (hasLeftSchool(stage)) return LEFT_SCHOOL_OPTIONS;
+  if (stage === "junior") return JUNIOR_OPTIONS;
   // Year 12s have already chosen their last subjects.
   return stage === "senior" ? SCHOOL_OPTIONS.filter((o) => !o.startsWith("Choosing subjects")) : SCHOOL_OPTIONS;
 }
@@ -68,6 +84,68 @@ export const WHO_SUGGESTIONS = [
   "A family friend who does it",
   "Someone a year or two ahead of me",
 ];
+
+const JUNIOR_TALK_QUESTIONS = [
+  "What's next year actually like?",
+  "What surprised you when you got there?",
+  "What do you wish you'd known before you chose?",
+  "What's the hard part nobody mentions?",
+  "If you were me, what would you do this term?",
+];
+
+const JUNIOR_WHO = [
+  "Someone a year or two ahead of me",
+  "An older brother, sister or cousin",
+  "A teacher who runs it",
+  "A parent or carer",
+];
+
+/** The wording that changes with where the student is. */
+export interface NextChapterCopy {
+  intro: string;
+  talkQuestions: string[];
+  whoSuggestions: string[];
+  placeholders: { hoping: string; firstStep: string; avoiding: string; headOff: string; who: string };
+}
+
+export function nextChapterCopy(stage: LifeStage): NextChapterCopy {
+  const tail =
+    "the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it.";
+  if (stage === "junior") {
+    return {
+      intro:
+        "Next year at school, made concrete: what's coming up, the version of next year you're hoping for and the one you'd rather avoid, and someone a year or two ahead to ask.",
+      talkQuestions: JUNIOR_TALK_QUESTIONS,
+      whoSuggestions: JUNIOR_WHO,
+      placeholders: {
+        hoping: "In Year 9, doing the drama elective, and properly part of the band",
+        firstStep: "Ask the music teacher what it takes to join the band",
+        avoiding: "Drifting: picking electives because my friends did, and being bored all year",
+        headOff: "Read the elective list myself before I ask anyone what they're picking",
+        who: "My cousin, who's in Year 10",
+      },
+    };
+  }
+  const leftSchool = hasLeftSchool(stage);
+  return {
+    intro: leftSchool
+      ? `What's next, made concrete: the options in front of you, ${tail}`
+      : stage === "middle"
+        ? `Choosing subjects, or thinking past school: the options in front of you, ${tail}`
+        : `Life after school, made concrete: the options in front of you, ${tail}`,
+    talkQuestions: TALK_QUESTIONS,
+    whoSuggestions: WHO_SUGGESTIONS,
+    placeholders: {
+      hoping: leftSchool
+        ? "Second semester of a course I actually chose, working two shifts a week"
+        : "In first-year nursing, working two shifts a week at the café",
+      firstStep: "Look up the entry requirements and ask the careers adviser what I'd need",
+      avoiding: "Drifting: doing a course I picked because my mates did, and hating it",
+      headOff: "Go to one open day on my own before I choose",
+      who: "My cousin, who's a second-year apprentice",
+    },
+  };
+}
 
 export const TALK_BY = [
   { days: 7, label: "In the next week" },

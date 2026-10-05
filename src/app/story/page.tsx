@@ -8,6 +8,7 @@ import {
   type StoryEntry,
   type StoryParagraph,
 } from "@/lib/myStory";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import StoryClient from "./StoryClient";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export default async function MyStoryPage() {
   if (!user) redirect("/auth");
 
   const db = supabase as any;
-  const [{ data: rows }, { data: profile }, { data: paragraphRows }] = await Promise.all([
+  const [{ data: rows }, { data: profile }, { data: paragraphRows }, lifeStage] = await Promise.all([
     db
       .from("journal_entries")
       .select("activity_id, mission_id, response, created_at")
@@ -36,6 +37,7 @@ export default async function MyStoryPage() {
       .eq("user_id", user.id)
       .eq("activity_id", STORY_PARAGRAPH_ACTIVITY_ID)
       .order("created_at", { ascending: false }),
+    getLifeStage(supabase, user.id),
   ]);
 
   // Newest first, so the first one seen for each activity is the latest.
@@ -50,6 +52,7 @@ export default async function MyStoryPage() {
       userId={user.id}
       story={assembleStory(latest, topStrengths(ranking, 5).map(strengthName))}
       paragraphs={(paragraphRows || []) as StoryParagraph[]}
+      lifeStage={lifeStage}
     />
   );
 }
