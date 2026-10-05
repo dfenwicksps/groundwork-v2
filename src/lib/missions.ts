@@ -344,7 +344,7 @@ export const MISSIONS: Mission[] = [
         title: "Your Story So Far",
         subtitle: "Step 1 of 6 · Where you've come from",
         intro:
-          "Before mapping who you are now, a quick look at how you got here. Everyone's life so far falls into chapters: a move, a new school, someone arriving or leaving, a new obsession. Naming them takes two minutes and gives the rest of this mission something to stand on. Keep it light. You'll come back to this in Mission 4, when there's more to say. If you'd rather not go back there today, either question can be left out.",
+          "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this in Mission 4, and either question can be left out.",
         prompt: "If your life so far were a book, what would the chapters be called?",
         scenarios: [
           "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
@@ -369,7 +369,7 @@ export const MISSIONS: Mission[] = [
         title: "Strengths Mapping",
         subtitle: "Step 2 of 6 · Inner compass",
         intro:
-          "Here’s the plan for this mission: build your inner compass, test it, then write it down. Your compass has two halves — strengths (what you’re naturally good at) and values (what actually matters to you). This step maps the first half. Psychologists have found that everyone’s character is a mix of the same 24 strengths — you just have more of some than others. Nobody can rank their own cold, so instead you’ll react to 18 quick everyday situations. Your reactions do the ranking for you.",
+          "This mission builds your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you. This step maps your strengths. Ranking yourself cold is hard, so you'll react to 18 quick everyday situations instead, and your reactions do the ranking.",
         warmUp:
           "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 8 minutes.",
         prompt:
@@ -386,7 +386,7 @@ export const MISSIONS: Mission[] = [
         title: "Values Clarifier",
         subtitle: "Step 3 of 6 · Inner compass",
         intro:
-          "Strengths were the first half of your inner compass — this is the second half. Values are what you refuse to trade away, and together with your strengths they're what you'll steer by for the rest of this journey. 'What are your values?' is impossible to answer cold, so read the situations below first. Notice which ones tug at you — which make you go 'I'd hate that' or 'that'd really bother me'. That reaction is a value showing itself.",
+          "Strengths were the first half of your compass. Values are the second: what you refuse to trade away. 'What are your values?' is hard to answer cold, so read the situations first and notice which ones tug at you. That reaction is a value showing itself.",
         warmUp:
           "You don't have to relate to all of these — just notice which ones pull at something in you. That pull is the clue.",
         scenarios: [
@@ -477,7 +477,7 @@ export const MISSIONS: Mission[] = [
         title: "Identity Letter",
         subtitle: "Step 5 of 6 · Milestone",
         intro:
-          "You've explored your inner compass — your strengths and values. You've examined your public self — where you perform versus where you're real. You've started to notice your social self — where you feel genuinely known versus where you belong on the surface. Now comes the step that holds all three together. This letter asks you to speak directly to yourself about who you actually are right now — and who you sense you're becoming.",
+          "You've mapped your strengths and values, and seen where you perform and where you're real. This letter holds it together: you, writing to yourself about who you are right now, and who you sense you're becoming.",
         warmUp:
           "You've already done the hard noticing in the last three steps. This letter just gathers it up. Write it to yourself as 'you' — it's private, permanent, and only ever for you.",
         storyBefore: 1,
@@ -555,7 +555,7 @@ export const MISSIONS: Mission[] = [
         title: "Parts of Who You Are",
         subtitle: "Optional · Beliefs, gender, sexuality",
         intro:
-          "Some parts of who you are are big questions for some people and barely questions at all for others: what you believe, your gender, who you're attracted to. You might be sure, still working it out, not thinking about it yet, or not ready to put it into words. All of those are fine, and every question here can be left out. What you write stays in your account and is never sent anywhere, not even for follow-up questions. If other people use this device, leave out anything you'd rather not have here. If something comes up that's hard, Get help at the top of the screen lists people to talk to, including QLife, for LGBTIQ+ people and anyone with questions about gender or sexuality.",
+          "Some parts of who you are are big questions for some people and barely questions for others: what you believe, your gender, who you're attracted to. Sure, unsure, not yet and not ready are all fine, and every question can be left out. What you write stays in your account and is never sent anywhere. On a shared device, leave out anything you'd rather not have here. If something's hard, Get help lists people to talk to, including QLife.",
         prompt: "What do you believe, and how do gender and sexuality fit into who you are?",
         scaffoldingSteps: [
           "What do you believe about the big questions — religion or spirituality, what's fair, how the world should work? Which of those beliefs feel like yours, and which did you just pick up?",
@@ -578,7 +578,7 @@ export const MISSIONS: Mission[] = [
         title: "Who Was I?",
         subtitle: "Optional · Talk to someone",
         intro:
-          "Your sense of who you are isn't only built inside your own head. Part of it comes from the stories other people tell about you. This step is a conversation, not a writing task: find someone who knew you when you were small — a parent, grandparent, older sibling, aunty, family friend, an old teacher — and ask them a few questions. Then come back and write up what you heard. If there's nobody you can ask, or you'd rather not, skip it. It's an extra.",
+          "Part of who you are comes from the stories other people tell about you. This step is a conversation: ask someone who knew you when you were small, like a parent, grandparent, older sibling or old teacher, a few questions. Then come back and write up what you heard. Nobody to ask, or you'd rather not? Skip it. It's an extra.",
         interviewQuestions: [
           "What was I like when I was five or six?",
           "What's a story about me you still tell people?",
@@ -660,7 +660,7 @@ export const MISSIONS: Mission[] = [
         title: "What Matters",
         subtitle: "Step 1 of 5 · Your motivated self",
         intro:
-          "Mission 1 was about looking inward — who you are, what you value, where you're most yourself. This mission turns that inward knowledge outward. Purpose often starts not with a grand vision, but with a quiet anger or a persistent pull — something in the world that bothers you, or something you find yourself drawn back to again and again. This step is about naming that thing honestly.",
+          "Mission 1 looked inward. This one looks outward. Purpose often starts with a quiet anger or a pull: something in the world that bothers you, or something you keep coming back to. This step is about naming that thing honestly.",
         warmUp:
           "Think about the last time you felt genuinely bothered by something in the world — not just inconvenienced, but actually troubled. Hold that feeling in mind before you write. That's usually where purpose begins.",
         storyBefore: 0,
@@ -722,7 +722,7 @@ export const MISSIONS: Mission[] = [
         title: "The Contribution Map",
         subtitle: "Step 2 of 5 · Your motivated self",
         intro:
-          "Knowing what matters to you is one thing. The next question is more specific: what do you, in particular, have to contribute to it? Purpose built from your actual strengths is more durable than purpose chosen at random — because it connects who you are to what you do. This step draws that line. If you're not sure yet — that's a valid answer too. Write about where you're uncertain, not just where you're confident.",
+          "Knowing what matters to you is one thing. This step asks what you, in particular, could bring to it. Purpose built on your real strengths lasts longer than purpose picked at random. Not sure yet? That's a real answer. Write about where you're unsure, not just where you're confident.",
         warmUp:
           "Look back at the strengths you mapped and the values you chose in Mission 1. If those things had a direction — if your inner compass was pointing somewhere — what would that direction be? Does it point toward what you wrote about in Step 1?",
         prompt:
@@ -843,7 +843,7 @@ export const MISSIONS: Mission[] = [
         title: "Commitment Statement",
         subtitle: "Step 4 of 5 · Milestone",
         intro:
-          "You've named what matters to you. You've mapped the connection between who you are and what you care about. You've seen that others share this care. Now comes the step that moves from exploring to committing — not with certainty, not permanently, but with enough conviction to say: this is mine. I'm going to take this seriously. This is the difference between interest and purpose.",
+          "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
         warmUp:
           "Think about what it would mean to genuinely commit to this — not as a project or a task, but as part of who you are and what you stand for. What would change if you took it seriously? Sit with that for a moment before you write.",
         storyBefore: 1,
@@ -965,7 +965,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You Belong",
         subtitle: "Step 1 of 5 · Your social self",
         intro:
-          "Missions 1 and 2 were mostly about you — your inner compass, your values, your purpose. This mission turns outward. Identity doesn't develop in isolation — it's built in relationship with others, and it's reflected back by the people around you. This first step is about finding the relationships where that reflection is clearest: where you feel most genuinely yourself, not most comfortable or most accepted, but most real.",
+          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself.",
         warmUp:
           "Think about the last time you were with someone and felt completely at ease — no managing yourself, no performing, just present. Who were you with, and what made that possible?",
         storyBefore: 0,
@@ -1084,7 +1084,7 @@ export const MISSIONS: Mission[] = [
         title: "Across the Gap",
         subtitle: "Step 3 of 5 · Your social self",
         intro:
-          "The relationships that shape us most aren't always the easiest ones. Some of the most important connections in your life might be with people who see the world very differently from you — a parent, a grandparent, someone from a different background, a person you disagreed with. The gap between you and them is real. But connection across a gap is a different kind of belonging, and it leaves a different kind of mark.",
+          "The relationships that shape us most aren't always the easy ones. Some matter because the other person sees the world differently: a grandparent, someone from another background, someone you've argued with. Connection across that gap is a different kind of belonging, and it leaves a different mark.",
         warmUp:
           "Think of someone in your life who is significantly different from you — different background, different age, different values, different way of seeing things. What made connection with them possible, even briefly?",
         storyBefore: 1,
@@ -1144,7 +1144,7 @@ export const MISSIONS: Mission[] = [
         title: "The People Who Shaped You",
         subtitle: "Step 4 of 5 · Milestone",
         intro:
-          "You are partly who you are because of other people. Not just the ones who raised you, but the ones who saw something in you, or challenged you, or showed you something you couldn't have found alone. You've been shaped by relationships you chose and ones you didn't — and some of that shaping happened without you fully noticing. This milestone is about seeing it clearly.",
+          "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly.",
         warmUp:
           "Think about who you were three or four years ago, and who you are now. The ways you've changed — some of them were shaped by specific people. Who were they? You don't have to include everyone. Just the ones who actually left something in you.",
         prompt:
@@ -1186,7 +1186,7 @@ export const MISSIONS: Mission[] = [
         title: "Culture and Heritage",
         subtitle: "Optional · Where you're from",
         intro:
-          "Culture can mean a lot of things: where your family is from, a language, a faith, food, Country, traditions, a community you belong to, or just the way things are done at your place. Some people have one culture, some have several, some are still finding theirs, and some feel they don't have one at all. All of those are real places to start. Every question here can be left out, and none of it is a test of how much you know. What you write stays in your account and is never sent anywhere, not even for follow-up questions. If something here is hard, Get help at the top of the screen lists people to talk to, including 13YARN for Aboriginal and Torres Strait Islander people.",
+          "Culture can mean where your family is from, a language, a faith, food, Country, traditions, or just the way things are done at your place. You might have one, several, be finding yours, or feel you don't have one. All of those are real places to start. Every question can be left out, and none of it is a test. What you write stays in your account and is never sent anywhere. If something's hard, Get help lists people to talk to, including 13YARN for Aboriginal and Torres Strait Islander people.",
         prompt: "What does your culture or background mean to you?",
         scaffoldingSteps: [
           "In your own words, where are you and your family from? It might be one culture, a few, a mix, a faith community, Country, a place, or something you're still working out.",
@@ -1209,7 +1209,7 @@ export const MISSIONS: Mission[] = [
         title: "Where We Come From",
         subtitle: "Optional · Talk to someone",
         intro:
-          "Every family has stories about where it came from: who moved, what was hard, what got handed down. Ask a parent, grandparent or older relative to tell you one. If family isn't someone you can ask right now, a family friend or someone from your community works too — or skip it, it's an extra. Then come back and write up what you heard.",
+          "Every family has stories: who moved, what was hard, what got handed down. Ask a parent, grandparent or older relative to tell you one. A family friend or someone from your community works too, or skip it, it's an extra. Then come back and write up what you heard.",
         interviewQuestions: [
           "Where did our family come from, before here?",
           "What was hard for them, and how did they get through it?",
@@ -1254,7 +1254,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You've Come From",
         subtitle: "Step 1 of 6 · Looking back",
         intro:
-          "Back in Mission 1 you gave your story so far some chapter titles. This step goes further back and deeper. Before you decide what kind of life to build, it helps to see what you're building from: the chapters you've already lived, a moment that changed you, and the things your family and culture handed you before you were old enough to choose. You decide how far back and how deep to go. If part of your past is painful, write around it or leave that question out — there's a button for it. And if this stirs something up, Get help is at the top of every screen.",
+          "In Mission 1 you named some chapters. This step goes further back: the chapters you've lived, a moment that changed you, and what your family and culture handed you before you could choose. You decide how deep to go. If part of it is painful, write around it or leave that question out. Get help is at the top of every screen.",
         warmUp:
           "Picture a photo of you at about seven. What would that kid be surprised by about you now — and what would they recognise straight away?",
         prompt:
@@ -1324,7 +1324,7 @@ export const MISSIONS: Mission[] = [
         title: "Future Self",
         subtitle: "Step 2 of 6 · Your future",
         intro:
-          "Identity isn't a fixed thing — it's a story you're always in the middle of writing. Before you can decide what kind of life to build, it helps to have a clear image of the life itself. Not a list of qualities and not a career goal — the actual shape of an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
+          "Before deciding what life to build, it helps to picture it. Not a list of qualities or a career, but an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
           "Think about the last time you felt genuinely alive — not just happy, but actually alive. Interested, purposeful, like you were doing something that mattered. Where were you and what were you doing? Hold that in mind before you write.",
         prompt:
@@ -1383,7 +1383,7 @@ export const MISSIONS: Mission[] = [
         title: "Digital Self",
         subtitle: "Step 3 of 6 · Your digital life",
         intro:
-          "You don't just exist in the physical world — you exist online too. And the version of you that shows up on screens isn't fake, but it is filtered. Algorithms decide what you see, platforms shape how you present yourself, and the gap between who you are online and who you are in person can tell you a lot about both. Before you can build the life you want, it's worth looking honestly at how much of your identity is being shaped by forces you didn't choose.",
+          "There's a version of you online too. It isn't fake, but it is filtered: algorithms pick what you see, and platforms shape how you show yourself. This step looks honestly at how much of who you are online was chosen by you, and how much by the feed.",
         warmUp:
           "Think about the last thing you posted, liked, or commented on publicly. Would the people who know you best be surprised by it — or is that completely them?",
         prompt:
@@ -1444,7 +1444,7 @@ export const MISSIONS: Mission[] = [
         title: "The Through-Line",
         subtitle: "Step 4 of 6 · The thread",
         intro:
-          "Mission 1 was about who you are — your strengths, your values, where you're most yourself. Mission 2 was about what you care about — what pulls you, what you have to contribute, who else shares that care. Mission 3 was about where you belong — the relationships that see you clearly, the ones that have shaped you most. And this mission began further back, with where you've come from. This step asks the question that sits underneath all of it: what's the thread running through it?",
+          "You've looked at who you are, what you care about, where you belong, and where you've come from. This step asks what sits underneath all of it: the thread running through.",
         warmUp:
           "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
@@ -1507,7 +1507,7 @@ export const MISSIONS: Mission[] = [
         recall: { activityId: "the-through-line", missionId: 4, label: "The thread you found", step: 0, answer: 3 },
         subtitle: "Step 5 of 6 · Milestone",
         intro:
-          "You've just named the thread. This letter is its other half: where that thread is going, what following it would actually cost, and why it's worth the cost anyway. Every step before this one looked backwards at what you found. This is the only one that looks forward — not a promise and not a plan, but a direction, written down while you can still see it clearly.",
+          "You've named the thread. This letter is its other half: where it's going, what following it would cost, and why it's worth it. It's the one step that looks forward. Not a promise or a plan, just a direction, written down while you can still see it clearly.",
         warmUp:
           "Somewhere in the next year or two there'll be a week when none of this feels true and the easy path looks obviously smarter. You're not writing to today's you. You're writing to that week.",
         prompt:
