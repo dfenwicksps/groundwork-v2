@@ -5,6 +5,7 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
+import { STORY_PARAGRAPH_ACTIVITY_ID } from "@/lib/myStory";
 import { MISSIONS, requiredSteps, isSensitiveActivity } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { MISSION_COUNT } from "@/lib/spine";
@@ -125,6 +126,8 @@ export default async function DashboardPage() {
     // Never offered on Home, where anyone glancing at the screen would see it.
     if (isSensitiveActivity(e.activity_id)) return false;
     if (e.activity_id.endsWith("-debrief")) return false;
+    // My story asks for a new version of the paragraph each year itself.
+    if (e.activity_id === STORY_PARAGRAPH_ACTIVITY_ID) return false;
     // Without the link column we can't tell chains apart, so keep the old
     // once-only behaviour rather than nagging about an entry already revisited.
     if (linksUnavailable) return !revisitedActivityIds.has(e.activity_id);
