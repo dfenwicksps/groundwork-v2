@@ -32,6 +32,10 @@ import { withReturn } from "@/lib/returnTo";
 import { becomingAge, type LifeStage } from "@/lib/lifeStage";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 import { mentionsCrisis } from "@/lib/help";
+import { hardOnSelfRecently } from "@/lib/hardOnSelf";
+import { smallStepOf, withSmallStep } from "@/lib/journal";
+import GentleCheck from "@/components/help/GentleCheck";
+import SmallStep from "@/components/SmallStep";
 import SupportCard from "@/components/help/SupportCard";
 
 /**
@@ -102,6 +106,10 @@ export default function WeekClient({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [supportNeeded, setSupportNeeded] = useState(false);
+  // After the reflection is saved: the gentle check, and the small step kept on
+  // the reflection's journal copy.
+  const [hardOnSelf, setHardOnSelf] = useState(false);
+  const [stepEntry, setStepEntry] = useState<{ id: string; response: string } | null>(null);
 
   const target = week.challenge.target ?? 1;
   const isTracked = week.challenge.kind !== "single";
@@ -220,18 +228,39 @@ export default function WeekClient({
       true
     );
     if (ok) {
-      setSupportNeeded(mentionsCrisis(reflection));
+      const text = reflection.trim();
+      const crisis = mentionsCrisis(text);
+      setSupportNeeded(crisis);
       // Journal copy so the week's reflection sits with everything else
-      await db.from("journal_entries").insert({
-        user_id: userId,
-        mission_id: 1,
-        activity_id: `program-week-${week.week}`,
-        prompt: `Week ${week.week} — ${week.title} (${week.challenge.title})`,
-        response: reflection.trim(),
-        is_milestone: false,
-      });
+      const { data: entry } = await db
+        .from("journal_entries")
+        .insert({
+          user_id: userId,
+          mission_id: 1,
+          activity_id: `program-week-${week.week}`,
+          prompt: `Week ${week.week} — ${week.title} (${week.challenge.title})`,
+          response: text,
+          is_milestone: false,
+        })
+        .select("id, response")
+        .single();
+      setStepEntry(entry ?? null);
+      setHardOnSelf(!crisis && (await hardOnSelfRecently(db, userId, text)));
       router.refresh();
     }
+  }
+
+  /** The small step goes on the end of the reflection's journal copy. */
+  async function saveSmallStep(step: string): Promise<boolean> {
+    if (!stepEntry) return false;
+    const next = withSmallStep(stepEntry.response, step);
+    const { error: err } = await db
+      .from("journal_entries")
+      .update({ response: next, updated_at: new Date().toISOString() })
+      .eq("id", stepEntry.id);
+    if (err) return false;
+    setStepEntry({ ...stepEntry, response: next });
+    return true;
   }
 
   return (
@@ -713,6 +742,16 @@ export default function WeekClient({
               {supportNeeded && (
                 <div className="mt-4">
                   <SupportCard />
+                </div>
+              )}
+              {!supportNeeded && hardOnSelf && (
+                <div className="mt-4">
+                  <GentleCheck />
+                </div>
+              )}
+              {!supportNeeded && stepEntry && (
+                <div className="mt-4 -mb-5">
+                  <SmallStep saved={smallStepOf(stepEntry.response)} onSave={saveSmallStep} />
                 </div>
               )}
               {blockedOnSource && !done && (

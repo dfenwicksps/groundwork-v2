@@ -89,6 +89,8 @@ export interface NextChapter {
   talkBy: string;
   foundOut: string;
   leftMe: string;
+  /** One small thing they'll do because of what they found out. Optional. */
+  nextStep: string;
 }
 
 export const EMPTY_NEXT_CHAPTER: NextChapter = {
@@ -102,6 +104,7 @@ export const EMPTY_NEXT_CHAPTER: NextChapter = {
   talkBy: "",
   foundOut: "",
   leftMe: "",
+  nextStep: "",
 };
 
 /** The label each field is saved under; the order is the order they're written. */
@@ -116,6 +119,14 @@ const FIELDS: { key: keyof NextChapter; label: string; list?: boolean }[] = [
   { key: "talkBy", label: "Talk by" },
   { key: "foundOut", label: "Found out" },
   { key: "leftMe", label: "Left me" },
+  { key: "nextStep", label: "Next step" },
+];
+
+/** Offered for the small step after the debrief; any can be rewritten. */
+export const DEBRIEF_STEPS = [
+  "Look into one thing they mentioned",
+  "Ask someone else the same questions",
+  "Get a small taste of it: an open day, a class, a shift",
 ];
 
 /** One line per field; free text is flattened so each field stays on its line. */
