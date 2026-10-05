@@ -10,6 +10,10 @@ import { WEEKLY_FIVE, WEEKLY_SCAFFOLDS, type Strand } from "@/lib/program";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
 import { mentionsCrisis } from "@/lib/help";
 import SupportCard from "@/components/help/SupportCard";
+import GentleCheck from "@/components/help/GentleCheck";
+import SmallStep from "@/components/SmallStep";
+import { hardOnSelfRecently } from "@/lib/hardOnSelf";
+import { smallStepOf, withSmallStep } from "@/lib/journal";
 
 export interface WeeklyCheckin {
   id: string;
@@ -39,6 +43,9 @@ export default function WeeklyFiveSection({
   const latest = checkins[0] ?? null;
   const [writing, setWriting] = useState(false);
   const [supportNeeded, setSupportNeeded] = useState(false);
+  // After saving: the gentle check, and the small step kept on the journal copy.
+  const [hardOnSelf, setHardOnSelf] = useState(false);
+  const [stepEntry, setStepEntry] = useState<{ id: string; response: string } | null>(null);
   const [drafts, setDrafts] = useState<Partial<Record<Strand, string>>>({});
   const [openId, setOpenId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,7 +60,8 @@ export default function WeeklyFiveSection({
       if (v) answers[q.key] = v;
     }
     if (Object.keys(answers).length === 0) return;
-    setSupportNeeded(mentionsCrisis(Object.values(answers).join("\n")));
+    const crisis = mentionsCrisis(Object.values(answers).join("\n"));
+    setSupportNeeded(crisis);
     setBusy(true);
     setError(null);
 
@@ -73,21 +81,41 @@ export default function WeeklyFiveSection({
     }
 
     // Journal copy — non-fatal
-    await db.from("journal_entries").insert({
-      user_id: userId,
-      mission_id: 1,
-      activity_id: "weekly-five",
-      prompt: "The weekly five",
-      response: WEEKLY_FIVE.filter((q) => answers[q.key])
-        .map((q) => `${q.question}\n${answers[q.key]}`)
-        .join("\n\n"),
-      is_milestone: false,
-    });
+    const copy = WEEKLY_FIVE.filter((q) => answers[q.key])
+      .map((q) => `${q.question}\n${answers[q.key]}`)
+      .join("\n\n");
+    const { data: entry } = await db
+      .from("journal_entries")
+      .insert({
+        user_id: userId,
+        mission_id: 1,
+        activity_id: "weekly-five",
+        prompt: "The weekly five",
+        response: copy,
+        is_milestone: false,
+      })
+      .select("id, response")
+      .single();
+    setStepEntry(entry ?? null);
+    setHardOnSelf(!crisis && (await hardOnSelfRecently(db, userId, copy)));
 
     setBusy(false);
     setWriting(false);
     setDrafts({});
     router.refresh();
+  }
+
+  /** The small step goes on the end of this week's journal copy. */
+  async function saveSmallStep(step: string): Promise<boolean> {
+    if (!stepEntry) return false;
+    const next = withSmallStep(stepEntry.response, step);
+    const { error: err } = await db
+      .from("journal_entries")
+      .update({ response: next, updated_at: new Date().toISOString() })
+      .eq("id", stepEntry.id);
+    if (err) return false;
+    setStepEntry({ ...stepEntry, response: next });
+    return true;
   }
 
   if (!ready) return null;
@@ -197,6 +225,10 @@ export default function WeeklyFiveSection({
       </p>
 
       {supportNeeded && <SupportCard />}
+      {!supportNeeded && hardOnSelf && <GentleCheck />}
+      {!supportNeeded && stepEntry && (
+        <SmallStep saved={smallStepOf(stepEntry.response)} onSave={saveSmallStep} />
+      )}
 
       {latest ? (
         <div className="card p-5">

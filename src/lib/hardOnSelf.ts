@@ -41,3 +41,28 @@ export function hardOnSelfLately(justWritten: string, recent: string[]): boolean
   if (!soundsHardOnSelf(justWritten)) return false;
   return recent.filter(soundsHardOnSelf).length >= PATTERN_THRESHOLD;
 }
+
+/**
+ * Reads the student's last few journal entries, on their device, to see
+ * whether the one just written is part of a run of being hard on themselves.
+ * Every writing surface keeps a journal copy, so this sees all of them; pass
+ * `justWritten` exactly as that copy was saved. Never saved or sent.
+ */
+export async function hardOnSelfRecently(
+  db: any,
+  userId: string,
+  justWritten: string
+): Promise<boolean> {
+  if (!soundsHardOnSelf(justWritten)) return false;
+  const { data } = await db
+    .from("journal_entries")
+    .select("response")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(6);
+  const recent = ((data || []) as { response: string | null }[]).map((r) => r.response || "");
+  // An entry updated in place (Next Chapter's debrief) can be older than the
+  // last six; it still counts as the one just written.
+  if (!recent.includes(justWritten)) recent.unshift(justWritten);
+  return hardOnSelfLately(justWritten, recent.slice(0, 6));
+}

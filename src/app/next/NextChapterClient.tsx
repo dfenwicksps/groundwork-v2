@@ -9,6 +9,9 @@ import { hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 import { mentionsCrisis } from "@/lib/help";
 import AppShell from "@/components/layout/AppShell";
 import SupportCard from "@/components/help/SupportCard";
+import GentleCheck from "@/components/help/GentleCheck";
+import SmallStep from "@/components/SmallStep";
+import { hardOnSelfRecently } from "@/lib/hardOnSelf";
 import {
   NEXT_CHAPTER_ACTIVITY_ID,
   EMPTY_NEXT_CHAPTER,
@@ -18,6 +21,7 @@ import {
   WHO_SUGGESTIONS,
   TALK_BY,
   OUTCOMES,
+  DEBRIEF_STEPS,
   optionsFor,
   nextChapterToText,
   parseNextChapter,
@@ -61,6 +65,7 @@ export default function NextChapterClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [supportNeeded, setSupportNeeded] = useState(false);
+  const [hardOnSelf, setHardOnSelf] = useState(false);
   const [foundOut, setFoundOut] = useState(initial.foundOut);
   const [leftMe, setLeftMe] = useState(initial.leftMe);
 
@@ -123,6 +128,7 @@ export default function NextChapterClient({
     }
     setEntryId(data.id);
     if (mentionsCrisis(response)) setSupportNeeded(true);
+    else setHardOnSelf(await hardOnSelfRecently(db, userId, response));
     router.refresh();
     return true;
   }
@@ -136,6 +142,13 @@ export default function NextChapterClient({
     if (foundOut.trim().length < 3) return;
     const next = { ...n, foundOut: foundOut.trim(), leftMe };
     if (await write(next)) setN(next);
+  }
+
+  async function saveNextStep(step: string): Promise<boolean> {
+    const next = { ...n, nextStep: step };
+    if (!(await write(next))) return false;
+    setN(next);
+    return true;
   }
 
   const missing = [
@@ -168,6 +181,7 @@ export default function NextChapterClient({
         </div>
 
         {supportNeeded && <SupportCard />}
+        {!supportNeeded && hardOnSelf && <GentleCheck />}
 
         {futureSelf && (
           <details className="card p-4" data-animate="2">
@@ -451,6 +465,16 @@ export default function NextChapterClient({
                   <p className="text-sm text-ink leading-relaxed">{n.foundOut}</p>
                   {n.leftMe && (
                     <p className="text-xs text-ink-muted mt-2">It left you: {n.leftMe.toLowerCase()}.</p>
+                  )}
+                  {!supportNeeded && (
+                    <div className="mt-4 -mb-5">
+                      <SmallStep
+                        saved={n.nextStep}
+                        onSave={saveNextStep}
+                        prompt="What's one small thing you'll do because of what you found out? Optional, and it's kept with your plan."
+                        options={DEBRIEF_STEPS}
+                      />
+                    </div>
                   )}
                 </>
               ) : (
