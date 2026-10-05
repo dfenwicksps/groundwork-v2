@@ -39,13 +39,16 @@ export function futureFirst(stage: LifeStage): boolean {
 }
 
 /**
- * The age Mission 4's Future Self pictures. Written as 21 for the school years,
- * which is a different life but a visible one; asking someone who is already
- * 21 to imagine being 21 makes the step meaningless, so it moves with them.
+ * The age Mission 4's Future Self pictures. Written as 21 for Year 10–12,
+ * which is a different life but a visible one. It moves with the student
+ * either side: asking someone who is already 21 to imagine being 21 makes the
+ * step meaningless, and for a twelve-year-old 21 is too far off to picture in
+ * any detail, so Year 7–9 picture 16, the end of school in sight.
  */
 export function futureSelfAge(stage: LifeStage): number {
   if (stage === "adult") return 28;
   if (stage === "leaver") return 25;
+  if (stage === "junior") return 16;
   return 21;
 }
 

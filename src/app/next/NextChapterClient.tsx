@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import { hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
+import type { LifeStage } from "@/lib/lifeStage";
 import { mentionsCrisis } from "@/lib/help";
 import AppShell from "@/components/layout/AppShell";
 import SupportCard from "@/components/help/SupportCard";
@@ -17,12 +17,11 @@ import {
   EMPTY_NEXT_CHAPTER,
   OPTIONS_MAX,
   QUESTIONS_MAX,
-  TALK_QUESTIONS,
-  WHO_SUGGESTIONS,
   TALK_BY,
   OUTCOMES,
   DEBRIEF_STEPS,
   optionsFor,
+  nextChapterCopy,
   nextChapterToText,
   parseNextChapter,
   planComplete,
@@ -70,9 +69,9 @@ export default function NextChapterClient({
   const [leftMe, setLeftMe] = useState(initial.leftMe);
 
   const options = optionsFor(lifeStage);
-  const leftSchool = hasLeftSchool(lifeStage);
+  const copy = nextChapterCopy(lifeStage);
   // Questions offered: the standard ones plus any the student wrote themselves.
-  const questionList = [...TALK_QUESTIONS, ...n.questions.filter((q) => !TALK_QUESTIONS.includes(q))];
+  const questionList = [...copy.talkQuestions, ...n.questions.filter((q) => !copy.talkQuestions.includes(q))];
 
   function set<K extends keyof NextChapter>(key: K, value: NextChapter[K]) {
     setN((prev) => ({ ...prev, [key]: value }));
@@ -172,11 +171,7 @@ export default function NextChapterClient({
             Your next chapter
           </h1>
           <p className="text-sm text-ink-muted leading-relaxed">
-            {leftSchool
-              ? "What's next, made concrete: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."
-              : lifeStage === "middle"
-                ? "Choosing subjects, or thinking past school: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."
-                : "Life after school, made concrete: the options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask who's already doing it."}
+            {copy.intro}
           </p>
         </div>
 
@@ -241,7 +236,7 @@ export default function NextChapterClient({
                 rows={3}
                 value={n.hoping}
                 onChange={(e) => set("hoping", e.target.value)}
-                placeholder={leftSchool ? "Second semester of a course I actually chose, working two shifts a week" : "In first-year nursing, working two shifts a week at the café"}
+                placeholder={copy.placeholders.hoping}
               />
               <label htmlFor={`${ids}-first`} className="block text-xs font-semibold text-ink mb-1">
                 One step this month that makes it more likely
@@ -252,7 +247,7 @@ export default function NextChapterClient({
                 rows={2}
                 value={n.firstStep}
                 onChange={(e) => set("firstStep", e.target.value)}
-                placeholder="Look up the entry requirements and ask the careers adviser what I'd need"
+                placeholder={copy.placeholders.firstStep}
               />
             </section>
 
@@ -273,7 +268,7 @@ export default function NextChapterClient({
                 rows={3}
                 value={n.avoiding}
                 onChange={(e) => set("avoiding", e.target.value)}
-                placeholder="Drifting: doing a course I picked because my mates did, and hating it"
+                placeholder={copy.placeholders.avoiding}
               />
               <label htmlFor={`${ids}-headoff`} className="block text-xs font-semibold text-ink mb-1">
                 What you could do early to head it off
@@ -284,7 +279,7 @@ export default function NextChapterClient({
                 rows={2}
                 value={n.headOff}
                 onChange={(e) => set("headOff", e.target.value)}
-                placeholder="Go to one open day on my own before I choose"
+                placeholder={copy.placeholders.headOff}
               />
             </section>
 
@@ -305,10 +300,10 @@ export default function NextChapterClient({
                 value={n.who}
                 maxLength={100}
                 onChange={(e) => set("who", e.target.value)}
-                placeholder="My cousin, who's a second-year apprentice"
+                placeholder={copy.placeholders.who}
               />
               <div className="flex flex-wrap gap-1.5 mb-4">
-                {WHO_SUGGESTIONS.map((w) => (
+                {copy.whoSuggestions.map((w) => (
                   <button
                     key={w}
                     type="button"

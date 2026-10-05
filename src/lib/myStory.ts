@@ -4,6 +4,7 @@ import { itemsIn } from "./inheritance";
 import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID, type LifeStory } from "./program";
 import { parseNextChapter, NEXT_CHAPTER_ACTIVITY_ID } from "./nextChapter";
 import type { Scaffold } from "./scaffold";
+import type { LifeStage } from "./lifeStage";
 
 // ─── My story ─────────────────────────────────────────────────────────────────
 // Identity, in the research the app is built on, is one evolving story: where
@@ -187,3 +188,50 @@ export const STORY_PARAGRAPH_SCAFFOLD: Scaffold = {
     "It's allowed to change next year. This is this year's version, not the final one.",
   ],
 };
+
+// Year 7–9: the same paragraph, asked as a few things that happened and what
+// each taught them rather than one theme across a life, which mostly arrives
+// later (Habermas & Bluck, 2000). Shorter, with openings that link one event
+// to one lesson, and a promise that it will be asked again.
+const JUNIOR_PARAGRAPH_STEMS = [
+  "Something that happened to me was",
+  "It taught me",
+  "Now I'm someone who",
+  "Next year I want to",
+];
+
+export interface ParagraphGuide {
+  minWords: number;
+  scaffold: Scaffold;
+  /** What the paragraph should cover, as the box's label */
+  label: string;
+  /** The first-time explanation */
+  intro: string;
+}
+
+export function paragraphGuide(stage: LifeStage): ParagraphGuide {
+  if (stage === "junior") {
+    return {
+      minWords: 20,
+      scaffold: {
+        quick: JUNIOR_PARAGRAPH_STEMS.map((s) => `${s} `),
+        stems: JUNIOR_PARAGRAPH_STEMS,
+        stuck: [
+          "You don't need one big theme yet. A few things that happened, and what each taught you, is a real story.",
+          "Pick one piece from Part 1 and one from Part 2 or 3. You don't have to use them all.",
+          "You'll write it again next year, and it usually joins up more as you get older.",
+        ],
+      },
+      label: "Something that happened, what it taught you, who you are now, and what you're working on next",
+      intro:
+        "Everything above is in pieces. Now put a few of them together in your own words: something that happened, what it taught you, who you are now, and what you're working on next.",
+    };
+  }
+  return {
+    minWords: PARAGRAPH_MIN_WORDS,
+    scaffold: STORY_PARAGRAPH_SCAFFOLD,
+    label: "Where you've come from, what changed you, who you are now, and where you're heading",
+    intro:
+      "Everything above is in pieces. Now join it up: where you've come from, what changed you, who that's made you, and where it's heading, in one paragraph and your own words.",
+  };
+}

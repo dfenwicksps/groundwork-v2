@@ -935,6 +935,42 @@ export const STORY_PARTS: {
   },
 ];
 
+/**
+ * Year 7–9 write the same sentence with more concrete openings. "Where I'm
+ * heading" asks for a life direction that most twelve-year-olds can't yet
+ * name, and shouldn't be pushed to; something they're working on in the next
+ * year or two is a real answer at that age.
+ */
+const JUNIOR_STORY_SCAFFOLDS: Record<StoryPart, Scaffold> = {
+  from: {
+    stems: ["I've been through", "of the time", "my family"],
+    stuck: [
+      "Pick one thing that happened, not your whole life: a move, a win, a loss, a person.",
+      "Your chapters from Mission 1 are a good place to look.",
+    ],
+  },
+  am: {
+    stems: ["is good at", "cares about", "won't"],
+    stuck: [
+      "What would a good friend say you're like? Start there.",
+      "Something you do, not something you'd like to be.",
+    ],
+  },
+  heading: {
+    stems: ["getting better at", "trying", "being someone who"],
+    stuck: [
+      "It can be about the next year or two. Something you're working on counts.",
+      "It doesn't have to be a big life direction yet. You'll write this again when you're older.",
+    ],
+  },
+};
+
+/** The scaffold for one part of the story sentence, for this student. */
+export function storyScaffoldFor(part: StoryPart, stage: LifeStage): Scaffold {
+  if (stage === "junior") return JUNIOR_STORY_SCAFFOLDS[part];
+  return STORY_PARTS.find((p) => p.key === part)!.scaffold;
+}
+
 export const EMPTY_STORY: LifeStory = { from: "", am: "", heading: "" };
 
 export function storyComplete(story: LifeStory): boolean {

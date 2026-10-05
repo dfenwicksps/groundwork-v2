@@ -253,19 +253,25 @@ export default function DashboardClient({
 
   // 5. The next chapter, for students for whom "what's next" is the live
   // question: the plan until they've made one, then pathways and goals.
-  if ((spine.futureFirst || lifeStage === "middle") && !nextChapter) {
-    // Year 10–11 included: subject choice and the first thoughts about after
-    // school are when exploring before committing matters most.
+  // Year 10–11 included: subject choice and the first thoughts about after
+  // school are when exploring before committing matters most. Year 7–9 too,
+  // once Mission 1 is done: next year at school is the near future that's
+  // real at that age, and it's the only future task they'd otherwise get.
+  const offerNextChapter =
+    spine.futureFirst || lifeStage === "middle" || (lifeStage === "junior" && missionsDone >= 1);
+  if (offerNextChapter && !nextChapter) {
     alsoNow.push({
       key: "next-chapter",
       href: "/next",
       icon: "→",
-      title: "Plan your next chapter",
+      title: lifeStage === "junior" ? "Plan next year" : "Plan your next chapter",
       sub: hasLeftSchool(lifeStage)
         ? "Your options, the year you're hoping for, and who to ask."
         : lifeStage === "middle"
           ? "Choosing subjects? Your options, the year you're hoping for, and who to ask."
-          : "Life after school: your options, the year you're hoping for, and who to ask.",
+          : lifeStage === "junior"
+            ? "Next year at school: the year you're hoping for, and someone a bit older to ask."
+            : "Life after school: your options, the year you're hoping for, and who to ask.",
     });
   } else if (!nextChapter?.due && spine.futureFirst) {
     alsoNow.push({

@@ -688,6 +688,7 @@ export default function WeekClient({
             saved={savedCode}
             savedStory={savedStory}
             earlier={storyEarlier}
+            lifeStage={lifeStage}
             onSaved={async (commitments) => {
               // The code itself is the week's reflection — record it so week 10
               // completes and the program reads 10 of 10.

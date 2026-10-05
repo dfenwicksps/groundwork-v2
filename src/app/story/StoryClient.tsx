@@ -6,6 +6,7 @@ import AppShell from "@/components/layout/AppShell";
 import { storySentence } from "@/lib/program";
 import { readyForParagraph, storyDueForRenewal, type MyStory, type StoryParagraph } from "@/lib/myStory";
 import { ParagraphCard, ParagraphWriter } from "./StoryParagraph";
+import type { LifeStage } from "@/lib/lifeStage";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
@@ -70,8 +71,10 @@ export default function StoryClient({
   userId,
   story,
   paragraphs: initialParagraphs,
+  lifeStage,
 }: {
   userId: string;
+  lifeStage: LifeStage;
   story: MyStory;
   /** Every version of "in my own words", newest first */
   paragraphs: StoryParagraph[];
@@ -200,6 +203,7 @@ export default function StoryClient({
           userId={userId}
           paragraphs={paragraphs}
           ready={readyForParagraph(story)}
+          lifeStage={lifeStage}
           onSaved={setParagraphs}
         />
 

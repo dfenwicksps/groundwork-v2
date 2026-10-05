@@ -13,11 +13,13 @@ import {
   EMPTY_STORY,
   STORY_PARTS,
   storyComplete,
+  storyScaffoldFor,
   storySentence,
   type LifeStory,
   type StoryPart,
 } from "@/lib/program";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
+import type { LifeStage } from "@/lib/lifeStage";
 
 const STARTERS = [
   "I keep my word, including the small promises.",
@@ -42,8 +44,11 @@ export default function CharacterCodeBuilder({
   saved,
   savedStory,
   earlier = {},
+  lifeStage,
   onSaved,
 }: {
+  /** Year 7–9 get more concrete openings for the story sentence */
+  lifeStage: LifeStage;
   userId: string;
   saved: string[];
   /** What the student already wrote that each part of the sentence repeats */
@@ -202,7 +207,7 @@ export default function CharacterCodeBuilder({
                 id={`${fieldId}-${p.key}`}
                 value={story[p.key]}
                 onChange={(v) => setPart(p.key, v)}
-                scaffold={p.scaffold}
+                scaffold={storyScaffoldFor(p.key, lifeStage)}
                 placeholder={p.placeholder}
                 rows={2}
               />

@@ -8,14 +8,14 @@ import GentleCheck from "@/components/help/GentleCheck";
 import { mentionsCrisis } from "@/lib/help";
 import { hardOnSelfRecently } from "@/lib/hardOnSelf";
 import {
-  PARAGRAPH_MIN_WORDS,
   STORY_PARAGRAPH_ACTIVITY_ID,
   STORY_PARAGRAPH_PROMPT,
-  STORY_PARAGRAPH_SCAFFOLD,
   paragraphDue,
+  paragraphGuide,
   wordCount,
   type StoryParagraph,
 } from "@/lib/myStory";
+import type { LifeStage } from "@/lib/lifeStage";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
@@ -68,10 +68,13 @@ export function ParagraphWriter({
   userId,
   paragraphs,
   ready,
+  lifeStage,
   onSaved,
 }: {
   userId: string;
   paragraphs: StoryParagraph[];
+  /** Year 7–9 get a shorter, more concrete version (paragraphGuide) */
+  lifeStage: LifeStage;
   /** Enough pieces above to join up (readyForParagraph) */
   ready: boolean;
   onSaved: (paragraphs: StoryParagraph[]) => void;
@@ -86,8 +89,9 @@ export function ParagraphWriter({
   const [supportNeeded, setSupportNeeded] = useState(false);
   const [hardOnSelf, setHardOnSelf] = useState(false);
 
+  const guide = paragraphGuide(lifeStage);
   const words = wordCount(draft);
-  const enough = words >= PARAGRAPH_MIN_WORDS;
+  const enough = words >= guide.minWords;
 
   async function save() {
     if (!enough || !writing) return;
@@ -158,11 +162,7 @@ export function ParagraphWriter({
         <div className="card p-5">
           {!latest ? (
             <>
-              <p className="text-sm text-ink leading-relaxed mb-1">
-                Everything above is in pieces. Now join it up: where you&apos;ve come from,
-                what changed you, who that&apos;s made you, and where it&apos;s heading, in one
-                paragraph and your own words.
-              </p>
+              <p className="text-sm text-ink leading-relaxed mb-1">{guide.intro}</p>
               <p className="text-xs text-ink-muted leading-relaxed mb-4">
                 Linking what happened to who you are is how a life starts to read as one
                 story. You&apos;ll be asked for a new version each year, with this one in view.
@@ -214,17 +214,17 @@ export function ParagraphWriter({
         <TierSwitcher className="mb-4" />
         <ScaffoldedInput
           id="story-paragraph"
-          label="Where you've come from, what changed you, who you are now, and where you're heading"
+          label={guide.label}
           value={draft}
           onChange={setDraft}
-          scaffold={STORY_PARAGRAPH_SCAFFOLD}
+          scaffold={guide.scaffold}
           placeholder="I grew up…"
           rows={8}
         />
         <p className="text-xs text-ink-muted mt-2" aria-live="polite">
           {enough
             ? `${words} words`
-            : `${words} of about ${PARAGRAPH_MIN_WORDS} words. A paragraph, not a sentence.`}
+            : `${words} of about ${guide.minWords} words. A paragraph, not a sentence.`}
         </p>
         {error && (
           <p role="alert" className="text-sm text-red-600 mt-2">
