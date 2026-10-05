@@ -8,8 +8,10 @@ import {
   PROGRAM_WEEKS,
   isWeekComplete,
   currentWeek,
+  weekForStage,
   type WeekProgress,
 } from "@/lib/program";
+import type { LifeStage } from "@/lib/lifeStage";
 
 /**
  * The program overview. Missions are a library the student browses; this is a
@@ -21,12 +23,14 @@ export default function ProgramClient({
   progress,
   weekly,
   spine,
+  lifeStage,
   outstanding,
   waiting,
   ready,
 }: {
   userId: string;
   spine: Spine;
+  lifeStage: LifeStage;
   progress: Record<number, WeekProgress>;
   weekly: WeeklyCheckin[];
   /** Missions still to finish before the program is the student's next step */
@@ -74,7 +78,7 @@ export default function ProgramClient({
                 Before week 1
               </div>
               <p className="text-sm text-ink leading-relaxed mb-4">
-                Week 1 sets the qualities you want at 25 against the strengths
+                Week 1 sets the qualities you want to grow into against the strengths
                 you already lead with, and week 2 attaches a behaviour to each
                 of your values. Both are made out of Mission 1 — without it
                 they&apos;re guesswork.
@@ -175,7 +179,7 @@ export default function ProgramClient({
                 {next.title}
               </p>
               <p className="text-sm leading-relaxed opacity-90">
-                {next.challenge.title}
+                {weekForStage(next, lifeStage).challenge.title}
               </p>
             </Link>
           </div>
@@ -237,7 +241,7 @@ export default function ProgramClient({
                       {w.title}
                     </div>
                     <div className="text-xs text-ink-muted leading-snug truncate">
-                      {w.challenge.title}
+                      {weekForStage(w, lifeStage).challenge.title}
                     </div>
                   </div>
                   {waiting[w.week] && !done ? (

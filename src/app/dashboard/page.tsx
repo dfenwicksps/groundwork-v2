@@ -3,7 +3,7 @@ import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextC
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { spineFor } from "@/lib/spine";
-import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, type WeekProgress } from "@/lib/program";
+import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { MISSIONS, requiredSteps, isSensitiveActivity } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
@@ -269,8 +269,10 @@ export default async function DashboardPage() {
   const programWeek = {
     week: weekNumber,
     title: PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.title ?? "",
-    challenge:
-      PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.challenge.title ?? "",
+    challenge: (() => {
+      const w = PROGRAM_WEEKS.find((x) => x.week === weekNumber);
+      return w ? weekForStage(w, lifeStage).challenge.title : "";
+    })(),
     emoji: PROGRAM_WEEKS.find((w) => w.week === weekNumber)?.emoji ?? "🧭",
     started: !!programProgress[weekNumber],
     weeksDone,

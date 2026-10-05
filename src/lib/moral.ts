@@ -3,6 +3,12 @@
 // decision-making pattern. Four styles, loosely drawn from moral foundations
 // and ethics-of-care research, worded for teenagers. Every scenario offers all
 // four styles; picks are tallied and the top style becomes the profile.
+//
+// Four of the eight are set at school. Someone who has left gets the same
+// dilemma at work or uni instead (scenariosFor): same four styles, same order,
+// so a saved profile reads the same either way.
+
+import { hasLeftSchool, type LifeStage } from "./lifeStage";
 
 export type MoralStyle = "care" | "fairness" | "loyalty" | "principle";
 
@@ -56,6 +62,8 @@ export const MORAL_STYLES: Record<MoralStyle, MoralStyleInfo> = {
 export interface MoralScenario {
   scenario: string;
   options: { text: string; style: MoralStyle }[];
+  /** The same dilemma for someone who has left school, with any option text that changes */
+  leftSchool?: { scenario: string; options?: Partial<Record<MoralStyle, string>> };
 }
 
 // Each scenario carries one option per style, in shuffled display order.
@@ -69,6 +77,14 @@ export const MORAL_SCENARIOS: MoralScenario[] = [
       { text: "Cheating's wrong and the truth matters. I'd tell it straight.", style: "principle" },
       { text: "I'd protect my friend — I'm not throwing them under the bus", style: "loyalty" },
     ],
+    leftSchool: {
+      scenario:
+        "Your friend cut a corner at work — and your manager just blamed the wrong person for the mistake. What's your gut move?",
+      options: {
+        fairness: "The wrong person can't take the fall. I'd speak up.",
+        principle: "Cutting corners was wrong and the truth matters. I'd tell it straight.",
+      },
+    },
   },
   {
     scenario:
@@ -99,6 +115,14 @@ export const MORAL_SCENARIOS: MoralScenario[] = [
       { text: "Ask around properly so it gets back to whoever actually lost it", style: "fairness" },
       { text: "Honestly? My mate eats today. Sort the rest after.", style: "loyalty" },
     ],
+    leftSchool: {
+      scenario:
+        "You find $50 in the staff room. Earlier you saw a new casual in tears about losing their cash. But your best mate, standing right there, is broke and hungry.",
+      options: {
+        care: "Find the new casual — that money is probably theirs and they're gutted",
+        principle: "Hand it to the manager. Not mine, not my call.",
+      },
+    },
   },
   {
     scenario:
@@ -109,6 +133,14 @@ export const MORAL_SCENARIOS: MoralScenario[] = [
       { text: "Take it through the proper channels, calmly and by the book", style: "principle" },
       { text: "Warn my friends how this teacher works so they don't get burned", style: "loyalty" },
     ],
+    leftSchool: {
+      scenario:
+        "A manager clearly gives their favourites the good shifts. It's cost one quiet coworker in particular. You…",
+      options: {
+        care: "Back the quiet coworker — help them feel less alone in it first",
+        loyalty: "Warn my friends how this manager works so they don't get burned",
+      },
+    },
   },
   {
     scenario:
@@ -139,8 +171,28 @@ export const MORAL_SCENARIOS: MoralScenario[] = [
       { text: "Refuse, but I'm not dobbing in the mate who offered", style: "loyalty" },
       { text: "Refuse — and ask them what's going on that they'd risk this", style: "care" },
     ],
+    leftSchool: {
+      scenario:
+        "Someone offers you a finished assignment for your course to hand in as your own. Nobody would ever know. You…",
+      options: {
+        fairness: "Refuse — everyone else did the work for real; it's not fair on them",
+      },
+    },
   },
 ];
+
+/** The dilemmas as this student should see them. */
+export function scenariosFor(stage: LifeStage): MoralScenario[] {
+  if (!hasLeftSchool(stage)) return MORAL_SCENARIOS;
+  return MORAL_SCENARIOS.map((sc) =>
+    sc.leftSchool
+      ? {
+          scenario: sc.leftSchool.scenario,
+          options: sc.options.map((o) => ({ ...o, text: sc.leftSchool!.options?.[o.style] ?? o.text })),
+        }
+      : sc
+  );
+}
 
 export interface MoralResult {
   scores: Record<MoralStyle, number>;

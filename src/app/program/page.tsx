@@ -64,8 +64,9 @@ export default async function ProgramPage() {
     mission_id: number;
     activity_id: string;
   }[];
+  const lifeStage = await getLifeStage(supabase, user.id);
   const spine = spineFor(
-    await getLifeStage(supabase, user.id),
+    lifeStage,
     missionsCompleted(missionRows),
     missionComplete(missionRows, 1)
   );
@@ -144,6 +145,7 @@ export default async function ProgramPage() {
       progress={progress}
       weekly={weekly}
       spine={spine}
+      lifeStage={lifeStage}
       outstanding={outstanding}
       waiting={waiting}
       ready={ready}

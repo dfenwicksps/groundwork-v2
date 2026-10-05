@@ -38,6 +38,26 @@ export function futureFirst(stage: LifeStage): boolean {
   return stage === "senior" || hasLeftSchool(stage);
 }
 
+/**
+ * The age Mission 4's Future Self pictures. Written as 21 for the school years,
+ * which is a different life but a visible one; asking someone who is already
+ * 21 to imagine being 21 makes the step meaningless, so it moves with them.
+ */
+export function futureSelfAge(stage: LifeStage): number {
+  if (stage === "adult") return 28;
+  if (stage === "leaver") return 25;
+  return 21;
+}
+
+/**
+ * The age week 1's five qualities are chosen for. 25 is far enough ahead for
+ * anyone at school or just out of it; a few years out, it's too close to be a
+ * direction.
+ */
+export function becomingAge(stage: LifeStage): number {
+  return stage === "adult" ? 30 : 25;
+}
+
 // The cookie keeps its old name so existing students' choices still read. It's
 // now a fallback: the account's users.life_stage is the source of truth, and
 // the cookie is still written so the app behaves the same if that column hasn't

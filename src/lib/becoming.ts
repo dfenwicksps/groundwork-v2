@@ -96,12 +96,12 @@ export function parseBecoming(response: string | null | undefined): Becoming {
   return { qualities: legacy, focus: legacy };
 }
 
-export function serialiseBecoming(b: Becoming): string {
+export function serialiseBecoming(b: Becoming, age = 25): string {
   const focus = b.focus.filter((k) => b.qualities.includes(k)).slice(0, FOCUS_MAX);
   // Two human-readable lines first: this entry shows up in the journal, and a
   // student reading it back should meet sentences, not key-value pairs.
   const lines = [
-    `Who I'm becoming at 25: ${b.qualities.map(strengthName).join(", ")}`,
+    `Who I'm becoming at ${age}: ${b.qualities.map(strengthName).join(", ")}`,
   ];
   if (focus.length) {
     lines.push(`Working on right now: ${focus.map(strengthName).join(" + ")}`);

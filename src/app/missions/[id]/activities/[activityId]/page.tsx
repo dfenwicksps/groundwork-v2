@@ -3,6 +3,8 @@ import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
 import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
 import { answersOnly } from "@/lib/journal";
+import { getLifeStage } from "@/lib/lifeStageServer";
+import { activityForStage } from "@/lib/stageContent";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -19,9 +21,13 @@ export default async function ActivityPage({
 
   const missionId = parseInt(params.id);
   const mission = getMission(missionId);
-  const activity = getActivity(missionId, params.activityId);
+  const baseActivity = getActivity(missionId, params.activityId);
 
-  if (!mission || !activity) notFound();
+  if (!mission || !baseActivity) notFound();
+
+  // A few steps are worded for school or a fixed age; see lib/stageContent.ts.
+  const lifeStage = await getLifeStage(supabase, user.id);
+  const activity = activityForStage(baseActivity, lifeStage);
 
   // Check if already completed
   const { data: _existing } = await supabase
@@ -191,6 +197,7 @@ export default async function ActivityPage({
       compass={compass}
       strengthProfile={strengthProfile}
       recalled={recalled}
+      lifeStage={lifeStage}
     />
   );
 }

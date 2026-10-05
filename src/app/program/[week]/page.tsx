@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase-server";
 import WeekClient from "./WeekClient";
 import {
   WEEK_BY_NUMBER,
+  weekForStage,
   PROGRAM_WEEKS,
   parseDays,
   responseToCode,
@@ -31,8 +32,8 @@ export default async function WeekPage({
   params: { week: string };
 }) {
   const weekNum = Number(params.week);
-  const week = WEEK_BY_NUMBER[weekNum];
-  if (!week) notFound();
+  const baseWeek = WEEK_BY_NUMBER[weekNum];
+  if (!baseWeek) notFound();
 
   const supabase = createServerClient();
   const {
@@ -42,6 +43,7 @@ export default async function WeekPage({
 
   const db = supabase as any;
   const lifeStage = await getLifeStage(supabase, user.id);
+  const week = weekForStage(baseWeek, lifeStage);
 
   // Weeks that are built on Mission 1's work read it rather than linking to it;
   // week 10 reads back weeks 1 and 2. Both need every week's row, so the query
@@ -208,7 +210,7 @@ export default async function WeekPage({
             const r = allRows.find((x) => x.week === w.week);
             return {
               week: w.week,
-              heading: w.artefact!.heading,
+              heading: weekForStage(w, lifeStage).artefact!.heading,
               // Week 1 stores VIA keys, and only as a completion receipt — the
               // live answer is the shared record, so read that and show names.
               items:

@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils";
  *
  * Two steps, deliberately in this order:
  *
- *   1. Five qualities you'd want to be described by at 25 — the direction.
+ *   1. Five qualities you'd want to be described by at 25 (30 for anyone a
+ *      few years out of school; see becomingAge) — the direction.
  *   2. One or two of those five to work on now — the work.
  *
  * Step 2 is capped at two on purpose. "Improve everything" is how nothing gets
@@ -47,6 +48,7 @@ export default function BecomingQualities({
   onSaved,
   disabled = false,
   hasGoals = false,
+  age = 25,
 }: {
   userId: string;
   saved: Becoming;
@@ -59,6 +61,8 @@ export default function BecomingQualities({
   onSaved?: (qualities: string[]) => Promise<boolean>;
   disabled?: boolean;
   hasGoals?: boolean;
+  /** The age the five are chosen for, which moves with life stage (becomingAge) */
+  age?: number;
 }) {
   const router = useRouter();
   const db = createClient() as any;
@@ -114,8 +118,8 @@ export default function BecomingQualities({
       user_id: userId,
       mission_id: 1,
       activity_id: BECOMING_ACTIVITY_ID,
-      prompt: "Who I'm becoming — five qualities at 25, and what I'm working on",
-      response: serialiseBecoming(next),
+      prompt: `Who I'm becoming — five qualities at ${age}, and what I'm working on`,
+      response: serialiseBecoming(next, age),
       is_milestone: false,
     });
     if (err) {
@@ -140,7 +144,7 @@ export default function BecomingQualities({
   if (step === "qualities") {
     const open = openKey ? STRENGTH_BY_KEY[openKey] : null;
     return (
-      <Frame variant={variant} step="qualities">
+      <Frame variant={variant} step="qualities" age={age}>
         <div className="card p-5">
           {currentTop.length > 0 ? (
             <div className="rounded-xl bg-surface-muted border border-surface-border p-4 mb-4">
@@ -315,7 +319,7 @@ export default function BecomingQualities({
   // ── Step 2: the one or two ──
   if (step === "focus") {
     return (
-      <Frame variant={variant} step="focus">
+      <Frame variant={variant} step="focus" age={age}>
         <div className="card p-5">
           <p className="text-sm text-ink leading-relaxed mb-1">
             Five is the direction. Now pick{" "}
@@ -409,13 +413,13 @@ export default function BecomingQualities({
   const toGrow = current.qualities.filter((k) => !currentSet.has(k));
 
   return (
-    <Frame variant={variant} step={null}>
+    <Frame variant={variant} step={null} age={age}>
       <div
         className="rounded-2xl p-5 text-white mb-3"
         style={{ background: "var(--navy)" }}
       >
         <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2">
-          At 25, I want to be described as
+          At {age}, I want to be described as
         </div>
         <div className="flex flex-wrap gap-1.5 mb-4">
           {current.qualities.map((k) => (
@@ -461,7 +465,7 @@ export default function BecomingQualities({
                 {already.map((k) => STRENGTH_BY_KEY[k]?.name ?? k).join(", ")}
               </span>{" "}
               {already.length === 1 ? "is" : "are"} already in your top five —
-              the part of the 25-year-old you that already exists.
+              the part of the {age}-year-old you that already exists.
             </p>
           )}
           {toGrow.length > 0 ? (
@@ -476,7 +480,7 @@ export default function BecomingQualities({
             <p className="text-sm text-ink leading-relaxed">
               You picked exactly the five you already lead with. Worth asking
               honestly: is that because they&apos;re genuinely the ones you want
-              at 25, or because they were the easiest to pick?
+              at {age}, or because they were the easiest to pick?
             </p>
           )}
         </div>
@@ -561,15 +565,17 @@ export default function BecomingQualities({
 function Frame({
   variant,
   step,
+  age,
   children,
 }: {
   variant: "program" | "profile";
   step: "qualities" | "focus" | null;
+  age: number;
   children: React.ReactNode;
 }) {
   const blurb =
     step === "qualities"
-      ? "Pick the five you'd want someone to reach for when describing you at 25. Not the ones you already have — the ones you'd want to be true."
+      ? `Pick the five you'd want someone to reach for when describing you at ${age}. Not the ones you already have — the ones you'd want to be true.`
       // The focus step's card carries its own explanation, and repeating it
       // here just made the same sentence appear twice in a row.
       : null;

@@ -172,7 +172,7 @@ export default function NextChapterClient({
         {futureSelf && (
           <details className="card p-4" data-animate="2">
             <summary className="text-xs font-bold text-ink-muted uppercase tracking-wider cursor-pointer">
-              Your ordinary Tuesday at 21, from Mission 4
+              Your ordinary Tuesday, from Mission 4
             </summary>
             <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 mt-3 whitespace-pre-line">
               {futureSelf}
