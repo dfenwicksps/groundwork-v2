@@ -37,8 +37,11 @@
 //
 // BEFORE ANY AGGREGATE ANALYSIS: answers are currently shown back to the
 // student and used for nothing else, and the privacy page says so. Counting
-// them in totals needs ethics review, a consent flow (with a parent or carer's
-// consent for under-16s), and an updated privacy page first.
+// them in totals needs ethics review, a consent flow (usually with a parent or
+// carer's consent too; the ethics committee decides), and an updated privacy
+// page first. The plan for
+// that, including which validated scales to use and how, is in
+// docs/evidence/evidence-plan.md.
 
 export const ITEM_SET = "groundwork-interim-v1";
 
