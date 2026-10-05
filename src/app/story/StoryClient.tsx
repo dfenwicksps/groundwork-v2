@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { storySentence } from "@/lib/program";
-import { storyDueForRenewal, type MyStory } from "@/lib/myStory";
+import { readyForParagraph, storyDueForRenewal, type MyStory, type StoryParagraph } from "@/lib/myStory";
+import { ParagraphCard, ParagraphWriter } from "./StoryParagraph";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
@@ -61,11 +62,22 @@ function Part({ number, title, blurb, children }: { number: string; title: strin
 
 /**
  * The student's life story in three parts, assembled from what they've written
- * (see lib/myStory.ts). Read-only: every piece is written somewhere else, and
- * the empty ones link there.
+ * (see lib/myStory.ts). The pieces are read-only: each is written somewhere
+ * else, and the empty ones link there. The one thing written here is the
+ * paragraph that joins them up (StoryParagraph.tsx).
  */
-export default function StoryClient({ story }: { story: MyStory }) {
+export default function StoryClient({
+  userId,
+  story,
+  paragraphs: initialParagraphs,
+}: {
+  userId: string;
+  story: MyStory;
+  /** Every version of "in my own words", newest first */
+  paragraphs: StoryParagraph[];
+}) {
   const { past, present, future } = story;
+  const [paragraphs, setParagraphs] = useState(initialParagraphs);
   const renew = storyDueForRenewal(story.codeWrittenAt);
 
   return (
@@ -106,6 +118,8 @@ export default function StoryClient({ story }: { story: MyStory }) {
             </Link>
           </div>
         )}
+
+        <ParagraphCard paragraphs={paragraphs} />
 
         {renew && (
           <div className="rounded-2xl p-4 border-2 border-dashed border-navy/25 no-print">
@@ -182,13 +196,20 @@ export default function StoryClient({ story }: { story: MyStory }) {
           </Piece>
         </Part>
 
+        <ParagraphWriter
+          userId={userId}
+          paragraphs={paragraphs}
+          ready={readyForParagraph(story)}
+          onSaved={setParagraphs}
+        />
+
         <div className="flex flex-col gap-2 no-print">
           <button onClick={() => window.print()} className="btn btn-secondary w-full py-3 rounded-xl text-sm">
             Print it or save it as a PDF
           </button>
           <p className="text-xs text-ink-muted text-center leading-relaxed">
             Private, like everything here. Only what&apos;s on this page prints, and nothing
-            you wrote in Parts of Who You Are is ever included.
+            you wrote in Parts of Who You Are or Culture and Heritage is ever included.
           </p>
         </div>
       </div>

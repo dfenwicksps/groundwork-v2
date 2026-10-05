@@ -1655,6 +1655,7 @@ const SPECIAL_LABELS: Record<string, string> = {
   "the-standard": "The Standard",
   "weekly-five": "The Weekly Five",
   "next-chapter": "Your Next Chapter",
+  "story-paragraph": "My Story, in a Paragraph",
   [CHARACTER_CODE_ACTIVITY_ID]: "Character Code",
 };
 

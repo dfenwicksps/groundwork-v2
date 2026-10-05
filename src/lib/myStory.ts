@@ -3,6 +3,7 @@ import { splitScaffoldedResponse, clarifierValues, LEFT_OUT_ANSWER } from "./jou
 import { itemsIn } from "./inheritance";
 import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID, type LifeStory } from "./program";
 import { parseNextChapter, NEXT_CHAPTER_ACTIVITY_ID } from "./nextChapter";
+import type { Scaffold } from "./scaffold";
 
 // ─── My story ─────────────────────────────────────────────────────────────────
 // Identity, in the research the app is built on, is one evolving story: where
@@ -120,3 +121,69 @@ export function storyDueForRenewal(codeWrittenAt: string | null, now = new Date(
   if (!codeWrittenAt) return false;
   return now.getTime() - new Date(codeWrittenAt).getTime() >= 365 * 86_400_000;
 }
+
+// ─── In my own words ──────────────────────────────────────────────────────────
+// Everything above is assembled: the student's answers, laid side by side. The
+// joining is left to the reader. But the research finding the page rests on is
+// about the joining itself: linking what happened to who you are and where
+// you're going, in your own words ("autobiographical reasoning"; Habermas &
+// Bluck, 2000; McAdams), is what builds a steady sense of self. So once there
+// are enough pieces, the page asks the student to tell it in one paragraph,
+// and again each year with last year's in view, so the versions read as one
+// story changing over time.
+
+export const STORY_PARAGRAPH_ACTIVITY_ID = "story-paragraph";
+
+export const STORY_PARAGRAPH_PROMPT =
+  "My story in a paragraph: where I've come from, what changed me, who I am now, and where I'm heading";
+
+/** A version of the paragraph, as saved. */
+export interface StoryParagraph {
+  id: string;
+  response: string;
+  created_at: string;
+}
+
+/** A new version is asked for once a year; until then, the current one can be edited. */
+export const PARAGRAPH_RENEW_DAYS = 365;
+
+export function paragraphDue(latest: StoryParagraph | null, now = new Date()): boolean {
+  if (!latest) return true;
+  return now.getTime() - new Date(latest.created_at).getTime() >= PARAGRAPH_RENEW_DAYS * 86_400_000;
+}
+
+/** Enough of the story to join up: something from the past, and something from now or ahead. */
+export function readyForParagraph(story: MyStory): boolean {
+  const past = !!(story.past.chapters || story.past.turningPoint);
+  const later = !!(story.present.thread || story.future.tuesday || story.future.direction || story.sentence);
+  return past && later;
+}
+
+/** Words in a paragraph, for the "a paragraph, not a sentence" nudge. */
+export function wordCount(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+export const PARAGRAPH_MIN_WORDS = 30;
+
+/** The joining words are the point: each stem links one part to the next. */
+const PARAGRAPH_STEMS = [
+  "I grew up",
+  "Then something changed:",
+  "Since then, I've",
+  "That's part of why I",
+  "So now I'm heading towards",
+];
+
+// Offered at every tier: a paragraph has no complete answers to tap, so Quick
+// gets the same openings as Extended.
+export const STORY_PARAGRAPH_SCAFFOLD: Scaffold = {
+  quick: PARAGRAPH_STEMS.map((s) => `${s} `),
+  stems: PARAGRAPH_STEMS,
+  stuck: [
+    "Go in order: where you started, a moment that shifted things, who that's made you, where it's pointing.",
+    "Use joining words — because, since then, that's why, so. They're what turn a list into a story.",
+    "Read your pieces above and pick one from each part. You don't have to use them all.",
+    "It's allowed to change next year. This is this year's version, not the final one.",
+  ],
+};
