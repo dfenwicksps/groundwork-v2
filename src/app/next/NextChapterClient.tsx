@@ -183,17 +183,6 @@ export default function NextChapterClient({
         {supportNeeded && <SupportCard />}
         {!supportNeeded && hardOnSelf && <GentleCheck />}
 
-        {futureSelf && (
-          <details className="card p-4" data-animate="2">
-            <summary className="text-xs font-bold text-ink-muted uppercase tracking-wider cursor-pointer">
-              Your ordinary Tuesday, from Mission 4
-            </summary>
-            <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 mt-3 whitespace-pre-line">
-              {futureSelf}
-            </blockquote>
-          </details>
-        )}
-
         {editing ? (
           <div className="space-y-4" data-animate="3">
             {/* 1 — options */}
@@ -234,6 +223,17 @@ export default function NextChapterClient({
               <p className="text-xs text-ink-muted mb-3 leading-relaxed">
                 A year from now, on an ordinary weekday. Specific beats impressive.
               </p>
+              {/* The same question further out, from Mission 4: next year is a
+                  step towards it, so it's in view rather than asked from scratch. */}
+              {futureSelf && (
+                <div className="rounded-xl bg-surface-muted px-3 py-2 mb-3">
+                  <div className="text-xs font-semibold text-ink-muted mb-0.5">
+                    Your ordinary Tuesday a few years on, from Mission 4
+                  </div>
+                  <p className="text-xs text-ink leading-relaxed whitespace-pre-line line-clamp-4">{futureSelf}</p>
+                  <p className="text-xs text-ink-muted mt-1.5">Does next year point towards it?</p>
+                </div>
+              )}
               <label htmlFor={`${ids}-hoping`} className="sr-only">The version you&apos;re hoping for</label>
               <textarea
                 id={`${ids}-hoping`}

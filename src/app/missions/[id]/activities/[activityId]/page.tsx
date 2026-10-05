@@ -2,7 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
 import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
-import { answersOnly } from "@/lib/journal";
+import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { activityForStage } from "@/lib/stageContent";
 import ActivityClient from "./ActivityClient";
@@ -157,11 +157,14 @@ export default async function ActivityPage({
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    const text = answersOnly(
-      activity.recall.missionId,
-      activity.recall.activityId,
-      (recallRow as { response: string } | null)?.response
-    );
+    const { missionId, activityId, answer } = activity.recall;
+    const response = (recallRow as { response: string } | null)?.response;
+    // One answer when the step names it; otherwise every answer in the entry.
+    const raw =
+      answer !== undefined
+        ? answerAt(missionId, activityId, response, answer)
+        : answersOnly(missionId, activityId, response);
+    const text = raw === LEFT_OUT_ANSWER ? "" : raw;
     if (text) recalled = { label: activity.recall.label, text };
   }
 

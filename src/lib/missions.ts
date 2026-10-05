@@ -89,10 +89,18 @@ export interface Activity {
   /**
    * An earlier entry to read back inside this one: shown in the intro and above
    * the scaffolding step at `step`, so the student answers with what they wrote
-   * before in front of them. Used where a question is deliberately asked twice,
-   * months apart, so the answer becomes how it has changed.
+   * before in front of them. Used wherever a question repeats or builds on an
+   * earlier one: asked twice months apart, the answer becomes how it has
+   * changed; built on, it starts from what they said rather than from scratch.
    */
-  recall?: { activityId: string; missionId: number; label: string; step: number };
+  recall?: {
+    activityId: string;
+    missionId: number;
+    label: string;
+    step: number;
+    /** Just this answer from the earlier entry, by index; all of them when unset */
+    answer?: number;
+  };
   /**
    * Never sent to the AI for follow-up questions. For the most sensitive
    * writing in the app (beliefs, gender, sexuality, culture and heritage),
@@ -1495,6 +1503,8 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "A Life Worth Building",
+        // The letter is where the thread goes, so the thread sits above its first question.
+        recall: { activityId: "the-through-line", missionId: 4, label: "The thread you found", step: 0, answer: 3 },
         subtitle: "Step 5 of 6 · Milestone",
         intro:
           "You've just named the thread. This letter is its other half: where that thread is going, what following it would actually cost, and why it's worth the cost anyway. Every step before this one looked backwards at what you found. This is the only one that looks forward — not a promise and not a plan, but a direction, written down while you can still see it clearly.",
