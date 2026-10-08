@@ -110,6 +110,9 @@ export default function WeekClient({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [supportNeeded, setSupportNeeded] = useState(false);
+  // Separate from the reflection's: the artefact is saved on its own, further
+  // up the page, so its help card sits beside it.
+  const [artefactSupport, setArtefactSupport] = useState(false);
   // After the reflection is saved: the gentle check, and the small step kept on
   // the reflection's journal copy.
   const [hardOnSelf, setHardOnSelf] = useState(false);
@@ -209,6 +212,7 @@ export default function WeekClient({
    * the next tick of a day would write the pre-artefact value back over it.
    */
   async function saveArtefact(value: string): Promise<boolean> {
+    setArtefactSupport(mentionsCrisis(value));
     setCommitment(value);
     return persist({ commitment: value || null });
   }
@@ -617,6 +621,8 @@ export default function WeekClient({
             onSave={(lines) => saveArtefact(linesToCommitment(lines))}
           />
         )}
+
+        {artefactSupport && <SupportCard />}
 
         {/* Week 10 reads back what the earlier weeks made, so the code is
             written from evidence rather than from memory. */}

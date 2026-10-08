@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { STRENGTH_ACTIONS } from "@/lib/boosts";
 import ScaffoldedInput from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 interface PracticeEntry {
   id: string;
@@ -45,6 +47,9 @@ export default function PracticeSection({
   const [error, setError] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  // On-device phrase check, as everywhere else students write: nothing is
+  // saved or sent, it only puts help on screen.
+  const [supportNeeded, setSupportNeeded] = useState(false);
 
   const suggested = [...growthEdges.slice(0, 3), ...top5.slice(0, 2)];
   const allKeys = Object.keys(STRENGTH_BY_KEY);
@@ -73,6 +78,7 @@ export default function PracticeSection({
   }
 
   async function saveEdit(id: string) {
+    setSupportNeeded(mentionsCrisis(editText));
     setBusy(true);
     setError(null);
     const { error: err } = await db
@@ -91,6 +97,7 @@ export default function PracticeSection({
 
   async function checkIn() {
     if (!active || !reflection.trim()) return;
+    setSupportNeeded(mentionsCrisis(reflection));
     setBusy(true);
     setError(null);
     const { error: err } = await db
@@ -125,6 +132,8 @@ export default function PracticeSection({
         Knowing your strengths is step one. Using one on purpose each week is how
         character becomes habit. No streaks — just practice.
       </p>
+
+      {supportNeeded && <SupportCard />}
 
       {/* Active practice — check-in */}
       {active ? (

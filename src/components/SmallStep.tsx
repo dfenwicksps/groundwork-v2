@@ -2,6 +2,8 @@
 
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 // ─── Ending on something you can do ──────────────────────────────────────────
 // After a reflection, the last word is an action, not the thing the student
@@ -34,10 +36,14 @@ export default function SmallStep({
   const [editing, setEditing] = useState(!saved);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The page's own check has already run on the entry this step hangs off;
+  // the step is new writing, so it gets the same on-device check.
+  const [supportNeeded, setSupportNeeded] = useState(false);
   const inputId = useId();
 
   async function save(step: string) {
     if (step.trim().length < 3) return;
+    setSupportNeeded(mentionsCrisis(step));
     setBusy(true);
     setError(null);
     const ok = await onSave(step.replace(/\s*\n+\s*/g, " ").trim());
@@ -51,21 +57,24 @@ export default function SmallStep({
 
   if (!editing && saved) {
     return (
-      <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `color-mix(in srgb, ${accent} 22%, transparent)` }} data-animate="3">
-        <div className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: accent }}>
-          ✓ Your small step
+      <>
+        {supportNeeded && <SupportCard />}
+        <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `color-mix(in srgb, ${accent} 22%, transparent)` }} data-animate="3">
+          <div className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: accent }}>
+            ✓ Your small step
+          </div>
+          <p className="text-sm text-[--ink] leading-relaxed">{saved}</p>
+          <button
+            onClick={() => {
+              setDraft(saved);
+              setEditing(true);
+            }}
+            className="text-xs text-[--teal] hover:underline mt-2"
+          >
+            Change it
+          </button>
         </div>
-        <p className="text-sm text-[--ink] leading-relaxed">{saved}</p>
-        <button
-          onClick={() => {
-            setDraft(saved);
-            setEditing(true);
-          }}
-          className="text-xs text-[--teal] hover:underline mt-2"
-        >
-          Change it
-        </button>
-      </div>
+      </>
     );
   }
 

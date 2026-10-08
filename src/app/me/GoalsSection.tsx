@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase";
 import { strengthName } from "@/lib/strengths";
 import { futureFirst, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
 import ScaffoldedInput from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 
 interface Goal {
   id: string;
@@ -67,6 +69,9 @@ export default function GoalsSection({
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState<string | null>(null);
   const [finishNote, setFinishNote] = useState("");
+  // On-device phrase check, as everywhere else students write: nothing is
+  // saved or sent, it only puts help on screen.
+  const [supportNeeded, setSupportNeeded] = useState(false);
 
   const active = goals.filter((g) => g.status === "active");
   const done = goals.filter((g) => g.status === "done");
@@ -91,6 +96,7 @@ export default function GoalsSection({
 
   async function save() {
     if (!wish.trim() || !plan.trim()) return;
+    setSupportNeeded(mentionsCrisis([wish, outcome, obstacle, plan].join("\n")));
     setBusy(true);
     setError(null);
     const payload = {
@@ -133,6 +139,7 @@ export default function GoalsSection({
   }
 
   async function finishGoal(goal: Goal) {
+    setSupportNeeded(mentionsCrisis(finishNote));
     setBusy(true);
     const { error: err } = await db
       .from("goals")
@@ -167,6 +174,8 @@ export default function GoalsSection({
         Self-knowledge becomes real when it has a target. Small and specific beats
         big and vague.{doneCount > 0 ? ` ${doneCount} finished so far ✓` : ""}
       </p>
+
+      {supportNeeded && <SupportCard />}
 
       {/* Active goals */}
       {active.length > 0 && (
