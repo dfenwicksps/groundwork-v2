@@ -278,6 +278,7 @@ children.push(
   tbl([1250, 3376, 4400], ["Verdict", "The line", "Why"], [
     ["SAY IT","“Built on the VIA character strengths framework and social-emotional learning research.”","Accurate and already on the landing page. The strengths assessment is an indicative snapshot of the VIA classification, not the full survey — say “based on” and “indicative”, never “validated” or “clinical”. (refs 5, 3)"],
     ["SAY IT","“Every activity maps to one of the five CASEL competencies, and we can show you which.”","True and unusually easy to evidence — the mapping is documented activity by activity. The single most useful sentence in a conversation with a wellbeing lead or curriculum coordinator. (ref 21)"],
+    ["SAY IT","“Groundwork gives students practice in the Identities and change content of the Australian Curriculum’s HPE learning area, and fits the Student voice and Support elements of the Australian Student Wellbeing Framework.”","Mapped code by code in the repository (docs/curriculum-alignment.md): AC9HP8P01–P02 for Years 7–8 and AC9HP10P01–P02 for Years 9–10, part of the Personal, social and community health strand, plus the Personal and Social and Ethical Understanding capabilities. Say “gives practice in” or “supports”, never “covers” or “delivers”: nothing in Groundwork is taught or assessed. Name the strand, because there’s nothing for Movement and physical activity. The mapping stops at Year 10, which is where the F–10 curriculum ends. (refs 26, 27)"],
     ["SAY IT","“No teacher or parent can read a student's journal. That's a design decision, not a settings default.”","True and enforced in the schema's row-level security. Lead with it in parent communications rather than burying it — it is the objection you would otherwise spend the meeting on."],
     ["CAREFULLY","“Writing about yourself has measurable benefits.”","True but small. The best meta-analysis of experimental disclosure found an average effect of r = .075 across 146 randomised studies — real, cheap to deliver, and considerably smaller than earlier syntheses claimed. Say “a small, well-replicated benefit”. Never imply it is therapeutic. (ref 22)"],
     ["CAREFULLY","“Character education works.”","The evidence base is real but uneven in quality, and effective programmes share features — multi-year, whole-school, adult modelling — that a self-guided app does not supply on its own. Position Groundwork as the student-facing spine of a character programme, not a replacement for one. (ref 23)"],
@@ -288,6 +289,7 @@ children.push(
     ["NEVER","Anything that positions Groundwork as therapy, treatment, or a mental-health intervention.","The app says “this isn't a therapy app” on its own landing page and in settings, and directs students to Kids Helpline. Marketing must not contradict the product. This also keeps Groundwork out of a regulatory category it is not built for."],
     ["NEVER","Any figure from section 6 attributed to Groundwork itself.","No outcome study of Groundwork exists yet. “Programmes of this kind have been shown to…” is defensible; “Groundwork delivers…” is not, until there is a pilot with pre/post data behind it."],
     ["NEVER","“Track your students' progress”, said to a teacher or school.","There is no teacher dashboard and journals are private by design. Promising visibility that doesn't exist — and shouldn't — sets up a failed implementation. The most Groundwork can offer is completion totals: how many students finish each step, across everyone, with counts under five hidden. There's no per-class or per-student view, so don't promise one, and never anything a student wrote."],
+    ["NEVER","“Covers the HPE curriculum”, or anything implying Groundwork teaches consent, respectful relationships or protective behaviours.","The mapping lists these as gaps, on purpose: they need a teacher, a class and the school’s own respectful relationships programme. A school that buys Groundwork thinking those boxes are ticked has been misled, and will find out. Don’t claim the Aboriginal and Torres Strait Islander cross-curriculum priority either, until the Culture and Heritage review is done."],
   ], { firstBold:true, size:18 }),
 );
 
@@ -295,7 +297,7 @@ children.push(
 const auds = [
   { h:"School leaders", who:"Deputy principals, heads of wellbeing, curriculum coordinators", col:NAVY,
     lead:"“You already run a character programme. This is the part your students do between your assemblies.”",
-    pts:["**Maps to what they report on.** Five CASEL competencies, activity by activity.",
+    pts:["**Maps to what they report on.** Five CASEL competencies, activity by activity, and the HPE curriculum's Identities and change content, code by code.",
          "**No marking, no timetable.** Self-guided, twenty-six mission steps plus a weekly cadence, at the student's pace.",
          "**Age-appropriate by design.** Everyone starts with Mission 1, then the weeks run one at a time. Examples change with life stage. Year 10–11s are offered Your Next Chapter around subject choice, and Year 12s and school leavers get next-year planning — Your Next Chapter, pathways and goals — first. Students who have left school get questions about work and study, not the classroom. Year 7–9 get a nearer future, more concrete tasks, and less to read before each question.",
          "**Defensible.** Every activity has a named framework behind it, and we'll tell you which claims are strong and which are indicative.",
@@ -381,7 +383,7 @@ children.push(
   callout(null, [
     "**Subject:** The part of your character programme students do on their own",
     "Most character programmes are strong on assemblies and thin on what happens between them. Groundwork is the between-them part: four missions that map a student's strengths, values and direction, then ten weeks that turn those into weekly practice — one question, one thing to actually do, no scores and no streaks. It ends with each student writing a Character Code: their story in one sentence, then five to seven commitments in their own words.",
-    "Two things worth knowing up front. Every activity maps to a CASEL competency and I'm happy to send the mapping. And no teacher or parent can read student writing — that's deliberate, and it's why they write honestly.",
+    "Two things worth knowing up front. Every activity maps to a CASEL competency, and to the Identities and change content of the HPE curriculum, and I'm happy to send both mappings. And no teacher or parent can read student writing — that's deliberate, and it's why they write honestly.",
     "We don't have an outcome study yet, so I'd rather run a pilot with pre/post measures than make a claim I can't support. Worth fifteen minutes?",
   ], TEAL, SUNK),
   new Paragraph({ spacing:{ after:60 } }),
@@ -400,7 +402,7 @@ children.push(
   new Paragraph({ children:[ new PageBreak() ] }),
   eyebrow("References"),
   h1("Sources"),
-  p("Items 1, 2, 5–8, 11–13 and 15 are the frameworks Groundwork's activities are built on. Items 3, 4, 9, 10, 14 and 16–25 are the empirical results quoted in this guide. Verified September 2026; items 24 and 25 added October 2026."),
+  p("Items 1, 2, 5–8, 11–13 and 15 are the frameworks Groundwork's activities are built on. Items 3, 4, 9, 10, 14 and 16–25 are the empirical results quoted in this guide. Items 26 and 27 are the Australian documents the curriculum line is mapped against. Verified September 2026; items 24–27 added October 2026."),
   ...[
     ["Erikson, E. H. (1968). *Identity: Youth and Crisis.* Norton.","The adolescent stage the whole programme is organised around, and the keep / rework / leave sort in Mission 4."],
     ["Marcia, J. E. (1966). Development and validation of ego identity status. *Journal of Personality and Social Psychology, 3*(5), 551–558.","Exploration and commitment, the two dimensions the missions are built on."],
@@ -427,9 +429,11 @@ children.push(
     ["Berkowitz, M. W., & Bier, M. C. (2005). *What Works in Character Education: A Research-Driven Guide for Educators.* Character Education Partnership.","109 studies; the features effective character programmes share — the basis for positioning Groundwork as a spine, not a substitute."],
     ["Duke, M. P., Lazarus, A., & Fivush, R. (2008). Knowledge of family history as a clinically useful index of psychological well-being and prognosis: A brief report. *Psychotherapy: Theory, Research, Practice, Training, 45*(2), 268–272.","Knowing more family stories goes with higher self-esteem and a stronger sense of control — Mission 3's conversation."],
     ["Habermas, T., & Bluck, S. (2000). Getting a life: The emergence of the life story in adolescence. *Psychological Bulletin, 126*(5), 748–769.","Finding one theme across your life mostly arrives in late adolescence — why Year 7–9 get more concrete versions of the Through-Line, the story sentence and the yearly paragraph."],
+    ["Australian Curriculum, Assessment and Reporting Authority (ACARA). (2022). *Australian Curriculum: Health and Physical Education, Version 9.0*, and the general capabilities. australiancurriculum.edu.au","The HPE content descriptions and capabilities in the curriculum line; codes checked October 2026."],
+    ["Australian Government Department of Education. (2018). *The Australian Student Wellbeing Framework.* Education Services Australia. studentwellbeinghub.edu.au","The five elements and effective practices Groundwork is mapped against."],
   ].flatMap(([t, n], i) => ref(i + 1, t, n)),
   rule(),
-  p("Internal marketing guide. Product facts are drawn from the Groundwork repository — docs/frameworks.md, src/lib/missions.ts, src/lib/program.ts, src/lib/standard.ts and src/lib/spine.ts — and reflect the build as at October 2026. Re-check the claim ladder in section 7 whenever the product changes.", { size:18, color:FAINT }),
+  p("Internal marketing guide. Product facts are drawn from the Groundwork repository — docs/frameworks.md, docs/curriculum-alignment.md, src/lib/missions.ts, src/lib/program.ts, src/lib/standard.ts and src/lib/spine.ts — and reflect the build as at October 2026. Re-check the claim ladder in section 7 whenever the product changes.", { size:18, color:FAINT }),
   p("Groundwork is not a therapy app and should never be marketed as one. The Kids Helpline number surfaced in the product (1800 55 1800) is Australian; localise before marketing in another region.", { size:18, color:FAINT }),
 );
 
