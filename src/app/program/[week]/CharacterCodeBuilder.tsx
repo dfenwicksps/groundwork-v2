@@ -19,6 +19,8 @@ import {
   type StoryPart,
 } from "@/lib/program";
 import ScaffoldedInput, { TierSwitcher } from "@/components/ScaffoldedInput";
+import { mentionsCrisis } from "@/lib/help";
+import SupportCard from "@/components/help/SupportCard";
 import type { LifeStage } from "@/lib/lifeStage";
 
 const STARTERS = [
@@ -69,6 +71,10 @@ export default function CharacterCodeBuilder({
   const [story, setStory] = useState<LifeStory>(savedStory ?? EMPTY_STORY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // On-device phrase check, as everywhere else students write: nothing is
+  // saved or sent, it only puts help on screen. Kept across the switch to the
+  // saved view, which is where the student lands after saving.
+  const [supportNeeded, setSupportNeeded] = useState(false);
 
   const filled = lines.filter((l) => l.trim()).length;
   const storyDone = storyComplete(story);
@@ -87,6 +93,7 @@ export default function CharacterCodeBuilder({
     setBusy(true);
     setError(null);
     const commitments = lines.map((l) => l.trim()).filter(Boolean);
+    setSupportNeeded(mentionsCrisis(codeToResponse(commitments, story)));
     const { error: err } = await db.from("journal_entries").insert({
       user_id: userId,
       mission_id: 1,
@@ -112,6 +119,7 @@ export default function CharacterCodeBuilder({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           My Character Code
         </h2>
+        {supportNeeded && <SupportCard />}
         <div
           className="rounded-2xl p-5 text-white"
           style={{ background: "var(--navy)" }}
@@ -178,6 +186,7 @@ export default function CharacterCodeBuilder({
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
         Two parts: the story it stands on, then what you&apos;ll do about it.
       </p>
+      {supportNeeded && <SupportCard />}
       <div className="card p-5 mb-3">
         <TierSwitcher className="mb-4" />
         <div className="text-sm font-semibold text-ink mb-1">1 · My story, in one sentence</div>
