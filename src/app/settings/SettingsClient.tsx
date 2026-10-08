@@ -292,9 +292,9 @@ export default function SettingsClient({
           <h2 className="font-semibold text-ink mb-1">Privacy</h2>
           <p className="text-sm text-ink-muted mb-4">
             After a reflection, Groundwork can offer three follow-up questions to
-            sit with. Writing those means sending the start of what you wrote to
-            an outside service. Turn this off and nothing you write ever leaves
-            our database.
+            sit with. They&apos;re written by AI (Claude, made by Anthropic), which
+            means sending the start of what you wrote to Anthropic. Turn this off
+            and nothing you write ever leaves our database.
           </p>
           <button
             type="button"
@@ -328,7 +328,7 @@ export default function SettingsClient({
               </span>
               <span className="block text-xs text-ink-muted mt-0.5">
                 {aiEnabled
-                  ? "Your reflections are sent for question-writing only, and never used to train anything."
+                  ? "Your reflections are sent to the AI for question-writing only, and never used to train it."
                   : "Nothing you write leaves Groundwork."}
               </span>
             </span>

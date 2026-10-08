@@ -29,6 +29,15 @@ export default async function ActivityPage({
   const lifeStage = await getLifeStage(supabase, user.id);
   const activity = activityForStage(baseActivity, lifeStage);
 
+  // Whether this student's writing goes to the AI for follow-up questions, so
+  // the step can say so before they finish (and not promise questions if not).
+  const { data: _prefs } = await (supabase as any)
+    .from("users")
+    .select("ai_reflections_enabled")
+    .eq("id", user.id)
+    .single();
+  const aiReflectionsEnabled: boolean = _prefs?.ai_reflections_enabled ?? true;
+
   // Check if already completed
   const { data: _existing } = await supabase
     .from("mission_progress")
@@ -201,6 +210,7 @@ export default async function ActivityPage({
       strengthProfile={strengthProfile}
       recalled={recalled}
       lifeStage={lifeStage}
+      aiReflectionsEnabled={aiReflectionsEnabled}
     />
   );
 }
