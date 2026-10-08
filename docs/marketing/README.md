@@ -9,6 +9,7 @@ the product is built on — this directory records what may be *claimed* about i
 | `marketing-guide.html` | The extended guide. Ten sections: positioning, benefit by mission, the ten weeks, the number bank, the claim ladder, messaging by audience, objection handling, copy blocks, 27 references. |
 | `Groundwork-Marketing-Guide.docx` | The same guide as a Word document, for sending to people who won't open an HTML file. Generated — edit the source, not this. |
 | `build-docx.js` | Generates the `.docx`. See below. |
+| `duty-of-care-brief.html` | A single A4 brief for principals and wellbeing leads before a rollout: what the app does when a student may be at risk, what stays with the school, and the AI disclosure (Australian Framework for Generative AI in Schools, principle 3.2). Same print stylesheet as the parent handout. Re-check it whenever the risk checks or the AI feature change. |
 | `parent-onepager.html` | A single A4 handout for parent evenings. Prints from the browser; the print stylesheet swaps in an ink-aware palette so it also reads in mono. |
 
 Both HTML files are standalone — no build step, no dependencies beyond a webfont

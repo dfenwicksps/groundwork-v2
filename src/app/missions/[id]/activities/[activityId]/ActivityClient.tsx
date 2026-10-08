@@ -54,6 +54,8 @@ interface Props {
   mission: Mission;
   activity: Activity;
   userId: string;
+  /** The student's Settings choice: send writing to the AI for follow-up questions. */
+  aiReflectionsEnabled: boolean;
   isCompleted: boolean;
   existingEntry: JournalEntry | null;
   existingChallenge: Challenge | null;
@@ -307,6 +309,7 @@ function ConversationalActivity({
   compass,
   recalled,
   lifeStage,
+  aiReflectionsEnabled,
   onComplete,
 }: {
   mission: Mission;
@@ -314,6 +317,7 @@ function ConversationalActivity({
   userId: string;
   recalled?: { label: string; text: string } | null;
   lifeStage: LifeStage;
+  aiReflectionsEnabled: boolean;
   existingEntry: JournalEntry | null;
   /** Latest saved response even when the step isn't marked complete (e.g.
       after a mission restart) — shown as a reference, never auto-filled. */
@@ -654,7 +658,7 @@ function ConversationalActivity({
 
     // Request AI reflection async (non-blocking, with a timeout so the done
     // screen never shows an eternal spinner).
-    if (finalResponse.length > 20 && entryId && !activity.keepFromAi) {
+    if (sendsToAi && finalResponse.length > 20 && entryId) {
       fetchAiReflection(finalResponse, entryId);
     } else {
       setReflectionFailed(true);
@@ -735,6 +739,9 @@ function ConversationalActivity({
   }
 
   const isLastQuestion = qIdx === questions.length - 1;
+  // Writing leaves Groundwork only when the student hasn't turned follow-up
+  // questions off and the step isn't one of the never-sent ones.
+  const sendsToAi = aiReflectionsEnabled && !activity.keepFromAi;
   const progressPct = Math.round((qIdx / questions.length) * 100);
 
   // ── Intro phase ────────────────────────────────────────────────────────────
@@ -1412,6 +1419,17 @@ function ConversationalActivity({
         {/* Fixed input bar */}
         <div className="conv-input-bar">
           <div className="max-w-lg mx-auto">
+            {/* Said before the writing is sent, not only on the result: the
+                questions are written by AI, and the student can say no. */}
+            {isLastQuestion && sendsToAi && !saveError && (
+              <p className="text-xs text-[--ink-muted] leading-relaxed mb-2">
+                When you finish, AI reads the start of what you wrote and suggests
+                three questions. Nobody else sees it.{" "}
+                <Link href="/settings" className="underline underline-offset-2 hover:text-[--ink]">
+                  Turn this off
+                </Link>
+              </p>
+            )}
             {saveError ? (
               // Save failed — every answer is still in memory (and in the local
               // draft). Offer a retry instead of pretending it worked.
@@ -1729,7 +1747,7 @@ function ConversationalActivity({
 
           {/* Non-blocking note while the reflection generates — with an honest
               fallback once it fails or times out, so no eternal spinner. */}
-          {!supportNeeded && !aiReflection && turns.length > 0 && !activity.keepFromAi && (
+          {!supportNeeded && !aiReflection && turns.length > 0 && sendsToAi && (
             <div
               role="status"
               className="rounded-2xl p-4 mb-8 border border-dashed border-[--border] bg-white"
@@ -1744,8 +1762,8 @@ function ConversationalActivity({
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 rounded-full border-2 border-[--teal] border-t-transparent animate-spin flex-shrink-0" />
                   <p className="text-xs text-[--ink-muted] leading-relaxed">
-                    A reflection is being written for you — it&apos;ll appear here
-                    and in your journal. Feel free to carry on in the meantime.
+                    AI is writing three questions for you — they&apos;ll appear
+                    here and in your journal. Feel free to carry on in the meantime.
                   </p>
                 </div>
               )}
@@ -2867,6 +2885,7 @@ export default function ActivityClient({
   strengthProfile,
   recalled,
   lifeStage,
+  aiReflectionsEnabled,
 }: Props) {
   const db = createClient() as any;
 
@@ -2992,6 +3011,7 @@ export default function ActivityClient({
       compass={compass}
       recalled={recalled}
       lifeStage={lifeStage}
+      aiReflectionsEnabled={aiReflectionsEnabled}
       onComplete={() => handleComplete()}
     />
   );

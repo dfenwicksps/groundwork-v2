@@ -83,9 +83,11 @@ export default function PrivacyPage() {
         </p>
         <p>
           <strong>The one exception is the follow-up questions.</strong> When you
-          finish a reflection, the app can offer three questions to sit with. To
-          write those, the first part of what you wrote is sent to Anthropic&apos;s
-          API, which generates the questions and sends them back. Anthropic does
+          finish a reflection, the app can offer three questions to sit with.
+          They&apos;re written by AI: the first part of what you wrote is sent to
+          Claude, an AI model made by Anthropic, which writes the questions and
+          sends them back. They&apos;re labelled &ldquo;Suggested by AI&rdquo;
+          wherever they appear, and the step tells you before you finish. Anthropic does
           not use API content to train its models. If you would rather that never
           happened, turn the follow-up questions off in{" "}
           <Link href="/settings" className="text-teal underline">Settings</Link>{" "}
