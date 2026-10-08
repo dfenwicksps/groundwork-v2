@@ -426,4 +426,7 @@ The VIA classification (positive psychology) supplies the *what* of character;
 the CASEL frame describes the *how* of the skills being practised. Together they
 ground the app's claim to be a character-education and SEL-aligned platform.
 
+For the Australian Curriculum (v9 HPE and general capabilities) and the Australian
+Student Wellbeing Framework, see [`curriculum-alignment.md`](curriculum-alignment.md).
+
 _Last updated: 2026-08-12._
