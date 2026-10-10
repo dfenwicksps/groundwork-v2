@@ -75,7 +75,7 @@ export default function ConfirmEmailBanner() {
 
   return (
     <div className="bg-amber-50 border-b border-amber-200">
-      <div className="max-w-2xl mx-auto px-4 py-2.5 flex items-start gap-3 text-sm">
+      <div className="max-w-2xl lg:max-w-6xl mx-auto px-4 lg:px-10 py-2.5 flex items-start gap-3 text-sm">
         <span aria-hidden className="mt-0.5">✉️</span>
         <div className="flex-1 min-w-0">
           <p className="text-ink leading-snug">

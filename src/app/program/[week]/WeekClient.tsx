@@ -273,7 +273,7 @@ export default function WeekClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-7">
+      <div className="page-read space-y-7">
         {/* Header */}
         <div data-animate="1">
           <Link
@@ -287,7 +287,7 @@ export default function WeekClient({
             {done && <span className="text-sage font-semibold"> · complete</span>}
           </p>
           <h1
-            className="text-3xl text-navy mb-3"
+            className="text-3xl lg:text-4xl text-navy mb-3"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             {week.emoji} {week.title}

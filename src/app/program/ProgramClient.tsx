@@ -48,11 +48,11 @@ export default function ProgramClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
-        <div data-animate="1">
+      <div className="page space-y-8">
+        <div data-animate="1" className="lg:max-w-2xl">
           <p className="text-sm text-ink-muted mb-1">Character program · 10 weeks</p>
           <h1
-            className="text-3xl text-navy mb-2"
+            className="text-3xl lg:text-4xl text-navy mb-2"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             This week.
@@ -62,17 +62,21 @@ export default function ProgramClient({
             Contribution is the evidence. Each week has one question to sit with
             and one thing to actually do.
           </p>
+          {/* Which track comes first, in one sentence. */}
+          <p className="text-sm text-ink leading-relaxed mt-4">{spine.orderLine}</p>
         </div>
 
-        {/* Which track comes first, in one sentence. */}
-        <p className="text-sm text-ink leading-relaxed -mt-4">{spine.orderLine}</p>
-
+        {/* One column on a phone, in the order the order-* classes give. On
+            desktop this week and the weekly five keep the wide column; the
+            ten weeks are the map beside them. */}
+        <div className="split">
+        <div className="split-col">
         {/* Mission 1 is the only hard prerequisite: weeks 1 and 2 are made
             out of the strengths and values it maps. Missions 2-4 aren't listed
             here as homework — each unlocks the one week built on it, when the
             student reaches it. */}
         {spine.missionsFirst && outstanding.length > 0 && (
-          <div data-animate="2">
+          <div data-animate="2" className="order-1">
             <div className="rounded-2xl border-2 border-dashed border-navy/25 bg-white p-5">
               <div className="text-xs font-bold uppercase tracking-widest mb-2 text-navy">
                 Before week 1
@@ -117,7 +121,7 @@ export default function ProgramClient({
         )}
 
         {!ready && (
-          <div className="card p-5 flex items-center gap-4" data-animate="2">
+          <div className="card p-5 flex items-center gap-4 order-2" data-animate="2">
             <span className="text-3xl flex-shrink-0" aria-hidden>
               🧰
             </span>
@@ -133,8 +137,63 @@ export default function ProgramClient({
           </div>
         )}
 
+        {/* The week being offered */}
+        {!allDone && (
+          <div data-animate="2" className="order-4">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              {progress[next.week]
+                ? "Carry on with"
+                : spine.missionsFirst
+                  ? "Waiting for you"
+                  : "Up next"}
+            </h2>
+            <Link
+              href={`/program/${next.week}`}
+              className="block rounded-2xl p-5 lg:p-8 text-white"
+              style={{ background: "var(--navy)" }}
+            >
+              <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
+                Week {next.week} · {next.emoji}
+              </div>
+              <p
+                className="text-xl lg:text-3xl mb-2"
+                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+              >
+                {next.title}
+              </p>
+              <p className="text-sm leading-relaxed opacity-90">
+                {weekForStage(next, lifeStage).challenge.title}
+              </p>
+            </Link>
+          </div>
+        )}
+
+        {allDone && (
+          <div
+            data-animate="2"
+            className="rounded-2xl p-5 lg:p-8 text-white order-4"
+            style={{ background: "var(--navy)" }}
+          >
+            <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
+              All ten weeks
+            </div>
+            <p className="text-sm leading-relaxed">
+              You&apos;ve been through the whole program. The weekly five below
+              is the part that keeps going — it&apos;s the same work, just
+              without the scaffolding.
+            </p>
+          </div>
+        )}
+
+        {/* The weekly heartbeat */}
+        <div className="order-5">
+          <WeeklyFiveSection userId={userId} checkins={weekly} ready={ready} />
+        </div>
+        </div>
+
+        <div className="split-col">
         {/* Progress */}
-        <div data-animate="2">
+        <div data-animate="2" className="order-3">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
               Progress
@@ -154,59 +213,8 @@ export default function ProgramClient({
           </div>
         </div>
 
-        {/* The week being offered */}
-        {!allDone && (
-          <div data-animate="2">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              {progress[next.week]
-                ? "Carry on with"
-                : spine.missionsFirst
-                  ? "Waiting for you"
-                  : "Up next"}
-            </h2>
-            <Link
-              href={`/program/${next.week}`}
-              className="block rounded-2xl p-5 text-white"
-              style={{ background: "var(--navy)" }}
-            >
-              <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
-                Week {next.week} · {next.emoji}
-              </div>
-              <p
-                className="text-xl mb-2"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-              >
-                {next.title}
-              </p>
-              <p className="text-sm leading-relaxed opacity-90">
-                {weekForStage(next, lifeStage).challenge.title}
-              </p>
-            </Link>
-          </div>
-        )}
-
-        {allDone && (
-          <div
-            data-animate="2"
-            className="rounded-2xl p-5 text-white"
-            style={{ background: "var(--navy)" }}
-          >
-            <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
-              All ten weeks
-            </div>
-            <p className="text-sm leading-relaxed">
-              You&apos;ve been through the whole program. The weekly five below
-              is the part that keeps going — it&apos;s the same work, just
-              without the scaffolding.
-            </p>
-          </div>
-        )}
-
-        {/* The weekly heartbeat */}
-        <WeeklyFiveSection userId={userId} checkins={weekly} ready={ready} />
-
         {/* All ten weeks */}
-        <div data-animate="4">
+        <div data-animate="4" className="order-6">
           <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
             The ten weeks
           </h2>
@@ -261,6 +269,8 @@ export default function ProgramClient({
               );
             })}
           </div>
+        </div>
+        </div>
         </div>
 
         <p className="text-xs text-ink-muted leading-relaxed pt-2 border-t border-surface-border">

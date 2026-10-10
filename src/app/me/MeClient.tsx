@@ -189,12 +189,12 @@ export default function MeClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      <div className="page space-y-8">
         {/* Header */}
         <div data-animate="1">
           <p className="text-sm text-ink-muted mb-1">Your profile</p>
           <h1
-            className="text-3xl text-navy"
+            className="text-3xl lg:text-4xl text-navy"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             {firstName}.
@@ -207,7 +207,7 @@ export default function MeClient({
             className="sticky top-0 z-20 -mx-4 px-4 py-2"
             style={{ background: "rgba(250,245,236,0.95)", backdropFilter: "blur(6px)" }}
           >
-            <div className="flex gap-1.5" role="tablist">
+            <div className="flex gap-1.5 lg:max-w-xl" role="tablist">
               {TABS.map((t) => (
                 <button
                   key={t.key}
@@ -215,7 +215,7 @@ export default function MeClient({
                   aria-selected={tab === t.key}
                   onClick={() => setTab(t.key)}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl text-xs font-semibold transition-all",
+                    "flex-1 flex flex-col lg:flex-row lg:justify-center items-center gap-0.5 lg:gap-2 py-2 lg:py-2.5 rounded-xl text-xs lg:text-sm font-semibold transition-all",
                     tab === t.key
                       ? "bg-navy text-white"
                       : "bg-white text-ink-muted border border-surface-border"
@@ -229,17 +229,23 @@ export default function MeClient({
           </div>
         )}
 
+        {/* The profile tab. One column on a phone, in the order the order-*
+            classes give; on desktop the strengths keep the left column and
+            everything made out of them sits beside it. */}
+        {(tab === "profile" || !hasProfile) && (
+          <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
+          <div className="split-col">
         {/* Purpose profile — the one-line "who I am" artefact */}
         {hasProfile && tab === "profile" && (
           <div
             data-animate="1"
-            className="rounded-2xl p-4 text-white"
+            className="rounded-2xl p-4 lg:p-6 text-white order-1"
             style={{ background: "var(--navy)" }}
           >
             <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
               Your profile in one line
             </div>
-            <p className="text-sm leading-relaxed">
+            <p className="text-sm lg:text-base leading-relaxed">
               Leads with <span className="font-semibold">{STRENGTH_BY_KEY[top5[0]]?.name}</span>
               {values[0] && (
                 <> · stands for <span className="font-semibold">{values[0]}</span></>
@@ -251,75 +257,8 @@ export default function MeClient({
           </div>
         )}
 
-        {/* My story — past, present and future in one place (/story) */}
-        {hasProfile && tab === "profile" && (
-          <Link href="/story" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all" data-animate="2">
-            <span className="w-10 h-10 rounded-xl bg-navy text-white flex items-center justify-center flex-shrink-0" aria-hidden>
-              ✎
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-ink">My story</div>
-              <p className="text-xs text-ink-muted leading-relaxed">
-                Where you&apos;ve come from, who you are and where you&apos;re heading, in one place.
-              </p>
-            </div>
-            <span className="text-ink-muted" aria-hidden>→</span>
-          </Link>
-        )}
-
-        {/* Character Code — the program's week-10 artefact, the strongest
-            single statement of identity the student has made */}
-        {hasProfile && tab === "profile" && characterCode.length > 0 && (
-          <div data-animate="2">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              My Character Code
-            </h2>
-            <div className="card p-5">
-              {characterStory && (
-                <p
-                  className="text-ink leading-relaxed mb-4 pb-4 border-b border-border"
-                  style={{ fontFamily: "var(--font-story)" }}
-                >
-                  {storySentence(characterStory)}
-                </p>
-              )}
-              <ol className="space-y-2.5">
-                {characterCode.map((c, i) => (
-                  <li key={i} className="text-sm text-ink leading-relaxed flex gap-2.5">
-                    <span className="text-ink-muted flex-shrink-0 tabular-nums">
-                      {i + 1}.
-                    </span>
-                    {c}
-                  </li>
-                ))}
-              </ol>
-              <Link
-                href="/program/10"
-                className="text-xs text-teal hover:underline mt-3 inline-block"
-              >
-                Revisit it →
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* The staged student journey: Discover → … → Launch */}
-        {hasProfile && tab === "profile" && (
-          <JourneyStrip
-            hasProfile={hasProfile}
-            hasValues={values.length > 0}
-            hasHabits={!!habitSaved}
-            hasMoral={!!moralProfile}
-            hasStandard={standardCheckins.length > 0}
-            hasFocus={becoming.focus.length > 0}
-            hasPractice={!!activePractice || recentPractices.length > 0}
-            hasSupport={supportCount > 0}
-            hasGoals={goals.length > 0}
-          />
-        )}
-
         {!hasProfile ? (
-          <div className="card p-8 text-center" data-animate="2">
+          <div className="card p-8 text-center order-5" data-animate="2">
             <div className="text-4xl mb-3" aria-hidden>🧭</div>
             <h2
               className="text-xl text-navy mb-2"
@@ -341,7 +280,7 @@ export default function MeClient({
         ) : tab === "profile" ? (
           <>
             {/* Signature strengths */}
-            <div data-animate="2">
+            <div data-animate="2" className="order-5">
               <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
                 Your signature strengths
               </h2>
@@ -384,7 +323,7 @@ export default function MeClient({
             </div>
 
             {/* Growth edges */}
-            <div data-animate="3">
+            <div data-animate="3" className="order-5">
               <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
                 Growth edges
               </h2>
@@ -414,7 +353,7 @@ export default function MeClient({
             </div>
 
             {/* Full ranking */}
-            <div data-animate="4">
+            <div data-animate="4" className="order-5">
               <button
                 onClick={() => setShowAll((v) => !v)}
                 className="flex items-center gap-2 text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3 w-full"
@@ -472,7 +411,7 @@ export default function MeClient({
             </div>
 
             {/* Retake */}
-            <div data-animate="5" className="text-center">
+            <div data-animate="5" className="text-center order-5">
               <Link
                 href="/missions/1/activities/strengths-mapping"
                 className="text-sm text-teal hover:underline"
@@ -482,10 +421,103 @@ export default function MeClient({
             </div>
           </>
         ) : null}
+          </div>
+
+          <div className="split-col">
+        {/* My story — past, present and future in one place (/story) */}
+        {hasProfile && tab === "profile" && (
+          <Link href="/story" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all order-2" data-animate="2">
+            <span className="w-10 h-10 rounded-xl bg-navy text-white flex items-center justify-center flex-shrink-0" aria-hidden>
+              ✎
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-ink">My story</div>
+              <p className="text-xs text-ink-muted leading-relaxed">
+                Where you&apos;ve come from, who you are and where you&apos;re heading, in one place.
+              </p>
+            </div>
+            <span className="text-ink-muted" aria-hidden>→</span>
+          </Link>
+        )}
+
+        {/* Character Code — the program's week-10 artefact, the strongest
+            single statement of identity the student has made */}
+        {hasProfile && tab === "profile" && characterCode.length > 0 && (
+          <div data-animate="2" className="order-3">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              My Character Code
+            </h2>
+            <div className="card p-5">
+              {characterStory && (
+                <p
+                  className="text-ink leading-relaxed mb-4 pb-4 border-b border-border"
+                  style={{ fontFamily: "var(--font-story)" }}
+                >
+                  {storySentence(characterStory)}
+                </p>
+              )}
+              <ol className="space-y-2.5">
+                {characterCode.map((c, i) => (
+                  <li key={i} className="text-sm text-ink leading-relaxed flex gap-2.5">
+                    <span className="text-ink-muted flex-shrink-0 tabular-nums">
+                      {i + 1}.
+                    </span>
+                    {c}
+                  </li>
+                ))}
+              </ol>
+              <Link
+                href="/program/10"
+                className="text-xs text-teal hover:underline mt-3 inline-block"
+              >
+                Revisit it →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* The staged student journey: Discover → … → Launch */}
+        {hasProfile && tab === "profile" && (
+          <div className="order-4">
+          <JourneyStrip
+            hasProfile={hasProfile}
+            hasValues={values.length > 0}
+            hasHabits={!!habitSaved}
+            hasMoral={!!moralProfile}
+            hasStandard={standardCheckins.length > 0}
+            hasFocus={becoming.focus.length > 0}
+            hasPractice={!!activePractice || recentPractices.length > 0}
+            hasSupport={supportCount > 0}
+            hasGoals={goals.length > 0}
+          />
+          </div>
+        )}
+
+        {/* Values */}
+        {values.length > 0 && tab === "profile" && (
+          <div data-animate="5" className="order-6">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+              Your chosen values
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {values.map((v) => (
+                <span
+                  key={v}
+                  className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
+                >
+                  {v}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+          </div>
+          </div>
+        )}
 
         {/* Reflect — how I decide + my current patterns */}
         {hasProfile && tab === "reflect" && (
-          <>
+          <div className="space-y-8 lg:max-w-3xl">
             {/* The recurring loop leads — the two below it are done once. */}
             <StandardSection
               userId={userId}
@@ -505,12 +537,12 @@ export default function MeClient({
               </Link>
               .
             </p>
-          </>
+          </div>
         )}
 
         {/* Grow — choose qualities + practise them */}
         {hasProfile && tab === "grow" && (
-          <>
+          <div className="space-y-8 lg:max-w-3xl">
             {/* The same artefact program week 1 builds — one record, two
                 doors. See src/lib/becoming.ts. */}
             <BecomingQualities
@@ -541,12 +573,12 @@ export default function MeClient({
             <SelvesSection />
             <BoostsSection />
             {!featuresReady && soonNote}
-          </>
+          </div>
         )}
 
         {/* Future — pathways + goals */}
         {hasProfile && tab === "future" && (
-          <>
+          <div className="space-y-8 lg:max-w-3xl">
             {/* The guided part of the tab: decide, and go and find out. */}
             <NextChapterSection plan={nextChapter} />
             {/* The picture the pathways and goals below are for. */}
@@ -570,27 +602,9 @@ export default function MeClient({
             ) : (
               soonNote
             )}
-          </>
-        )}
-
-        {/* Values */}
-        {values.length > 0 && tab === "profile" && (
-          <div data-animate="5">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              Your chosen values
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {values.map((v) => (
-                <span
-                  key={v}
-                  className="px-3 py-1.5 rounded-lg bg-navy text-white text-sm font-medium"
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
           </div>
         )}
+
 
         {/* Settings link */}
         <div data-animate="6" className="pt-2 border-t border-surface-border">

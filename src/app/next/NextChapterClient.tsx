@@ -159,13 +159,13 @@ export default function NextChapterClient({
 
   return (
     <AppShell>
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-lg lg:max-w-2xl mx-auto px-4 py-8 space-y-6 lg:py-10">
         <div data-animate="1">
           <Link href="/me?tab=future" className="text-xs text-teal hover:underline">
             ← Future
           </Link>
           <h1
-            className="text-3xl text-navy mt-3 mb-2"
+            className="text-3xl lg:text-4xl text-navy mt-3 mb-2"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Your next chapter

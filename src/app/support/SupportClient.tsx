@@ -67,11 +67,11 @@ export default function SupportClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      <div className="page space-y-8">
         {/* Header */}
         <div data-animate="1">
           <h1
-            className="text-3xl text-navy mb-2"
+            className="text-3xl lg:text-4xl text-navy mb-2"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Your support circle
@@ -82,8 +82,13 @@ export default function SupportClient({
           </p>
         </div>
 
+        {/* One column on a phone, in the order the order-* classes give. On
+            desktop the help lines keep the wide column and the circle sits
+            beside them, so both are on screen without scrolling. */}
+        <div className="split">
+        <div className="split-col">
         {/* Help first: someone who opens this page may need it now. */}
-        <section id="get-help" data-animate="2" className="mb-8 scroll-mt-6" aria-labelledby="get-help-heading">
+        <section id="get-help" data-animate="2" className="mb-8 lg:mb-0 scroll-mt-6 order-1" aria-labelledby="get-help-heading">
           <h2
             id="get-help-heading"
             className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2"
@@ -97,8 +102,39 @@ export default function SupportClient({
           <HelpLines />
         </section>
 
+        {/* Conversation starters */}
+        <div data-animate="3" className="order-3">
+          <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+            How to start a conversation
+          </h2>
+          <div className="card p-5">
+            <p className="text-sm text-ink-muted mb-4">
+              Sometimes the hardest part is knowing how to begin. Here are some
+              ways you could open the conversation:
+            </p>
+            <div className="space-y-3">
+              {CONVERSATION_STARTERS.map((starter, i) => (
+                <div
+                  key={i}
+                  className="p-3 rounded-xl bg-surface-muted border border-surface-border"
+                >
+                  <p className="text-sm text-ink leading-relaxed italic">
+                    {starter}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div className="split-col">
         {/* Contacts */}
-        <div data-animate="2">
+        <div data-animate="2" className="order-2">
+          {/* The page title covers this on a phone; beside the help lines it needs its own. */}
+          <h2 className="hidden lg:block text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+            In your corner
+          </h2>
           {contacts.length > 0 ? (
             <div className="space-y-2 mb-4">
               {contacts.map((contact) => (
@@ -212,30 +248,7 @@ export default function SupportClient({
             </div>
           )}
         </div>
-
-        {/* Conversation starters */}
-        <div data-animate="3">
-          <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            How to start a conversation
-          </h2>
-          <div className="card p-5">
-            <p className="text-sm text-ink-muted mb-4">
-              Sometimes the hardest part is knowing how to begin. Here are some
-              ways you could open the conversation:
-            </p>
-            <div className="space-y-3">
-              {CONVERSATION_STARTERS.map((starter, i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-xl bg-surface-muted border border-surface-border"
-                >
-                  <p className="text-sm text-ink leading-relaxed italic">
-                    {starter}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+        </div>
         </div>
       </div>
     </AppShell>

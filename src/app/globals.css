@@ -61,6 +61,7 @@
 
   /* Layout constants */
   --nav-height: 4rem;
+  --rail-width: 16rem; /* the side rail that replaces the tab bar from lg up */
 }
 
 /* Dark mode follows the phone. Surfaces go deep blue-black; brand colours are
@@ -311,9 +312,39 @@ body {
     transition: width 0.4s ease;
   }
 
+  /* Page widths. One column on a phone and tablet; from lg the tab bar
+     becomes a side rail (AppShell) and a page has room for a second column.
+     .page-read is for the screens that stay one column at any width: the
+     ones you read or write your way down. */
+  .page {
+    @apply mx-auto max-w-2xl px-4 py-8 lg:max-w-6xl lg:px-10 lg:py-10;
+  }
+
+  .page-read {
+    @apply mx-auto max-w-2xl px-4 py-8 lg:max-w-3xl lg:px-10 lg:py-10;
+  }
+
+  /* Main column beside a rail on desktop */
+  .split {
+    @apply flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] lg:items-start lg:gap-10;
+  }
+
+  /* A column of a .split: invisible on a phone, where its children sit
+     directly in the page and keep their phone order (order-*). */
+  .split-col {
+    @apply contents lg:flex lg:flex-col lg:gap-8;
+  }
+
   /* Mobile layout helpers */
   .pb-nav {
     padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 0.5rem);
+  }
+
+  @media (min-width: 1024px) {
+    /* No tab bar to clear */
+    .pb-nav {
+      padding-bottom: 2.5rem;
+    }
   }
 
   .pt-safe {
