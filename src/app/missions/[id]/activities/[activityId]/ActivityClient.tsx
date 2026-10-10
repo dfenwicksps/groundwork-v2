@@ -750,7 +750,7 @@ function ConversationalActivity({
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {/* Minimal header */}
         <div className="activity-header">
-          <div className="max-w-lg mx-auto flex items-center gap-3">
+          <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
             <ActivityBackLink missionId={mission.id} />
             <span className="text-xs font-semibold text-[--ink-muted] tracking-wide truncate">
               {mission.title}
@@ -761,7 +761,7 @@ function ConversationalActivity({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-lg mx-auto px-5 pt-8 pb-40" data-animate="1">
+          <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8 pb-40" data-animate="1">
             {/* Activity header */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-3">
@@ -1081,7 +1081,7 @@ function ConversationalActivity({
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {/* Header with progress */}
         <div className="activity-header">
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-lg lg:max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-2">
               <button
                 onClick={() => {
@@ -1136,7 +1136,7 @@ function ConversationalActivity({
           className="flex-1 overflow-y-auto"
           style={{ paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))" }}
         >
-          <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
+          <div className="max-w-lg lg:max-w-2xl mx-auto px-4 pt-6 space-y-4">
             {/* Completed turns */}
             {turns.map((turn, i) => (
               <div key={i} className="group">
@@ -1418,7 +1418,7 @@ function ConversationalActivity({
 
         {/* Fixed input bar */}
         <div className="conv-input-bar">
-          <div className="max-w-lg mx-auto">
+          <div className="max-w-lg lg:max-w-2xl mx-auto">
             {/* Said before the writing is sent, not only on the result: the
                 questions are written by AI, and the student can say no. */}
             {isLastQuestion && sendsToAi && !saveError && (
@@ -1509,7 +1509,7 @@ function ConversationalActivity({
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
       <div className="activity-header">
-        <div className="max-w-lg mx-auto flex items-center gap-3">
+        <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
           <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
           <GetHelpButton variant="inline" />
@@ -1517,7 +1517,7 @@ function ConversationalActivity({
       </div>
 
       <div className="flex-1 overflow-y-auto pb-nav">
-        <div className="max-w-lg mx-auto px-5 pt-8">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8">
           {/* Celebration */}
           <div className="text-center mb-8" data-animate="1">
             <div className="text-4xl mb-4">✓</div>
@@ -1924,13 +1924,13 @@ function ValuesPickerActivity({
     return (
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         <div className="activity-header">
-          <div className="max-w-lg mx-auto flex items-center gap-3">
+          <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
             <ActivityBackLink missionId={mission.id} />
             <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
             <GetHelpButton variant="inline" />
           </div>
         </div>
-        <div className="max-w-lg mx-auto px-5 pt-8 pb-nav">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8 pb-nav">
           <div className="text-center mb-8">
             <div className="text-4xl mb-4">✓</div>
             <h2 className="text-2xl text-[--navy] mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
@@ -1993,7 +1993,7 @@ function ValuesPickerActivity({
   return (
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       <div className="activity-header">
-        <div className="max-w-lg mx-auto flex items-center gap-3">
+        <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
           <span className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
           <span className="text-xs text-[--ink-muted]">
@@ -2003,7 +2003,7 @@ function ValuesPickerActivity({
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 pt-6 pb-nav">
+      <div className="max-w-lg lg:max-w-2xl mx-auto px-4 pt-6 pb-nav">
         <div className="card p-5 mb-5">
           <p className="text-[--ink] leading-relaxed">{activity.prompt}</p>
         </div>
@@ -2281,7 +2281,7 @@ function ChallengeActivity({
 
   const header = (
     <div className="activity-header">
-      <div className="max-w-lg mx-auto flex items-center gap-3">
+      <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
         <GetHelpButton variant="inline" />
@@ -2293,7 +2293,7 @@ function ChallengeActivity({
     return (
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         {header}
-        <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
           <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "var(--gold)" }}>
             <p className="text-xs font-semibold text-[--gold-text] mb-2 uppercase tracking-wide">Check in</p>
             <p className="text-[--ink] text-sm leading-relaxed">{existingChallenge?.challenge_text}</p>
@@ -2358,7 +2358,7 @@ function ChallengeActivity({
     return (
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         {header}
-        <div className="max-w-lg mx-auto px-5 pt-8 pb-nav text-center">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8 pb-nav text-center">
           <div className="text-4xl mb-4">🎯</div>
           <h2 className="text-xl text-[--navy] mb-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             Challenge accepted.
@@ -2404,7 +2404,7 @@ function ChallengeActivity({
   return (
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
-      <div className="max-w-lg mx-auto px-5 pt-6 pb-nav">
+      <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
         <div
           className="rounded-2xl p-6 mb-6 text-center"
           style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
@@ -2580,7 +2580,7 @@ function StrengthsAssessmentActivity({
 
   const header = (label: string) => (
     <div className="activity-header">
-      <div className="max-w-lg mx-auto flex items-center gap-3">
+      <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
         <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
         <GetHelpButton variant="inline" />
@@ -2594,7 +2594,7 @@ function StrengthsAssessmentActivity({
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {header(mission.title)}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-lg mx-auto px-5 pt-8 pb-24" data-animate="1">
+          <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8 pb-24" data-animate="1">
             <div className="mb-6">
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
@@ -2645,7 +2645,7 @@ function StrengthsAssessmentActivity({
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {header(activity.title)}
         <div className="flex-1 overflow-y-auto pb-nav">
-          <div className="max-w-lg mx-auto px-5 pt-8">
+          <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8">
             <div className="text-center mb-6" data-animate="1">
               <div className="text-4xl mb-3" aria-hidden>🧭</div>
               <h2
@@ -2751,7 +2751,7 @@ function StrengthsAssessmentActivity({
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
       <div className="activity-header">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg lg:max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={() => (idx > 0 ? setIdx(idx - 1) : setPhase("intro"))}
@@ -2784,7 +2784,7 @@ function StrengthsAssessmentActivity({
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ paddingBottom: "calc(6rem + env(safe-area-inset-bottom, 0px))" }}>
-        <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
+        <div className="max-w-lg lg:max-w-2xl mx-auto px-4 pt-6 space-y-4">
           <div
             className="rounded-2xl p-4 border"
             style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
@@ -2846,7 +2846,7 @@ function StrengthsAssessmentActivity({
       </div>
 
       <div className="conv-input-bar">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg lg:max-w-2xl mx-auto">
           {saveError && (
             <p role="alert" className="text-sm text-red-600 mb-2 leading-relaxed">{saveError}</p>
           )}

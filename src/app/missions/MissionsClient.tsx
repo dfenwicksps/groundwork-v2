@@ -48,11 +48,13 @@ export default function MissionsClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      <div className="page space-y-8">
+        {/* Desktop: the intro and the progress bar share the top row */}
+        <div className="split lg:items-end">
         <div data-animate="1">
           <p className="text-sm text-ink-muted mb-1">Four missions</p>
           <h1
-            className="text-3xl text-navy mb-2"
+            className="text-3xl lg:text-4xl text-navy mb-2"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             The deep dives.
@@ -62,10 +64,9 @@ export default function MissionsClient({
             steps per mission: four reflections and one challenge you carry
             through the week. Nothing expires, and nothing nags you.
           </p>
+          {/* Which track comes first, in one sentence. */}
+          <p className="text-sm text-ink leading-relaxed mt-4">{spine.orderLine}</p>
         </div>
-
-        {/* Which track comes first, in one sentence. */}
-        <p className="text-sm text-ink leading-relaxed -mt-4">{spine.orderLine}</p>
 
         {/* Progress, in the same units the program uses */}
         <div data-animate="2">
@@ -87,6 +88,7 @@ export default function MissionsClient({
             />
           </div>
         </div>
+        </div>
 
         {/* The mission being offered */}
         {!allDone ? (
@@ -96,14 +98,15 @@ export default function MissionsClient({
             </h2>
             <Link
               href={`/missions/${next.id}`}
-              className="block rounded-2xl p-5 text-white"
+              className="block rounded-2xl p-5 lg:p-8 text-white lg:flex lg:items-center lg:justify-between lg:gap-10 group"
               style={{ background: next.colour }}
             >
+              <div className="min-w-0">
               <div className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">
                 {next.subtitle}
               </div>
               <p
-                className="text-xl mb-2"
+                className="text-xl lg:text-3xl mb-2"
                 style={{
                   fontFamily: "var(--font-story)",
                   fontWeight: 400,
@@ -115,6 +118,11 @@ export default function MissionsClient({
               <p className="text-sm leading-relaxed opacity-90">
                 Step {Math.min(next.done + 1, next.total)} of {next.total}
               </p>
+              </div>
+              {/* A phone taps the card; a wide card wants somewhere to aim. */}
+              <span className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 bg-white/20 group-hover:bg-white/30 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium">
+                {started ? "Carry on" : "Start"} <span aria-hidden>→</span>
+              </span>
             </Link>
           </div>
         ) : (
@@ -139,12 +147,12 @@ export default function MissionsClient({
           <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
             The four missions
           </h2>
-          <div className="space-y-2">
+          <div className="grid gap-2 lg:grid-cols-2 lg:gap-4">
             {missions.map((m) => (
               <Link
                 key={m.id}
                 href={`/missions/${m.id}`}
-                className={`card p-4 flex items-center gap-3 transition-all ${
+                className={`card p-4 lg:p-5 flex items-center lg:items-start gap-3 lg:gap-4 transition-all ${
                   m.complete ? "bg-sage/5 border-sage/30" : "hover:border-navy/30"
                 }`}
               >
@@ -159,11 +167,15 @@ export default function MissionsClient({
                     {m.title}
                   </div>
                   <div
-                    className="text-xs text-ink-muted leading-snug truncate"
+                    className="text-xs lg:text-sm text-ink-muted leading-snug truncate lg:whitespace-normal"
                     style={{ fontStyle: "italic" }}
                   >
                     {m.question}
                   </div>
+                  {/* Room for what the mission is about, which a phone row hasn't */}
+                  <p className="hidden lg:[display:-webkit-box] line-clamp-3 text-sm text-ink-muted leading-relaxed mt-2">
+                    {m.description}
+                  </p>
                 </div>
                 <span className="text-xs font-bold text-ink-muted uppercase tracking-wide flex-shrink-0">
                   {m.done}/{m.total}

@@ -89,7 +89,7 @@ export default function RevisitClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-4 py-6 lg:max-w-3xl lg:px-10 lg:py-10">
         <Link
           href="/journal"
           className="inline-flex items-center gap-1 text-ink-muted hover:text-ink text-sm mb-6 transition-colors"

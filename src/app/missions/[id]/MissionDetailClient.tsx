@@ -56,9 +56,12 @@ export default function MissionDetailClient({
 
   return (
     <AppShell>
+      {/* Desktop: the mission stays put as a panel on the left while its
+          steps scroll beside it. On a phone it's the banner across the top. */}
+      <div className="lg:mx-auto lg:max-w-6xl lg:px-10 lg:py-10 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-10 lg:items-start">
       {/* Mission hero */}
       <div
-        className="px-4 pt-8 pb-10 text-white relative overflow-hidden"
+        className="px-4 pt-8 pb-10 lg:p-8 lg:rounded-3xl xl:sticky xl:top-10 xl:max-h-[calc(100vh-5rem)] xl:overflow-y-auto text-white relative overflow-hidden"
         style={{ background: mission.colour }}
       >
         <div
@@ -88,7 +91,7 @@ export default function MissionDetailClient({
             </div>
           </div>
           <h1
-            className="text-3xl text-white mb-2"
+            className="text-3xl lg:text-4xl text-white mb-2"
             style={{
               fontFamily: "var(--font-story)",
               fontWeight: 400,
@@ -141,7 +144,7 @@ export default function MissionDetailClient({
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-8">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-8 lg:max-w-none lg:mx-0 lg:p-0">
         {/* Journey — activities with stories woven in */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -398,6 +401,7 @@ export default function MissionDetailClient({
             )}
           </div>
         )}
+      </div>
       </div>
     </AppShell>
   );

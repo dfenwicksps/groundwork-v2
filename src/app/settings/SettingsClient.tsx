@@ -127,10 +127,10 @@ export default function SettingsClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <div className="page-read space-y-6">
         <div data-animate="1">
           <h1
-            className="text-3xl text-navy"
+            className="text-3xl lg:text-4xl text-navy"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Settings

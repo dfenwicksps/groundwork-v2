@@ -12,7 +12,7 @@ export default function Error({
         <span className="text-white text-base font-semibold">G</span>
       </div>
       <h1
-        className="text-3xl text-navy mb-3"
+        className="text-3xl lg:text-4xl text-navy mb-3"
         style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
       >
         Something went wrong.

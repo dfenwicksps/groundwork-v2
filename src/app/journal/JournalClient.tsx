@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   MISSIONS,
@@ -27,6 +27,14 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
   const [search, setSearch] = useState("");
   // Sensitive entries open in two taps: one to expand, one to show the words.
   const [revealed, setRevealed] = useState<string | null>(null);
+
+  // Desktop has a reading pane with nothing in it until something is picked,
+  // so it starts on the newest entry. A phone starts with every row folded.
+  useEffect(() => {
+    if (entries.length > 0 && window.matchMedia("(min-width: 1024px)").matches) {
+      setExpanded((current) => current ?? entries[0].id);
+    }
+  }, [entries]);
 
   const groupOf = (e: JournalEntry) => entryGroup(e.activity_id, e.mission_id);
   const byMission = filter
@@ -57,12 +65,135 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
       )
     : byMission;
 
+  // What an open entry shows. A phone unfolds it under its row; desktop
+  // gives it the reading pane beside the list.
+  const entryBody = (entry: JournalEntry) => {
+    const sensitive = isSensitiveActivity(entry.activity_id);
+    const canEdit = isWithin24Hours(entry.created_at);
+    return (
+      <>
+      {sensitive && revealed !== entry.id && (
+        <div>
+          <p className="text-sm text-ink-muted leading-relaxed mb-3">
+            This one stays hidden until you choose to show it, so it
+            can&apos;t be caught by a glance at your screen.
+          </p>
+          <button
+            onClick={() => setRevealed(entry.id)}
+            className="btn btn-secondary text-sm py-2 px-4 rounded-xl"
+          >
+            Show it
+          </button>
+        </div>
+      )}
+
+      {(!sensitive || revealed === entry.id) && (
+        <div>
+          <p className="text-sm text-ink-muted italic mb-3 leading-relaxed">
+            {entry.prompt}
+          </p>
+          <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
+            {entry.response}
+          </p>
+
+          {entry.ai_reflection && (() => {
+            const parsed = parseReflection(entry.ai_reflection);
+            if (!parsed) return null;
+            return (
+              <div
+                className="mt-4 p-4 rounded-xl border"
+                style={{
+                  background: "rgba(46, 125, 140, 0.04)",
+                  borderColor: "rgba(46, 125, 140, 0.2)",
+                }}
+              >
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <span className="text-xs font-semibold text-teal uppercase tracking-wide">
+                    Something to sit with
+                  </span>
+                  <span className="text-xs text-ink-muted">Suggested by AI</span>
+                </div>
+                {parsed.type === "tricheck" ? (
+                  <div className="space-y-3">
+                    {([
+                      { label: "What you believe", q: parsed.tricheck.conceptual },
+                      { label: "Something to try", q: parsed.tricheck.practical },
+                      { label: "Who gets it",      q: parsed.tricheck.collective },
+                    ] as const).map(({ label, q }) => (
+                      <div key={label} className="flex gap-3">
+                        <span className="text-xs font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
+                          {label}
+                        </span>
+                        <p className="text-sm text-ink leading-relaxed">{q}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-ink">{parsed.text}</p>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Revisiting your own past writing is the one comparison
+              this app makes — against yourself, never anyone else. */}
+          {!isRevisitEntry(entry.activity_id) && (() => {
+            const mine = revisitsByParent.get(entry.id) || [];
+            const chain = {
+              original: entry as unknown as RevisitEntry,
+              revisits: mine as unknown as RevisitEntry[],
+            };
+            const el = revisitEligibility(chain);
+            return (
+              <div className="mt-4 pt-3 border-t border-surface-border">
+                {el.ok ? (
+                  <Link
+                    href={`/revisit/${entry.id}`}
+                    className="btn btn-secondary w-full py-2.5 rounded-xl text-sm"
+                  >
+                    {mine.length === 0
+                      ? "Revisit this →"
+                      : "Look at this again →"}
+                  </Link>
+                ) : (
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    You can revisit this in {el.waitDays}{" "}
+                    {el.waitDays === 1 ? "day" : "days"} — last looked
+                    at it {agoLabel(el.sinceDays)}.
+                  </p>
+                )}
+                {mine.length > 0 && (
+                  <Link
+                    href={`/revisit/${entry.id}`}
+                    className="block text-xs text-teal hover:underline text-center mt-2"
+                  >
+                    Read the whole thread ({mine.length + 1} entries)
+                  </Link>
+                )}
+              </div>
+            );
+          })()}
+
+          {!canEdit && (
+            <p className="text-xs text-ink-muted mt-3">
+              Entries are read-only after 24 hours.
+            </p>
+          )}
+        </div>
+      )}
+      </>
+    );
+  };
+
+  const selected = filtered.find((e) => e.id === expanded) ?? null;
+  const selectedGroup = selected ? groupOf(selected) : null;
+
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="page">
         <div data-animate="1" className="mb-6">
           <h1
-            className="text-3xl text-navy mb-1"
+            className="text-3xl lg:text-4xl text-navy mb-1"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Your journal
@@ -73,6 +204,9 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
           </p>
         </div>
 
+        {/* Desktop: the list on the left, the open entry in a pane beside it */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-10 lg:items-start">
+        <div>
         {/* Search */}
         <div data-animate="2" className="mb-4">
           <label htmlFor="journal-search" className="sr-only">
@@ -160,19 +294,22 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
               const mission =
                 typeof group === "number" ? MISSIONS.find((m) => m.id === group) : undefined;
               const isOpen = expanded === entry.id;
-              const canEdit = isWithin24Hours(entry.created_at);
               const label =
                 getActivityLabel(entry.activity_id);
               const sensitive = isSensitiveActivity(entry.activity_id);
 
               return (
-                <div key={entry.id} className="card overflow-hidden">
+                <div
+                  key={entry.id}
+                  className={cn("card overflow-hidden", isOpen && "lg:ring-2 lg:ring-teal")}
+                >
                   <button
                     onClick={() => {
                       setExpanded(isOpen ? null : entry.id);
                       setRevealed(null);
                     }}
                     className="w-full p-4 text-left"
+                    aria-expanded={isOpen}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
@@ -217,7 +354,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                         fill="none"
                         className={cn(
                           "flex-shrink-0 mt-1 text-ink-muted transition-transform",
-                          isOpen && "rotate-90"
+                          isOpen && "rotate-90 lg:rotate-0"
                         )}
                       >
                         <path
@@ -231,113 +368,9 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                     </div>
                   </button>
 
-                  {isOpen && sensitive && revealed !== entry.id && (
-                    <div className="px-4 pb-4 border-t border-surface-border pt-4">
-                      <p className="text-sm text-ink-muted leading-relaxed mb-3">
-                        This one stays hidden until you choose to show it, so it
-                        can&apos;t be caught by a glance at your screen.
-                      </p>
-                      <button
-                        onClick={() => setRevealed(entry.id)}
-                        className="btn btn-secondary text-sm py-2 px-4 rounded-xl"
-                      >
-                        Show it
-                      </button>
-                    </div>
-                  )}
-
-                  {isOpen && (!sensitive || revealed === entry.id) && (
-                    <div className="px-4 pb-4 border-t border-surface-border pt-4">
-                      <p className="text-sm text-ink-muted italic mb-3 leading-relaxed">
-                        {entry.prompt}
-                      </p>
-                      <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
-                        {entry.response}
-                      </p>
-
-                      {entry.ai_reflection && (() => {
-                        const parsed = parseReflection(entry.ai_reflection);
-                        if (!parsed) return null;
-                        return (
-                          <div
-                            className="mt-4 p-4 rounded-xl border"
-                            style={{
-                              background: "rgba(46, 125, 140, 0.04)",
-                              borderColor: "rgba(46, 125, 140, 0.2)",
-                            }}
-                          >
-                            <div className="flex items-center justify-between gap-3 mb-3">
-                              <span className="text-xs font-semibold text-teal uppercase tracking-wide">
-                                Something to sit with
-                              </span>
-                              <span className="text-xs text-ink-muted">Suggested by AI</span>
-                            </div>
-                            {parsed.type === "tricheck" ? (
-                              <div className="space-y-3">
-                                {([
-                                  { label: "What you believe", q: parsed.tricheck.conceptual },
-                                  { label: "Something to try", q: parsed.tricheck.practical },
-                                  { label: "Who gets it",      q: parsed.tricheck.collective },
-                                ] as const).map(({ label, q }) => (
-                                  <div key={label} className="flex gap-3">
-                                    <span className="text-xs font-semibold text-teal/50 uppercase tracking-wide w-[5.5rem] flex-shrink-0 pt-0.5 leading-tight">
-                                      {label}
-                                    </span>
-                                    <p className="text-sm text-ink leading-relaxed">{q}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-sm text-ink">{parsed.text}</p>
-                            )}
-                          </div>
-                        );
-                      })()}
-
-                      {/* Revisiting your own past writing is the one comparison
-                          this app makes — against yourself, never anyone else. */}
-                      {!isRevisitEntry(entry.activity_id) && (() => {
-                        const mine = revisitsByParent.get(entry.id) || [];
-                        const chain = {
-                          original: entry as unknown as RevisitEntry,
-                          revisits: mine as unknown as RevisitEntry[],
-                        };
-                        const el = revisitEligibility(chain);
-                        return (
-                          <div className="mt-4 pt-3 border-t border-surface-border">
-                            {el.ok ? (
-                              <Link
-                                href={`/revisit/${entry.id}`}
-                                className="btn btn-secondary w-full py-2.5 rounded-xl text-sm"
-                              >
-                                {mine.length === 0
-                                  ? "Revisit this →"
-                                  : "Look at this again →"}
-                              </Link>
-                            ) : (
-                              <p className="text-xs text-ink-muted leading-relaxed">
-                                You can revisit this in {el.waitDays}{" "}
-                                {el.waitDays === 1 ? "day" : "days"} — last looked
-                                at it {agoLabel(el.sinceDays)}.
-                              </p>
-                            )}
-                            {mine.length > 0 && (
-                              <Link
-                                href={`/revisit/${entry.id}`}
-                                className="block text-xs text-teal hover:underline text-center mt-2"
-                              >
-                                Read the whole thread ({mine.length + 1} entries)
-                              </Link>
-                            )}
-                          </div>
-                        );
-                      })()}
-
-                      {!canEdit && (
-                        <p className="text-xs text-ink-muted mt-3">
-                          Entries are read-only after 24 hours.
-                        </p>
-                      )}
+                  {isOpen && (
+                    <div className="px-4 pb-4 border-t border-surface-border pt-4 lg:hidden">
+                      {entryBody(entry)}
                     </div>
                   )}
                 </div>
@@ -345,6 +378,37 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
             })}
           </div>
         )}
+        </div>
+
+        <section
+          aria-label="Open entry"
+          className="hidden lg:block card p-8 sticky top-10 max-h-[calc(100vh-5rem)] overflow-y-auto"
+        >
+          {selected ? (
+            <>
+              <div className="mb-5 pb-5 border-b border-surface-border">
+                <h2
+                  className="text-2xl text-navy mb-1"
+                  style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+                >
+                  {getActivityLabel(selected.activity_id)}
+                </h2>
+                <p className="text-xs text-ink-muted">
+                  {formatDate(selected.created_at)} ·{" "}
+                  {typeof selectedGroup === "number"
+                    ? MISSIONS.find((m) => m.id === selectedGroup)?.title || "Unknown mission"
+                    : ENTRY_GROUP_LABELS[selectedGroup!]}
+                </p>
+              </div>
+              {entryBody(selected)}
+            </>
+          ) : (
+            <p className="text-sm text-ink-muted text-center py-16">
+              {filtered.length === 0 ? "Nothing to read yet." : "Pick an entry to read it here."}
+            </p>
+          )}
+        </section>
+        </div>
       </div>
     </AppShell>
   );

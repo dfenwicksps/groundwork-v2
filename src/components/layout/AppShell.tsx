@@ -168,19 +168,78 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
-      {/* Unconfirmed-email nudge — never a blocker, just a reminder */}
-      <ConfirmEmailBanner />
-      {/* Present only when a program week sent them here — see lib/returnTo. */}
-      <ReturnBanner />
 
-      {/* /support opens with the full list, so the button would only cover its title. */}
-      {!pathname.startsWith("/support") && <GetHelpButton variant="floating" />}
+      {/* Desktop: the five tabs as a side rail, with help and settings at its
+          foot. A tab bar pinned under a wide page is a long way from anything. */}
+      <aside
+        className="hidden lg:flex fixed inset-y-0 left-0 z-40 flex-col bg-white border-r border-[--border] px-4 py-6"
+        style={{ width: "var(--rail-width)" }}
+      >
+        <Link href="/dashboard" className="flex items-center gap-2 px-3 mb-8">
+          <span className="w-7 h-7 bg-navy rounded-md flex items-center justify-center">
+            <span className="text-white text-xs font-semibold">G</span>
+          </span>
+          <span
+            className="font-semibold text-navy text-lg"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Groundwork
+          </span>
+        </Link>
 
-      <main id="main-content" className="pb-nav">{children}</main>
+        <nav aria-label="Primary" className="flex-1 space-y-1">
+          {NAV_ITEMS.map((item) => {
+            const active = item.match(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors",
+                  active
+                    ? "bg-teal/10 text-[--teal]"
+                    : "text-[--ink-muted] hover:bg-[--surface-muted] hover:text-[--ink]"
+                )}
+              >
+                {item.icon(active)}
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="space-y-1 pt-4 border-t border-[--border]">
+          {!pathname.startsWith("/support") && <GetHelpButton variant="rail" />}
+          <Link
+            href="/settings"
+            aria-current={pathname.startsWith("/settings") ? "page" : undefined}
+            className="block px-3 py-2.5 rounded-xl text-sm font-medium text-[--ink-muted] hover:bg-[--surface-muted] hover:text-[--ink] transition-colors"
+          >
+            Account &amp; settings
+          </Link>
+        </div>
+      </aside>
+
+      <div className="lg:pl-[--rail-width]">
+        {/* Unconfirmed-email nudge — never a blocker, just a reminder */}
+        <ConfirmEmailBanner />
+        {/* Present only when a program week sent them here — see lib/returnTo. */}
+        <ReturnBanner />
+
+        {/* /support opens with the full list, so the button would only cover its title. */}
+        {!pathname.startsWith("/support") && (
+          <div className="lg:hidden">
+            <GetHelpButton variant="floating" />
+          </div>
+        )}
+
+        <main id="main-content" className="pb-nav">{children}</main>
+      </div>
 
       <nav
         aria-label="Primary"
-        className="fixed bottom-0 left-0 right-0 z-40 bg-white/96 backdrop-blur-md border-t border-[--border]"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/96 backdrop-blur-md border-t border-[--border]"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         <div className="max-w-lg mx-auto px-1">

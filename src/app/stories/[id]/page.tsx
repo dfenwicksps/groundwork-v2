@@ -50,7 +50,7 @@ export default async function StoryPage({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="page-read">
         {/* Back */}
         <Link
           href="/stories"
@@ -78,7 +78,7 @@ export default async function StoryPage({
 
         {/* Title */}
         <h1
-          className="text-3xl text-navy mb-6"
+          className="text-3xl lg:text-4xl text-navy mb-6"
           style={{
             fontFamily: "var(--font-story)",
             fontWeight: 400,

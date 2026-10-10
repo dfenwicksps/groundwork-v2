@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import HelpLines from "./HelpLines";
 
@@ -9,11 +9,14 @@ import HelpLines from "./HelpLines";
  * current page rather than navigating away, so a student halfway through an
  * activity doesn't lose what they've written by asking for help.
  *
- * `floating` pins it to the top-right corner (the app shell); `inline` sits in
- * an activity header row.
+ * `floating` pins it to the top-right corner (the app shell on a phone);
+ * `rail` is a full-width row at the foot of the desktop side rail; `inline`
+ * sits in an activity header row.
  */
-export default function GetHelpButton({ variant }: { variant: "floating" | "inline" }) {
+export default function GetHelpButton({ variant }: { variant: "floating" | "rail" | "inline" }) {
   const [open, setOpen] = useState(false);
+  // The shell renders one for the phone and one for the rail.
+  const titleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -31,11 +34,13 @@ export default function GetHelpButton({ variant }: { variant: "floating" | "inli
         className={
           variant === "floating"
             ? "fixed right-3 z-30 rounded-full bg-white/95 backdrop-blur border border-surface-border shadow-soft px-3 py-1.5 text-xs font-semibold text-ink-muted hover:text-ink"
+            : variant === "rail"
+            ? "w-full text-left px-3 py-2.5 rounded-xl border border-surface-border text-sm font-semibold text-ink hover:border-navy/30 transition-colors"
             : "ml-auto flex-shrink-0 rounded-full border border-surface-border px-2.5 py-1 text-xs font-semibold text-ink-muted hover:text-ink"
         }
         style={variant === "floating" ? { top: "calc(env(safe-area-inset-top, 0px) + 10px)" } : undefined}
       >
-        {variant === "floating" ? "Need to talk?" : "Help"}
+        {variant === "inline" ? "Help" : "Need to talk?"}
       </button>
 
       <dialog
@@ -45,12 +50,12 @@ export default function GetHelpButton({ variant }: { variant: "floating" | "inli
           // A click on the backdrop lands on the dialog element itself.
           if (e.target === e.currentTarget) setOpen(false);
         }}
-        aria-labelledby="get-help-title"
+        aria-labelledby={titleId}
         className="w-[min(28rem,calc(100vw-2rem))] max-h-[85vh] rounded-2xl p-0 backdrop:bg-black/40"
       >
         <div className="p-5 bg-surface-muted">
           <div className="flex items-start justify-between gap-3 mb-1">
-            <h2 id="get-help-title" className="text-xl text-navy" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+            <h2 id={titleId} className="text-xl text-navy" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
               You don&apos;t have to handle it alone.
             </h2>
             <button

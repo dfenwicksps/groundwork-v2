@@ -37,10 +37,10 @@ export default function StoriesClient({
 
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div data-animate="1" className="mb-6">
+      <div className="page">
+        <div data-animate="1" className="mb-6 lg:max-w-2xl">
           <h1
-            className="text-3xl text-navy mb-1"
+            className="text-3xl lg:text-4xl text-navy mb-1"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Stories
@@ -86,7 +86,7 @@ export default function StoriesClient({
         </div>
 
         {/* Story grid */}
-        <div className="grid gap-3" data-animate="3">
+        <div className="grid gap-3 lg:grid-cols-2 lg:gap-4" data-animate="3">
           {filtered.map((story) => {
             const mission = MISSIONS.find((m) => m.id === story.mission_id);
             const read = readById.get(story.id);
@@ -97,7 +97,7 @@ export default function StoriesClient({
                 key={story.id}
                 href={`/stories/${story.id}`}
                 className={cn(
-                  "card p-5 hover:shadow-card transition-all group block",
+                  "card p-5 lg:p-6 hover:shadow-card transition-all group block",
                   complete && "bg-sage/5 border-sage/30"
                 )}
               >

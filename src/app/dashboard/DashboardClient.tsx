@@ -128,7 +128,7 @@ export default function DashboardClient({
     spine.lead === "mission" && nextMissionStep ? (
       <Link
         href={`/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`}
-        className="block rounded-2xl p-6 text-white relative overflow-hidden group"
+        className="block rounded-2xl p-6 lg:p-8 text-white relative overflow-hidden group"
         style={{ background: nextMissionStep.colour }}
       >
         <div
@@ -141,7 +141,7 @@ export default function DashboardClient({
             Mission {nextMissionStep.missionId} · {nextMissionStep.missionTitle} · Step{" "}
             {nextMissionStep.step} of {nextMissionStep.total}
           </div>
-          <p className="text-2xl mb-1" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+          <p className="text-2xl lg:text-3xl mb-1 lg:mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             {nextMissionStep.activityTitle}
           </p>
           <p className="text-sm opacity-90 italic">{nextMissionStep.question}</p>
@@ -154,7 +154,7 @@ export default function DashboardClient({
     ) : (
       <Link
         href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
-        className="block rounded-2xl p-6 text-white group"
+        className="block rounded-2xl p-6 lg:p-8 text-white group"
         style={{ background: "var(--navy)" }}
       >
         <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
@@ -162,7 +162,7 @@ export default function DashboardClient({
             ? "All ten weeks done"
             : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}
         </div>
-        <p className="text-2xl mb-1" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+        <p className="text-2xl lg:text-3xl mb-1 lg:mb-2" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
           {programWeek.allDone ? "Keep the weekly five going" : programWeek.title}
         </p>
         <p className="text-sm leading-relaxed opacity-90">
@@ -294,13 +294,27 @@ export default function DashboardClient({
 
   const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX);
 
+  const tunedFor = (
+    <p className="text-xs text-ink-muted">
+      Tuned for:{" "}
+      <span className="font-medium text-ink">
+        {LIFE_STAGE_OPTIONS.find((y) => y.key === lifeStage)?.label ?? "Year 10–11"}
+      </span>
+      .{" "}
+      <Link href="/settings" className="text-teal hover:underline">
+        Change it any time
+      </Link>
+      .
+    </p>
+  );
+
   return (
     <AppShell>
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-7">
+      <div className="page space-y-7 lg:space-y-8">
         {/* Greeting */}
         <div data-animate="1">
           <p className="text-sm text-ink-muted mb-1">{greeting}</p>
-          <h1 className="text-3xl text-navy" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+          <h1 className="text-3xl lg:text-4xl text-navy" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             {firstName}.
           </h1>
           {welcomeBack && (
@@ -312,114 +326,164 @@ export default function DashboardClient({
 
         <PolicyNotice joinedAt={profile.created_at} />
 
-        {/* Up next — the one thing to do */}
-        <section data-animate="2" aria-labelledby="up-next">
-          <h2 id="up-next" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            Up next
-          </h2>
-          {upNext}
-          <p className="text-xs text-ink-muted leading-relaxed mt-2">{spine.orderLine}</p>
-        </section>
-
-        {/* Also now */}
-        {shownAlsoNow.length > 0 && (
-          <section data-animate="3" aria-labelledby="also-now">
-            <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-              Also now
-            </h2>
-            <div className="space-y-2">
-              {shownAlsoNow.map((row) => (
-                <Link
-                  key={row.key}
-                  href={row.href}
-                  className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
-                >
-                  <span
-                    className="w-9 h-9 rounded-xl bg-surface-muted flex items-center justify-center text-base text-ink-muted flex-shrink-0"
-                    aria-hidden
-                  >
-                    {row.icon}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-ink">{row.title}</div>
-                    <p className="text-xs text-ink-muted leading-relaxed truncate">{row.sub}</p>
-                  </div>
-                  <Arrow className="text-ink-muted flex-shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* What the missions found, once there's all of it */}
-        {missionSummary && <MissionsSummaryCard summary={missionSummary} />}
-
-        {/* A story, because most students never go looking for one */}
-        {featuredStory && (
-          <section data-animate="4" aria-labelledby="story-for-you">
-            <div className="flex items-baseline justify-between mb-3">
-              <h2 id="story-for-you" className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-                A story for you
+        {/* One column on a phone, in the order the order-* classes give. On
+            desktop the thing to do keeps the wide column and what's
+            time-sensitive sits beside it, so neither is below the fold. */}
+        <div className="split gap-7 lg:gap-10">
+          <div className="split-col">
+            {/* Up next — the one thing to do */}
+            <section data-animate="2" aria-labelledby="up-next" className="order-1">
+              <h2 id="up-next" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+                Up next
               </h2>
-              <Link href="/stories" className="text-xs text-teal hover:underline">
-                All stories
-              </Link>
-            </div>
-            <Link
-              href={`/stories/${featuredStory.id}`}
-              className="card p-5 block hover:shadow-card transition-all"
-            >
-              {featuredStory.film && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5 rounded-full bg-navy/10 text-navy text-xs font-medium">
-                  <svg aria-hidden="true" width="8" height="8" viewBox="0 0 12 12" fill="currentColor">
-                    <path d="M3 1.8v8.4c0 .6.65.97 1.16.66l6.3-4.2a.78.78 0 000-1.32l-6.3-4.2A.78.78 0 003 1.8z" />
-                  </svg>
-                  Animated · 1 min
-                </span>
-              )}
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-lg text-navy mb-1" style={{ fontFamily: "var(--font-story)", fontWeight: 500 }}>
-                    {featuredStory.title}
-                  </p>
-                  <p className="text-sm text-ink-muted leading-relaxed">{featuredStory.teaser}</p>
-                </div>
-                <Arrow className="text-ink-muted flex-shrink-0 mt-1" />
-              </div>
-            </Link>
-          </section>
-        )}
+              {upNext}
+              <p className="text-xs text-ink-muted leading-relaxed mt-2">{spine.orderLine}</p>
+            </section>
 
-        {/* Where things stand, one line each, linking to the tab with the detail */}
-        <div data-animate="5" className="pt-4 border-t border-surface-border space-y-2 text-sm">
-          <div className="flex flex-wrap gap-x-4 gap-y-1">
-            <Link href="/missions" className="text-ink-muted hover:text-ink">
-              Missions <span className="font-semibold text-ink">{missionsDone} of 4</span>
-            </Link>
-            <Link href="/program" className="text-ink-muted hover:text-ink">
-              Weeks <span className="font-semibold text-ink">{programWeek.weeksDone} of 10</span>
-            </Link>
-            <Link href="/support" className="text-ink-muted hover:text-ink">
-              {supportCount > 0 ? (
-                <>
-                  Your support circle <span className="font-semibold text-ink">{supportCount}</span>
-                </>
-              ) : (
-                <>Add someone you trust</>
-              )}
-            </Link>
+            {/* What the missions found, once there's all of it */}
+            {missionSummary && (
+              <div className="order-3">
+                <MissionsSummaryCard summary={missionSummary} />
+              </div>
+            )}
+
+            {/* A story, because most students never go looking for one */}
+            {featuredStory && (
+              <section data-animate="4" aria-labelledby="story-for-you" className="order-4">
+                <div className="flex items-baseline justify-between mb-3">
+                  <h2 id="story-for-you" className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                    A story for you
+                  </h2>
+                  <Link href="/stories" className="text-xs text-teal hover:underline">
+                    All stories
+                  </Link>
+                </div>
+                <Link
+                  href={`/stories/${featuredStory.id}`}
+                  className="card p-5 lg:p-6 block hover:shadow-card transition-all"
+                >
+                  {featuredStory.film && (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mb-1.5 rounded-full bg-navy/10 text-navy text-xs font-medium">
+                      <svg aria-hidden="true" width="8" height="8" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M3 1.8v8.4c0 .6.65.97 1.16.66l6.3-4.2a.78.78 0 000-1.32l-6.3-4.2A.78.78 0 003 1.8z" />
+                      </svg>
+                      Animated · 1 min
+                    </span>
+                  )}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-lg lg:text-xl text-navy mb-1" style={{ fontFamily: "var(--font-story)", fontWeight: 500 }}>
+                        {featuredStory.title}
+                      </p>
+                      <p className="text-sm text-ink-muted leading-relaxed">{featuredStory.teaser}</p>
+                    </div>
+                    <Arrow className="text-ink-muted flex-shrink-0 mt-1" />
+                  </div>
+                </Link>
+              </section>
+            )}
           </div>
-          <p className="text-xs text-ink-muted">
-            Tuned for:{" "}
-            <span className="font-medium text-ink">
-              {LIFE_STAGE_OPTIONS.find((y) => y.key === lifeStage)?.label ?? "Year 10–11"}
-            </span>
-            .{" "}
-            <Link href="/settings" className="text-teal hover:underline">
-              Change it any time
-            </Link>
-            .
-          </p>
+
+          <div className="split-col">
+            {/* Also now */}
+            {shownAlsoNow.length > 0 && (
+              <section data-animate="3" aria-labelledby="also-now" className="order-2">
+                <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+                  Also now
+                </h2>
+                <div className="space-y-2">
+                  {shownAlsoNow.map((row) => (
+                    <Link
+                      key={row.key}
+                      href={row.href}
+                      className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
+                    >
+                      <span
+                        className="w-9 h-9 rounded-xl bg-surface-muted flex items-center justify-center text-base text-ink-muted flex-shrink-0"
+                        aria-hidden
+                      >
+                        {row.icon}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-ink">{row.title}</div>
+                        {/* The rail is narrower than a phone, but there's
+                            room to let the line wrap instead of cutting it. */}
+                        <p className="text-xs text-ink-muted leading-relaxed truncate lg:whitespace-normal lg:line-clamp-3">{row.sub}</p>
+                      </div>
+                      <Arrow className="text-ink-muted flex-shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Where things stand, linking to the tab with the detail: one
+                line each on a phone, a card with bars beside the page on desktop */}
+            <div data-animate="5" className="order-5">
+              <div className="lg:hidden pt-4 border-t border-surface-border space-y-2 text-sm">
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  <Link href="/missions" className="text-ink-muted hover:text-ink">
+                    Missions <span className="font-semibold text-ink">{missionsDone} of 4</span>
+                  </Link>
+                  <Link href="/program" className="text-ink-muted hover:text-ink">
+                    Weeks <span className="font-semibold text-ink">{programWeek.weeksDone} of 10</span>
+                  </Link>
+                  <Link href="/support" className="text-ink-muted hover:text-ink">
+                    {supportCount > 0 ? (
+                      <>
+                        Your support circle <span className="font-semibold text-ink">{supportCount}</span>
+                      </>
+                    ) : (
+                      <>Add someone you trust</>
+                    )}
+                  </Link>
+                </div>
+                {tunedFor}
+              </div>
+
+              <section className="hidden lg:block" aria-labelledby="where-things-stand">
+                <h2 id="where-things-stand" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+                  Where things stand
+                </h2>
+                <div className="card p-5 space-y-4">
+                  {[
+                    { href: "/missions", label: "Missions", done: missionsDone, total: 4 },
+                    { href: "/program", label: "Weeks", done: programWeek.weeksDone, total: 10 },
+                  ].map((t) => (
+                    <Link key={t.href} href={t.href} className="block group">
+                      <div className="flex items-center justify-between text-sm mb-1.5">
+                        <span className="text-ink-muted group-hover:text-ink transition-colors">{t.label}</span>
+                        <span className="font-semibold text-ink">
+                          {t.done} of {t.total}
+                        </span>
+                      </div>
+                      <div className="h-2 bg-surface-muted rounded-full overflow-hidden border border-surface-border">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${Math.max(2, (t.done / t.total) * 100)}%`, background: "var(--teal)" }}
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                  <Link
+                    href="/support"
+                    className="flex items-center justify-between text-sm text-ink-muted hover:text-ink transition-colors pt-3 border-t border-surface-border"
+                  >
+                    {supportCount > 0 ? (
+                      <>
+                        Your support circle <span className="font-semibold text-ink">{supportCount}</span>
+                      </>
+                    ) : (
+                      <>
+                        Add someone you trust <Arrow />
+                      </>
+                    )}
+                  </Link>
+                  {tunedFor}
+                </div>
+              </section>
+            </div>
+          </div>
         </div>
       </div>
     </AppShell>

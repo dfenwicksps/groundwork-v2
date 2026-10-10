@@ -1,7 +1,7 @@
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-surface-muted">
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+    <div className="min-h-screen bg-surface-muted lg:pl-[--rail-width]">
+      <div className="page space-y-8">
         <div>
           <div className="skeleton h-4 w-28 mb-2" />
           <div className="skeleton h-9 w-40" />
