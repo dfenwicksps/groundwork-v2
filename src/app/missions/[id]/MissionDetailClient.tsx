@@ -158,13 +158,12 @@ export default function MissionDetailClient({
             )}
           </div>
 
-          {/* Build a map: which story index appears before which activity index */}
+          {/* Build a map: which story appears before which activity index */}
           {(() => {
-            const storySlots = new Map<number, number>();
+            const storySlots = new Map<number, StoryPreview>();
             mission.activities.forEach((a, idx) => {
-              if (a.storyBefore !== undefined && stories[a.storyBefore]) {
-                storySlots.set(idx, a.storyBefore);
-              }
+              const s = stories.find((st) => st.title === a.storyBefore);
+              if (s) storySlots.set(idx, s);
             });
 
             const firstIncompleteIdx = mission.activities.findIndex(
@@ -178,8 +177,7 @@ export default function MissionDetailClient({
                   const completed = completedActivities.has(activity.id);
                   const isLocked = activity.locked;
                   const isCurrent = idx === firstIncompleteIdx;
-                  const storyIdx = storySlots.get(idx);
-                  const story = storyIdx !== undefined ? stories[storyIdx] : null;
+                  const story = storySlots.get(idx) ?? null;
 
                   return (
                     <div key={activity.id}>
@@ -315,10 +313,10 @@ export default function MissionDetailClient({
 
         {/* Remaining stories not woven into activities */}
         {(() => {
-          const usedStoryIndices = new Set(
-            mission.activities.map((a) => a.storyBefore).filter((i): i is number => i !== undefined)
+          const usedStoryTitles = new Set(
+            mission.activities.map((a) => a.storyBefore).filter((t): t is string => t !== undefined)
           );
-          const remainingStories = stories.filter((_, i) => !usedStoryIndices.has(i));
+          const remainingStories = stories.filter((s) => !usedStoryTitles.has(s.title));
           if (remainingStories.length === 0) return null;
           return (
             <div>
