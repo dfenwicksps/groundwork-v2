@@ -29,8 +29,9 @@ export interface Activity {
   intro?: string;
   /** An easier lead-in question to warm up before the main prompt */
   warmUp?: string;
-  /** Index (0-based) of this mission's story to surface before this activity */
-  storyBefore?: number;
+  /** Title of this mission's story to surface before this activity (matched
+   *  against stories.title — the table has no ordering column, so never by index) */
+  storyBefore?: string;
   /** Numbered sub-questions that break the main prompt into smaller, guided steps */
   scaffoldingSteps?: string[];
   /**
@@ -423,7 +424,7 @@ export const MISSIONS: Mission[] = [
           "Your compass is built — strengths mapped, values chosen. Now we test it against the real world. Everyone wears slightly different versions of themselves in different rooms — that's normal, not fake. The question is which parts of your compass make it into every room, and which get hidden. The moments below will show you.",
         warmUp:
           "This isn't about catching yourself being fake. Everyone adjusts. We're just looking at where the gap is biggest — because that's where the most interesting stuff usually is.",
-        storyBefore: 0,
+        storyBefore: "The Version of Me at School",
         prompt:
           "Think about who you are at school, at home, and with your closest friends. Where do you feel most like yourself? Where do you feel like you're performing?",
         secondaryPrompt:
@@ -487,7 +488,7 @@ export const MISSIONS: Mission[] = [
           "You've mapped your strengths and values, and seen where you perform and where you're real. This letter holds it together: you, writing to yourself about who you are right now, and who you sense you're becoming.",
         warmUp:
           "You've already done the hard noticing in the last three steps. This letter just gathers it up. Write it to yourself as 'you' — it's private, permanent, and only ever for you.",
-        storyBefore: 1,
+        storyBefore: "What the Mirror Doesn't Show",
         prompt:
           "Write a short letter to yourself — not who you think you should be, but who you actually are right now. Be honest. Be kind.",
         secondaryPrompt:
@@ -671,7 +672,7 @@ export const MISSIONS: Mission[] = [
           "Mission 1 looked inward. This one looks outward. Purpose often starts with a quiet anger or a pull: something in the world that bothers you, or something you keep coming back to. This step is about naming that thing honestly.",
         warmUp:
           "Think about the last time you felt genuinely bothered by something in the world — not just inconvenienced, but actually troubled. Hold that feeling in mind before you write. That's usually where purpose begins.",
-        storyBefore: 0,
+        storyBefore: "The Thing She Couldn't Ignore",
         prompt:
           "Write about something that genuinely matters to you — a problem in the world, a person you admire, a cause you care about. Why does it matter?",
         scaffoldingSteps: [
@@ -792,7 +793,7 @@ export const MISSIONS: Mission[] = [
           "Purpose gets real when you realise you're not alone in caring. There are people — in your life, in history, in communities you haven't found yet — who care about the same things you do. This step asks you to find one of them and pay attention to what their story tells you about yours.",
         warmUp:
           "Think of one person — someone you know, someone you've read about, or a historical figure — who has built part of their life around something you care about. Not necessarily someone famous. Just someone who has taken this kind of thing seriously. What do you know about what drove them?",
-        storyBefore: 1,
+        storyBefore: "The Coach Who Stopped Winning",
         prompt:
           "Who else cares about what you care about? Find one person — in your life, in a story, in history — who is connected to what matters to you. What does their experience tell you about your own?",
         scaffoldingSteps: [
@@ -854,7 +855,7 @@ export const MISSIONS: Mission[] = [
           "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
         warmUp:
           "Think about what it would mean to genuinely commit to this — not as a project or a task, but as part of who you are and what you stand for. What would change if you took it seriously? Sit with that for a moment before you write.",
-        storyBefore: 1,
+        storyBefore: "The Coach Who Stopped Winning",
         prompt:
           "Write a commitment statement — a clear, personal declaration of what you care about and why. Not a plan. Not a promise to the world. Just an honest statement of what you're standing for.",
         isMilestone: true,
@@ -977,7 +978,7 @@ export const MISSIONS: Mission[] = [
           "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself.",
         warmUp:
           "Think about the last time you were with someone and felt completely at ease — no managing yourself, no performing, just present. Who were you with, and what made that possible?",
-        storyBefore: 0,
+        storyBefore: "The Friend Who Stayed",
         prompt:
           "Think about the people in your life who make you feel most like yourself. What is it about those relationships that matters?",
         scaffoldingSteps: [
@@ -1096,7 +1097,7 @@ export const MISSIONS: Mission[] = [
           "The relationships that shape us most aren't always the easy ones. Some matter because the other person sees the world differently: a grandparent, someone from another background, someone you've argued with. Connection across that gap is a different kind of belonging, and it leaves a different mark.",
         warmUp:
           "Think of someone in your life who is significantly different from you — different background, different age, different values, different way of seeing things. What made connection with them possible, even briefly?",
-        storyBefore: 1,
+        storyBefore: "Different Enough",
         prompt:
           "Think of a relationship where there's a real difference between you — in background, values, age, or how you see the world. What does that relationship teach you about connection?",
         scaffoldingSteps: [

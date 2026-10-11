@@ -80,20 +80,14 @@ export default async function ActivityPage({
     turning_point: string;
   } | null = null;
   if (activity.storyBefore !== undefined) {
-    const { data: missionStories } = await supabase
+    const { data: storyRaw } = await supabase
       .from("stories")
       .select("id, title, teaser, context, turning_point")
-      .eq("mission_id", missionId);
-    const storiesArr = missionStories as Array<{
-      id: string;
-      title: string;
-      teaser: string;
-      context: string;
-      turning_point: string;
-    }> | null;
-    if (storiesArr && storiesArr[activity.storyBefore]) {
-      pairedStory = storiesArr[activity.storyBefore];
-    }
+      .eq("mission_id", missionId)
+      .eq("title", activity.storyBefore)
+      .limit(1)
+      .maybeSingle();
+    pairedStory = storyRaw as typeof pairedStory;
   }
 
   // Inner compass — inject the user's own VIA signature strengths (top-5),
