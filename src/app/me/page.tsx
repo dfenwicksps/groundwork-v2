@@ -5,6 +5,7 @@ import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
 import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { getLifeStage } from "@/lib/lifeStageServer";
+import { resolvePhase } from "@/lib/phaseServer";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
@@ -200,6 +201,7 @@ export default async function MePage() {
       }
       supportCount={supportCount ?? 0}
       lifeStage={await getLifeStage(supabase, user.id)}
+      phase={await resolvePhase(supabase, user.id)}
       // If the goals table errors, the 003 migration hasn't run — the moral
       // compass, practice loop and goals need it, so we hide those rather than
       // let students hit save-time errors that read as "the app is broken".

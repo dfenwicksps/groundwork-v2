@@ -23,7 +23,11 @@ create table if not exists public.users (
   active_mission int default 1 not null,
   -- Where the student is at: 'junior' (Year 7-9), 'middle' (10-11),
   -- 'senior' (12), 'leaver' (just left school), 'adult' (a few years out)
-  life_stage text check (life_stage is null or life_stage in ('junior', 'middle', 'senior', 'leaver', 'adult'))
+  life_stage text check (life_stage is null or life_stage in ('junior', 'middle', 'senior', 'leaver', 'adult')),
+  -- The three-phase journey (src/lib/phase.ts): 1 = first pass (tap), 2 = review
+  -- & add, 3 = deepen. phase_meta holds unlock timestamps + reviewed anchors.
+  journey_phase int not null default 1,
+  phase_meta jsonb
 );
 
 -- Onboarding results

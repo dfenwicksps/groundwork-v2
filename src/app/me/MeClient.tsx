@@ -19,6 +19,8 @@ import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
 import JourneyStrip from "./JourneyStrip";
+import PhaseBanner from "@/components/PhaseBanner";
+import type { Phase } from "@/lib/phase";
 import type { HabitAnswer, HabitResult } from "@/lib/habits";
 import { becomingAge, futureFirst, type LifeStage } from "@/lib/lifeStage";
 import type { MoralStyle } from "@/lib/moral";
@@ -77,6 +79,7 @@ export default function MeClient({
   supportCount,
   featuresReady,
   lifeStage,
+  phase,
 }: {
   userId: string;
   displayName: string;
@@ -109,6 +112,8 @@ export default function MeClient({
   supportCount: number;
   featuresReady: boolean;
   lifeStage: LifeStage;
+  /** The global journey phase (lib/phase.ts), shown as a progress banner. */
+  phase: Phase;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -200,6 +205,16 @@ export default function MeClient({
             {firstName}.
           </h1>
         </div>
+
+        {/* Phase banner — how deep the whole journey currently goes. The CTA
+            points to the first identity anchor, which is where a first pass,
+            a review and a deepen all begin. */}
+        {hasProfile && (
+          <PhaseBanner
+            phase={phase}
+            href={phase === 1 ? "/missions" : "/missions/1/activities/strengths-mapping"}
+          />
+        )}
 
         {/* Tab bar — journey-aligned, only when there's a profile */}
         {hasProfile && (

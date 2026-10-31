@@ -4,6 +4,7 @@ import { getActivity, getMission } from "@/lib/missions";
 import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
 import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
+import { resolvePhase } from "@/lib/phaseServer";
 import { activityForStage } from "@/lib/stageContent";
 import ActivityClient from "./ActivityClient";
 
@@ -28,6 +29,10 @@ export default async function ActivityPage({
   // A few steps are worded for school or a fixed age; see lib/stageContent.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
   const activity = activityForStage(baseActivity, lifeStage);
+
+  // The global journey phase sets the default writing depth (lib/phase.ts) and
+  // auto-advances here if newly earned.
+  const phase = await resolvePhase(supabase, user.id);
 
   // Whether this student's writing goes to the AI for follow-up questions, so
   // the step can say so before they finish (and not promise questions if not).
@@ -204,6 +209,7 @@ export default async function ActivityPage({
       strengthProfile={strengthProfile}
       recalled={recalled}
       lifeStage={lifeStage}
+      phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}
     />
   );

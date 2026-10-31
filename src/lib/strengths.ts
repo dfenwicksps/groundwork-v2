@@ -4,7 +4,7 @@
 // Interventions" (signature-strengths framing). The one-liners are teen-friendly
 // paraphrases of the handbook's consensual definitions.
 
-import { hasLeftSchool, type LifeStage } from "./lifeStage";
+import { type LifeStage } from "./lifeStage";
 
 export type Virtue =
   | "Wisdom"
@@ -85,29 +85,31 @@ export function strengthName(key: string): string {
 // 0, and the ranking was decided largely by the tie-break rather than by the
 // student's answers — see TIEBREAK_ORDER below.
 //
-// Age relevance (scenariosFor):
-//   • junior  → Year 7–9: class, friends, home — younger framing
-//   • base    → Year 10–12: school, bigger decisions, more at stake
-//   • leftSchool → leaver/adult: work, uni, flatting, independent life
-// A variant only ever rewrites the *wording* — the strength behind each option
-// is fixed, so scoring and the three-appearance invariant are identical across
-// all ages. Option overrides are keyed by the option's strength and only given
-// where the base wording names something age-specific; everything else carries
-// over unchanged.
+// Age relevance (scenariosFor): each scenario is reworded for the student's life
+// stage so it's set in their actual world. The base text is the Year 10–11
+// ("middle") version; the `variants` map supplies distinct wording for the other
+// four stages:
+//   • junior → Year 7–9: class, friends, home, teams — simplest stakes
+//   • senior → Year 12: exams, leadership, licences, decisions that count
+//   • leaver → uni / TAFE / apprenticeship / first full-time job / gap year
+//   • adult  → workplace, flatmates, rent and bills, independent adult life
+// A variant only ever rewrites the *wording* — the strength behind each option is
+// fixed, so scoring and the three-appearance invariant are identical across all
+// ages, and a saved profile reads the same whatever stage the student is on.
+// Option overrides are keyed by the option's strength and only given where the
+// base wording names something stage-specific; everything else carries over.
 
-/** Age-specific rewording of one scenario. `options` is keyed by strength. */
+/** Stage-specific rewording of one scenario. `options` is keyed by strength. */
 export interface ScenarioVariant {
   scenario: string;
   options?: Record<string, string>;
 }
 
 export interface StrengthScenario {
-  scenario: string;
+  scenario: string; // base = Year 10–11 ("middle"); the neutral fallback
   options: { text: string; strength: string }[];
-  /** Year 7–9 framing */
-  junior?: ScenarioVariant;
-  /** Left-school (leaver / adult) framing */
-  leftSchool?: ScenarioVariant;
+  /** Distinct wording per life stage; a missing stage falls back to the base. */
+  variants?: Partial<Record<LifeStage, ScenarioVariant>>;
 }
 
 export const STRENGTH_SCENARIOS: StrengthScenario[] = [
@@ -120,21 +122,40 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Say little, start on my part, and just grind it out", strength: "perseverance" },
       { text: "Make sure the quieter people actually get heard", strength: "fairness" },
     ],
-    junior: {
-      scenario:
-        "You get put in a group for a class task and it's chaos — no plan, everyone talking at once. What do you do?",
-      options: {
-        leadership: "Help sort out who does what",
-        creativity: "Suggest a fun, different way to do it",
-        perseverance: "Quietly start on my bit and keep going",
-        fairness: "Make sure everyone gets a turn to talk",
+    variants: {
+      junior: {
+        scenario:
+          "You get put in a group for a class task and it's chaos — no plan, everyone talking at once. What do you do?",
+        options: {
+          leadership: "Help sort out who does what",
+          creativity: "Suggest a fun, different way to do it",
+          perseverance: "Quietly start on my bit and keep going",
+          fairness: "Make sure everyone gets a turn to talk",
+        },
       },
-    },
-    leftSchool: {
-      scenario:
-        "A project lands on your team and it's a mess — no plan, deadline close, everyone talking over each other. What are you most likely to do?",
-      options: {
-        creativity: "Pitch a completely different approach no one's tried",
+      senior: {
+        scenario:
+          "A big group assessment drops near the end of term — no plan, marks that count, everyone talking over each other. What are you most likely to do?",
+        options: {
+          leadership: "Take the lead, divide it up and set deadlines",
+          creativity: "Pitch a sharper angle no one's considered",
+        },
+      },
+      leaver: {
+        scenario:
+          "A group task lands in your tutorial (or first job) — no plan, deadline close, everyone talking over each other. What do you do?",
+        options: {
+          creativity: "Pitch a completely different approach no one's tried",
+        },
+      },
+      adult: {
+        scenario:
+          "A project lands on your team at work and it's a mess — no plan, deadline close, everyone talking over each other. What's your move?",
+        options: {
+          leadership: "Step up, divide it and give everyone a clear job",
+          creativity: "Pitch a completely different approach no one's tried",
+          perseverance: "Say little, start on my piece and grind it out",
+        },
       },
     },
   },
@@ -146,11 +167,21 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "A slow one-on-one with someone I'm close to", strength: "love" },
       { text: "Outdoors and moving, chasing a bit of a thrill", strength: "zest" },
     ],
-    junior: {
-      scenario: "A whole weekend with nothing you have to do. Which one's most you?",
-    },
-    leftSchool: {
-      scenario: "A rare weekend off, nothing booked. Which version of the day is most you?",
+    variants: {
+      junior: {
+        scenario: "A whole weekend with nothing you have to do. Which one's most you?",
+      },
+      senior: {
+        scenario:
+          "A rare weekend with no study and no shift. Which version of the day is most you?",
+      },
+      leaver: {
+        scenario:
+          "A weekend off between classes and work. Which version of the day is most you?",
+      },
+      adult: {
+        scenario: "A rare weekend off, nothing booked. Which version of the day is most you?",
+      },
     },
   },
   {
@@ -162,8 +193,22 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "I remind them this feeling won't last forever", strength: "hope" },
       { text: "I help them step back and see it more clearly", strength: "perspective" },
     ],
-    junior: {
-      scenario: "A friend texts you at night, really upset about something. What do you do first?",
+    variants: {
+      junior: {
+        scenario: "A friend texts you at night, really upset about something. What do you do first?",
+      },
+      senior: {
+        scenario:
+          "A mate messages you at midnight, stressed out of their mind. What comes most naturally?",
+      },
+      leaver: {
+        scenario:
+          "A friend messages you late, clearly falling apart — study, money, a breakup. What comes most naturally?",
+      },
+      adult: {
+        scenario:
+          "A close friend calls you late, clearly falling apart. What comes most naturally?",
+      },
     },
   },
   {
@@ -175,18 +220,28 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "It's not fair on everyone who did do it", strength: "fairness" },
       { text: "I quietly go back and do it properly anyway", strength: "self-regulation" },
     ],
-    junior: {
-      scenario: "You forgot your homework but the teacher never checked. What's going through your head?",
-      options: {
-        honesty: "I'd probably admit it anyway",
-        prudence: "I think about what happens if this catches up with me",
-        fairness: "It's not fair on everyone who did theirs",
-        "self-regulation": "I quietly do it properly later anyway",
+    variants: {
+      junior: {
+        scenario: "You forgot your homework but the teacher never checked. What's going through your head?",
+        options: {
+          honesty: "I'd probably admit it anyway",
+          prudence: "I think about what happens if this catches up with me",
+          fairness: "It's not fair on everyone who did theirs",
+          "self-regulation": "I quietly do it properly later anyway",
+        },
       },
-    },
-    leftSchool: {
-      scenario:
-        "You got away with it — no one noticed a task you quietly skipped at work. What really goes through your head?",
+      senior: {
+        scenario:
+          "You skipped prep for a task and no one checked. What really goes through your head?",
+      },
+      leaver: {
+        scenario:
+          "You got away with it — no one checked an assignment task you quietly skipped. What really goes through your head?",
+      },
+      adult: {
+        scenario:
+          "You got away with it — no one noticed a task you quietly skipped at work. What really goes through your head?",
+      },
     },
   },
   {
@@ -198,9 +253,23 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Consider I might've read the whole thing wrong", strength: "humility" },
       { text: "Try to work out why they actually did it", strength: "judgment" },
     ],
-    junior: {
-      scenario:
-        "A friend did something last week that annoyed you. Today they act totally normal. You…",
+    variants: {
+      junior: {
+        scenario:
+          "A friend did something last week that annoyed you. Today they act totally normal. You…",
+      },
+      senior: {
+        scenario:
+          "Someone in your year did something that really got to you last week. Today they're acting like nothing happened. You…",
+      },
+      leaver: {
+        scenario:
+          "Someone in your course or crew did something that annoyed you last week. Today they're acting like nothing happened. You…",
+      },
+      adult: {
+        scenario:
+          "A colleague did something that really annoyed you last week. Today they're acting like nothing happened. You…",
+      },
     },
   },
   {
@@ -211,11 +280,21 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Fold them into the group so they belong", strength: "teamwork" },
       { text: "Crack a joke to melt the awkwardness", strength: "humor" },
     ],
-    junior: {
-      scenario: "A new kid joins your class and doesn't know anyone. What's most like you?",
-    },
-    leftSchool: {
-      scenario: "A new starter joins your workplace and knows nobody. Over the week, what's most like you?",
+    variants: {
+      junior: {
+        scenario: "A new kid joins your class and doesn't know anyone. What's most like you?",
+      },
+      senior: {
+        scenario:
+          "A new student joins your year group partway through and knows nobody. Over the week, what's most like you?",
+      },
+      leaver: {
+        scenario:
+          "Someone new joins your course or your team and knows nobody. Over the week, what's most like you?",
+      },
+      adult: {
+        scenario: "A new starter joins your workplace and knows nobody. Over the week, what's most like you?",
+      },
     },
   },
   {
@@ -227,9 +306,23 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "I throw myself in all-in, no half measures", strength: "zest" },
       { text: "I weigh it up properly before I commit", strength: "prudence" },
     ],
-    junior: {
-      scenario:
-        "There's a chance to try something new in front of the class, and you might be bad at it. What wins?",
+    variants: {
+      junior: {
+        scenario:
+          "There's a chance to try something new in front of the class, and you might be bad at it. What wins?",
+      },
+      senior: {
+        scenario:
+          "There's a chance to put your hand up for something new in front of your year — and you might flop. What wins?",
+      },
+      leaver: {
+        scenario:
+          "There's a chance to try something new in front of a room of people you barely know — and you might be bad at it. What wins?",
+      },
+      adult: {
+        scenario:
+          "There's a chance to try something new in front of colleagues — and you might be genuinely bad at it. What wins?",
+      },
     },
   },
   {
@@ -241,6 +334,20 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "I hype them up and make sure they know they're seen", strength: "kindness" },
       { text: "It makes me feel part of something bigger", strength: "spirituality" },
     ],
+    variants: {
+      junior: {
+        scenario:
+          "You watch someone your age pull off something amazing — a goal, a dance, a drawing. Your reaction?",
+      },
+      senior: {
+        scenario:
+          "You watch someone absolutely nail a performance, a game or a piece of work. Your reaction?",
+      },
+      adult: {
+        scenario:
+          "You watch someone pull off something genuinely brilliant — on stage, on the field, in their craft. Your reaction?",
+      },
+    },
   },
   {
     scenario:
@@ -251,9 +358,23 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Afterwards, I'd name plainly that it wasn't right", strength: "honesty" },
       { text: "Rally a few others so it actually changes", strength: "leadership" },
     ],
-    junior: {
-      scenario:
-        "You see a kid getting picked on, or blamed for something they didn't do. First instinct?",
+    variants: {
+      junior: {
+        scenario:
+          "You see a kid getting picked on, or blamed for something they didn't do. First instinct?",
+      },
+      senior: {
+        scenario:
+          "You see someone in your year getting a raw deal — left out, blamed, singled out. First instinct?",
+      },
+      leaver: {
+        scenario:
+          "You see someone getting a raw deal — shut out, blamed, talked over. First instinct?",
+      },
+      adult: {
+        scenario:
+          "You see someone at work getting a raw deal — blamed for something, talked over, pushed out. First instinct?",
+      },
     },
   },
   {
@@ -265,6 +386,24 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "I stay convinced it'll pay off in the end", strength: "hope" },
       { text: "I don't need the credit, I just want it done right", strength: "humility" },
     ],
+    variants: {
+      junior: {
+        scenario:
+          "You set a goal that'll take months — getting good at a sport, an instrument, a game. Be honest, what are you like?",
+      },
+      senior: {
+        scenario:
+          "You've set a goal that'll take months of grind — your ATAR, a portfolio, a big tryout. Be honest, what are you like?",
+      },
+      leaver: {
+        scenario:
+          "You've set a goal that'll take months of unglamorous work — passing first year, finishing a qualification. Be honest, what are you like?",
+      },
+      adult: {
+        scenario:
+          "You've set a goal that'll take months of grind — a fitness target, a qualification, saving for something big. Be honest, what are you like?",
+      },
+    },
   },
   {
     scenario: "Life's been genuinely good lately. When you notice that, what do you do with it?",
@@ -274,6 +413,15 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Soak up the small, beautiful moments", strength: "appreciation" },
       { text: "Spread the good mood and make people laugh", strength: "humor" },
     ],
+    variants: {
+      junior: {
+        scenario: "Things have been really good lately. When you notice that, what do you do with it?",
+      },
+      adult: {
+        scenario:
+          "Life's been genuinely good lately — work, people, the lot. When you notice that, what do you do with it?",
+      },
+    },
   },
   {
     scenario: "A big claim is flying round the group chat and everyone's just believing it. Your move?",
@@ -283,6 +431,16 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Stay honest about what I don't actually know", strength: "humility" },
       { text: "Try to see it from the other side's angle", strength: "perspective" },
     ],
+    variants: {
+      junior: {
+        scenario:
+          "A wild rumour is going round the class group chat and everyone's just believing it. Your move?",
+      },
+      adult: {
+        scenario:
+          "A big claim is doing the rounds — a group chat, a work Slack, your feed — and everyone's just believing it. Your move?",
+      },
+    },
   },
   {
     scenario: "You and someone close have properly fallen out. A week's gone by. Your instinct?",
@@ -292,6 +450,15 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Work out what was really going on under it for them", strength: "social-intelligence" },
       { text: "Reach out first — the person matters more than being right", strength: "love" },
     ],
+    variants: {
+      junior: {
+        scenario: "You and a close friend have had a proper falling-out. A week's gone by. Your instinct?",
+      },
+      adult: {
+        scenario:
+          "You and someone close — a partner, a mate — have properly fallen out. A week's gone by. Your instinct?",
+      },
+    },
   },
   {
     scenario:
@@ -302,6 +469,16 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "End up laughing about it and making it a story", strength: "humor" },
       { text: "Pivot fast and throw myself at the next thing", strength: "zest" },
     ],
+    variants: {
+      junior: {
+        scenario:
+          "Something you'd been really looking forward to gets cancelled last minute. Honest reaction?",
+      },
+      adult: {
+        scenario:
+          "Plans you'd been looking forward to fall through at the last minute. Honest reaction?",
+      },
+    },
   },
   {
     scenario:
@@ -312,12 +489,22 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Break it down and find where my thinking slipped", strength: "judgment" },
       { text: "Keep chipping at it until it finally cracks", strength: "perseverance" },
     ],
-    junior: {
-      scenario: "You hit a topic in class you just don't get. What's your move?",
-    },
-    leftSchool: {
-      scenario:
-        "You hit something at work you genuinely don't get — a system, a skill, a problem that won't budge. Your move?",
+    variants: {
+      junior: {
+        scenario: "You hit a topic in class you just don't get. What's your move?",
+      },
+      senior: {
+        scenario:
+          "You hit a topic you genuinely don't get, right when the exam's coming. What's your move?",
+      },
+      leaver: {
+        scenario:
+          "You hit something at uni or work you genuinely don't get — a concept, a system, a problem that won't budge. Your move?",
+      },
+      adult: {
+        scenario:
+          "You hit something at work you genuinely don't get — a system, a skill, a problem that won't budge. Your move?",
+      },
     },
   },
   {
@@ -329,9 +516,23 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Checking nobody's quietly being left out", strength: "kindness" },
       { text: "Thinking ahead to what could go wrong", strength: "prudence" },
     ],
-    junior: {
-      scenario:
-        "You and your friends are trying to plan something and no one's deciding anything. Where do you land?",
+    variants: {
+      junior: {
+        scenario:
+          "You and your friends are trying to plan something and no one's deciding anything. Where do you land?",
+      },
+      senior: {
+        scenario:
+          "You're pulling together a formal, a fundraiser or an event and it's all loose — half-decided, nobody committing. Where do you land?",
+      },
+      leaver: {
+        scenario:
+          "A group of you is organising something — a trip, an event, a share house — and it's all loose. Where do you land?",
+      },
+      adult: {
+        scenario:
+          "Your team's organising something and it's all loose — half-decided, nobody committing. Where do you land?",
+      },
     },
   },
   {
@@ -343,6 +544,16 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Noticing things I usually walk straight past", strength: "appreciation" },
       { text: "Ideas start arriving and I want to make something", strength: "creativity" },
     ],
+    variants: {
+      junior: {
+        scenario:
+          "An hour on your own — no phone, nothing you have to do. Where does your head go?",
+      },
+      adult: {
+        scenario:
+          "An hour entirely to yourself — no phone, no jobs to do. Where does your head actually go?",
+      },
+    },
   },
   {
     scenario: "Someone let you down badly, and now they're asking for another chance. What do you do?",
@@ -352,13 +563,22 @@ export const STRENGTH_SCENARIOS: StrengthScenario[] = [
       { text: "Tell them straight how it landed, awkward as it is", strength: "bravery" },
       { text: "Sit with it instead of reacting while I'm angry", strength: "self-regulation" },
     ],
+    variants: {
+      junior: {
+        scenario: "A friend let you down badly, and now they're asking for another chance. What do you do?",
+      },
+      adult: {
+        scenario:
+          "Someone let you down badly — a friend, a partner, a colleague — and now they're asking for another chance. What do you do?",
+      },
+    },
   },
 ];
 
 /** The scenarios as this student should see them, reworded for their life stage. */
 export function scenariosFor(stage: LifeStage): StrengthScenario[] {
   return STRENGTH_SCENARIOS.map((sc) => {
-    const v = stage === "junior" ? sc.junior : hasLeftSchool(stage) ? sc.leftSchool : null;
+    const v = sc.variants?.[stage];
     if (!v) return { scenario: sc.scenario, options: sc.options };
     return {
       scenario: v.scenario,
@@ -378,7 +598,7 @@ if (process.env.NODE_ENV !== "production") {
 
   for (const sc of STRENGTH_SCENARIOS) {
     const keys = new Set(sc.options.map((o) => o.strength));
-    for (const v of [sc.junior, sc.leftSchool]) {
+    for (const v of Object.values(sc.variants ?? {})) {
       if (!v?.options) continue;
       const bad = Object.keys(v.options).filter((k) => !keys.has(k));
       if (bad.length) console.warn("[strengths] variant overrides unknown strength:", bad, sc.scenario);

@@ -6,12 +6,11 @@ import { createClient } from "@/lib/supabase";
 import { cn, parseReflection } from "@/lib/utils";
 import {
   TIERS,
-  readTier,
-  writeTier,
   insertText,
   type Tier,
 } from "@/lib/scaffold";
 import { scaffoldForStep } from "@/lib/missionScaffolds";
+import { phaseToTier, ANCHOR_ACTIVITY_IDS, type Phase, type PhaseMeta } from "@/lib/phase";
 import type { LifeStage } from "@/lib/lifeStage";
 import type { Mission, Activity } from "@/lib/missions";
 import { VALUES_WITH_DEFINITIONS, MISSIONS, requiredSteps, requiredDone } from "@/lib/missions";
@@ -73,42 +72,56 @@ interface Props {
   recalled?: { label: string; text: string } | null;
   /** Where the student is, for the hints and sentence starters */
   lifeStage: LifeStage;
+  /** The global journey phase — sets the default writing depth (lib/phase.ts). */
+  phase: Phase;
 }
 
-// ─── Shared: Starter / Advanced mode toggle ───────────────────────────────────
+// ─── Shared: "go deeper" depth control ────────────────────────────────────────
+// The phase sets the default writing depth (Phase 1 → tap, 2 → sentence
+// starters, 3 → open writing). This is the quiet, optional control that lets a
+// student go a level deeper within a single activity without changing their
+// phase — the tier is a floor, never a ceiling (see lib/scaffold.ts). `floor` is
+// the phase's default tier, so "Simpler" returns there rather than all the way
+// down.
 
 const OTHER_OPTION = "__other__";
 
-function ModeToggle({
-  mode,
+const TIER_ORDER: Tier[] = ["quick", "extended", "open"];
+
+function GoDeeper({
+  tier,
+  floor,
   onChange,
-  accent,
 }: {
-  mode: Tier;
-  onChange: (m: Tier) => void;
-  accent: string;
+  tier: Tier;
+  floor: Tier;
+  onChange: (t: Tier) => void;
 }) {
+  const i = TIER_ORDER.indexOf(tier);
+  const canDeeper = i < TIER_ORDER.length - 1;
+  const atFloor = tier === floor;
+  if (!canDeeper && atFloor) return null;
   return (
-    <div
-      className="inline-flex items-center p-0.5 rounded-full border border-[--border] bg-white text-xs font-semibold"
-      role="group"
-      aria-label="Answer mode"
-    >
-      {TIERS.map(({ key: m, label }) => (
+    <div className="inline-flex items-center gap-3 text-xs">
+      {canDeeper && (
         <button
-          key={m}
           type="button"
-          onClick={() => onChange(m)}
-          aria-pressed={mode === m}
-          className={cn(
-            "px-3 py-1.5 rounded-full transition-colors",
-            mode === m ? "text-white" : "text-[--ink-muted] hover:text-[--ink]"
-          )}
-          style={mode === m ? { background: accent } : undefined}
+          onClick={() => onChange(TIER_ORDER[i + 1])}
+          className="inline-flex items-center gap-1 font-semibold text-[--teal] hover:underline"
         >
-          {label}
+          <span aria-hidden>✎</span>
+          {tier === "quick" ? "Add it in my own words" : "Write it fully"}
         </button>
-      ))}
+      )}
+      {!atFloor && (
+        <button
+          type="button"
+          onClick={() => onChange(floor)}
+          className="text-[--ink-muted] hover:underline"
+        >
+          Simpler
+        </button>
+      )}
     </div>
   );
 }
@@ -309,6 +322,7 @@ function ConversationalActivity({
   compass,
   recalled,
   lifeStage,
+  phase,
   aiReflectionsEnabled,
   onComplete,
 }: {
@@ -317,6 +331,7 @@ function ConversationalActivity({
   userId: string;
   recalled?: { label: string; text: string } | null;
   lifeStage: LifeStage;
+  phase: Phase;
   aiReflectionsEnabled: boolean;
   existingEntry: JournalEntry | null;
   /** Latest saved response even when the step isn't marked complete (e.g.
@@ -339,12 +354,14 @@ function ConversationalActivity({
   const nextActivity =
     mission.activities.slice(currentIdx + 1).find((a) => !a.locked && !a.optional) || null;
 
-  const [phase, setPhase] = useState<ConvPhase>(
+  const [convPhase, setConvPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
   );
-  const [mode, setModeState] = useState<Tier>("quick");
-  // Read the saved preference after mount to avoid a hydration mismatch.
-  useEffect(() => setModeState(readTier()), []);
+  // The journey phase sets the default writing depth (lib/phase.ts). It's a
+  // server prop, identical on server and client, so seeding state with it
+  // directly is hydration-safe — no post-mount read needed.
+  const floorTier = phaseToTier(phase);
+  const [mode, setModeState] = useState<Tier>(floorTier);
   const [qIdx, setQIdx] = useState(0);
   const [turns, setTurns] = useState<CompletedTurn[]>([]);
   const [current, setCurrent] = useState("");
@@ -374,8 +391,9 @@ function ConversationalActivity({
 
   function changeMode(m: Tier) {
     if (m === mode) return;
+    // Per-activity only: not persisted, so each activity opens at the phase's
+    // default depth (lib/phase.ts) and "go deeper" is a local choice.
     setModeState(m);
-    writeTier(m);
     if (m !== "quick") {
       // Starter picks become editable text the user can extend or replace.
       if (selectedOption && selectedOption !== OTHER_OPTION) {
@@ -510,7 +528,7 @@ function ConversationalActivity({
   }, []);
 
   useEffect(() => {
-    if (phase !== "q" || editing) return;
+    if (convPhase !== "q" || editing) return;
     try {
       localStorage.setItem(
         draftKey,
@@ -519,7 +537,7 @@ function ConversationalActivity({
     } catch {
       // storage full/unavailable — non-fatal
     }
-  }, [qIdx, turns, current, sortChoices, customItems, phase, editing, draftKey]);
+  }, [qIdx, turns, current, sortChoices, customItems, convPhase, editing, draftKey]);
 
   function clearDraft() {
     try {
@@ -535,7 +553,7 @@ function ConversationalActivity({
   // Bring the TOP of the new question (its scenario) into view so the user
   // reads from the start, rather than landing scrolled to the bottom.
   useEffect(() => {
-    if (phase !== "q") return;
+    if (convPhase !== "q") return;
     const t = setTimeout(() => {
       // First question: reset the scroll area to the very top.
       if (qIdx === 0 && scrollAreaRef.current) {
@@ -545,7 +563,7 @@ function ConversationalActivity({
       }
     }, 60);
     return () => clearTimeout(t);
-  }, [qIdx, phase]);
+  }, [qIdx, convPhase]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -558,10 +576,10 @@ function ConversationalActivity({
   // Focus the textarea when writing — but never let focusing scroll the page
   // (that was pushing the scenario off the top of the screen).
   useEffect(() => {
-    if (phase === "q" && writingOther) {
+    if (convPhase === "q" && writingOther) {
       setTimeout(() => textareaRef.current?.focus({ preventScroll: true }), 200);
     }
-  }, [qIdx, phase, writingOther]);
+  }, [qIdx, convPhase, writingOther]);
 
   function canSubmitCurrent() {
     if (isSortStep) return sortedCount >= SORT_MIN;
@@ -665,7 +683,7 @@ function ConversationalActivity({
     }
 
     onComplete(finalResponse);
-    setPhase("done");
+    setConvPhase("done");
     setSubmitting(false);
   }
 
@@ -735,7 +753,7 @@ function ConversationalActivity({
     setTurns([]);
     setQIdx(0);
     applyPrefill(0);
-    setPhase("q");
+    setConvPhase("q");
   }
 
   const isLastQuestion = qIdx === questions.length - 1;
@@ -744,8 +762,8 @@ function ConversationalActivity({
   const sendsToAi = aiReflectionsEnabled && !activity.keepFromAi;
   const progressPct = Math.round((qIdx / questions.length) * 100);
 
-  // ── Intro phase ────────────────────────────────────────────────────────────
-  if (phase === "intro") {
+  // ── Intro ──────────────────────────────────────────────────────────────────
+  if (convPhase === "intro") {
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {/* Minimal header */}
@@ -797,18 +815,15 @@ function ConversationalActivity({
               )}
             </div>
 
-            {/* Starter / Advanced mode chooser */}
+            {/* Depth: the phase sets the default; "go deeper" is optional. */}
             {activity.starterOptions && activity.starterOptions.length > 0 && (
               <div className="mb-6 rounded-2xl border border-[--border] bg-white p-4">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <span className="text-sm font-semibold text-[--ink]">
-                    How do you want to answer?
-                  </span>
-                  <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
-                </div>
                 <p className="text-xs text-[--ink-muted] leading-relaxed">
                   {TIERS.find((t) => t.key === mode)?.blurb}
                 </p>
+                <div className="mt-2">
+                  <GoDeeper tier={mode} floor={floorTier} onChange={changeMode} />
+                </div>
               </div>
             )}
 
@@ -1052,7 +1067,7 @@ function ConversationalActivity({
 
             {/* Begin button */}
             <button
-              onClick={() => setPhase("q")}
+              onClick={() => setConvPhase("q")}
               className="btn btn-primary w-full py-4 text-base rounded-xl mt-2"
               style={{ background: mission.colour }}
             >
@@ -1075,8 +1090,8 @@ function ConversationalActivity({
     );
   }
 
-  // ── Conversation phase ─────────────────────────────────────────────────────
-  if (phase === "q") {
+  // ── Conversation ─────────────────────────────────────────────────────────────
+  if (convPhase === "q") {
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
         {/* Header with progress */}
@@ -1091,7 +1106,7 @@ function ConversationalActivity({
                     setTurns(turns.slice(0, -1));
                     if (editing) applyPrefill(prevIdx);
                   } else {
-                    setPhase("intro");
+                    setConvPhase("intro");
                   }
                 }}
                 className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
@@ -1124,7 +1139,7 @@ function ConversationalActivity({
             </div>
             {activity.starterOptions && activity.starterOptions.length > 0 && (
               <div className="flex justify-end mt-2">
-                <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
+                <GoDeeper tier={mode} floor={floorTier} onChange={changeMode} />
               </div>
             )}
           </div>
@@ -1782,12 +1797,14 @@ function ValuesPickerActivity({
   activity,
   userId,
   existingEntry,
+  phase,
   onComplete,
 }: {
   mission: Mission;
   activity: Activity;
   userId: string;
   existingEntry: JournalEntry | null;
+  phase: Phase;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
@@ -1805,12 +1822,13 @@ function ValuesPickerActivity({
   const [savedResponse, setSavedResponse] = useState(existingEntry?.response || "");
   const whyId = useId();
   const [whyExpanded, setWhyExpanded] = useState(false);
-  const [mode, setModeState] = useState<Tier>("quick");
+  // Phase sets the default depth; seeding from the server prop is hydration-safe.
+  const floorTier = phaseToTier(phase);
+  const [mode, setModeState] = useState<Tier>(floorTier);
   const [saveError, setSaveError] = useState<string | null>(null);
-  useEffect(() => setModeState(readTier()), []);
+  // Per-activity only, not persisted — each activity opens at the phase default.
   function changeMode(m: Tier) {
     setModeState(m);
-    writeTier(m);
   }
 
   /**
@@ -2008,19 +2026,16 @@ function ValuesPickerActivity({
           <p className="text-[--ink] leading-relaxed">{activity.prompt}</p>
         </div>
 
-        {/* Starter / Advanced mode chooser */}
+        {/* Depth: the phase sets the default; "go deeper" is optional. */}
         <div className="mb-5 rounded-2xl border border-[--border] bg-white p-4">
-          <div className="flex items-center justify-between gap-3 mb-2">
-            <span className="text-sm font-semibold text-[--ink]">
-              How do you want to answer?
-            </span>
-            <ModeToggle mode={mode} onChange={changeMode} accent={mission.colour} />
-          </div>
           <p className="text-xs text-[--ink-muted] leading-relaxed">
             {mode === "quick"
-              ? "Quick — just choose your values. That's all you need to do."
+              ? "Just choose your values — that's all you need to do."
               : "Choose your values, then add why each one matters."}
           </p>
+          <div className="mt-2">
+            <GoDeeper tier={mode} floor={floorTier} onChange={changeMode} />
+          </div>
         </div>
 
         {activity.whyItMatters && (
@@ -2926,11 +2941,38 @@ export default function ActivityClient({
   strengthProfile,
   recalled,
   lifeStage,
+  phase,
   aiReflectionsEnabled,
 }: Props) {
   const db = createClient() as any;
 
   const [completed, setCompleted] = useState(isCompleted);
+
+  // Phase 2 asks the student to revisit the identity anchors; saving one while
+  // in Phase 2 (or later) records it, which is what unlocks Phase 3 (see
+  // lib/phase.ts / lib/phaseServer.ts). Best-effort: a hiccup here never blocks
+  // the save, and it's a no-op before the migration adds phase_meta.
+  const recordAnchorReview = useCallback(async () => {
+    if (phase < 2 || !ANCHOR_ACTIVITY_IDS.includes(activity.id)) return;
+    try {
+      const { data, error } = await db
+        .from("users")
+        .select("phase_meta")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) return; // column not present yet
+      const meta: PhaseMeta = (data?.phase_meta as PhaseMeta) ?? {};
+      const reviewed = new Set(meta.reviewed ?? []);
+      if (reviewed.has(activity.id)) return;
+      reviewed.add(activity.id);
+      await db
+        .from("users")
+        .update({ phase_meta: { ...meta, reviewed: Array.from(reviewed) } })
+        .eq("id", userId);
+    } catch (e) {
+      console.error("recordAnchorReview failed:", e);
+    }
+  }, [db, userId, phase, activity.id]);
 
   // After any activity type completes, mark mission_progress and advance active_mission if needed
   const markProgress = useCallback(async () => {
@@ -2978,6 +3020,7 @@ export default function ActivityClient({
 
   function handleComplete() {
     markProgress();
+    recordAnchorReview();
     setCompleted(true);
   }
 
@@ -3021,6 +3064,7 @@ export default function ActivityClient({
         activity={activity}
         userId={userId}
         existingEntry={completed ? existingEntry : null}
+        phase={phase}
         onComplete={() => handleComplete()}
       />
     );
@@ -3053,6 +3097,7 @@ export default function ActivityClient({
       compass={compass}
       recalled={recalled}
       lifeStage={lifeStage}
+      phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}
       onComplete={() => handleComplete()}
     />
