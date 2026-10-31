@@ -5,7 +5,7 @@ import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
 import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { resolvePhase } from "@/lib/phaseServer";
-import { activityForStage } from "@/lib/stageContent";
+import { activityForStage, hiddenForStage } from "@/lib/stageContent";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -28,6 +28,8 @@ export default async function ActivityPage({
 
   // A few steps are worded for school or a fixed age; see lib/stageContent.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
+  // A step hidden at this stage isn't reachable by URL either.
+  if (hiddenForStage(baseActivity.id, lifeStage)) redirect(`/missions/${missionId}`);
   const activity = activityForStage(baseActivity, lifeStage);
 
   // The global journey phase sets the default writing depth (lib/phase.ts) and

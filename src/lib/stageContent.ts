@@ -180,11 +180,29 @@ export function futureSelfLine(text: string, stage: LifeStage): string {
     .replace(/\b21\b/g, String(age));
 }
 
+/**
+ * Steps a stage doesn't see at all. Parts of Who You Are asks about beliefs,
+ * gender and sexuality; for Year 7–9 (12 to 15) that's a conversation for
+ * families and school wellbeing staff, not a self-guided app, so the step is
+ * hidden rather than reworded. It's optional and never counts towards a
+ * mission, so hiding it changes nothing about progress. Anything a student
+ * already wrote there stays theirs, in the Journal.
+ */
+const HIDDEN_BY_STAGE: Partial<Record<LifeStage, string[]>> = {
+  junior: ["parts-of-you"],
+};
+
+export function hiddenForStage(activityId: string, stage: LifeStage): boolean {
+  return !!HIDDEN_BY_STAGE[stage]?.includes(activityId);
+}
+
 /** The mission as this student should see it: its description, and every step. */
 export function missionForStage(mission: Mission, stage: LifeStage): Mission {
   return {
     ...mission,
     description: MISSION_DESCRIPTIONS[stage]?.[mission.id] ?? mission.description,
-    activities: mission.activities.map((a) => activityForStage(a, stage)),
+    activities: mission.activities
+      .filter((a) => !hiddenForStage(a.id, stage))
+      .map((a) => activityForStage(a, stage)),
   };
 }
