@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useId } from "react";
+import { useState, useEffect, useRef, useCallback, useId, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { cn, parseReflection } from "@/lib/utils";
@@ -42,7 +42,7 @@ import {
 } from "@/lib/inheritance";
 import { storyHasFilm } from "@/components/stories/films";
 import {
-  STRENGTH_SCENARIOS,
+  scenariosFor,
   scoreAssessment,
   topStrengths,
   strengthName,
@@ -2466,6 +2466,7 @@ function StrengthsAssessmentActivity({
   userId,
   alreadyDone,
   profile,
+  lifeStage,
   onComplete,
 }: {
   mission: Mission;
@@ -2476,10 +2477,14 @@ function StrengthsAssessmentActivity({
     ranking: string[];
     answers: { most: (string | null)[]; least: (string | null)[] } | null;
   } | null;
+  lifeStage: LifeStage;
   onComplete: (response: string) => void;
 }) {
   const db = createClient() as any;
-  const scenarios = STRENGTH_SCENARIOS;
+  // Scenarios are reworded for the student's life stage (class/friends for
+  // juniors, work/uni for leavers). The strength behind each option is the same
+  // across ages, so a saved profile and its scoring are unaffected.
+  const scenarios = useMemo(() => scenariosFor(lifeStage), [lifeStage]);
 
   const [phase, setPhase] = useState<"intro" | "q" | "done">(
     alreadyDone ? "done" : "intro"
@@ -2507,26 +2512,60 @@ function StrengthsAssessmentActivity({
   }, [idx, phase]);
 
   const cur = scenarios[idx];
-  const canNext = !!most[idx]; // "most" required; "least" optional
   const isLast = idx === scenarios.length - 1;
   const progressPct = Math.round((idx / scenarios.length) * 100);
 
-  function choose(kind: "most" | "least", strength: string) {
-    if (kind === "most") {
-      setMost((m) => m.map((v, i) => (i === idx ? (v === strength ? null : strength) : v)));
-      // can't be both most and least
-      setLeast((l) => l.map((v, i) => (i === idx && v === strength ? null : v)));
-    } else {
-      setLeast((l) => l.map((v, i) => (i === idx ? (v === strength ? null : strength) : v)));
-      setMost((m) => m.map((v, i) => (i === idx && v === strength ? null : v)));
-    }
+  // Auto-advance: once both MOST and LEAST are picked, move on by itself after a
+  // short beat (long enough to see the taps register). No Next button. The timer
+  // is cleared on unmount and before each new schedule so taps can't stack up.
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+  }, []);
+
+  function scheduleAdvance(
+    atIdx: number,
+    mostArr: (string | null)[],
+    leastArr: (string | null)[]
+  ) {
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    const last = atIdx === scenarios.length - 1;
+    advanceTimer.current = setTimeout(() => {
+      // The final answer only lives in mostArr/leastArr yet (the setState from
+      // this same tap may not have flushed), so hand them straight to finish.
+      if (last) finish(mostArr, leastArr);
+      else setIdx((i) => (i === atIdx ? i + 1 : i));
+    }, 360);
   }
 
-  async function finish() {
+  function choose(kind: "most" | "least", strength: string) {
+    // Work out the resulting pick for this scenario synchronously so we can
+    // decide whether both slots are now filled.
+    let nextMost = most[idx];
+    let nextLeast = least[idx];
+    if (kind === "most") {
+      nextMost = nextMost === strength ? null : strength;
+      if (nextLeast === strength) nextLeast = null; // can't be both
+    } else {
+      nextLeast = nextLeast === strength ? null : strength;
+      if (nextMost === strength) nextMost = null;
+    }
+    const nextMostArr = most.map((v, i) => (i === idx ? nextMost : v));
+    const nextLeastArr = least.map((v, i) => (i === idx ? nextLeast : v));
+    setMost(nextMostArr);
+    setLeast(nextLeastArr);
+    if (advanceTimer.current) clearTimeout(advanceTimer.current); // changing a pick cancels a pending jump
+    if (nextMost && nextLeast) scheduleAdvance(idx, nextMostArr, nextLeastArr);
+  }
+
+  async function finish(
+    mostArg: (string | null)[] = most,
+    leastArg: (string | null)[] = least
+  ) {
     setSubmitting(true);
     setSaveError(null);
-    const mostKeys = most.filter(Boolean) as string[];
-    const leastKeys = least.filter(Boolean) as string[];
+    const mostKeys = mostArg.filter(Boolean) as string[];
+    const leastKeys = leastArg.filter(Boolean) as string[];
     const { scores, ranking } = scoreAssessment(mostKeys, leastKeys);
     const top5 = topStrengths(ranking, 5);
 
@@ -2538,7 +2577,7 @@ function StrengthsAssessmentActivity({
       updated_at: new Date().toISOString(),
     };
     let { error } = await db.from("strength_profiles").upsert(
-      { ...basePayload, answers: { most, least } },
+      { ...basePayload, answers: { most: mostArg, least: leastArg } },
       { onConflict: "user_id" }
     );
     // The answers column is a retake-prefill nice-to-have. If the database
@@ -2839,36 +2878,38 @@ function StrengthsAssessmentActivity({
               })}
             </div>
             <p className="text-xs text-[--ink-muted] mt-2 px-0.5 leading-relaxed">
-              Optional: tap <span className="font-semibold">Least</span> on the one that&apos;s least like you — it sharpens your results.
+              Then tap <span className="font-semibold">Least</span> on the one that&apos;s least
+              like you. Pick both and it moves on by itself.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="conv-input-bar">
-        <div className="max-w-lg lg:max-w-2xl mx-auto">
-          {saveError && (
-            <p role="alert" className="text-sm text-red-600 mb-2 leading-relaxed">{saveError}</p>
-          )}
-          <button
-            onClick={() => (isLast ? finish() : setIdx(idx + 1))}
-            disabled={!canNext || submitting}
-            className={cn(
-              "btn w-full py-3 rounded-xl text-sm transition-all",
-              canNext ? "text-white" : "bg-[--border] text-[--ink-muted] cursor-not-allowed"
+      {/* No Next button — picking both MOST and LEAST advances on its own. This
+          bar only appears for the last-question submit and for save errors. */}
+      {(submitting || saveError || (isLast && !!most[idx] && !!least[idx])) && (
+        <div className="conv-input-bar">
+          <div className="max-w-lg lg:max-w-2xl mx-auto">
+            {saveError && (
+              <p role="alert" className="text-sm text-red-600 mb-2 leading-relaxed">{saveError}</p>
             )}
-            style={canNext ? { background: mission.colour } : undefined}
-          >
-            {submitting
-              ? "Working out your strengths…"
-              : isLast
-              ? saveError
-                ? "Try again"
-                : "See my strengths ✨"
-              : "Next →"}
-          </button>
+            {saveError ? (
+              <button
+                onClick={() => finish()}
+                disabled={submitting}
+                className="btn w-full py-3 rounded-xl text-sm text-white transition-all"
+                style={{ background: mission.colour }}
+              >
+                {submitting ? "Working out your strengths…" : "Try again"}
+              </button>
+            ) : (
+              <p className="text-sm text-center text-[--ink-muted] py-1">
+                {submitting ? "Working out your strengths…" : "Last one — that's a wrap ✨"}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -2966,6 +3007,7 @@ export default function ActivityClient({
         // After "Restart this mission" (completed=false) the assessment starts
         // from scratch; a plain revisit/retake pre-fills previous answers.
         profile={completed ? strengthProfile : null}
+        lifeStage={lifeStage}
         onComplete={() => handleComplete()}
       />
     );
