@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
-import { resolvePhase } from "@/lib/phaseServer";
+import { resolvePhaseState } from "@/lib/phaseServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
   // furthest along. See src/lib/spine.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
   // Global journey phase (lib/phase.ts); resolves + persists any newly earned.
-  const phase = await resolvePhase(supabase, user.id);
+  const { phase, reviewed: reviewedAnchors } = await resolvePhaseState(supabase, user.id);
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
@@ -326,6 +326,7 @@ export default async function DashboardPage() {
       spine={spine}
       lifeStage={lifeStage}
       phase={phase}
+      reviewedAnchors={reviewedAnchors}
       missionSummary={summary}
       programWeek={programWeek}
       nextChapter={nextChapter}

@@ -369,13 +369,14 @@ function ConversationalActivity({
   const [editing, setEditing] = useState(false);
   const prevAnswersRef = useRef<string[]>([]);
 
-  // Quick tier uses multiple-choice when the current step has options.
-  const stepOptions = activity.starterOptions?.[qIdx];
-  const usingStarter = mode === "quick" && !!stepOptions;
-  // Extended offers half-written sentences; "stuck" hints show at every tier.
-  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions, lifeStage);
   // A sort step is answered by sorting, not writing (see lib/inheritance.ts).
   const isSortStep = activity.sortStep === qIdx;
+  // Quick tier uses multiple-choice when the current step has options. A sort
+  // step's slot in starterOptions is an empty placeholder, never a choice list.
+  const stepOptions = activity.starterOptions?.[qIdx];
+  const usingStarter = mode === "quick" && !isSortStep && !!stepOptions?.length;
+  // Extended offers half-written sentences; "stuck" hints show at every tier.
+  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions, lifeStage);
   const [sortChoices, setSortChoices] = useState<SortChoices>({});
   const [customItems, setCustomItems] = useState<string[]>([]);
   const sortedCount = Object.keys(sortChoices).length;
@@ -2534,9 +2535,13 @@ function StrengthsAssessmentActivity({
   // short beat (long enough to see the taps register). No Next button. The timer
   // is cleared on unmount and before each new schedule so taps can't stack up.
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True between a completing tap and the jump it schedules, so the "keep these"
+  // button (for a scenario arrived at already answered) doesn't flash up.
+  const [advancing, setAdvancing] = useState(false);
   useEffect(() => () => {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
   }, []);
+  useEffect(() => setAdvancing(false), [idx]);
 
   function scheduleAdvance(
     atIdx: number,
@@ -2545,6 +2550,7 @@ function StrengthsAssessmentActivity({
   ) {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     const last = atIdx === scenarios.length - 1;
+    setAdvancing(true);
     advanceTimer.current = setTimeout(() => {
       // The final answer only lives in mostArr/leastArr yet (the setState from
       // this same tap may not have flushed), so hand them straight to finish.
@@ -2554,6 +2560,8 @@ function StrengthsAssessmentActivity({
   }
 
   function choose(kind: "most" | "least", strength: string) {
+    // The last answer is being saved; a stray tap mustn't save it twice.
+    if (submitting) return;
     // Work out the resulting pick for this scenario synchronously so we can
     // decide whether both slots are now filled.
     let nextMost = most[idx];
@@ -2570,6 +2578,7 @@ function StrengthsAssessmentActivity({
     setMost(nextMostArr);
     setLeast(nextLeastArr);
     if (advanceTimer.current) clearTimeout(advanceTimer.current); // changing a pick cancels a pending jump
+    setAdvancing(false);
     if (nextMost && nextLeast) scheduleAdvance(idx, nextMostArr, nextLeastArr);
   }
 
@@ -2901,8 +2910,11 @@ function StrengthsAssessmentActivity({
       </div>
 
       {/* No Next button — picking both MOST and LEAST advances on its own. This
-          bar only appears for the last-question submit and for save errors. */}
-      {(submitting || saveError || (isLast && !!most[idx] && !!least[idx])) && (
+          bar appears while saving, for save errors, and on a scenario that was
+          already answered when the student arrived (a retake pre-fills every
+          answer, and Back returns to answered ones), where nothing would
+          otherwise move them on without changing an answer. */}
+      {(submitting || saveError || (!!most[idx] && !!least[idx] && !advancing)) && (
         <div className="conv-input-bar">
           <div className="max-w-lg lg:max-w-2xl mx-auto">
             {saveError && (
@@ -2917,10 +2929,18 @@ function StrengthsAssessmentActivity({
               >
                 {submitting ? "Working out your strengths…" : "Try again"}
               </button>
-            ) : (
+            ) : submitting ? (
               <p className="text-sm text-center text-[--ink-muted] py-1">
-                {submitting ? "Working out your strengths…" : "Last one — that's a wrap ✨"}
+                Working out your strengths…
               </p>
+            ) : (
+              <button
+                onClick={() => (isLast ? finish() : setIdx(idx + 1))}
+                className="btn w-full py-3 rounded-xl text-sm text-white transition-all"
+                style={{ background: mission.colour }}
+              >
+                {isLast ? "Keep these and see my strengths →" : "Keep these and continue →"}
+              </button>
             )}
           </div>
         </div>
