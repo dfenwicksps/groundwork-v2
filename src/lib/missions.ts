@@ -341,7 +341,7 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Looking inward without pressure to have it figured out yet.",
     description:
-      "Identity has three layers worth knowing: your inner compass (the self you feel from the inside), your public self (the version you show others), and your social self (the groups that shape who you are). This mission starts with the story so far, then explores all three — mapping your strengths, naming what you value, and examining the gap between who you feel you are and who you present yourself to be. There are no right answers. The goal is honest self-knowledge, not a finished picture.",
+      "By the end of this mission you'll have your top 5 strengths, your 5 core values, and a private letter to yourself about who you are right now. Every step adds a piece to your Who I Am card, so you can watch the picture build as you go. Seven short steps, about an hour in all, spread over a week. There are no right answers.",
     colour: "#4F46E5",
     colourLight: "#6366F1",
     textColour: "#FFFFFF",
@@ -355,12 +355,28 @@ export const MISSIONS: Mission[] = [
           "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this in Mission 4, and either question can be left out.",
         prompt: "If your life so far were a book, what would the chapters be called?",
         scenarios: [
-          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
-          "The episode playing right now has a title too \u2014 maybe one you'd only admit to yourself.",
+          "Someone's writing a book about your life so far. Each chapter starts on a new page with a short title at the top.",
+          "The chapter you're in right now has a title too \u2014 maybe one you'd only admit to yourself.",
         ],
         scaffoldingSteps: [
-          "If your life so far were a book, what would the chapters be called? Give three or four short titles, roughly in order.",
+          "If your life so far were a book, what would the chapters be called? Give two to four short titles, roughly in order.",
           "What's the chapter you're in right now called, and what's it about?",
+        ],
+        starterOptions: [
+          [
+            "The Little Kid Years \u2192 Starting School \u2192 Right Now",
+            "Before the Move \u2192 The New Place \u2192 Finding My Feet",
+            "The Shy Years \u2192 Finding My Thing \u2192 Getting Louder",
+            "When Things Changed at Home \u2192 Learning to Cope \u2192 Steadier Now",
+            "The Sport Years \u2192 Trying New Stuff \u2192 Working Out What's Mine",
+          ],
+          [
+            "Figuring It Out \u2014 a lot is changing and I'm not sure where it's going",
+            "Everything at Once \u2014 school, friends and home all busy",
+            "Finding My People \u2014 working out who I want around me",
+            "Starting Fresh \u2014 a new place, group or start",
+            "Keeping My Head Down \u2014 just getting through for now",
+          ],
         ],
         skippableSteps: [0, 1],
         wrapUp:
@@ -372,7 +388,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "strengths-mapping",
         wrapUp:
-          "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and the app will point back to them from here on. Next: the other half — the values underneath why those strengths matter to you.",
+          "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and they’re on your Who I Am card now. Next: the other half — the values underneath why those strengths matter to you.",
         type: "strengths_assessment",
         title: "Strengths Mapping",
         subtitle: "Step 2 of 7 · Inner compass",
@@ -389,7 +405,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "values-clarifier",
         wrapUp:
-          "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
+          "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from, and both are on your Who I Am card now. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
         type: "values_picker",
         title: "Values Clarifier",
         subtitle: "Step 3 of 7 · Inner compass",
@@ -400,7 +416,7 @@ export const MISSIONS: Mission[] = [
         scenarios: [
           "You find out a friend has been quietly spreading something untrue about another friend. Calling it out could cost you — but staying quiet doesn't sit right either. What's the part of you that won't let it go?",
           "Two free Saturdays, two versions of you. One stays in, deep into something you love, totally absorbed and happy on your own. The other is out, around people, in the middle of everything. Which one feels more like a good day — and what does that say you need?",
-          "An adult you respect breaks a promise to you and never mentions it again. It stings more than you expected. Which part stings most — the unfairness, the broken trust, the not being taken seriously?",
+          "Someone you look up to breaks a promise to you and never mentions it again. It stings more than you expected. Which part stings most — the unfairness, the broken trust, the not being taken seriously?",
           "You're handed the chance to do something new that you might genuinely be bad at in front of people. Part of you wants to run. Part of you is curious. Which part usually wins — and how do you feel about that?",
         ],
         prompt:
@@ -416,7 +432,7 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
+          "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. Where you can just be you is on your card now. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
         type: "journal",
         title: "The Mask Check",
         subtitle: "Step 4 of 7 · Your public self",
@@ -438,7 +454,7 @@ export const MISSIONS: Mission[] = [
         scaffoldingSteps: [
           "Pick two of those rooms. How does the 'you' that shows up actually change between them — your volume, your opinions, how much you let show?",
           "What's one part of you that stays mostly hidden? You don't have to reveal it in detail — just name that it's there and where it lives.",
-          "What were you protecting in that moment — what did you think might happen if you'd left it as it was? What does that fear cost you over time?",
+          "Think of a time you edited yourself, like that deleted post. What were you protecting — what did you think might happen if you'd left it as it was? What does holding back cost you over time?",
           "What's different about that place or person? What do they give you that the harder rooms don't — and what would it take to feel a little more of that elsewhere?",
         ],
         starterOptions: [
@@ -472,7 +488,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         whyItMatters:
-          "Psychologists call the gap between your private and public self 'self-monitoring'. Some gap is normal and healthy — we all adapt to context. But when the gap gets very large, it tends to correlate with higher anxiety and a fragmented sense of identity. This activity isn't about eliminating the gap. It's about seeing it clearly so you can decide — consciously — where you want to close it.",
+          "Psychologists have studied for decades how people adjust themselves to fit different situations. Some adjusting is normal and healthy — everyone does it. But research on authenticity finds that feeling you have to hide big parts of yourself, most of the time, goes with more stress and a shakier sense of who you are. This step isn't about getting rid of the gap. It's about seeing it clearly so you can decide where you'd like to close it.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -480,14 +496,14 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "That letter is the truest snapshot of you that exists anywhere \u2014 compass, masks and all. Nobody can mark it, judge it, or take it. Future-you will read it on a day they need it. One thing left: living one small piece of it out loud.",
+          "That's a snapshot of who you are right now, in lines you chose. Nobody can mark it or judge it, and you can add to it whenever you come back. One line from it is now on your Who I Am card. Next: living one small piece of it out loud.",
         type: "milestone_letter",
         title: "Identity Letter",
         subtitle: "Step 5 of 7 · Milestone",
         intro:
           "You've mapped your strengths and values, and seen where you perform and where you're real. This letter holds it together: you, writing to yourself about who you are right now, and who you sense you're becoming.",
         warmUp:
-          "You've already done the hard noticing in the last three steps. This letter just gathers it up. Write it to yourself as 'you' — it's private, permanent, and only ever for you.",
+          "You've already done the hard noticing in the last three steps. This letter just gathers it up. Tap the lines that ring true or use your own words. It's private and only ever for you.",
         storyBefore: "What the Mirror Doesn't Show",
         prompt:
           "Write a short letter to yourself — not who you think you should be, but who you actually are right now. Be honest. Be kind.",
@@ -501,7 +517,7 @@ export const MISSIONS: Mission[] = [
           "The kindest person who really knows you is asked to describe you in one honest sentence. They don't flatter you — they just see you clearly.",
         ],
         scaffoldingSteps: [
-          "What would you want them to understand about you first — your personality, your quirks, what actually matters to you, not your achievements?",
+          "What would you want that new person to understand about you first — your personality, your quirks, what actually matters to you, not your achievements?",
           "What's the true thing future-you might need reminding of on that hard day?",
           "What does that moment quietly tell you about something you're still working on — said kindly, the way you'd say it to a friend?",
           "What's their one sentence — and is it something you'd struggle to say about yourself? Try saying it anyway.",
@@ -537,7 +553,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         whyItMatters:
-          "Writing about yourself in the second person — addressing yourself as 'you' — activates a different kind of self-awareness than thinking in the first person does. Studies on expressive writing show it can reduce self-criticism, increase clarity about values, and help consolidate fragmented self-perceptions into a more coherent sense of identity. The letter format isn't arbitrary — it works.",
+          "Putting who you are into words, honestly and kindly, helps pull scattered thoughts about yourself into one clearer picture. Studies of expressive writing link it with less self-criticism and more clarity about what matters to you. Some research also suggests that talking to yourself as 'you' makes it easier to be kind to yourself, the way you would be to a friend.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -579,8 +595,38 @@ export const MISSIONS: Mission[] = [
           "What surprised you — something you didn't know, or didn't expect them to have noticed?",
           "What's one thing from it that still feels true about you now?",
         ],
+        starterOptions: [
+          [
+            "A parent \u2014 it was nice to hear",
+            "A grandparent \u2014 they had heaps of stories",
+            "An older sibling or cousin \u2014 funny and a bit embarrassing",
+            "A teacher or coach who's known me a while",
+            "Nobody this time \u2014 I went through old photos and cards",
+          ],
+          [
+            "I was always asking questions",
+            "I looked after the other kids",
+            "I was fearless and into everything",
+            "I was quiet but noticed everything",
+            "I was the one who made everyone laugh",
+          ],
+          [
+            "How much they remembered",
+            "That I was more confident back then",
+            "That they'd noticed something I thought nobody saw",
+            "How much I've changed",
+            "Honestly, nothing surprised me",
+          ],
+          [
+            "I still ask a lot of questions",
+            "I still look out for people",
+            "I still throw myself into things I love",
+            "I still notice more than I say",
+            "I still like making people laugh",
+          ],
+        ],
         wrapUp:
-          "You've added someone else's view to your own story: the version of you that existed before you can remember.",
+          "You've added someone else's view to your own story: the version of you that existed before you can remember. It's on your Who I Am card now.",
         whyItMatters:
           "Psychologists who study how young people build a life story have found it doesn't happen alone. Teenagers make sense of who they are partly through the stories other people tell about them, and with them. Hearing how someone saw you as a kid gives you material your own memory doesn't have, and shows you which parts of you have stayed constant.",
         timeEstimate: "A conversation, then 5 minutes",
@@ -908,6 +954,36 @@ export const MISSIONS: Mission[] = [
           "What did they do about it — and what did it cost them, if anything?",
           "What does their story tell you about the thing you care about?",
         ],
+        starterOptions: [
+          [
+            "A family member who volunteers",
+            "A teacher, coach or boss who cares about a cause",
+            "A friend or older sibling who's into it",
+            "Someone in my community doing something about it",
+            "Nobody this time — I read or watched someone's story",
+          ],
+          [
+            "Something happened to them or someone close",
+            "They saw something unfair and couldn't ignore it",
+            "Someone else got them involved",
+            "It grew slowly from something they already loved",
+            "They're not totally sure — it just stuck",
+          ],
+          [
+            "Time — they gave up a lot of weekends",
+            "Money, or a better-paying path",
+            "Some friends didn't get it",
+            "It wore them out sometimes",
+            "Not much — it mostly gave back",
+          ],
+          [
+            "You can start small and still matter",
+            "Caring about it is normal, not weird",
+            "It takes a long time to make a difference",
+            "I need people around me who care too",
+            "I care about it more than I realised",
+          ],
+        ],
         wrapUp:
           "You've seen what caring about something looks like over years rather than a week, including what it costs.",
         whyItMatters:
@@ -1209,6 +1285,36 @@ export const MISSIONS: Mission[] = [
           "What got handed down — a habit, a value, a recipe, a way of doing things — that you can still see in your family?",
           "Where do you see yourself in that story? What would you carry on, and what would you do differently?",
         ],
+        starterOptions: [
+          [
+            "A grandparent — a story about moving or starting over",
+            "A parent — a story from when they were my age",
+            "An aunt, uncle or cousin — a family legend",
+            "An older family friend who knew my family back then",
+            "Nobody this time — I looked at old photos, documents or records",
+          ],
+          [
+            "Money was tight and they made it work",
+            "They moved somewhere new and started again",
+            "They lost someone and kept going",
+            "They were treated unfairly and stood their ground",
+            "They worked hard for years without much thanks",
+          ],
+          [
+            "Always feeding people who turn up",
+            "Working hard and not complaining",
+            "Sticking together no matter what",
+            "Faith, or a tradition we still keep",
+            "A sense of humour when things are hard",
+          ],
+          [
+            "I'd carry on the loyalty and do the talking-about-feelings bit better",
+            "I'd carry on the hard work and rest more",
+            "I'd carry on the traditions in my own way",
+            "I'd carry on the toughness and ask for help sooner",
+            "I'm still working out where I fit in it",
+          ],
+        ],
         skippableSteps: [1],
         wrapUp:
           "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in this mission.",
@@ -1281,6 +1387,32 @@ export const MISSIONS: Mission[] = [
           "Pick one turning point — a moment when something shifted. What happened, and what did it leave in you that's still there now?",
           "Everyone's handed things by their family and culture before they're old enough to choose. Sort what you were handed: keep it, rework it, or leave it.",
           "Pick one thing you're reworking. What are you keeping from it, and what are you changing so it fits who you are now?",
+        ],
+        // Step 3 is the sort, answered by sorting rather than tapping, so its
+        // slot is empty.
+        starterOptions: [
+          [
+            "Mostly the same as before — the titles still fit",
+            "The same, plus a new chapter since Mission 1",
+            "I'd rename one — it means something different now",
+            "Different — I see the whole story differently now",
+            "Not sure yet — I'm still in the middle of it",
+          ],
+          [
+            "Moving somewhere new — it made me braver",
+            "A friendship ending — it taught me who to trust",
+            "Someone in my family getting sick or leaving — I grew up fast",
+            "Finding something I'm good at — it gave me confidence",
+            "A big failure — it showed me I can get back up",
+          ],
+          [],
+          [
+            "Keeping the work ethic, dropping the guilt about resting",
+            "Keeping the faith or traditions, making them my own",
+            "Keeping the loyalty to family, adding my own boundaries",
+            "Keeping the high standards, letting go of the pressure",
+            "Keeping the toughness, letting myself show feelings too",
+          ],
         ],
         sortStep: 2,
         skippableSteps: [1, 2, 3],
@@ -1572,6 +1704,36 @@ export const MISSIONS: Mission[] = [
           "What did they nearly do instead, or have to give up?",
           "What would they tell themselves at your age?",
           "What does their path tell you about yours?",
+        ],
+        starterOptions: [
+          [
+            "A parent — they took a winding road",
+            "A relative who changed careers",
+            "A teacher, coach or boss whose job I'm curious about",
+            "Someone a few years older than me",
+            "Nobody this time — I read or watched someone's story",
+          ],
+          [
+            "A completely different job or course",
+            "Moving away, or staying when they wanted to go",
+            "Something creative they loved but couldn't make pay",
+            "Time with family or friends",
+            "Not much — they always knew",
+          ],
+          [
+            "Don't panic — it works out slower than you think",
+            "Try more things before you decide",
+            "Pick the people, not just the job",
+            "Look after your health and money early",
+            "Back yourself more",
+          ],
+          [
+            "It's fine not to have it figured out yet",
+            "Most paths change, so the first choice isn't forever",
+            "What I'm good at matters as much as what pays",
+            "I should talk to more people who do things I'm curious about",
+            "I might be closer to knowing than I thought",
+          ],
         ],
         wrapUp:
           "You've got a real path to set beside your own, wrong turns and all. Most paths have some.",

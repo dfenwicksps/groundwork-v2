@@ -18,13 +18,26 @@
 // stage a student was at when they wrote them. (Which questions can be left
 // out may change; that doesn't affect how an entry reads.)
 
-import type { Activity } from "./missions";
-import { futureSelfAge, hasLeftSchool, type LifeStage } from "./lifeStage";
+import type { Activity, Mission } from "./missions";
+import { futureSelfAge, type LifeStage } from "./lifeStage";
+import {
+  JUNIOR_M1,
+  SENIOR_M1,
+  LEFT_SCHOOL_M1,
+  LEAVER_M1,
+  ADULT_M1,
+  MISSION_DESCRIPTIONS,
+} from "./stageContentMission1";
 
-/** Lines replaced for students who have left school, by activity id. */
-interface StageLines {
+/** Lines replaced for one life stage, by activity id. */
+export interface StageLines {
   prompt?: string;
   warmUp?: string;
+  intro?: string;
+  wrapUp?: string;
+  alternative?: string;
+  /** Replacements by index, like steps */
+  interviewQuestions?: Record<number, string>;
   /** Replacements by index for the questions themselves */
   steps?: Record<number, string>;
   skippableSteps?: number[];
@@ -110,6 +123,10 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
     ...activity,
     prompt: lines.prompt ?? activity.prompt,
     warmUp: lines.warmUp ?? activity.warmUp,
+    intro: lines.intro ?? activity.intro,
+    wrapUp: lines.wrapUp ?? activity.wrapUp,
+    alternative: lines.alternative ?? activity.alternative,
+    interviewQuestions: activity.interviewQuestions?.map((q, i) => lines.interviewQuestions?.[i] ?? q),
     scaffoldingSteps: activity.scaffoldingSteps?.map((s, i) => lines.steps?.[i] ?? s),
     skippableSteps: lines.skippableSteps
       ? Array.from(new Set([...(activity.skippableSteps ?? []), ...lines.skippableSteps]))
@@ -121,11 +138,20 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
 
 /** The activity as this student should see it. */
 export function activityForStage(activity: Activity, stage: LifeStage): Activity {
-  let a = hasLeftSchool(stage)
-    ? withLines(activity, LEFT_SCHOOL[activity.id])
-    : stage === "junior"
-      ? withLines(activity, JUNIOR[activity.id])
-      : activity;
+  const id = activity.id;
+  // Applied in order, later layers winning: what anyone past school needs, then
+  // the stage's own lines. Middle (Year 10–11) reads missions.ts as written.
+  const layers: (StageLines | undefined)[] =
+    stage === "leaver"
+      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEAVER_M1[id]]
+      : stage === "adult"
+        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], ADULT_M1[id]]
+        : stage === "junior"
+          ? [JUNIOR[id], JUNIOR_M1[id]]
+          : stage === "senior"
+            ? [SENIOR_M1[id]]
+            : [];
+  let a = layers.reduce<Activity>((acc, lines) => withLines(acc, lines), activity);
 
   const age = futureSelfAge(stage);
   if (a.id === "future-self") {
@@ -152,4 +178,13 @@ export function futureSelfLine(text: string, stage: LifeStage): string {
     .replace(/between 15 and 21/, `between now and ${age}`)
     .replace(/for six years/, "for a few years")
     .replace(/\b21\b/g, String(age));
+}
+
+/** The mission as this student should see it: its description, and every step. */
+export function missionForStage(mission: Mission, stage: LifeStage): Mission {
+  return {
+    ...mission,
+    description: MISSION_DESCRIPTIONS[stage]?.[mission.id] ?? mission.description,
+    activities: mission.activities.map((a) => activityForStage(a, stage)),
+  };
 }
