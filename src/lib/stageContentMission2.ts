@@ -69,6 +69,11 @@ export const JUNIOR_M2: Record<string, StageLines> = {
   },
   "commitment-statement": {
     title: "What I Want to Explore",
+    // An entry written as a commitment statement before this existed (or
+    // before moving down a stage) doesn't answer these questions.
+    retiredQuestions: [
+      "Name what you care about as clearly and specifically as you can. Not 'I care about the environment' — something more particular to you.",
+    ],
     intro:
       "You've named what you care about, what you could bring, and who else cares. Now, instead of promising anything, name what you want to find out more about. At your age, exploring is the right move: trying things is how you find out what really fits.",
     warmUp:

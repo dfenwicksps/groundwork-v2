@@ -98,7 +98,9 @@ export default function IdentityCard({
                   href={`/missions/${missionId}/activities/${p.activityId}`}
                   className="text-sm text-[--ink-muted] hover:text-[--ink] transition-colors"
                 >
-                  Unlocks at Step {i + 1} · {p.stepTitle} →
+                  {p.stale
+                    ? `This step's questions changed. Redo Step ${i + 1} to add this →`
+                    : `Unlocks at Step ${i + 1} · ${p.stepTitle} →`}
                 </Link>
               )}
             </li>

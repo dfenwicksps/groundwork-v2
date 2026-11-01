@@ -19,6 +19,7 @@ import {
   LEFT_OUT_ANSWER as LEFT_OUT,
   smallStepOf,
   withSmallStep,
+  isRetiredEntry,
 } from "@/lib/journal";
 import { hardOnSelfRecently } from "@/lib/hardOnSelf";
 import GentleCheck from "@/components/help/GentleCheck";
@@ -491,6 +492,10 @@ function ConversationalActivity({
   const [supportNeeded, setSupportNeeded] = useState(false);
   const [restoredDraft, setRestoredDraft] = useState(false);
   const [existingResponse] = useState(existingEntry?.response || "");
+  // Written under questions this step has since replaced (Activity.retiredQuestions):
+  // kept as written, but reopening starts fresh and saves a new entry.
+  const retiredEntry = isRetiredEntry(existingResponse || previousResponse, activity.retiredQuestions);
+  const [freshStart, setFreshStart] = useState(false);
   // The entry as last saved, so the small step can be added to it in place.
   const [latestResponse, setLatestResponse] = useState(existingEntry?.response || "");
   // Set when several recent entries read as hard on the self (lib/hardOnSelf).
@@ -510,7 +515,7 @@ function ConversationalActivity({
 
   // Make previous answers visible for reference on fresh runs too (post-restart)
   useEffect(() => {
-    if (prevAnswersRef.current.length === 0 && previousResponse) {
+    if (prevAnswersRef.current.length === 0 && previousResponse && !retiredEntry) {
       prevAnswersRef.current = parsePrevAnswers(previousResponse);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -639,7 +644,8 @@ function ConversationalActivity({
     setSaveError(null);
 
     // Editing keeps the small step the student already added.
-    const finalResponse = withSmallStep(buildResponse(allTurns), smallStepOf(latestResponse));
+    // A fresh start (retired questions) doesn't inherit the old entry's small step.
+    const finalResponse = withSmallStep(buildResponse(allTurns), freshStart ? "" : smallStepOf(latestResponse));
 
     let entryId = entryIdRef.current;
     if (entryId) {
@@ -678,6 +684,8 @@ function ConversationalActivity({
     clearDraft();
 
     setLatestResponse(finalResponse);
+    // The replacement is saved; editing it from here keeps its own small step.
+    setFreshStart(false);
     if (mentionsCrisis(finalResponse)) {
       setSupportNeeded(true);
     } else {
@@ -756,7 +764,19 @@ function ConversationalActivity({
   // multi-step ones start fresh (the saved response can't be reliably split).
   function startEdit() {
     const saved = turns.length ? buildResponse(turns) : existingResponse;
-    prevAnswersRef.current = parsePrevAnswers(saved);
+    if (retiredEntry && !turns.length) {
+      // Old answers don't belong under the new questions. Start blank, and
+      // save as a new entry so the old one stays in the Journal as written.
+      prevAnswersRef.current = [];
+      entryIdRef.current = null;
+      setFreshStart(true);
+      // The old entry's follow-up questions were about the old answers.
+      setAiReflection(null);
+      setReflectionFailed(false);
+    } else {
+      prevAnswersRef.current = parsePrevAnswers(saved);
+      setFreshStart(false);
+    }
     clearDraft(); // edit sessions start from the saved entry, not a stale draft
     setEditing(true);
     setSaveError(null);
@@ -1286,6 +1306,13 @@ function ConversationalActivity({
               )}
             </div>
 
+            {freshStart && qIdx === 0 && (
+              <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border] text-sm text-[--ink] leading-relaxed">
+                This step&apos;s questions have changed since you last did it, so it
+                starts fresh. What you wrote before is still in your Journal.
+              </div>
+            )}
+
             {/* Previous answer — shown while editing AND on fresh re-runs, so
                 the user can always see what they said last time */}
             {prevAnswersRef.current[qIdx] && !(isSortStep && editing) && (
@@ -1680,7 +1707,17 @@ function ConversationalActivity({
           {turns.length === 0 && existingResponse && (
             <div className="card p-5 mb-5" data-animate="2">
               <p className="text-xs text-[--ink-muted] font-medium mb-2">Your reflection</p>
-              {questions.length > 1 ? (
+              {retiredEntry ? (
+                // Written under earlier questions: shown with its own questions,
+                // never matched up against the current ones.
+                <>
+                  <p className="text-xs text-[--ink-muted] italic mb-3 leading-relaxed">
+                    You wrote this before this step&apos;s questions changed. Tap Edit to
+                    answer the new ones; this stays in your Journal either way.
+                  </p>
+                  <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">{existingResponse}</p>
+                </>
+              ) : questions.length > 1 ? (
                 <div className="space-y-4">
                   {parsePrevAnswers(existingResponse).map((answer, i) => (
                     <div key={i}>

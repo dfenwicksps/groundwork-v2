@@ -51,6 +51,8 @@ export interface StageLines {
   /** A step whose purpose changes at a stage (Year 7–9's "What I Want to Explore") */
   title?: string;
   whyItMatters?: string;
+  /** Replaces the activity's list, so each stage names the versions it has moved on from */
+  retiredQuestions?: string[];
   prompt?: string;
   warmUp?: string;
   intro?: string;
@@ -143,6 +145,7 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
     ...activity,
     title: lines.title ?? activity.title,
     whyItMatters: lines.whyItMatters ?? activity.whyItMatters,
+    retiredQuestions: lines.retiredQuestions ?? activity.retiredQuestions,
     prompt: lines.prompt ?? activity.prompt,
     warmUp: lines.warmUp ?? activity.warmUp,
     intro: lines.intro ?? activity.intro,

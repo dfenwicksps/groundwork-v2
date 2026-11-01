@@ -112,6 +112,13 @@ export interface Activity {
     answer?: number;
   };
   /**
+   * The first question of earlier versions of this step whose questions were
+   * replaced, not just reworded (lib/journal.ts isRetiredEntry). An entry
+   * written under one of them is kept as written, but reopening the step
+   * starts fresh and saves a new entry, and cards don't read the old one.
+   */
+  retiredQuestions?: string[];
+  /**
    * Never sent to the AI for follow-up questions. For the most sensitive
    * writing in the app (beliefs, gender, sexuality, culture and heritage),
    * which stays in the student's own account; culture also because a model's
@@ -899,6 +906,9 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "Commitment Statement",
+        // Year 7–9 answer "What I Want to Explore" (stageContentMission2.ts); a
+        // student who has moved up starts the commitment fresh.
+        retiredQuestions: ["What's the thing you want to explore? Say it as clearly as you can."],
         subtitle: "Step 4 of 6 · Milestone",
         intro:
           "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
@@ -1114,6 +1124,10 @@ export const MISSIONS: Mission[] = [
         // What they said about changing between rooms in Mission 1, so this
         // step starts from there instead of asking it again.
         recall: { activityId: "mask-check", missionId: 1, label: "How you change between rooms, from Mission 1", step: 0, answer: 0 },
+        // Before it built on the Mask Check, this step asked these questions instead.
+        retiredQuestions: [
+          "Think of a group or situation where you feel genuinely yourself — no performance, no editing. What's that like? What makes it possible?",
+        ],
         type: "journal",
         title: "Fitting In vs. Belonging",
         subtitle: "Step 2 of 6 · Your social self",
