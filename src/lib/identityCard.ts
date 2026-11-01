@@ -28,6 +28,16 @@ export interface IdentityPiece {
   /** One line, or a list of chips; empty until the step is done */
   text: string;
   chips: string[];
+  /**
+   * The step is saved, even if this question was left out (which the app
+   * allows on some). A left-out piece still counts towards a finished card.
+   */
+  done: boolean;
+}
+
+/** Whether a piece counts towards a finished card. */
+export function pieceDone(p: IdentityPiece): boolean {
+  return p.done || !!p.text || p.chips.length > 0;
 }
 
 export interface IdentityCard {
@@ -78,6 +88,7 @@ export function buildIdentityCard({ ranking, responses, challenge, stage }: Sour
       label: "The chapter I'm in",
       activityId: "chapters-so-far",
       stepTitle: "Your Story So Far",
+      done: !!responses["chapters-so-far"],
       text: said("chapters-so-far", responses["chapters-so-far"], 1, 1, stage),
       chips: [],
     },
@@ -88,6 +99,7 @@ export function buildIdentityCard({ ranking, responses, challenge, stage }: Sour
       stepTitle: "Strengths Mapping",
       text: "",
       chips: topStrengths(ranking ?? [], 5).map(strengthName),
+      done: !!ranking?.length,
     },
     {
       key: "values",
@@ -96,12 +108,14 @@ export function buildIdentityCard({ ranking, responses, challenge, stage }: Sour
       stepTitle: "Values Clarifier",
       text: "",
       chips: clarifierValues(responses["values-clarifier"]).slice(0, 5),
+      done: !!responses["values-clarifier"],
     },
     {
       key: "real",
       label: "Where I can just be me",
       activityId: "mask-check",
       stepTitle: "The Mask Check",
+      done: !!responses["mask-check"],
       text: said("mask-check", responses["mask-check"], 3, 1, stage),
       chips: [],
     },
@@ -110,6 +124,7 @@ export function buildIdentityCard({ ranking, responses, challenge, stage }: Sour
       label: "A true thing about me",
       activityId: "identity-letter",
       stepTitle: "Identity Letter",
+      done: !!responses["identity-letter"],
       text: said("identity-letter", responses["identity-letter"], 3, 1, stage),
       chips: [],
     },
@@ -120,19 +135,21 @@ export function buildIdentityCard({ ranking, responses, challenge, stage }: Sour
       stepTitle: "Mission Challenge",
       text: challengeText(challenge, "Accepted, and trying it this week"),
       chips: [],
+      done: challenge.accepted,
     },
     {
       key: "constant",
       label: "Still me since I was little",
       activityId: "conversation-who-i-was",
       stepTitle: "Who Was I?",
+      done: !!responses["conversation-who-i-was"],
       text: said("conversation-who-i-was", responses["conversation-who-i-was"], 3, 1, stage),
       chips: [],
     },
   ];
   return {
     pieces,
-    filled: pieces.filter((p) => p.text || p.chips.length).length,
+    filled: pieces.filter(pieceDone).length,
   };
 }
 
@@ -176,6 +193,7 @@ export function buildPurposeCard({
     stepTitle,
     text: said(activityId, responses[activityId], index, 2, stage),
     chips: [],
+    done: !!responses[activityId],
   });
   const pieces: IdentityPiece[] = [
     piece("cares", "What pulls at me", "what-matters", "What Matters", 0),
@@ -191,12 +209,13 @@ export function buildPurposeCard({
       stepTitle: "Mission Challenge",
       text: challengeText(challenge, "Picked one thing to do about it this week"),
       chips: [],
+      done: challenge.accepted,
     },
     piece("heard", "What I heard from someone else", "conversation-what-matters", "What They Care About", 3),
   ];
   return {
     pieces,
-    filled: pieces.filter((p) => p.text).length,
+    filled: pieces.filter(pieceDone).length,
     missionId: 2,
     title: "My purpose",
     doneText: explore
@@ -235,6 +254,7 @@ export function buildConnectionCard({
     stepTitle,
     text: said(activityId, responses[activityId], index, 3, stage),
     chips: [],
+    done: !!responses[activityId],
   });
   const pieces: IdentityPiece[] = [
     piece("belong", "Where I belong", "belonging", "Where You Belong", 0),
@@ -248,12 +268,13 @@ export function buildConnectionCard({
       stepTitle: "Mission Challenge",
       text: challengeText(challenge, "Reaching toward someone this week"),
       chips: [],
+      done: challenge.accepted,
     },
     piece("handed", "Handed down in my family", "conversation-family-story", "Where We Come From", 2),
   ];
   return {
     pieces,
-    filled: pieces.filter((p) => p.text).length,
+    filled: pieces.filter(pieceDone).length,
     missionId: 3,
     title: "My people",
     doneText:
@@ -293,6 +314,7 @@ export function buildDirectionCard({
     stepTitle,
     text: said(activityId, responses[activityId], index, 4, stage),
     chips: [],
+    done: !!responses[activityId],
   });
   const pieces: IdentityPiece[] = [
     piece("kept", "Something I'm keeping, my way", "where-ive-come-from", "Where You've Come From", 3),
@@ -307,12 +329,13 @@ export function buildDirectionCard({
       stepTitle: "Mission Challenge",
       text: challengeText(challenge, "Making one choice on purpose this week"),
       chips: [],
+      done: challenge.accepted,
     },
     piece("path", "What someone's path told me", "conversation-path", "How They Chose", 3),
   ];
   return {
     pieces,
-    filled: pieces.filter((p) => p.text).length,
+    filled: pieces.filter(pieceDone).length,
     missionId: 4,
     title: "My direction",
     doneText:
