@@ -2252,6 +2252,7 @@ function ChallengeActivity({
   existingChallenge,
   isCompleted,
   compass,
+  recalled,
   onComplete,
 }: {
   mission: Mission;
@@ -2260,6 +2261,8 @@ function ChallengeActivity({
   existingChallenge: Challenge | null;
   isCompleted: boolean;
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
+  /** An earlier answer the challenge starts from (Mission 2: the tiny step from Step 2) */
+  recalled?: { label: string; text: string } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
@@ -2455,6 +2458,7 @@ function ChallengeActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
       <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+        {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
         <div
           className="rounded-2xl p-6 mb-6 text-center"
           style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
@@ -3134,6 +3138,7 @@ export default function ActivityClient({
         existingChallenge={existingChallenge}
         isCompleted={completed}
         compass={compass}
+        recalled={recalled}
         onComplete={handleComplete}
       />
     );

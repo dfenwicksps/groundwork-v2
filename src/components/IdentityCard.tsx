@@ -15,22 +15,23 @@ export default function IdentityCard({
 }) {
   const total = card.pieces.length;
   const complete = card.filled === total;
+  const missionId = card.missionId ?? 1;
 
   return (
     <section
-      id="who-i-am"
-      aria-labelledby="who-i-am-title"
+      id={missionId === 1 ? "who-i-am" : `mission-${missionId}-card`}
+      aria-labelledby={`card-title-${missionId}`}
       className="rounded-2xl overflow-hidden border"
       style={{ borderColor: `${colour}30`, background: "white" }}
     >
       <div className="px-5 pt-5 pb-4 text-white" style={{ background: colour }}>
         <div className="flex items-baseline justify-between gap-3">
           <h2
-            id="who-i-am-title"
+            id={`card-title-${missionId}`}
             className="text-xl"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
-            Who I am
+            {card.title ?? "Who I am"}
           </h2>
           <span className="text-xs font-semibold opacity-80 flex-shrink-0">
             {card.filled} of {total} pieces
@@ -49,9 +50,10 @@ export default function IdentityCard({
         </div>
         <p className="text-xs leading-relaxed mt-3 opacity-90">
           {complete
-            ? "Mission 1 done. This is your answer to “Who am I?” for now. It will change, and that's the point: you'll come back to it."
+            ? card.doneText ??
+              "Mission 1 done. This is your answer to “Who am I?” for now. It will change, and that's the point: you'll come back to it."
             : card.filled === 0
-              ? "Each step you finish adds a piece here. Start with Step 1 — it takes two minutes."
+              ? "Each step you finish adds a piece here. Start with Step 1."
               : "Each step you finish adds a piece. Keep going to fill the card."}
         </p>
       </div>
@@ -82,7 +84,7 @@ export default function IdentityCard({
                 )
               ) : (
                 <Link
-                  href={`/missions/1/activities/${p.activityId}`}
+                  href={`/missions/${missionId}/activities/${p.activityId}`}
                   className="text-sm text-[--ink-muted] hover:text-[--ink] transition-colors"
                 >
                   Unlocks at Step {i + 1} · {p.stepTitle} →
