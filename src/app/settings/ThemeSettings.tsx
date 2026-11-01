@@ -62,6 +62,10 @@ export default function ThemeSettings() {
   useEffect(() => {
     setActive(getActiveTheme());
     setPicked(getStoredTheme() !== null);
+    // While following the phone, the boot script can switch the look under us.
+    const obs = new MutationObserver(() => setActive(getActiveTheme()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => obs.disconnect();
   }, []);
 
   function choose(t: Theme) {

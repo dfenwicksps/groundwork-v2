@@ -157,7 +157,7 @@ export default function MissionsClient({
                 }`}
               >
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${m.complete ? "text-on-accent" : "text-white"}`}
                   style={{ background: m.complete ? "var(--sage)" : m.colour }}
                 >
                   {m.complete ? "✓" : m.id}

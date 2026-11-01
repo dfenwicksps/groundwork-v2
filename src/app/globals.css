@@ -607,6 +607,13 @@ body {
   color: rgb(var(--c-navy-light));
 }
 
+/* Translucent white loses contrast on the pink fill (white/70 is 3.0:1), so
+   in Bold every text-white/NN label is opaque; size and weight still carry
+   the hierarchy. */
+[data-theme="bold"] [class*="text-white/"] {
+  color: #fff;
+}
+
 [data-theme="bold"] h1,
 [data-theme="bold"] h2,
 [data-theme="bold"] h3,

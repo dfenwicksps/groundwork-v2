@@ -23,7 +23,7 @@ export const THEME_BAR: Record<Theme, string> = {
 };
 
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */
-export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=null;try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
+export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
 
 function isTheme(v: unknown): v is Theme {
   return typeof v === "string" && (THEMES as string[]).includes(v);
@@ -31,6 +31,8 @@ function isTheme(v: unknown): v is Theme {
 
 /** The look picked on this device, or null while following the phone. */
 export function getStoredTheme(): Theme | null {
+  const mem = (window as unknown as { __gwTheme?: Theme }).__gwTheme;
+  if (isTheme(mem)) return mem;
   try {
     const v = localStorage.getItem(THEME_KEY);
     return isTheme(v) ? v : null;
@@ -46,6 +48,9 @@ export function getActiveTheme(): Theme {
 }
 
 export function setTheme(theme: Theme): void {
+  // Remembered for this visit too, so a blocked localStorage doesn't let the
+  // boot script's phone-setting listener undo an explicit choice.
+  (window as unknown as { __gwTheme?: Theme }).__gwTheme = theme;
   try {
     localStorage.setItem(THEME_KEY, theme);
   } catch {
