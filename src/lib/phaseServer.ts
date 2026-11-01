@@ -18,6 +18,14 @@ import {
  * goals/practice.
  */
 export async function resolvePhase(supabase: any, userId: string): Promise<Phase> {
+  return (await resolvePhaseState(supabase, userId)).phase;
+}
+
+/** The phase, plus which anchors have been reviewed (for the Phase 2 checklist). */
+export async function resolvePhaseState(
+  supabase: any,
+  userId: string
+): Promise<{ phase: Phase; reviewed: string[] }> {
   const { data, error } = await supabase
     .from("users")
     .select("journey_phase, phase_meta")
@@ -25,7 +33,7 @@ export async function resolvePhase(supabase: any, userId: string): Promise<Phase
     .maybeSingle();
 
   // Column missing / unmigrated → everyone is Phase 1, no writes.
-  if (error) return 1;
+  if (error) return { phase: 1, reviewed: [] };
 
   const stored = parsePhase(data?.journey_phase);
   const meta: PhaseMeta = (data?.phase_meta as PhaseMeta) ?? {};
@@ -60,8 +68,8 @@ export async function resolvePhase(supabase: any, userId: string): Promise<Phase
       .from("users")
       .update({ journey_phase: earned, phase_meta: nextMeta })
       .eq("id", userId);
-    return earned;
+    return { phase: earned, reviewed: meta.reviewed ?? [] };
   }
 
-  return stored;
+  return { phase: stored, reviewed: meta.reviewed ?? [] };
 }

@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { requiredSteps, requiredDone, type Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import { WEEKLY_BY_KEY } from "@/lib/program";
+import IdentityCard from "@/components/IdentityCard";
+import type { IdentityCard as IdentityCardData } from "@/lib/identityCard";
 
 interface StoryPreview {
   id: string;
@@ -21,6 +23,8 @@ interface Props {
   userId: string;
   completedActivities: Set<string>;
   stories: StoryPreview[];
+  /** Mission 1 only: the Who I Am card, filled as far as the student has got */
+  identityCard?: IdentityCardData | null;
 }
 
 export default function MissionDetailClient({
@@ -28,6 +32,7 @@ export default function MissionDetailClient({
   userId,
   completedActivities,
   stories,
+  identityCard,
 }: Props) {
   const router = useRouter();
   const [confirmingRestart, setConfirmingRestart] = useState(false);
@@ -145,6 +150,8 @@ export default function MissionDetailClient({
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-8 lg:max-w-none lg:mx-0 lg:p-0">
+        {identityCard && <IdentityCard card={identityCard} colour={mission.colour} />}
+
         {/* Journey — activities with stories woven in */}
         <div>
           <div className="flex items-center justify-between mb-3">

@@ -63,6 +63,8 @@ interface Props {
   lifeStage: LifeStage;
   /** The global journey phase (lib/phase.ts), shown as a progress banner. */
   phase: Phase;
+  /** Anchors reviewed so far, for the Phase 2 checklist. */
+  reviewedAnchors: string[];
   /** Present only once all four missions are done */
   missionSummary: MissionSummary | null;
   /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
@@ -119,6 +121,7 @@ export default function DashboardClient({
   programWeek,
   lifeStage,
   phase,
+  reviewedAnchors,
   missionSummary,
   nextChapter,
   checkin,
@@ -336,6 +339,7 @@ export default function DashboardClient({
             point at the Me page where answers get reviewed and deepened. */}
         <PhaseBanner
           phase={phase}
+          reviewed={reviewedAnchors}
           href={
             phase === 1 && nextMissionStep
               ? `/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`

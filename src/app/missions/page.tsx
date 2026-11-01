@@ -4,6 +4,7 @@ import { MISSIONS, requiredSteps, requiredDone, missionFinished, type ProgressRo
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { spineFor } from "@/lib/spine";
 import { getLifeStage } from "@/lib/lifeStageServer";
+import { missionForStage } from "@/lib/stageContent";
 import MissionsClient from "./MissionsClient";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,7 @@ export default async function MissionsIndexPage() {
   ]);
 
   const rows = (progressRaw || []) as ProgressRow[];
+  const lifeStage = await getLifeStage(supabase, user.id);
   const activeMission =
     (profileRaw as { active_mission?: number } | null)?.active_mission ?? 1;
 
@@ -45,7 +47,7 @@ export default async function MissionsIndexPage() {
       title: m.title,
       subtitle: m.subtitle,
       question: m.question,
-      description: m.description,
+      description: missionForStage(m, lifeStage).description,
       colour: m.colour,
       strands: m.strands,
       done,
@@ -59,7 +61,7 @@ export default async function MissionsIndexPage() {
       missions={missions}
       activeMission={activeMission}
       spine={spineFor(
-        await getLifeStage(supabase, user.id),
+        lifeStage,
         missionsCompleted(rows),
         missionComplete(rows, 1)
       )}

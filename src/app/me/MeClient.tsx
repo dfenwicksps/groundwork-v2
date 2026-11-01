@@ -80,6 +80,7 @@ export default function MeClient({
   featuresReady,
   lifeStage,
   phase,
+  reviewedAnchors,
 }: {
   userId: string;
   displayName: string;
@@ -114,6 +115,8 @@ export default function MeClient({
   lifeStage: LifeStage;
   /** The global journey phase (lib/phase.ts), shown as a progress banner. */
   phase: Phase;
+  /** Anchors reviewed so far, for the Phase 2 checklist. */
+  reviewedAnchors: string[];
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -212,6 +215,7 @@ export default function MeClient({
         {hasProfile && (
           <PhaseBanner
             phase={phase}
+            reviewed={reviewedAnchors}
             href={phase === 1 ? "/missions" : "/missions/1/activities/strengths-mapping"}
           />
         )}

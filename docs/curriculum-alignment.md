@@ -40,11 +40,11 @@ The content descriptions are quoted from v9. Years 7–8 and 9–10 sit side by 
 
 | Code | Content description | Where Groundwork does it | Fit |
 |---|---|---|---|
-| **AC9HP8P01** | analyse and reflect on the influence of values and beliefs on the development of identities | Values Clarifier (M1); Program week 2, *What do I stand for?*; Parts of Who You Are (M1, optional: beliefs); What You Were Handed (sorting what family and culture gave you); Commitment Statement (M2) | **Direct** |
+| **AC9HP8P01** | analyse and reflect on the influence of values and beliefs on the development of identities | Values Clarifier (M1); Program week 2, *What do I stand for?*; Parts of Who You Are (M1, optional: beliefs; Year 10 up only, hidden for Year 7–9); What You Were Handed (sorting what family and culture gave you); Commitment Statement (M2) | **Direct** |
 | **AC9HP10P01** | analyse factors that shape identities and evaluate how individuals influence the identities of others | The Mask Check (M1); The People Who Shaped You (M3); Who Was I? (M1 conversation); Program week 8, *Who is shaping me?*; Fitting In vs. Belonging (M3); stories *The Version of Me at School* and *What the Mirror Doesn't Show* | **Direct** |
 | **AC9HP8P02** | analyse the impact of changes and transitions, and devise strategies to support themselves and others through these changes | Your Story So Far (M1, life as chapters); Where You've Come From (M4); Your Next Chapter (subject choice for Years 10–11, next year at school for Years 7–9); story *The Friend Who Stayed* (parents separating, a friend who shows up) | **Direct** |
 | **AC9HP10P02** | refine, evaluate and adapt strategies for managing changes and transitions | Your Next Chapter (hoped-for and feared versions of next year, each with a concrete step); Future Self (M4); How They Chose (M4 conversation); Pathways; Goals (wish, outcome, obstacle, plan); Revisits (comparing what you wrote months apart) | **Direct** |
-| **AC9HP8P03** / **AC9HP10P03** | gender stereotypes in relationships; gender equality and preventing violence and abuse | Parts of Who You Are asks how gender sits with what people expect. Nothing about power, stereotypes or violence. | **Gap** |
+| **AC9HP8P03** / **AC9HP10P03** | gender stereotypes in relationships; gender equality and preventing violence and abuse | Parts of Who You Are asks how gender sits with what people expect (Year 10 up; hidden for Year 7–9, so nothing for AC9HP8P03). Nothing about power, stereotypes or violence. | **Gap** |
 
 ### Interacting with others
 
@@ -65,7 +65,7 @@ The content descriptions are quoted from v9. Years 7–8 and 9–10 sit side by 
 | **AC9HP10P09** | critique health information, services and media messaging | Digital Self touches media messaging. No critique of health information. | **Partial**, weak |
 | **AC9HP8P10** / **AC9HP10P10** | plan strategies to enhance their own and others' health, safety, relationships and wellbeing | The 10-Week Program as a whole: each week ends in a lived challenge (one unnoticed contribution a day, one promise kept, three screen-free half hours). The Standard. Boosts, each with an exercise for this week. Goals. | **Direct** for *own and others' wellbeing and relationships*; not health or safety |
 
-**HPE focus areas.** Of v9's focus areas, Groundwork sits within **mental health and wellbeing** and, through *Parts of Who You Are*, touches **relationships and sexuality** at the level of identity only. It isn't a relationships and sexuality education resource.
+**HPE focus areas.** Of v9's focus areas, Groundwork sits within **mental health and wellbeing** and, through *Parts of Who You Are*, touches **relationships and sexuality** at the level of identity only, and only from Year 10: the step is hidden for Year 7–9. It isn't a relationships and sexuality education resource.
 
 **Against the achievement standards.** Year 10: "propose and evaluate personal strategies to manage their identities, emotions and responses to change" is the closest single sentence to what Groundwork does. Year 8: "analyse factors that influence identities, emotions and responses to change" and "help-seeking strategies applied online and offline" both fit. Neither standard's sentences on assertive communication, protective behaviours or credible health information are covered.
 
