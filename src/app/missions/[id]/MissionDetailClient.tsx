@@ -269,15 +269,15 @@ export default function MissionDetailClient({
                             className={cn(
                               "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm",
                               completed
-                                ? "bg-sage text-white"
+                                ? "bg-sage text-on-accent"
                                 : isCurrent
-                                ? "bg-teal text-white"
+                                ? "bg-teal text-on-accent"
                                 : "bg-surface-muted text-ink-muted border border-surface-border"
                             )}
                           >
                             {completed ? (
                               <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             ) : activity.optional ? (
                               <span aria-hidden>{activity.interviewQuestions ? "💬" : "✦"}</span>

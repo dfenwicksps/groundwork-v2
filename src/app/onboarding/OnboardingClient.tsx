@@ -359,7 +359,7 @@ export default function OnboardingClient({
                         </div>
                       </div>
                       {whyHere === opt.value && (
-                        <div className="ml-auto w-4 h-4 rounded-full bg-teal flex items-center justify-center flex-shrink-0">
+                        <div className="ml-auto w-4 h-4 rounded-full bg-teal text-on-accent flex items-center justify-center flex-shrink-0">
                           <svg aria-hidden="true"
                             width="8"
                             height="8"
@@ -368,7 +368,7 @@ export default function OnboardingClient({
                           >
                             <path
                               d="M1.5 4L3 5.5L6.5 2"
-                              stroke="white"
+                              stroke="currentColor"
                               strokeWidth="1.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"

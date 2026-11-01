@@ -533,7 +533,7 @@ export default function WeekClient({
                         }
                         className={`flex-1 aspect-square max-w-[52px] rounded-xl border text-sm font-semibold transition-all ${
                           on
-                            ? "bg-sage text-white border-sage"
+                            ? "bg-sage text-on-accent border-sage"
                             : "bg-white text-ink-muted border-surface-border hover:border-navy/30"
                         }`}
                       >

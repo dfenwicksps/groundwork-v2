@@ -33,7 +33,7 @@ export default function MissionsSummaryCard({
         </h2>
         <span
           className="text-xs font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
-          style={{ background: "var(--sage)", color: "white" }}
+          style={{ background: "var(--sage)", color: "rgb(var(--c-on-accent))" }}
         >
           All four done
         </span>
