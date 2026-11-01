@@ -38,6 +38,8 @@ export interface IdentityCard {
   title?: string;
   /** Shown once every piece is filled */
   doneText?: string;
+  /** A link shown once every piece is filled (Mission 4's card opens My Story) */
+  doneLink?: { href: string; text: string };
 }
 
 interface Sources {
@@ -256,5 +258,65 @@ export function buildConnectionCard({
     title: "My people",
     doneText:
       "Mission 3 done. This is where you belong and who's part of your story, for now. It will change as people come and go, and that's normal.",
+  };
+}
+
+// ─── Direction card ───────────────────────────────────────────────────────────
+// Mission 4's version, in step order: something kept (reworked) from what they
+// were handed, where they're most real online, an ordinary day in the future,
+// the thread, the direction, the deliberate choice, and what someone else's
+// path told them. Never the turning point from Step 1, which can be painful.
+// Finished, it hands over to My Story, which joins all four missions up.
+
+export const DIRECTION_CARD_SOURCES = [
+  "where-ive-come-from",
+  "digital-self",
+  "future-self",
+  "the-through-line",
+  "meaning-letter",
+  "conversation-path",
+];
+
+export function buildDirectionCard({
+  responses,
+  challenge,
+  stage,
+}: {
+  responses: Record<string, string | null | undefined>;
+  challenge: { accepted: boolean; debriefed: boolean };
+  stage: LifeStage;
+}): IdentityCard {
+  const piece = (key: string, label: string, activityId: string, stepTitle: string, index: number): IdentityPiece => ({
+    key,
+    label,
+    activityId,
+    stepTitle,
+    text: said(activityId, responses[activityId], index, 4, stage),
+    chips: [],
+  });
+  const pieces: IdentityPiece[] = [
+    piece("kept", "Something I'm keeping, my way", "where-ive-come-from", "Where You've Come From", 3),
+    piece("online", "Where I'm most real online", "digital-self", "Digital Self", 3),
+    piece("tuesday", "An ordinary day, a few years on", "future-self", "Future Self", 0),
+    piece("thread", "My thread", "the-through-line", "The Through-Line", 3),
+    piece("direction", "My direction", "meaning-letter", "A Life Worth Building", 0),
+    {
+      key: "choice",
+      label: "My deliberate choice",
+      activityId: "meaning-challenge",
+      stepTitle: "Mission Challenge",
+      text: challengeText(challenge, "Making one choice on purpose this week"),
+      chips: [],
+    },
+    piece("path", "What someone's path told me", "conversation-path", "How They Chose", 3),
+  ];
+  return {
+    pieces,
+    filled: pieces.filter((p) => p.text).length,
+    missionId: 4,
+    title: "My direction",
+    doneText:
+      "All four missions done. Your story so far, from where you've come from to where you're heading, is joined up in one place.",
+    doneLink: { href: "/story", text: "Open My Story →" },
   };
 }

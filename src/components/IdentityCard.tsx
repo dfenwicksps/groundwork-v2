@@ -56,6 +56,14 @@ export default function IdentityCard({
               ? "Each step you finish adds a piece here. Start with Step 1."
               : "Each step you finish adds a piece. Keep going to fill the card."}
         </p>
+        {complete && card.doneLink && (
+          <Link
+            href={card.doneLink.href}
+            className="inline-flex mt-3 text-sm font-semibold bg-white/20 hover:bg-white/30 transition-colors rounded-lg px-3 py-1.5"
+          >
+            {card.doneLink.text}
+          </Link>
+        )}
       </div>
 
       <ul className="divide-y" style={{ borderColor: "var(--border)" }}>

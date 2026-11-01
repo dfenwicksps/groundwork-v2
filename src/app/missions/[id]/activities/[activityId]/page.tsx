@@ -6,6 +6,8 @@ import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { resolvePhase } from "@/lib/phaseServer";
 import { activityForStage, hiddenForStage } from "@/lib/stageContent";
+import { loadMissionCard } from "@/lib/missionCardsServer";
+import type { IdentityCard } from "@/lib/identityCard";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -204,6 +206,19 @@ export default async function ActivityPage({
     }
   }
 
+  // The Through-Line reads the first three missions' cards rather than asking
+  // the student to recall three missions from memory.
+  let priorCards: { colour: string; card: IdentityCard }[] | null = null;
+  if (activity.id === "the-through-line") {
+    const loaded = await Promise.all(
+      [1, 2, 3].map(async (id) => {
+        const card = await loadMissionCard(supabase, user.id, id, lifeStage);
+        return card ? { colour: getMission(id)!.colour, card } : null;
+      })
+    );
+    priorCards = loaded.filter((c): c is { colour: string; card: IdentityCard } => !!c);
+  }
+
   return (
     <ActivityClient
       mission={mission}
@@ -216,6 +231,7 @@ export default async function ActivityPage({
       compass={compass}
       strengthProfile={strengthProfile}
       recalled={recalled}
+      priorCards={priorCards}
       lifeStage={lifeStage}
       phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}

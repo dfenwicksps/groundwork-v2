@@ -28,6 +28,8 @@ import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
 import SupportCard from "@/components/help/SupportCard";
 import AskByLink from "@/components/AskByLink";
+import CardRecap from "@/components/CardRecap";
+import type { IdentityCard } from "@/lib/identityCard";
 import { canAskByLink } from "@/lib/askLink";
 import { mentionsCrisis } from "@/lib/help";
 import {
@@ -72,6 +74,8 @@ interface Props {
   } | null;
   /** An earlier entry this step reads back (Activity.recall) */
   recalled?: { label: string; text: string } | null;
+  /** Earlier missions' cards (Mission 4's Through-Line) */
+  priorCards?: { colour: string; card: IdentityCard }[] | null;
   /** Where the student is, for the hints and sentence starters */
   lifeStage: LifeStage;
   /** The global journey phase — sets the default writing depth (lib/phase.ts). */
@@ -323,6 +327,7 @@ function ConversationalActivity({
   pairedStory,
   compass,
   recalled,
+  priorCards,
   lifeStage,
   phase,
   aiReflectionsEnabled,
@@ -332,6 +337,8 @@ function ConversationalActivity({
   activity: Activity;
   userId: string;
   recalled?: { label: string; text: string } | null;
+  /** Earlier missions' cards, for a step that builds on all of them */
+  priorCards?: { colour: string; card: IdentityCard }[] | null;
   lifeStage: LifeStage;
   phase: Phase;
   aiReflectionsEnabled: boolean;
@@ -920,6 +927,9 @@ function ConversationalActivity({
             {/* An earlier answer this step builds on, read back in the student's own words */}
             {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
 
+            {/* Earlier missions' cards, for the step that joins them up */}
+            {priorCards && <CardRecap cards={priorCards} />}
+
             {/* A conversation step: the questions to take with you, before the write-up */}
             {activity.interviewQuestions && activity.interviewQuestions.length > 0 && (
               <div
@@ -1291,6 +1301,14 @@ function ConversationalActivity({
 
             {recalled && activity.recall?.step === qIdx && (
               <RecallCard recalled={recalled} accent={mission.colour} />
+            )}
+
+            {/* Through-Line: questions 1–3 are each about one mission's card;
+                the last one, the thread, has all three. */}
+            {priorCards && (
+              <CardRecap
+                cards={qIdx < 3 ? priorCards.filter(({ card }) => (card.missionId ?? 1) === qIdx + 1) : priorCards}
+              />
             )}
 
             {/* Answers that came back by link, to quote from while writing it up */}
@@ -3004,6 +3022,7 @@ export default function ActivityClient({
   compass,
   strengthProfile,
   recalled,
+  priorCards,
   lifeStage,
   phase,
   aiReflectionsEnabled,
@@ -3161,6 +3180,7 @@ export default function ActivityClient({
       pairedStory={pairedStory}
       compass={compass}
       recalled={recalled}
+      priorCards={priorCards}
       lifeStage={lifeStage}
       phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}
