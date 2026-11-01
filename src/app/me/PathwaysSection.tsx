@@ -73,15 +73,14 @@ export default function PathwaysSection({
                     style={{ background: "rgba(67,56,202,0.04)", borderColor: "rgba(67,56,202,0.15)" }}
                   >
                     <div
-                      className="text-xs font-bold uppercase tracking-wider mb-1.5"
-                      style={{ color: "var(--navy)" }}
+                      className="text-xs font-bold uppercase tracking-wider mb-1.5 text-navy"
                     >
                       🎓 First steps after school
                     </div>
                     <ul className="space-y-1">
                       {cluster.nextSteps.map((n, i) => (
                         <li key={i} className="text-xs text-ink leading-relaxed flex gap-1.5">
-                          <span aria-hidden style={{ color: "var(--navy)" }}>›</span>
+                          <span aria-hidden className="text-navy">›</span>
                           <span>{n}</span>
                         </li>
                       ))}
