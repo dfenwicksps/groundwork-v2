@@ -6,8 +6,10 @@ import { missionForStage } from "@/lib/stageContent";
 import {
   buildIdentityCard,
   buildPurposeCard,
+  buildConnectionCard,
   IDENTITY_CARD_SOURCES,
   PURPOSE_CARD_SOURCES,
+  CONNECTION_CARD_SOURCES,
   type IdentityCard,
 } from "@/lib/identityCard";
 import MissionDetailClient from "./MissionDetailClient";
@@ -47,10 +49,15 @@ export default async function MissionPage({
 
   const completedActivities = new Set((progress as Array<{ activity_id: string }> | null)?.map((p) => p.activity_id) || []);
 
-  // Missions 1 and 2 build a card as they go (lib/identityCard.ts): Who I Am,
-  // then the Purpose card.
+  // Missions 1–3 build a card as they go (lib/identityCard.ts): Who I Am,
+  // the Purpose card, then the Connection card.
+  const CARD_SOURCES: Record<number, string[]> = {
+    1: IDENTITY_CARD_SOURCES,
+    2: PURPOSE_CARD_SOURCES,
+    3: CONNECTION_CARD_SOURCES,
+  };
   let identityCard: IdentityCard | null = null;
-  if (missionId === 1 || missionId === 2) {
+  if (CARD_SOURCES[missionId]) {
     const db = supabase as any;
     const [{ data: profile }, { data: entries }, { data: challenge }] = await Promise.all([
       db.from("strength_profiles").select("ranking").eq("user_id", user.id).maybeSingle(),
@@ -58,7 +65,7 @@ export default async function MissionPage({
         .from("journal_entries")
         .select("activity_id, response, created_at")
         .eq("user_id", user.id)
-        .in("activity_id", missionId === 1 ? IDENTITY_CARD_SOURCES : PURPOSE_CARD_SOURCES)
+        .in("activity_id", CARD_SOURCES[missionId])
         .order("created_at", { ascending: false }),
       db
         .from("challenges")
@@ -86,7 +93,9 @@ export default async function MissionPage({
             challenge: challengeState,
             stage: lifeStage,
           })
-        : buildPurposeCard({ responses, challenge: challengeState, stage: lifeStage });
+        : missionId === 2
+          ? buildPurposeCard({ responses, challenge: challengeState, stage: lifeStage })
+          : buildConnectionCard({ responses, challenge: challengeState, stage: lifeStage });
   }
 
   return (

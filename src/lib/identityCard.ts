@@ -202,3 +202,59 @@ export function buildPurposeCard({
       : "Mission 2 done. This is what you care about and what you can bring to it, for now. It can grow and change with you.",
   };
 }
+
+// ─── Connection card ──────────────────────────────────────────────────────────
+// Mission 3's version: where they belong, who could belong more because of
+// them, someone across a real difference, the people who shaped them, their
+// reach-out, and something handed down in their family. Never the hard-shaping
+// question from Step 4: a card is something a student may show.
+
+export const CONNECTION_CARD_SOURCES = [
+  "belonging",
+  "fitting-in-vs-belonging",
+  "across-the-gap",
+  "people-who-shaped-you",
+  "conversation-family-story",
+];
+
+export function buildConnectionCard({
+  responses,
+  challenge,
+  stage,
+}: {
+  responses: Record<string, string | null | undefined>;
+  challenge: { accepted: boolean; debriefed: boolean };
+  stage: LifeStage;
+}): IdentityCard {
+  const piece = (key: string, label: string, activityId: string, stepTitle: string, index: number): IdentityPiece => ({
+    key,
+    label,
+    activityId,
+    stepTitle,
+    text: said(activityId, responses[activityId], index, 3, stage),
+    chips: [],
+  });
+  const pieces: IdentityPiece[] = [
+    piece("belong", "Where I belong", "belonging", "Where You Belong", 0),
+    piece("room", "Someone I'm making room for", "fitting-in-vs-belonging", "Fitting In vs. Belonging", 3),
+    piece("gap", "Someone across the gap", "across-the-gap", "Across the Gap", 0),
+    piece("shaped", "People who shaped me", "people-who-shaped-you", "The People Who Shaped You", 0),
+    {
+      key: "reach",
+      label: "My reach-out",
+      activityId: "connection-challenge",
+      stepTitle: "Mission Challenge",
+      text: challengeText(challenge, "Reaching toward someone this week"),
+      chips: [],
+    },
+    piece("handed", "Handed down in my family", "conversation-family-story", "Where We Come From", 2),
+  ];
+  return {
+    pieces,
+    filled: pieces.filter((p) => p.text).length,
+    missionId: 3,
+    title: "My people",
+    doneText:
+      "Mission 3 done. This is where you belong and who's part of your story, for now. It will change as people come and go, and that's normal.",
+  };
+}
