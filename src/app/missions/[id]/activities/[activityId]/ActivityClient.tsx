@@ -27,6 +27,8 @@ import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackL
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
 import SupportCard from "@/components/help/SupportCard";
+import AskByLink from "@/components/AskByLink";
+import { canAskByLink } from "@/lib/askLink";
 import { mentionsCrisis } from "@/lib/help";
 import {
   INHERITANCE_GROUPS,
@@ -946,6 +948,16 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* Or send the questions as a private link, and read the answers here */}
+            {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+              <AskByLink
+                missionId={mission.id}
+                activityId={activity.id}
+                questions={activity.interviewQuestions}
+                accent={mission.colour}
+              />
+            )}
+
             {/* Another way in, so having nobody to ask never means being stuck */}
             {activity.alternative && (
               <div className="rounded-2xl p-4 mb-5 bg-white border border-[--border]">
@@ -1281,6 +1293,17 @@ function ConversationalActivity({
               <RecallCard recalled={recalled} accent={mission.colour} />
             )}
 
+            {/* Answers that came back by link, to quote from while writing it up */}
+            {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+              <AskByLink
+                variant="answers"
+                missionId={mission.id}
+                activityId={activity.id}
+                questions={activity.interviewQuestions}
+                accent={mission.colour}
+              />
+            )}
+
             {/* What you were handed — sorted rather than written */}
             {isSortStep && (
               <InheritanceSort
@@ -1547,6 +1570,17 @@ function ConversationalActivity({
               That&apos;s one more thing you know about yourself.
             </p>
           </div>
+
+          {/* Links sent from this step. Answers can arrive after the write-up;
+              they show here, and Edit (below) adds them to it. */}
+          {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+            <AskByLink
+              missionId={mission.id}
+              activityId={activity.id}
+              questions={activity.interviewQuestions}
+              accent={mission.colour}
+            />
+          )}
 
           {/* Compass check results — the Mask Check tested the strengths and
               values from earlier steps; show them so the Identity Letter has

@@ -64,6 +64,31 @@ export default async function DashboardPage() {
     .single();
   const challenge = _challenge as import("@/types/database").Challenge | null;
 
+  // Answers that came back by link and haven't been read yet (lib/askLink.ts).
+  // An error means migration 017 hasn't run: no card, nothing else changes.
+  const { data: _answers } = await (supabase as any)
+    .from("conversation_requests")
+    .select("mission_id, activity_id, for_label, responder_name")
+    .eq("user_id", user.id)
+    .not("answered_at", "is", null)
+    .is("seen_at", null)
+    .order("answered_at", { ascending: false })
+    .limit(10);
+  const unreadAnswers = (_answers || []) as {
+    mission_id: number;
+    activity_id: string;
+    for_label: string;
+    responder_name: string | null;
+  }[];
+  const newAnswers = unreadAnswers.length
+    ? {
+        missionId: unreadAnswers[0].mission_id,
+        activityId: unreadAnswers[0].activity_id,
+        who: unreadAnswers[0].responder_name || unreadAnswers[0].for_label,
+        count: unreadAnswers.length,
+      }
+    : null;
+
   // Fetch support circle
   const { data: supportCircle } = await supabase
     .from("support_circle")
@@ -331,6 +356,7 @@ export default async function DashboardPage() {
       programWeek={programWeek}
       nextChapter={nextChapter}
       checkin={checkin}
+      newAnswers={newAnswers}
     />
   );
 }

@@ -21,13 +21,17 @@ export const LOCKED_CLASS = "gw-locked";
 export const RELOCK_AFTER_MS = 5 * 60 * 1000;
 export const PIN_LENGTH = 4;
 
-/** Pages anyone can see without signing in never ask for the code. */
+/**
+ * Pages anyone can see without signing in never ask for the code. That
+ * includes /ask: the person answering a student's questions may open the link
+ * on the same family device, and must never be asked for the student's code.
+ */
 export function isPublicPath(path: string): boolean {
-  return path === "/" || /^\/(auth|privacy|terms)(\/|$)/.test(path);
+  return path === "/" || /^\/(auth|privacy|terms|ask)(\/|$)/.test(path);
 }
 
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */
-export const LOCK_BOOT_SCRIPT = `try{var p=location.pathname;if(localStorage.getItem("${LOCK_KEY}")&&!sessionStorage.getItem("${UNLOCKED_KEY}")&&!(p==="/"||/^\\/(auth|privacy|terms)(\\/|$)/.test(p)))document.documentElement.classList.add("${LOCKED_CLASS}")}catch(e){}`;
+export const LOCK_BOOT_SCRIPT = `try{var p=location.pathname;if(localStorage.getItem("${LOCK_KEY}")&&!sessionStorage.getItem("${UNLOCKED_KEY}")&&!(p==="/"||/^\\/(auth|privacy|terms|ask)(\\/|$)/.test(p)))document.documentElement.classList.add("${LOCKED_CLASS}")}catch(e){}`;
 
 interface StoredLock {
   salt: string;
