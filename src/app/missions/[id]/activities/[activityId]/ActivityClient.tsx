@@ -684,6 +684,8 @@ function ConversationalActivity({
     clearDraft();
 
     setLatestResponse(finalResponse);
+    // The replacement is saved; editing it from here keeps its own small step.
+    setFreshStart(false);
     if (mentionsCrisis(finalResponse)) {
       setSupportNeeded(true);
     } else {
@@ -768,8 +770,12 @@ function ConversationalActivity({
       prevAnswersRef.current = [];
       entryIdRef.current = null;
       setFreshStart(true);
+      // The old entry's follow-up questions were about the old answers.
+      setAiReflection(null);
+      setReflectionFailed(false);
     } else {
       prevAnswersRef.current = parsePrevAnswers(saved);
+      setFreshStart(false);
     }
     clearDraft(); // edit sessions start from the saved entry, not a stale draft
     setEditing(true);
