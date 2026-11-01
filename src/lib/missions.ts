@@ -1,4 +1,6 @@
 import { WEEK_BY_NUMBER, CHARACTER_CODE_ACTIVITY_ID, type Strand } from "./program";
+import type { LifeStage } from "./lifeStage";
+import { activityForStage } from "./stageContent";
 
 export interface Activity {
   id: string;
@@ -666,7 +668,7 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Moving from self-knowledge to conscious choices about what matters.",
     description:
-      "Mission 1 helped you map who you are. This mission asks the next question: given who you are, what in the world actually pulls you? Purpose isn't found — it's built, gradually, from the intersection of your inner compass and the things you can't ignore. This mission moves through three dimensions: the cause that genuinely matters to you, the particular contribution you could make to it, and the people who share your care. The goal isn't a plan. It's a commitment.",
+      "By the end of this mission you'll have the thing you care about, what you can bring to it, and one sentence that says it. Every step adds a piece to your Purpose card. Six short steps, about an hour in all, spread over a week. You don't need a cause to start: something you love doing is just as good a way in.",
     colour: "#0E7490",
     colourLight: "#0891B2",
     textColour: "#FFFFFF",
@@ -674,9 +676,9 @@ export const MISSIONS: Mission[] = [
       {
         id: "what-matters",
         wrapUp:
-          "You've named the thing that actually pulls at you \u2014 not what you're supposed to care about, what you genuinely do. That pull is where purpose starts for everyone. Next: working out what you, specifically, could bring to it.",
+          "You've named the thing that actually pulls at you \u2014 not what you're supposed to care about, what you genuinely do. That pull is where purpose starts for everyone, and it's the first piece of your Purpose card. Next: working out what you, specifically, could bring to it.",
         scenarios: [
-          "You're scrolling before bed. Post after post slides past \u2014 then one story stops your thumb. It sits in your chest a bit heavier than the rest, and you're still thinking about it when you put the phone down.",
+          "Two moments from your week. In one, you're scrolling and a story stops your thumb, and you're still thinking about it when you put the phone down. In the other, you're doing something and look up to find two hours have gone. Either one is a clue.",
           "School assembly. A guest speaker is telling their story. Most of the room is half-listening, but something about this person has actually got you \u2014 and a week later, you still remember them.",
           "Imagine it's ten years from now and you bump into a mate from school. They ask what you've been up to \u2014 and you get to say one thing that makes you quietly proud.",
           "Look back at what stopped your thumb, who got your attention, and what you'd want to be proud of. Line them up like clues.",
@@ -685,9 +687,10 @@ export const MISSIONS: Mission[] = [
           [
             "People being treated unfairly when they did nothing wrong",
             "The planet or animals being wrecked and ignored",
-            "Bullying, cruelty, or people being humiliated",
-            "People stuck with no real chance to get ahead",
             "People struggling alone when nobody checks on them",
+            "Making things \u2014 art, music, code, videos, food",
+            "Sport, training, or getting better at something physical",
+            "Working out how things work \u2014 science, tech, puzzles",
           ],
           [
             "They stood up for something when it was easier to stay quiet",
@@ -715,20 +718,20 @@ export const MISSIONS: Mission[] = [
         title: "What Matters",
         subtitle: "Step 1 of 6 · Your motivated self",
         intro:
-          "Mission 1 looked inward. This one looks outward. Purpose often starts with a quiet anger or a pull: something in the world that bothers you, or something you keep coming back to. This step is about naming that thing honestly.",
+          "Mission 1 looked inward. This one looks outward. Purpose usually starts in one of two places: something in the world that bothers you, or something you love doing so much you lose track of time. Either is a way in. Most people your age don't have a cause yet, and that's normal.",
         warmUp:
           "Think about the last time you felt genuinely bothered by something in the world — not just inconvenienced, but actually troubled. Hold that feeling in mind before you write. That's usually where purpose begins.",
         storyBefore: "The Thing She Couldn't Ignore",
         prompt:
           "Write about something that genuinely matters to you — a problem in the world, a person you admire, a cause you care about. Why does it matter?",
         scaffoldingSteps: [
-          "What's a problem in the world — local or global — that actually bothers you? Not one you feel you should care about, but one you actually do.",
+          "What pulls at you most? It can be a problem in the world that actually bothers you, or something you love doing so much you lose track of time. Not what you feel you should say.",
           "Is there a person you admire — real or historical — whose life or work pulls you toward something? What is it about them?",
           "When you think about your future, what kind of impact, however small, would feel meaningful?",
           "What do all of these have in common? What does that tell you about what you're actually oriented toward?",
         ],
         whyItMatters:
-          "Researcher William Damon distinguishes between being 'engaged' (doing things) and being 'purposeful' (knowing why). Purposeful adolescents are more resilient under pressure and report significantly higher wellbeing — not because their lives are easier, but because they have a direction. The quiet anger or persistent pull you feel about something isn't random. It's identity data, pointing you somewhere specific.",
+          "Researcher William Damon distinguishes between being 'engaged' (doing things) and being 'purposeful' (knowing why). Young people with a sense of purpose tend to cope better under pressure and report higher wellbeing, not because their lives are easier but because they have a direction. Peter Benson's research on 'sparks' found purpose often grows out of something a young person loves doing, not only from a problem they want to fix. Whichever way in you took, the pull you feel isn't random.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -736,10 +739,10 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer'. Next: discovering you're not the only one who cares.",
+          "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer', and it's on your Purpose card now. Next: discovering you're not the only one who cares.",
         scenarios: [
           "Your school is running a big fundraiser for a cause. At the first meeting, jobs get handed out \u2014 posters, speeches, budgets, the group chat, the actual event. You look at the list, and one job quietly has your name on it.",
-          "Think about the cause you named in Step 1. Now imagine you're right there, in the middle of it \u2014 at the beach clean-up, the food drive, the campaign, whatever it is. A moment happens where something in you switches on.",
+          "Think about what you named in Step 1, the cause or the thing you love. Now imagine you're right in the middle of it \u2014 the clean-up, the training session, the studio, the campaign, whatever it is. A moment happens where something in you switches on.",
           "The organisers pull you aside: 'We've got heaps of helpers. What we don't have is someone who can do the thing YOU do.' What's the thing?",
           "It's this Saturday morning. You've got two free hours and zero excuses. The smallest real version of your contribution is sitting right there.",
         ],
@@ -833,7 +836,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         type: "journal",
-        title: "The Other Side",
+        title: "Who Else Cares",
         subtitle: "Step 3 of 6 · Your people",
         intro:
           "Purpose gets real when you realise you're not alone in caring. There are people — in your life, in history, in communities you haven't found yet — who care about the same things you do. This step asks you to find one of them and pay attention to what their story tells you about yours.",
@@ -857,7 +860,7 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You put it in writing: what you stand for and why it's yours. That's a commitment, not a contract \u2014 it's allowed to grow and change with you. Last step: acting on it once, in the real world, this week.",
+          "You put it in writing: what you stand for and why it's yours. It's on your Purpose card now. That's a commitment, not a contract \u2014 it's allowed to grow and change with you. Next: acting on it once, in the real world, this week.",
         scenarios: [
           "There's a wall of causes at school, each with one sentence and a name signed under it. Yours is going up where people you know will read it.",
           "A good friend catches you working on this and asks, genuinely: 'Why do you care so much about that?' They're not mocking you \u2014 they actually want to know.",
@@ -901,7 +904,6 @@ export const MISSIONS: Mission[] = [
           "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
         warmUp:
           "Think about what it would mean to genuinely commit to this — not as a project or a task, but as part of who you are and what you stand for. What would change if you took it seriously? Sit with that for a moment before you write.",
-        storyBefore: "The Coach Who Stopped Winning",
         prompt:
           "Write a commitment statement — a clear, personal declaration of what you care about and why. Not a plan. Not a promise to the world. Just an honest statement of what you're standing for.",
         isMilestone: true,
@@ -912,7 +914,7 @@ export const MISSIONS: Mission[] = [
           "What would you want someone reading this to understand about why it genuinely matters to you?",
         ],
         whyItMatters:
-          "Research on identity development finds that articulating a commitment — even privately, before acting on it — significantly increases psychological investment and follow-through. This isn't superstition. It's the mechanics of how belief becomes identity: the moment you say 'this is mine,' something shifts. The commitment doesn't have to be certain or permanent. It just has to be honest.",
+          "Saying clearly what you stand for is part of how something you care about becomes part of who you are. Research on commitment and follow-through finds the effect is strongest when the commitment is specific, and stronger again when you share it with someone. It doesn't have to be certain or permanent. It just has to be honest.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -926,7 +928,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Commitment isn't proven by what you say — it's tested by what you actually do. This challenge asks you to take one real step toward what you care about. Not a grand gesture. Just the smallest version of genuine engagement that feels real to you.",
         prompt:
-          "This week, do one concrete thing that connects you to what you care about. It could be learning more, talking to someone, showing up somewhere, making something, or helping in a small way. The action matters less than the fact that you actually did it.",
+          "Pick ONE for this week:\n\n• Do the tiny first step you planned in Step 2.\n• Learn one thing properly \u2014 spend 30 minutes reading, watching or asking about what you care about.\n• Talk to one person about it \u2014 tell them why it matters to you.\n• Show up once \u2014 go to one thing connected to it, or help with one task.\n\nPick one. Keep it small. Doing it matters more than doing it well.",
+        // The tiny version they wrote in Step 2, shown above the choices.
+        recall: { activityId: "contribution-map", missionId: 2, label: "Your tiny first step, from Step 2", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -1889,7 +1893,17 @@ const SPECIAL_LABELS: Record<string, string> = {
 
 const PROGRAM_WEEK_ID = /^program-week-(\d+)$/;
 
-export function getActivityLabel(activityId: string): string {
+export function getActivityLabel(activityId: string, stage?: LifeStage): string {
+  // A step can be titled differently for a stage (Year 7–9's "What I Want to
+  // Explore"); with a stage, label it the way that student saw it.
+  const title = (id: string): string | undefined => {
+    if (!stage) return BASE_ACTIVITY_LABELS[id];
+    for (const m of MISSIONS) {
+      const a = m.activities.find((x) => x.id === id);
+      if (a) return activityForStage(a, stage).title;
+    }
+    return undefined;
+  };
   if (SPECIAL_LABELS[activityId]) return SPECIAL_LABELS[activityId];
   const week = activityId.match(PROGRAM_WEEK_ID);
   if (week) {
@@ -1897,14 +1911,14 @@ export function getActivityLabel(activityId: string): string {
     return w ? `Week ${w.week} · ${w.title}` : `Week ${week[1]}`;
   }
   if (activityId.endsWith("-debrief")) {
-    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-debrief$/, "")];
+    const base = title(activityId.replace(/-debrief$/, ""));
     return base ? `${base} — Debrief` : "Challenge Debrief";
   }
   if (activityId.endsWith("-revisit")) {
-    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-revisit$/, "")];
+    const base = title(activityId.replace(/-revisit$/, ""));
     return base ? `${base} — Revisit` : "Revisit";
   }
-  return BASE_ACTIVITY_LABELS[activityId] || activityId;
+  return title(activityId) || activityId;
 }
 
 /**

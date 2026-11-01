@@ -352,7 +352,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         missionId: 2,
         recallLabel: "The person you found who cares about the same thing",
         href: "/missions/2/activities/the-other-side",
-        label: "The Other Side",
+        label: "Who Else Cares",
         whyNeeded:
           "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
         soWhat:
@@ -600,8 +600,10 @@ export const CAPSTONE_SOURCES: {
   {
     activityId: "commitment-statement",
     missionId: 2,
-    label: "What you said you stand for",
-    note: "Mission 2 · Commitment Statement",
+    // Year 7–9 wrote what they want to explore rather than a commitment
+    // (stageContentMission2.ts), so this names the step by what both versions share.
+    label: "What you said matters most to you",
+    note: "Mission 2 · milestone",
     href: "/missions/2/activities/commitment-statement",
   },
   {

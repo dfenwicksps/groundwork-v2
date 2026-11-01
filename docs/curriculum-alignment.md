@@ -181,7 +181,7 @@ For finding a code from an activity. M = mission.
 | M1 Who Was I? | **10P01** | PSC communication |
 | M1 Parts of Who You Are (optional) | 8P01, 10P01 | IU cultural perspectives and worldviews |
 | M2 What Matters / Contribution Map | 8P01, 8P10 | PSC community awareness |
-| M2 The Other Side / What They Care About | 10P01 | PSC communication |
+| M2 Who Else Cares / What They Care About | 10P01 | PSC communication |
 | M2 Commitment Statement | 8P01 | PSC goal setting |
 | M3 Where You Belong / Fitting In vs. Belonging | **10P01** | PSC relational awareness |
 | M3 Across the Gap | 8P05, 10P05 | PSC empathy; IU multiple perspectives |

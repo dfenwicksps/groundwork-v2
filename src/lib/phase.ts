@@ -50,7 +50,7 @@ export const ANCHOR_ACTIVITY_IDS = [
 export const ANCHOR_LINKS: Record<string, { label: string; href: string }> = {
   "strengths-mapping": { label: "Your strengths", href: "/missions/1/activities/strengths-mapping" },
   "values-clarifier": { label: "Your values", href: "/missions/1/activities/values-clarifier" },
-  "commitment-statement": { label: "What you're committing to", href: "/missions/2/activities/commitment-statement" },
+  "commitment-statement": { label: "What you care about most", href: "/missions/2/activities/commitment-statement" },
   "future-self": { label: "Your future self", href: "/missions/4/activities/future-self" },
 };
 
