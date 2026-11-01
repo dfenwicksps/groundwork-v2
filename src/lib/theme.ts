@@ -1,9 +1,14 @@
 // ─── Look and feel ───────────────────────────────────────────────────────────
-// Three looks: light, dark and bold (neon pink and lime on near-black). The
-// choice is kept in this browser only, like the device passcode: it's a
-// preference about this screen, not about the student.
+// Three looks: light, dark and bold (neon pink and lime on near-black).
 //
-// Until a look is picked, the app follows the phone's light/dark setting.
+// The choice lives on the student's account (users.theme), so it follows them
+// to any device. This browser keeps a copy in localStorage, because the look
+// has to be applied before first paint, long before the account can be asked.
+// ThemeSync (components/ThemeSync.tsx) brings the copy into line with the
+// account once per visit, and signing out clears it, so the next person on a
+// shared device doesn't inherit the look.
+//
+// No choice (null) means following the phone's light/dark setting.
 //
 // The look is a data-theme attribute on <html>. An inline script in the root
 // layout (THEME_BOOT_SCRIPT) sets it before first paint so the page never
@@ -14,6 +19,8 @@ export type Theme = "light" | "dark" | "bold";
 
 export const THEMES: Theme[] = ["light", "dark", "bold"];
 export const THEME_KEY = "gw_theme_v1";
+/** Set for this tab once the copy has been checked against the account. */
+export const THEME_SYNCED_KEY = "gw_theme_synced";
 
 /** Browser bar colour for each look (matches --c-surface-muted). */
 export const THEME_BAR: Record<Theme, string> = {
@@ -23,19 +30,20 @@ export const THEME_BAR: Record<Theme, string> = {
 };
 
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */
-export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
+export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}window.__gwApplyTheme=s;s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
 
-function isTheme(v: unknown): v is Theme {
-  return typeof v === "string" && (THEMES as string[]).includes(v);
+type ThemeWindow = Window & { __gwTheme?: Theme; __gwApplyTheme?: () => void };
+
+export function parseTheme(v: unknown): Theme | null {
+  return typeof v === "string" && (THEMES as string[]).includes(v) ? (v as Theme) : null;
 }
 
-/** The look picked on this device, or null while following the phone. */
+/** The look this browser holds a copy of, or null while following the phone. */
 export function getStoredTheme(): Theme | null {
-  const mem = (window as unknown as { __gwTheme?: Theme }).__gwTheme;
-  if (isTheme(mem)) return mem;
+  const mem = parseTheme((window as ThemeWindow).__gwTheme);
+  if (mem) return mem;
   try {
-    const v = localStorage.getItem(THEME_KEY);
-    return isTheme(v) ? v : null;
+    return parseTheme(localStorage.getItem(THEME_KEY));
   } catch {
     return null;
   }
@@ -43,21 +51,47 @@ export function getStoredTheme(): Theme | null {
 
 /** The look on screen right now. */
 export function getActiveTheme(): Theme {
-  const v = document.documentElement.getAttribute("data-theme");
-  return isTheme(v) ? v : "light";
+  return parseTheme(document.documentElement.getAttribute("data-theme")) ?? "light";
 }
 
-export function setTheme(theme: Theme): void {
-  // Remembered for this visit too, so a blocked localStorage doesn't let the
-  // boot script's phone-setting listener undo an explicit choice.
-  (window as unknown as { __gwTheme?: Theme }).__gwTheme = theme;
+/**
+ * Show a look and keep this browser's copy of it; null goes back to following
+ * the phone. Saving it to the account is the caller's job (saveTheme).
+ */
+export function applyTheme(theme: Theme | null): void {
+  const w = window as ThemeWindow;
+  // Also kept in memory, so a blocked localStorage doesn't let the boot
+  // script's phone-setting listener undo an explicit choice.
+  if (theme) w.__gwTheme = theme;
+  else delete w.__gwTheme;
   try {
-    localStorage.setItem(THEME_KEY, theme);
+    if (theme) localStorage.setItem(THEME_KEY, theme);
+    else localStorage.removeItem(THEME_KEY);
   } catch {
     // Private mode or storage blocked: still switch for this visit.
   }
-  document.documentElement.setAttribute("data-theme", theme);
-  document
-    .querySelectorAll('meta[name="theme-color"]')
-    .forEach((m) => m.setAttribute("content", THEME_BAR[theme]));
+  if (w.__gwApplyTheme) {
+    w.__gwApplyTheme();
+  } else if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+}
+
+/**
+ * Save a student's look to their account. Returns false if the write failed
+ * (offline, or the column not yet added); the browser copy still holds it.
+ */
+export async function saveTheme(db: any, userId: string, theme: Theme): Promise<boolean> {
+  const { error } = await db.from("users").update({ theme }).eq("id", userId);
+  return !error;
+}
+
+/** On sign-out: forget this browser's copy so the next person starts fresh. */
+export function clearThemeCache(): void {
+  try {
+    sessionStorage.removeItem(THEME_SYNCED_KEY);
+  } catch {
+    // ignore
+  }
+  applyTheme(null);
 }

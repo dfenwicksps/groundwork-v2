@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { getActiveTheme, getStoredTheme, setTheme, type Theme } from "@/lib/theme";
+import {
+  THEME_SYNCED_KEY,
+  applyTheme,
+  getActiveTheme,
+  saveTheme,
+  type Theme,
+} from "@/lib/theme";
 
 // Each preview is drawn in its own look's colours, whatever look is on now,
 // so the three are always comparable side by side.
@@ -54,32 +60,54 @@ function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
   );
 }
 
-export default function ThemeSettings() {
-  // Read after mount: the look lives in this browser, not on the server.
-  const [active, setActive] = useState<Theme | null>(null);
-  const [picked, setPicked] = useState(false);
+export default function ThemeSettings({
+  db,
+  userId,
+  initialTheme,
+}: {
+  db: any;
+  userId: string;
+  /** The account's look (users.theme); null while following the phone. */
+  initialTheme: Theme | null;
+}) {
+  // What's on screen is read after mount: following the phone is decided in
+  // the browser, not on the server.
+  const [active, setActive] = useState<Theme | null>(initialTheme);
+  const [picked, setPicked] = useState(initialTheme !== null);
+  const [saved, setSaved] = useState<"idle" | "saved" | "failed">("idle");
 
   useEffect(() => {
+    // The account is the record: if this browser's copy differs, it wins
+    // (ThemeSync would do the same, but this page already has the answer).
+    if (initialTheme) applyTheme(initialTheme);
+    try {
+      sessionStorage.setItem(THEME_SYNCED_KEY, "1");
+    } catch {
+      // ignore
+    }
     setActive(getActiveTheme());
-    setPicked(getStoredTheme() !== null);
     // While following the phone, the boot script can switch the look under us.
     const obs = new MutationObserver(() => setActive(getActiveTheme()));
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     return () => obs.disconnect();
-  }, []);
+  }, [initialTheme]);
 
-  function choose(t: Theme) {
-    setTheme(t);
+  async function choose(t: Theme) {
+    applyTheme(t);
     setActive(t);
     setPicked(true);
+    const ok = await saveTheme(db, userId, t);
+    setSaved(ok ? "saved" : "failed");
+    if (ok) setTimeout(() => setSaved("idle"), 2000);
   }
 
   return (
     <div data-animate="3" className="card p-6">
       <h2 className="font-semibold text-ink mb-1">Look</h2>
       <p className="text-sm text-ink-muted mb-4">
-        Pick how Groundwork looks on this device.
-        {active && !picked && " Until you pick, it follows your phone's light or dark setting."}
+        Pick how Groundwork looks. It&apos;s saved to your account, so it follows you to
+        any device.
+        {!picked && " Until you pick, it follows your phone's light or dark setting."}
       </p>
       <div className="grid grid-cols-3 gap-2" role="group" aria-label="Look">
         {OPTIONS.map((o) => (
@@ -102,6 +130,12 @@ export default function ThemeSettings() {
           </button>
         ))}
       </div>
+      {saved === "saved" && <p className="text-xs text-sage mt-2">Saved ✓</p>}
+      {saved === "failed" && (
+        <p role="alert" className="text-xs text-ink-muted mt-2">
+          Couldn&apos;t save that to your account, so it&apos;s only on this device for now.
+        </p>
+      )}
     </div>
   );
 }

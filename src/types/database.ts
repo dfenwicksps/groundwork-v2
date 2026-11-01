@@ -10,6 +10,7 @@ export type Database = {
           active_mission: number;
           ai_reflections_enabled: boolean;
           life_stage: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
+          theme: "light" | "dark" | "bold" | null;
         };
         Insert: {
           id: string;
@@ -19,6 +20,7 @@ export type Database = {
           active_mission?: number;
           ai_reflections_enabled?: boolean;
           life_stage?: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
+          theme?: "light" | "dark" | "bold" | null;
         };
         Update: {
           id?: string;
@@ -27,6 +29,7 @@ export type Database = {
           active_mission?: number;
           ai_reflections_enabled?: boolean;
           life_stage?: "junior" | "middle" | "senior" | "leaver" | "adult" | null;
+          theme?: "light" | "dark" | "bold" | null;
         };
       };
       onboarding_results: {

@@ -9,6 +9,7 @@ import AppShell from "@/components/layout/AppShell";
 import DeviceLockSettings from "./DeviceLockSettings";
 import ThemeSettings from "./ThemeSettings";
 import { clearLock } from "@/lib/deviceLock";
+import { clearThemeCache, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
 
@@ -20,6 +21,7 @@ export default function SettingsClient({
   missionValues,
   initialLifeStage,
   aiReflectionsEnabled,
+  initialTheme,
 }: {
   userId: string;
   email: string;
@@ -29,6 +31,7 @@ export default function SettingsClient({
   missionValues: string[];
   initialLifeStage: LifeStage;
   aiReflectionsEnabled: boolean;
+  initialTheme: Theme | null;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -98,6 +101,7 @@ export default function SettingsClient({
 
   async function handleSignOut() {
     await supabase.auth.signOut();
+    clearThemeCache();
     router.push("/");
   }
 
@@ -119,6 +123,7 @@ export default function SettingsClient({
       // drop this device's passcode, which guarded an account that's gone.
       await supabase.auth.signOut();
       clearLock();
+      clearThemeCache();
       router.push("/");
     } catch {
       setDeleteError("Couldn't reach the server. Check your connection and try again.");
@@ -203,7 +208,7 @@ export default function SettingsClient({
         </div>
 
         {/* Look — light, dark or bold, kept on this device */}
-        <ThemeSettings />
+        <ThemeSettings db={db} userId={userId} initialTheme={initialTheme} />
 
         {/* Your values */}
         <div data-animate="3" className="card p-6">
