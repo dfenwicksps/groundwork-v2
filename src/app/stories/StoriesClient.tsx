@@ -103,7 +103,10 @@ export default function StoriesClient({
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm font-semibold"
+                    className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-semibold",
+                      complete ? "text-on-accent" : "text-white"
+                    )}
                     style={{ background: complete ? "var(--sage)" : mission?.colour || "#4F46E5" }}
                     aria-label={complete ? "Read and reflected on" : undefined}
                   >

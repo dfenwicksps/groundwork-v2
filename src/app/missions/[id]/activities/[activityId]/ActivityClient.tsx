@@ -1209,7 +1209,7 @@ function ConversationalActivity({
                   className="w-full flex items-start gap-2.5 text-left"
                 >
                   <span
-                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-on-accent mt-0.5"
                     style={{ background: "var(--sage)" }}
                   >
                     ✓

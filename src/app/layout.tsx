@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
 import DeviceLock from "@/components/DeviceLock";
 import { LOCK_BOOT_SCRIPT } from "@/lib/deviceLock";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 // Self-hosted via next/font: no render-blocking Google CSS request, no flash
 // of unstyled text. The families are exposed as CSS variables that
@@ -65,6 +66,9 @@ export default function RootLayout({
       className={`${bricolage.variable} ${fraunces.variable} ${dmSans.variable}`}
     >
       <head>
+        {/* Sets the chosen look (light / dark / bold) before first paint, so
+            the page never flashes the wrong colours (lib/theme.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {/* Hides the page before first paint when this device has a passcode
             and this tab hasn't been unlocked (lib/deviceLock.ts). */}
         <script dangerouslySetInnerHTML={{ __html: LOCK_BOOT_SCRIPT }} />

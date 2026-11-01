@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import DeviceLockSettings from "./DeviceLockSettings";
+import ThemeSettings from "./ThemeSettings";
 import { clearLock } from "@/lib/deviceLock";
 import { cn } from "@/lib/utils";
 import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
@@ -200,6 +201,9 @@ export default function SettingsClient({
             )}
           </div>
         </div>
+
+        {/* Look — light, dark or bold, kept on this device */}
+        <ThemeSettings />
 
         {/* Your values */}
         <div data-animate="3" className="card p-6">

@@ -92,7 +92,7 @@ export default async function StoryPage({
         {complete && (
           <div className="flex items-center gap-2 text-xs font-medium text-sage mb-6 -mt-3">
             <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
+              className="w-5 h-5 rounded-full flex items-center justify-center text-on-accent text-xs font-bold"
               style={{ background: "var(--sage)" }}
               aria-hidden="true"
             >

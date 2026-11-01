@@ -235,9 +235,9 @@ export default function ProgramClient({
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${
                       done
-                        ? "bg-sage text-white"
+                        ? "bg-sage text-on-accent"
                         : started
-                          ? "bg-teal text-white"
+                          ? "bg-teal text-on-accent"
                           : "bg-surface-muted text-ink-muted"
                     }`}
                   >
