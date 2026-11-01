@@ -787,7 +787,7 @@ export const MISSIONS: Mission[] = [
           "What's the connection between who you are and what you care about? How do your particular strengths and values fit the thing that matters to you?",
         scaffoldingSteps: [
           "Look at the strengths you identified in Mission 1. How might they be genuinely useful in relation to what you care about — even in a small way?",
-          "Look at the values you chose. Which ones feel most alive when you think about the problem or cause from Step 1?",
+          "Look at the values you chose. Which ones feel most alive when you think about what you named in Step 1, the cause or the thing you love?",
           "Is there a kind of contribution — however small — that only you, with your particular inner compass, could make to this?",
           "What would even a tiny version of that contribution look like in practice?",
         ],

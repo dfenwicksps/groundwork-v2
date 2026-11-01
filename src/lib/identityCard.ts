@@ -14,6 +14,8 @@
 
 import { answerAt, clarifierValues, LEFT_OUT_ANSWER } from "./journal";
 import { strengthName, topStrengths } from "./strengths";
+import { getActivity } from "./missions";
+import { activityForStage } from "./stageContent";
 import type { LifeStage } from "./lifeStage";
 
 export interface IdentityPiece {
@@ -42,21 +44,39 @@ interface Sources {
   ranking: string[] | null | undefined;
   responses: Record<string, string | null | undefined>;
   challenge: { accepted: boolean; debriefed: boolean };
+  stage?: LifeStage;
 }
 
-function said(activityId: string, response: string | null | undefined, index: number, missionId = 1): string {
-  const a = answerAt(missionId, activityId, response, index);
+/**
+ * One answer from an entry, read against the questions as this student saw
+ * them (a stage can reword them), or "" if it was left out.
+ */
+function said(
+  activityId: string,
+  response: string | null | undefined,
+  index: number,
+  missionId = 1,
+  stage?: LifeStage
+): string {
+  const base = getActivity(missionId, activityId);
+  const questions = base && stage ? activityForStage(base, stage).scaffoldingSteps : undefined;
+  const a = answerAt(missionId, activityId, response, index, questions);
   return a === LEFT_OUT_ANSWER ? "" : a;
 }
 
-export function buildIdentityCard({ ranking, responses, challenge }: Sources): IdentityCard {
+/** A challenge's check-in can say it didn't happen, so the card never claims it did. */
+function challengeText(c: { accepted: boolean; debriefed: boolean }, accepted: string): string {
+  return c.debriefed ? "Checked in afterwards on how it went" : c.accepted ? accepted : "";
+}
+
+export function buildIdentityCard({ ranking, responses, challenge, stage }: Sources): IdentityCard {
   const pieces: IdentityPiece[] = [
     {
       key: "chapter",
       label: "The chapter I'm in",
       activityId: "chapters-so-far",
       stepTitle: "Your Story So Far",
-      text: said("chapters-so-far", responses["chapters-so-far"], 1),
+      text: said("chapters-so-far", responses["chapters-so-far"], 1, 1, stage),
       chips: [],
     },
     {
@@ -80,7 +100,7 @@ export function buildIdentityCard({ ranking, responses, challenge }: Sources): I
       label: "Where I can just be me",
       activityId: "mask-check",
       stepTitle: "The Mask Check",
-      text: said("mask-check", responses["mask-check"], 3),
+      text: said("mask-check", responses["mask-check"], 3, 1, stage),
       chips: [],
     },
     {
@@ -88,7 +108,7 @@ export function buildIdentityCard({ ranking, responses, challenge }: Sources): I
       label: "A true thing about me",
       activityId: "identity-letter",
       stepTitle: "Identity Letter",
-      text: said("identity-letter", responses["identity-letter"], 3),
+      text: said("identity-letter", responses["identity-letter"], 3, 1, stage),
       chips: [],
     },
     {
@@ -96,11 +116,7 @@ export function buildIdentityCard({ ranking, responses, challenge }: Sources): I
       label: "My experiment",
       activityId: "weekly-challenge",
       stepTitle: "Mission Challenge",
-      text: challenge.debriefed
-        ? "Tried it, and told myself the truth about how it went"
-        : challenge.accepted
-          ? "Accepted, and trying it this week"
-          : "",
+      text: challengeText(challenge, "Accepted, and trying it this week"),
       chips: [],
     },
     {
@@ -108,7 +124,7 @@ export function buildIdentityCard({ ranking, responses, challenge }: Sources): I
       label: "Still me since I was little",
       activityId: "conversation-who-i-was",
       stepTitle: "Who Was I?",
-      text: said("conversation-who-i-was", responses["conversation-who-i-was"], 3),
+      text: said("conversation-who-i-was", responses["conversation-who-i-was"], 3, 1, stage),
       chips: [],
     },
   ];
@@ -156,7 +172,7 @@ export function buildPurposeCard({
     label,
     activityId,
     stepTitle,
-    text: said(activityId, responses[activityId], index, 2),
+    text: said(activityId, responses[activityId], index, 2, stage),
     chips: [],
   });
   const pieces: IdentityPiece[] = [
@@ -171,11 +187,7 @@ export function buildPurposeCard({
       label: "My first step",
       activityId: "purpose-challenge",
       stepTitle: "Mission Challenge",
-      text: challenge.debriefed
-        ? "Did one real thing about it, and told myself how it went"
-        : challenge.accepted
-          ? "Picked one thing to do about it this week"
-          : "",
+      text: challengeText(challenge, "Picked one thing to do about it this week"),
       chips: [],
     },
     piece("heard", "What I heard from someone else", "conversation-what-matters", "What They Care About", 3),

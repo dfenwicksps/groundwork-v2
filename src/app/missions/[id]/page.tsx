@@ -84,6 +84,7 @@ export default async function MissionPage({
             ranking: (profile as { ranking?: string[] } | null)?.ranking,
             responses,
             challenge: challengeState,
+            stage: lifeStage,
           })
         : buildPurposeCard({ responses, challenge: challengeState, stage: lifeStage });
   }

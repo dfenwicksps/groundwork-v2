@@ -107,7 +107,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   "contribution-map": {
     stems: [
       ["One of my strengths that could be useful here is", "Even in a small way, I could", "Where that strength already shows up is"],
-      ["The value that feels most alive here is", "It connects because", "When I think about this cause I feel"],
+      ["The value that feels most alive here is", "It connects because", "When I think about it I feel"],
       ["Something only I could bring is", "My particular combination means", "Most people wouldn't"],
       ["A tiny version would be", "I could start this week by", "It would take about"],
     ],
