@@ -44,6 +44,7 @@ import {
   ADULT_M3,
   MISSION3_DESCRIPTIONS,
 } from "./stageContentMission3";
+import { JUNIOR_M4, SENIOR_M4, LEFT_SCHOOL_M4, MISSION4_DESCRIPTIONS } from "./stageContentMission4";
 
 /** Lines replaced for one life stage, by activity id. */
 export interface StageLines {
@@ -164,13 +165,13 @@ export function activityForStage(activity: Activity, stage: LifeStage): Activity
   // the stage's own lines. Middle (Year 10–11) reads missions.ts as written.
   const layers: (StageLines | undefined)[] =
     stage === "leaver"
-      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], LEAVER_M1[id], LEAVER_M2[id], LEAVER_M3[id]]
+      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], LEFT_SCHOOL_M4[id], LEAVER_M1[id], LEAVER_M2[id], LEAVER_M3[id]]
       : stage === "adult"
-        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], ADULT_M1[id], ADULT_M2[id], ADULT_M3[id]]
+        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], LEFT_SCHOOL_M4[id], ADULT_M1[id], ADULT_M2[id], ADULT_M3[id]]
         : stage === "junior"
-          ? [JUNIOR[id], JUNIOR_M1[id], JUNIOR_M2[id], JUNIOR_M3[id]]
+          ? [JUNIOR[id], JUNIOR_M1[id], JUNIOR_M2[id], JUNIOR_M3[id], JUNIOR_M4[id]]
           : stage === "senior"
-            ? [SENIOR_M1[id], SENIOR_M2[id], SENIOR_M3[id]]
+            ? [SENIOR_M1[id], SENIOR_M2[id], SENIOR_M3[id], SENIOR_M4[id]]
             : [];
   let a = layers.reduce<Activity>((acc, lines) => withLines(acc, lines), activity);
 
@@ -183,8 +184,8 @@ export function activityForStage(activity: Activity, stage: LifeStage): Activity
       scaffoldingSteps: a.scaffoldingSteps?.map((s) => atAge(s, age)!),
       whyItMatters: atAge(a.whyItMatters, age),
     };
-  } else if (a.id === "where-ive-come-from") {
-    // Its wrap-up hands over to the Future Self by name.
+  } else if (a.id === "digital-self") {
+    // The step before the Future Self; its wrap-up hands over by name, age included.
     a = { ...a, wrapUp: atAge(a.wrapUp, age) };
   }
   return a;
@@ -226,7 +227,9 @@ export function missionForStage(mission: Mission, stage: LifeStage): Mission {
         ? MISSION2_DESCRIPTIONS[stage]
         : mission.id === 3
           ? MISSION3_DESCRIPTIONS[stage]
-          : MISSION_DESCRIPTIONS[stage]?.[mission.id]) ??
+          : mission.id === 4
+            ? MISSION4_DESCRIPTIONS[stage]
+            : MISSION_DESCRIPTIONS[stage]?.[mission.id]) ??
       mission.description,
     activities: mission.activities
       .filter((a) => !hiddenForStage(a.id, stage))

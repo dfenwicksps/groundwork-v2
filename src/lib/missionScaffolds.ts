@@ -239,12 +239,12 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   "digital-self": {
     stems: [
       ["Where I spend most time online is", "How I show up there is", "It's different from real life because"],
-      ["My feed mostly reflects", "It says I'm interested in", "That's accurate — or isn't — because"],
+      ["What gets recommended to me mostly reflects", "It says I'm interested in", "That's accurate — or isn't — because"],
       ["Something I've said online I wouldn't say in person is", "What made that possible was", "Looking back I feel"],
       ["The most real version of me online is", "The most performed one is", "I perform it for"],
     ],
     stuck: [
-      ["Pick one platform, not all of them.", "Are you louder or quieter online than off?"],
+      ["Pick one place: a group chat, a game, an app.", "Are you louder or quieter online than off?"],
       ["Actually open it and scroll. What's the first thing you see?", "Is it who you are, or who you were six months ago?"],
       ["Distance and anonymity make things easier to say. Which was it?", "It doesn't have to be something bad."],
       ["Who is the audience for the performed version?", "Which version would you be happiest for a parent to scroll through?"],
@@ -258,9 +258,9 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["The thread is", "What's true in all three is", "Underneath all of it, I'm someone who"],
     ],
     stuck: [
-      ["Check your strengths and values on the Me page.", "What surprised you most back then?"],
-      ["Honest, not impressive.", "What would you still do if nobody ever knew?"],
-      ["What kind of people, not which people.", "What does belonging require, for you?"],
+      ["Your Who I Am card is above.", "What surprised you most back then?"],
+      ["Your Purpose card is above. Honest, not impressive.", "What would you still do if nobody ever knew?"],
+      ["Your Connection card is above. What kind of people, not which people.", "What does belonging require, for you?"],
       ["One sentence. If it needs a paragraph, it isn't the thread yet.", "Where it leads is the next step's job \u2014 this one is just what's true."],
     ],
   },
@@ -300,6 +300,22 @@ const JUNIOR_EXPLORE: ActivityScaffold = {
   ],
 };
 
+/** Year 7–9's version of the Mission 4 letter (stageContentMission4.ts). */
+const JUNIOR_LETTER: ActivityScaffold = {
+  stems: [
+    ["I want more", "Over the next few years I'd like to", "The direction I want to head in is"],
+    ["I might need to do less", "To head that way I'd skip", "Something that gets in the way is"],
+    ["I want to keep close", "The people I want around are", "Someone I don't want to drift from is"],
+    ["It matters because", "When I forget, remember", "I'm into it because"],
+  ],
+  stuck: [
+    ["Think 'more of', not 'a job'.", "It can change later. That's fine."],
+    ["Less, not none.", "What eats your time without giving much back?"],
+    ["Name one person if you can.", "Friends, family, a coach, a team."],
+    ["'It makes me happy' is a real reason.", "Write it for a day you feel stuck."],
+  ],
+};
+
 export function scaffoldForStep(
   activityId: string,
   stepIndex: number,
@@ -307,7 +323,11 @@ export function scaffoldForStep(
   stage?: LifeStage
 ): Scaffold {
   const s =
-    stage === "junior" && activityId === "commitment-statement" ? JUNIOR_EXPLORE : MISSION_SCAFFOLDS[activityId];
+    stage === "junior" && activityId === "commitment-statement"
+      ? JUNIOR_EXPLORE
+      : stage === "junior" && activityId === "meaning-letter"
+        ? JUNIOR_LETTER
+        : MISSION_SCAFFOLDS[activityId];
   // The Future Self's age moves with the student; its hints name that age.
   const line = (t: string) =>
     stage && activityId === "future-self" ? futureSelfLine(t, stage) : t;
