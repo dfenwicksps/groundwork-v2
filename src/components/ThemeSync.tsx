@@ -2,19 +2,12 @@
 
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase";
-import {
-  THEME_SYNCED_KEY,
-  applyTheme,
-  getStoredTheme,
-  parseTheme,
-  saveTheme,
-} from "@/lib/theme";
+import { THEME_SYNCED_KEY, markThemeSynced, parseTheme, reconcileTheme } from "@/lib/theme";
 
 /**
  * Brings this browser's copy of the look into line with the account, once per
- * visit (lib/theme.ts). On a new device that means picking up the look chosen
- * elsewhere. A browser-only choice, made before the look lived on the account,
- * is copied up to it instead.
+ * visit (reconcileTheme in lib/theme.ts). On a new device that means picking up
+ * the look chosen elsewhere.
  *
  * A read error (signed out, offline, the column not yet added) leaves the
  * browser copy in charge and tries again on the next page.
@@ -42,18 +35,8 @@ export default function ThemeSync() {
         .maybeSingle();
       if (error || cancelled) return;
 
-      const fromAccount = parseTheme(data?.theme);
-      const local = getStoredTheme();
-      if (fromAccount) {
-        if (fromAccount !== local) applyTheme(fromAccount);
-      } else if (local) {
-        if (!(await saveTheme(db, userId, local))) return;
-      }
-      try {
-        sessionStorage.setItem(THEME_SYNCED_KEY, "1");
-      } catch {
-        // ignore
-      }
+      await reconcileTheme(db, userId, parseTheme(data?.theme));
+      markThemeSynced();
     })();
 
     return () => {

@@ -1,39 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";
 import DeviceLock from "@/components/DeviceLock";
 import { LOCK_BOOT_SCRIPT } from "@/lib/deviceLock";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
-// Self-hosted via next/font: no render-blocking Google CSS request, no flash
-// of unstyled text. The families are exposed as CSS variables that
-// globals.css maps onto --font-display / --font-story / --font-sans.
+// Fonts come straight from Google Fonts. globals.css names the families
+// directly (--font-display / --font-story / --font-sans), so if this sheet is
+// slow or blocked the page falls back to system fonts, never to the browser's
+// default serif.
 //
 // Headings are Bricolage Grotesque. Only 600 and 800 are loaded, so the many
 // headings that ask for weight 400 get 600 — bold enough to carry a screen on
 // a phone. Fraunces stays as the story voice: story titles and italic lines.
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["600", "800"],
-  variable: "--font-bricolage",
-  display: "swap",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
+const GOOGLE_FONTS_HREF =
+  "https://fonts.googleapis.com/css2" +
+  "?family=Bricolage+Grotesque:wght@600;800" +
+  "&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600" +
+  "&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600" +
+  "&display=swap";
 
 export const metadata: Metadata = {
   title: "Groundwork — Figure out who you are",
@@ -63,9 +47,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bricolage.variable} ${fraunces.variable} ${dmSans.variable}`}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- app router root layout: applies to every page */}
+        <link rel="stylesheet" href={GOOGLE_FONTS_HREF} />
         {/* Sets the chosen look (light / dark / bold) before first paint, so
             the page never flashes the wrong colours (lib/theme.ts). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />

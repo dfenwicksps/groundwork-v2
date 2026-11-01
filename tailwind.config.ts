@@ -54,9 +54,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-bricolage)", "system-ui", "sans-serif"],
-        story: ["var(--font-fraunces)", "Georgia", "serif"],
+        // The stacks live in globals.css (--font-*), loaded from Google Fonts.
+        sans: ["var(--font-sans)"],
+        display: ["var(--font-display)"],
+        story: ["var(--font-story)"],
         mono: ["ui-monospace", "monospace"],
       },
       spacing: {
