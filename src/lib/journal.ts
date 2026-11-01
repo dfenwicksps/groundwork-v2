@@ -81,6 +81,21 @@ export function splitScaffoldedResponse(
  * step asks for the thread in a single sentence — so a summary wants that step
  * rather than the whole entry.
  */
+/**
+ * Whether an entry was written under questions that have since been replaced
+ * with different ones (Activity.retiredQuestions). Entries save each question
+ * above its answer, so the first one identifies the version. Such an entry
+ * stays in the Journal as written, but its answers don't belong under the new
+ * questions: the step starts fresh, and cards don't read it.
+ */
+export function isRetiredEntry(
+  response: string | null | undefined,
+  retiredQuestions: string[] | undefined
+): boolean {
+  if (!response || !retiredQuestions?.length) return false;
+  return retiredQuestions.some((q) => response.includes(`1. ${q}`));
+}
+
 export function answerAt(
   missionId: number,
   activityId: string,

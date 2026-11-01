@@ -12,7 +12,7 @@
 // optional Parts of Who You Are: a card is something a student may show or
 // screenshot, so it only carries things they'd say out loud.
 
-import { answerAt, clarifierValues, LEFT_OUT_ANSWER } from "./journal";
+import { answerAt, clarifierValues, isRetiredEntry, LEFT_OUT_ANSWER } from "./journal";
 import { strengthName, topStrengths } from "./strengths";
 import { getActivity } from "./missions";
 import { activityForStage } from "./stageContent";
@@ -33,6 +33,11 @@ export interface IdentityPiece {
    * allows on some). A left-out piece still counts towards a finished card.
    */
   done: boolean;
+  /**
+   * The step was done under questions it has since replaced, so its old
+   * answer isn't shown here (Activity.retiredQuestions); redoing it fills this.
+   */
+  stale?: boolean;
 }
 
 /** Whether a piece counts towards a finished card. */
@@ -76,12 +81,33 @@ function said(
   return a === LEFT_OUT_ANSWER ? "" : a;
 }
 
+/**
+ * The entries a card may read: anything written under questions the step has
+ * since replaced is left out, and its activity id is returned as stale.
+ */
+function liveResponses(
+  responses: Record<string, string | null | undefined>,
+  missionId: number,
+  stage: LifeStage | undefined
+): { live: Record<string, string | null | undefined>; stale: Set<string> } {
+  const live: Record<string, string | null | undefined> = {};
+  const stale = new Set<string>();
+  for (const [id, response] of Object.entries(responses)) {
+    const base = getActivity(missionId, id);
+    const activity = base && stage ? activityForStage(base, stage) : base;
+    if (isRetiredEntry(response, activity?.retiredQuestions)) stale.add(id);
+    else live[id] = response;
+  }
+  return { live, stale };
+}
+
 /** A challenge's check-in can say it didn't happen, so the card never claims it did. */
 function challengeText(c: { accepted: boolean; debriefed: boolean }, accepted: string): string {
   return c.debriefed ? "Checked in afterwards on how it went" : c.accepted ? accepted : "";
 }
 
-export function buildIdentityCard({ ranking, responses, challenge, stage }: Sources): IdentityCard {
+export function buildIdentityCard({ ranking, responses: all, challenge, stage }: Sources): IdentityCard {
+  const { live: responses } = liveResponses(all, 1, stage);
   const pieces: IdentityPiece[] = [
     {
       key: "chapter",
@@ -177,7 +203,7 @@ export const PURPOSE_CARD_SOURCES = [
 ];
 
 export function buildPurposeCard({
-  responses,
+  responses: all,
   challenge,
   stage,
 }: {
@@ -185,6 +211,7 @@ export function buildPurposeCard({
   challenge: { accepted: boolean; debriefed: boolean };
   stage: LifeStage;
 }): IdentityCard {
+  const { live: responses, stale } = liveResponses(all, 2, stage);
   const explore = stage === "junior"; // Year 7–9 explore rather than commit
   const piece = (key: string, label: string, activityId: string, stepTitle: string, index: number): IdentityPiece => ({
     key,
@@ -194,6 +221,7 @@ export function buildPurposeCard({
     text: said(activityId, responses[activityId], index, 2, stage),
     chips: [],
     done: !!responses[activityId],
+    stale: stale.has(activityId),
   });
   const pieces: IdentityPiece[] = [
     piece("cares", "What pulls at me", "what-matters", "What Matters", 0),
@@ -239,7 +267,7 @@ export const CONNECTION_CARD_SOURCES = [
 ];
 
 export function buildConnectionCard({
-  responses,
+  responses: all,
   challenge,
   stage,
 }: {
@@ -247,6 +275,7 @@ export function buildConnectionCard({
   challenge: { accepted: boolean; debriefed: boolean };
   stage: LifeStage;
 }): IdentityCard {
+  const { live: responses, stale } = liveResponses(all, 3, stage);
   const piece = (key: string, label: string, activityId: string, stepTitle: string, index: number): IdentityPiece => ({
     key,
     label,
@@ -255,6 +284,7 @@ export function buildConnectionCard({
     text: said(activityId, responses[activityId], index, 3, stage),
     chips: [],
     done: !!responses[activityId],
+    stale: stale.has(activityId),
   });
   const pieces: IdentityPiece[] = [
     piece("belong", "Where I belong", "belonging", "Where You Belong", 0),
@@ -299,7 +329,7 @@ export const DIRECTION_CARD_SOURCES = [
 ];
 
 export function buildDirectionCard({
-  responses,
+  responses: all,
   challenge,
   stage,
 }: {
@@ -307,6 +337,7 @@ export function buildDirectionCard({
   challenge: { accepted: boolean; debriefed: boolean };
   stage: LifeStage;
 }): IdentityCard {
+  const { live: responses, stale } = liveResponses(all, 4, stage);
   const piece = (key: string, label: string, activityId: string, stepTitle: string, index: number): IdentityPiece => ({
     key,
     label,
@@ -315,6 +346,7 @@ export function buildDirectionCard({
     text: said(activityId, responses[activityId], index, 4, stage),
     chips: [],
     done: !!responses[activityId],
+    stale: stale.has(activityId),
   });
   const pieces: IdentityPiece[] = [
     piece("kept", "Something I'm keeping, my way", "where-ive-come-from", "Where You've Come From", 3),
