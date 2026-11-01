@@ -2252,6 +2252,7 @@ function ChallengeActivity({
   existingChallenge,
   isCompleted,
   compass,
+  recalled,
   onComplete,
 }: {
   mission: Mission;
@@ -2260,6 +2261,8 @@ function ChallengeActivity({
   existingChallenge: Challenge | null;
   isCompleted: boolean;
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
+  /** An earlier answer the challenge starts from (Mission 2: the tiny step from Step 2) */
+  recalled?: { label: string; text: string } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
@@ -2344,6 +2347,7 @@ function ChallengeActivity({
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         {header}
         <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+          {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
           <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "var(--gold)" }}>
             <p className="text-xs font-semibold text-[--gold-text] mb-2 uppercase tracking-wide">Check in</p>
             <p className="text-[--ink] text-sm leading-relaxed">{existingChallenge?.challenge_text}</p>
@@ -2413,6 +2417,11 @@ function ChallengeActivity({
           <h2 className="text-xl text-[--navy] mb-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             Challenge accepted.
           </h2>
+          {recalled && (
+            <div className="text-left">
+              <RecallCard recalled={recalled} accent={mission.colour} />
+            </div>
+          )}
           <div className="card p-5 mb-5 text-left">
             <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">{activity.prompt}</p>
           </div>
@@ -2455,6 +2464,7 @@ function ChallengeActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
       <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+        {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
         <div
           className="rounded-2xl p-6 mb-6 text-center"
           style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
@@ -3134,6 +3144,7 @@ export default function ActivityClient({
         existingChallenge={existingChallenge}
         isCompleted={completed}
         compass={compass}
+        recalled={recalled}
         onComplete={handleComplete}
       />
     );

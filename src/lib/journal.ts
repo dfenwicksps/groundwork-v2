@@ -85,10 +85,16 @@ export function answerAt(
   missionId: number,
   activityId: string,
   response: string | null | undefined,
-  index: number
+  index: number,
+  /**
+   * The questions as this student saw them, when a stage rewords them
+   * (lib/stageContent.ts). Entries saved under other wording still parse:
+   * splitScaffoldedResponse falls back to the question number.
+   */
+  questions?: string[]
 ): string {
   if (!response?.trim()) return "";
-  const steps = getActivity(missionId, activityId)?.scaffoldingSteps;
+  const steps = questions?.length ? questions : getActivity(missionId, activityId)?.scaffoldingSteps;
   if (!steps?.length) return index === 0 ? response.trim() : "";
   return splitScaffoldedResponse(response, steps)[index]?.trim() ?? "";
 }

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import JournalClient from "./JournalClient";
 
 export const dynamic = 'force-dynamic';
@@ -15,5 +16,5 @@ export default async function JournalPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  return <JournalClient entries={entries || []} />;
+  return <JournalClient entries={entries || []} lifeStage={await getLifeStage(supabase, user.id)} />;
 }

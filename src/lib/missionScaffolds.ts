@@ -92,13 +92,13 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   // ── Mission 2 · Purpose ────────────────────────────────────────────────────
   "what-matters": {
     stems: [
-      ["Something that genuinely bothers me is", "It bothers me because", "I notice I react whenever"],
+      ["Something that genuinely bothers me is", "I lose track of time when I'm", "I notice I react whenever"],
       ["Someone I admire is", "What pulls me towards them is", "What they do that I'd want to do is"],
       ["The impact I'd want to have is", "Even a small version would be", "It would feel meaningful because"],
       ["What these have in common is", "That suggests I'm oriented towards", "The thread running through them is"],
     ],
     stuck: [
-      ["What makes you angry when you see it? That's the clue.", "Local counts — it doesn't have to be a global cause."],
+      ["What makes you angry when you see it? Or what would you do for free? Either is a clue.", "Local counts, and so does a hobby. It doesn't have to be a global cause."],
       ["Could be a teacher, a relative, an athlete, someone historical.", "It's the quality you admire that matters, not how famous they are."],
       ["Small is fine — meaningful isn't the same as large.", "Who specifically would be better off?"],
       ["Look for the repeated word or feeling across your three answers.", "If they seem unrelated, what's the need underneath all of them?"],
@@ -107,7 +107,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   "contribution-map": {
     stems: [
       ["One of my strengths that could be useful here is", "Even in a small way, I could", "Where that strength already shows up is"],
-      ["The value that feels most alive here is", "It connects because", "When I think about this cause I feel"],
+      ["The value that feels most alive here is", "It connects because", "When I think about it I feel"],
       ["Something only I could bring is", "My particular combination means", "Most people wouldn't"],
       ["A tiny version would be", "I could start this week by", "It would take about"],
     ],
@@ -284,13 +284,30 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
  * The scaffold for one step of an activity. `quick` comes from the activity's
  * own starterOptions, which are authored alongside the questions in missions.ts.
  */
+/** Year 7–9's "What I Want to Explore" (stageContentMission2.ts): starters for exploring, not committing. */
+const JUNIOR_EXPLORE: ActivityScaffold = {
+  stems: [
+    ["I want to find out more about", "The part I'm most curious about is", "I'd like to try"],
+    ["I'm curious about it because I'm", "My value of ___ is part of it because", "It fits me because"],
+    ["This year I could", "Someone I could ask is", "One thing I could try is"],
+    ["It matters to me right now because", "I'm into it because", "I keep thinking about it because"],
+  ],
+  stuck: [
+    ["It can be small: a skill, a hobby, a question you keep wondering about.", "You can change it later. That's what exploring means."],
+    ["Check your Me page for your strengths and values.", "Curious, creative and kind all count."],
+    ["A club, a video, a question to a teacher or family member.", "Something you could do before the end of term."],
+    ["'It's fun' is a real reason.", "Has it been on your mind for a while?"],
+  ],
+};
+
 export function scaffoldForStep(
   activityId: string,
   stepIndex: number,
   starterOptions?: string[][],
   stage?: LifeStage
 ): Scaffold {
-  const s = MISSION_SCAFFOLDS[activityId];
+  const s =
+    stage === "junior" && activityId === "commitment-statement" ? JUNIOR_EXPLORE : MISSION_SCAFFOLDS[activityId];
   // The Future Self's age moves with the student; its hints name that age.
   const line = (t: string) =>
     stage && activityId === "future-self" ? futureSelfLine(t, stage) : t;

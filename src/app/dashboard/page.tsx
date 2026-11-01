@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
+import { activityForStage } from "@/lib/stageContent";
 import { resolvePhaseState } from "@/lib/phaseServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
@@ -229,6 +230,10 @@ export default async function DashboardPage() {
   // Which track leads is a function of life stage, not of what happens to be
   // furthest along. See src/lib/spine.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
+  // "Up next" names the step the way this student will see it (lib/stageContent.ts).
+  if (nextMissionStep && nextActivity) {
+    nextMissionStep.activityTitle = activityForStage(nextActivity, lifeStage).title;
+  }
   // Global journey phase (lib/phase.ts); resolves + persists any newly earned.
   const { phase, reviewed: reviewedAnchors } = await resolvePhaseState(supabase, user.id);
 
