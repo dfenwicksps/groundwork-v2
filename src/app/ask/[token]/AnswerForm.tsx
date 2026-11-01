@@ -54,7 +54,9 @@ export default function AnswerForm({
         ? "Someone has already answered this link, so these answers couldn't be added."
         : data === "expired"
           ? `This link has expired. Ask ${fromName} for a new one.`
-          : "Something about the answers couldn't be saved. Try shortening any very long answers."
+          : data === "not_found"
+            ? `This link has been cancelled, so your answers couldn't be saved. Ask ${fromName} for a new one. Copy anything you've written first so you don't have to type it again.`
+            : "Something about the answers couldn't be saved. Try shortening any very long answers."
     );
   }
 

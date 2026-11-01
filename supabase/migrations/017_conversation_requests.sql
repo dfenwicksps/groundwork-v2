@@ -112,16 +112,16 @@ begin
       return 'invalid';
     end if;
   end loop;
-  -- At least one real answer.
+  -- At least one real answer: something other than spaces, tabs or newlines.
   if not exists (
-    select 1 from jsonb_array_elements_text(p_answers) t where char_length(trim(t)) > 0
+    select 1 from jsonb_array_elements_text(p_answers) t where t ~ '\S'
   ) then
     return 'invalid';
   end if;
 
   update public.conversation_requests
      set answers = p_answers,
-         responder_name = nullif(trim(p_responder), ''),
+         responder_name = nullif(btrim(p_responder, E' \t\r\n'), ''),
          answered_at = now()
    where id = r.id;
   return 'ok';

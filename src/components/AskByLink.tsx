@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { mentionsCrisis } from "@/lib/help";
+import { LOCKED_CLASS } from "@/lib/deviceLock";
 import {
   ASK_LINK_DAYS,
   MAX_OPEN_LINKS,
@@ -62,19 +63,49 @@ export default function AskByLink({
       setReady(true);
       return;
     }
-    const rows = (data ?? []) as ConversationRequest[];
-    setRequests(rows);
+    setRequests((data ?? []) as ConversationRequest[]);
     setReady(true);
-    // Answers on screen count as seen, which clears the note on Home.
-    const unseen = rows.filter((r) => r.answered_at && !r.seen_at).map((r) => r.id);
-    if (unseen.length) {
-      await db.from("conversation_requests").update({ seen_at: new Date().toISOString() }).in("id", unseen);
-    }
   }, [db, activityId]);
 
+  // Answers arrive while the student is elsewhere, often in the app they sent
+  // the link from. Check again whenever they come back to this tab.
   useEffect(() => {
     load();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+    };
   }, [load]);
+
+  // Answers count as read, clearing the note on Home, only once they're on a
+  // screen the student can see: not behind the device passcode (lib/deviceLock).
+  useEffect(() => {
+    const unseen = requests.filter((r) => r.answered_at && !r.seen_at).map((r) => r.id);
+    if (!unseen.length) return;
+    const root = document.documentElement;
+    let done = false;
+    async function markSeen() {
+      if (done || root.classList.contains(LOCKED_CLASS) || document.visibilityState !== "visible") return;
+      done = true;
+      const now = new Date().toISOString();
+      const { error: err } = await db.from("conversation_requests").update({ seen_at: now }).in("id", unseen);
+      if (!err) setRequests((rs) => rs.map((r) => (unseen.includes(r.id) ? { ...r, seen_at: now } : r)));
+    }
+    markSeen();
+    const watch = new MutationObserver(markSeen);
+    watch.observe(root, { attributes: true, attributeFilter: ["class"] });
+    document.addEventListener("visibilitychange", markSeen);
+    return () => {
+      done = true;
+      watch.disconnect();
+      document.removeEventListener("visibilitychange", markSeen);
+    };
+  }, [db, requests]);
 
   // The name the student goes by, as a starting point for how they sign the link.
   useEffect(() => {
@@ -182,7 +213,10 @@ export default function AskByLink({
                 {state === "answered" && <Answers r={r} />}
                 {state === "waiting" && (
                   <p className="text-xs text-[--ink-muted] leading-relaxed">
-                    Sent {shortDate(r.created_at)}. The link works until {shortDate(r.expires_at)}.
+                    Sent {shortDate(r.created_at)}. The link works until {shortDate(r.expires_at)}.{" "}
+                    <button type="button" onClick={load} className="font-semibold text-[--teal]">
+                      Check for answers
+                    </button>
                   </p>
                 )}
                 {state === "expired" && (
