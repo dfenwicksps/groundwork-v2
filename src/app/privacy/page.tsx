@@ -61,6 +61,18 @@ export default function PrivacyPage() {
             store the name and relationship you typed. That is all — we never ask
             for their contact details, and we never contact them.
           </li>
+          <li>
+            <strong>Answers from someone you asked.</strong> In the conversation
+            steps you can send someone a private link to a few questions. We
+            store who you said it was for (like &ldquo;Grandma&rdquo;), the
+            name you signed it with, and their answers and the name they sign
+            with. You send the link yourself: we never ask for their email or
+            phone number, and we never contact them. The person sees only your
+            name and the questions. Each link works once and stops working
+            after 30 days, and you can delete their answers whenever you like.
+            Their answers are never sent to the AI. If you quote them in your
+            own write-up, that write-up is treated like the rest of your writing.
+          </li>
         </ul>
         <p>
           We do not ask for your date of birth, your school, your address, your

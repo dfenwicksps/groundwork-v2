@@ -69,6 +69,8 @@ interface Props {
   nextChapter: { who: string; due: boolean } | null;
   /** The outcome check-in: null when it isn't available yet */
   checkin: { startAt: string | null; endDone: boolean } | null;
+  /** Answers that came back by link and haven't been read (lib/askLink.ts) */
+  newAnswers: { missionId: number; activityId: string; who: string; count: number } | null;
 }
 
 /** Home's "Also now" shows at most this many, so it never outweighs "Up next". */
@@ -122,6 +124,7 @@ export default function DashboardClient({
   missionSummary,
   nextChapter,
   checkin,
+  newAnswers,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -190,6 +193,21 @@ export default function DashboardClient({
   // turn: the challenge, conversation and plan are still there when the first
   // two are dealt with, and a revisit keeps.
   const alsoNow: { key: string; href: string; icon: string; title: string; sub: string }[] = [];
+
+  // 0. Someone answered the questions a student sent them. It's the reply to
+  // something they did, and it's what they'll most want to see.
+  if (newAnswers) {
+    alsoNow.push({
+      key: "answers",
+      href: `/missions/${newAnswers.missionId}/activities/${newAnswers.activityId}`,
+      icon: "💬",
+      title:
+        newAnswers.count > 1
+          ? `${truncate(newAnswers.who, 30)} and ${newAnswers.count - 1} more answered your questions`
+          : `${truncate(newAnswers.who, 40)} answered your questions`,
+      sub: "Read what they said, then write it up.",
+    });
+  }
 
   // 1. A planned conversation that's happened: what they found out fades fast.
   if (nextChapter?.due) {
