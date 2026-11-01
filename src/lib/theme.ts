@@ -36,7 +36,11 @@ export const THEME_BAR: Record<Theme, string> = {
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */
 export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}window.__gwApplyTheme=s;s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
 
-type ThemeWindow = Window & { __gwTheme?: Theme; __gwApplyTheme?: () => void };
+type ThemeWindow = Window & {
+  __gwTheme?: Theme;
+  __gwThemeOwner?: string;
+  __gwApplyTheme?: () => void;
+};
 
 export function parseTheme(v: unknown): Theme | null {
   return typeof v === "string" && (THEMES as string[]).includes(v) ? (v as Theme) : null;
@@ -58,12 +62,22 @@ export function getActiveTheme(): Theme {
   return parseTheme(document.documentElement.getAttribute("data-theme")) ?? "light";
 }
 
-/** Whose look this browser holds a copy of, if anyone's. */
-function getThemeOwner(): string | null {
+/**
+ * This browser's copy and whose it is, read together from the same place
+ * (this tab's memory if it has a copy, else localStorage), so a look from
+ * one is never paired with an owner from the other.
+ */
+function getStoredCopy(): { theme: Theme | null; owner: string | null } {
+  const w = window as ThemeWindow;
+  const mem = parseTheme(w.__gwTheme);
+  if (mem) return { theme: mem, owner: w.__gwThemeOwner ?? null };
   try {
-    return localStorage.getItem(THEME_OWNER_KEY);
+    return {
+      theme: parseTheme(localStorage.getItem(THEME_KEY)),
+      owner: localStorage.getItem(THEME_OWNER_KEY),
+    };
   } catch {
-    return null;
+    return { theme: null, owner: null };
   }
 }
 
@@ -78,6 +92,8 @@ export function applyTheme(theme: Theme | null, owner?: string): void {
   // script's phone-setting listener undo an explicit choice.
   if (theme) w.__gwTheme = theme;
   else delete w.__gwTheme;
+  if (theme && owner) w.__gwThemeOwner = owner;
+  else delete w.__gwThemeOwner;
   try {
     if (theme) localStorage.setItem(THEME_KEY, theme);
     else localStorage.removeItem(THEME_KEY);
@@ -103,36 +119,39 @@ export async function saveTheme(db: any, userId: string, theme: Theme): Promise<
 }
 
 /**
- * Bring this browser's copy into line with the account, and return the look
- * the student has chosen (null: following the phone).
+ * Bring this browser's copy into line with the account. Returns the look the
+ * student has chosen (null: following the phone), and whether the copy and
+ * the account now agree; only then should the tab be marked synced.
  *
  * - The account has a look: it wins, on this device too.
  * - The account has none, and the copy is this student's (a pick whose save
  *   failed, say before migration 018 was run): it's saved to the account now.
+ *   If that save fails, the copy is kept and `synced` is false, so the next
+ *   page tries again.
  * - The account has none, and the copy is someone else's or nobody's: it's
  *   dropped, so it can't land on this student's account.
  *
- * `fromAccount` is users.theme, already read by the caller.
+ * `fromAccount` must come from a successful read of users.theme: a failed
+ * read is not "no look", and treating it so could overwrite a real one.
  */
 export async function reconcileTheme(
   db: any,
   userId: string,
   fromAccount: Theme | null
-): Promise<Theme | null> {
+): Promise<{ theme: Theme | null; synced: boolean }> {
+  const copy = getStoredCopy();
   if (fromAccount) {
-    if (fromAccount !== getStoredTheme() || getThemeOwner() !== userId) {
+    if (fromAccount !== copy.theme || copy.owner !== userId) {
       applyTheme(fromAccount, userId);
     }
-    return fromAccount;
+    return { theme: fromAccount, synced: true };
   }
-  const local = getStoredTheme();
-  if (!local) return null;
-  if (getThemeOwner() === userId) {
-    await saveTheme(db, userId, local);
-    return local;
+  if (!copy.theme) return { theme: null, synced: true };
+  if (copy.owner === userId) {
+    return { theme: copy.theme, synced: await saveTheme(db, userId, copy.theme) };
   }
   applyTheme(null);
-  return null;
+  return { theme: null, synced: true };
 }
 
 /** Mark this tab's copy as checked against the account. */

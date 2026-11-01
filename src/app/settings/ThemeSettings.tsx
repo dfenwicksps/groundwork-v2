@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import {
   applyTheme,
   getActiveTheme,
+  getStoredTheme,
   markThemeSynced,
   reconcileTheme,
   saveTheme,
@@ -65,17 +66,23 @@ export default function ThemeSettings({
   db,
   userId,
   initialTheme,
+  themeRead,
 }: {
   db: any;
   userId: string;
   /** The account's look (users.theme); null while following the phone. */
   initialTheme: Theme | null;
+  /** False if the server's read of the account failed: initialTheme is then unknown. */
+  themeRead: boolean;
 }) {
   // What's on screen is read after mount: following the phone is decided in
   // the browser, not on the server.
   const [active, setActive] = useState<Theme | null>(initialTheme);
   const [picked, setPicked] = useState(initialTheme !== null);
   const [saved, setSaved] = useState<"idle" | "saved" | "failed">("idle");
+  // Picks wait until the check below has finished, so a save it makes can't
+  // land after (and overwrite) a newer pick.
+  const [ready, setReady] = useState(false);
   // The parent makes a new client each render; the check below runs once.
   const dbRef = useRef(db);
   dbRef.current = db;
@@ -89,19 +96,28 @@ export default function ThemeSettings({
     // already has: so a look this student picked before it could be saved is
     // shown as picked and saved now, even when Settings is the first page.
     (async () => {
-      const current = await reconcileTheme(dbRef.current, userId, initialTheme);
-      markThemeSynced();
+      let current: Theme | null;
+      if (themeRead) {
+        const result = await reconcileTheme(dbRef.current, userId, initialTheme);
+        if (result.synced) markThemeSynced();
+        current = result.theme;
+      } else {
+        // Account unknown: leave the copy as it is; ThemeSync retries the read.
+        current = getStoredTheme();
+      }
       if (cancelled) return;
       setPicked(current !== null);
       setActive(getActiveTheme());
+      setReady(true);
     })();
     return () => {
       cancelled = true;
       obs.disconnect();
     };
-  }, [userId, initialTheme]);
+  }, [userId, initialTheme, themeRead]);
 
   async function choose(t: Theme) {
+    if (!ready) return;
     applyTheme(t, userId);
     setActive(t);
     setPicked(true);
@@ -124,6 +140,7 @@ export default function ThemeSettings({
             key={o.key}
             type="button"
             aria-pressed={active === o.key}
+            disabled={!ready}
             onClick={() => choose(o.key)}
             className={cn(
               "p-2 rounded-xl border text-left transition-all",

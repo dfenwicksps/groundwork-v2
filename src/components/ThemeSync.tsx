@@ -35,8 +35,8 @@ export default function ThemeSync() {
         .maybeSingle();
       if (error || cancelled) return;
 
-      await reconcileTheme(db, userId, parseTheme(data?.theme));
-      markThemeSynced();
+      const { synced } = await reconcileTheme(db, userId, parseTheme(data?.theme));
+      if (synced) markThemeSynced();
     })();
 
     return () => {
