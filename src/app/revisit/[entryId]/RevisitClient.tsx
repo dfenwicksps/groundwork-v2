@@ -1,5 +1,6 @@
 "use client";
 
+import type { LifeStage } from "@/lib/lifeStage";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,10 +33,12 @@ export default function RevisitClient({
   chain,
   userId,
   ready,
+  lifeStage,
 }: {
   chain: RevisitChain;
   userId: string;
   ready: boolean;
+  lifeStage?: LifeStage;
 }) {
   const db = createClient() as any;
   const router = useRouter();
@@ -48,7 +51,7 @@ export default function RevisitClient({
 
   const { original, revisits } = chain;
   const mission = MISSIONS.find((m) => m.id === original.mission_id);
-  const activityLabel = getActivityLabel(original.activity_id);
+  const activityLabel = getActivityLabel(original.activity_id, lifeStage);
   const accent = mission?.colour || "var(--navy)";
 
   const eligibility = revisitEligibility(chain);

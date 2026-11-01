@@ -311,7 +311,7 @@ export default function DashboardClient({
       key: "revisit",
       href: `/revisit/${revisitEntry.id}`,
       icon: "↩",
-      title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
+      title: `Look back at ${getActivityLabel(revisitEntry.activity_id, lifeStage)}`,
       sub: isStoryActivity(revisitEntry.activity_id)
         ? `Written ${formatRelativeDate(revisitEntry.created_at)}. What would you add to your story now?`
         : `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,

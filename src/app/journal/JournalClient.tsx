@@ -1,5 +1,6 @@
 "use client";
 
+import type { LifeStage } from "@/lib/lifeStage";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -21,7 +22,14 @@ import {
   type RevisitEntry,
 } from "@/lib/revisit";
 
-export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
+export default function JournalClient({
+  entries,
+  lifeStage,
+}: {
+  entries: JournalEntry[];
+  /** Labels steps the way this student saw them (lib/stageContent.ts) */
+  lifeStage?: LifeStage;
+}) {
   const [filter, setFilter] = useState<EntryGroup | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -58,10 +66,10 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
         // A sensitive entry is found by its name, never by what's written in
         // it, so a search can't surface those words on screen.
         isSensitiveActivity(e.activity_id)
-          ? getActivityLabel(e.activity_id).toLowerCase().includes(q)
+          ? getActivityLabel(e.activity_id, lifeStage).toLowerCase().includes(q)
           : e.response.toLowerCase().includes(q) ||
             e.prompt.toLowerCase().includes(q) ||
-            getActivityLabel(e.activity_id).toLowerCase().includes(q)
+            getActivityLabel(e.activity_id, lifeStage).toLowerCase().includes(q)
       )
     : byMission;
 
@@ -295,7 +303,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                 typeof group === "number" ? MISSIONS.find((m) => m.id === group) : undefined;
               const isOpen = expanded === entry.id;
               const label =
-                getActivityLabel(entry.activity_id);
+                getActivityLabel(entry.activity_id, lifeStage);
               const sensitive = isSensitiveActivity(entry.activity_id);
 
               return (
@@ -391,7 +399,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                   className="text-2xl text-navy mb-1"
                   style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
                 >
-                  {getActivityLabel(selected.activity_id)}
+                  {getActivityLabel(selected.activity_id, lifeStage)}
                 </h2>
                 <p className="text-xs text-ink-muted">
                   {formatDate(selected.created_at)} ·{" "}

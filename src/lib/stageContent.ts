@@ -28,9 +28,20 @@ import {
   ADULT_M1,
   MISSION_DESCRIPTIONS,
 } from "./stageContentMission1";
+import {
+  JUNIOR_M2,
+  SENIOR_M2,
+  LEFT_SCHOOL_M2,
+  LEAVER_M2,
+  ADULT_M2,
+  MISSION2_DESCRIPTIONS,
+} from "./stageContentMission2";
 
 /** Lines replaced for one life stage, by activity id. */
 export interface StageLines {
+  /** A step whose purpose changes at a stage (Year 7–9's "What I Want to Explore") */
+  title?: string;
+  whyItMatters?: string;
   prompt?: string;
   warmUp?: string;
   intro?: string;
@@ -121,6 +132,8 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
   if (!lines) return activity;
   return {
     ...activity,
+    title: lines.title ?? activity.title,
+    whyItMatters: lines.whyItMatters ?? activity.whyItMatters,
     prompt: lines.prompt ?? activity.prompt,
     warmUp: lines.warmUp ?? activity.warmUp,
     intro: lines.intro ?? activity.intro,
@@ -143,13 +156,13 @@ export function activityForStage(activity: Activity, stage: LifeStage): Activity
   // the stage's own lines. Middle (Year 10–11) reads missions.ts as written.
   const layers: (StageLines | undefined)[] =
     stage === "leaver"
-      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEAVER_M1[id]]
+      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEAVER_M1[id], LEAVER_M2[id]]
       : stage === "adult"
-        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], ADULT_M1[id]]
+        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], ADULT_M1[id], ADULT_M2[id]]
         : stage === "junior"
-          ? [JUNIOR[id], JUNIOR_M1[id]]
+          ? [JUNIOR[id], JUNIOR_M1[id], JUNIOR_M2[id]]
           : stage === "senior"
-            ? [SENIOR_M1[id]]
+            ? [SENIOR_M1[id], SENIOR_M2[id]]
             : [];
   let a = layers.reduce<Activity>((acc, lines) => withLines(acc, lines), activity);
 
@@ -200,7 +213,9 @@ export function hiddenForStage(activityId: string, stage: LifeStage): boolean {
 export function missionForStage(mission: Mission, stage: LifeStage): Mission {
   return {
     ...mission,
-    description: MISSION_DESCRIPTIONS[stage]?.[mission.id] ?? mission.description,
+    description:
+      (mission.id === 2 ? MISSION2_DESCRIPTIONS[stage] : MISSION_DESCRIPTIONS[stage]?.[mission.id]) ??
+      mission.description,
     activities: mission.activities
       .filter((a) => !hiddenForStage(a.id, stage))
       .map((a) => activityForStage(a, stage)),
