@@ -22,6 +22,7 @@ export default function SettingsClient({
   initialLifeStage,
   aiReflectionsEnabled,
   initialTheme,
+  themeRead,
 }: {
   userId: string;
   email: string;
@@ -32,6 +33,8 @@ export default function SettingsClient({
   initialLifeStage: LifeStage;
   aiReflectionsEnabled: boolean;
   initialTheme: Theme | null;
+  /** False if the profile read failed, so initialTheme is unknown, not "none". */
+  themeRead: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -208,7 +211,12 @@ export default function SettingsClient({
         </div>
 
         {/* Look — light, dark or bold, kept on this device */}
-        <ThemeSettings db={db} userId={userId} initialTheme={initialTheme} />
+        <ThemeSettings
+          db={db}
+          userId={userId}
+          initialTheme={initialTheme}
+          themeRead={themeRead}
+        />
 
         {/* Your values */}
         <div data-animate="3" className="card p-6">

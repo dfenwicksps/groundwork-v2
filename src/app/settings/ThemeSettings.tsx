@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
-  THEME_SYNCED_KEY,
   applyTheme,
   getActiveTheme,
+  getStoredTheme,
+  markThemeSynced,
+  reconcileTheme,
   saveTheme,
   type Theme,
 } from "@/lib/theme";
@@ -64,36 +66,59 @@ export default function ThemeSettings({
   db,
   userId,
   initialTheme,
+  themeRead,
 }: {
   db: any;
   userId: string;
   /** The account's look (users.theme); null while following the phone. */
   initialTheme: Theme | null;
+  /** False if the server's read of the account failed: initialTheme is then unknown. */
+  themeRead: boolean;
 }) {
   // What's on screen is read after mount: following the phone is decided in
   // the browser, not on the server.
   const [active, setActive] = useState<Theme | null>(initialTheme);
   const [picked, setPicked] = useState(initialTheme !== null);
   const [saved, setSaved] = useState<"idle" | "saved" | "failed">("idle");
+  // Picks wait until the check below has finished, so a save it makes can't
+  // land after (and overwrite) a newer pick.
+  const [ready, setReady] = useState(false);
+  // The parent makes a new client each render; the check below runs once.
+  const dbRef = useRef(db);
+  dbRef.current = db;
 
   useEffect(() => {
-    // The account is the record: if this browser's copy differs, it wins
-    // (ThemeSync would do the same, but this page already has the answer).
-    if (initialTheme) applyTheme(initialTheme);
-    try {
-      sessionStorage.setItem(THEME_SYNCED_KEY, "1");
-    } catch {
-      // ignore
-    }
-    setActive(getActiveTheme());
+    let cancelled = false;
     // While following the phone, the boot script can switch the look under us.
     const obs = new MutationObserver(() => setActive(getActiveTheme()));
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => obs.disconnect();
-  }, [initialTheme]);
+    // The same check ThemeSync makes, with the account's value this page
+    // already has: so a look this student picked before it could be saved is
+    // shown as picked and saved now, even when Settings is the first page.
+    (async () => {
+      let current: Theme | null;
+      if (themeRead) {
+        const result = await reconcileTheme(dbRef.current, userId, initialTheme);
+        if (result.synced) markThemeSynced();
+        current = result.theme;
+      } else {
+        // Account unknown: leave the copy as it is; ThemeSync retries the read.
+        current = getStoredTheme();
+      }
+      if (cancelled) return;
+      setPicked(current !== null);
+      setActive(getActiveTheme());
+      setReady(true);
+    })();
+    return () => {
+      cancelled = true;
+      obs.disconnect();
+    };
+  }, [userId, initialTheme, themeRead]);
 
   async function choose(t: Theme) {
-    applyTheme(t);
+    if (!ready) return;
+    applyTheme(t, userId);
     setActive(t);
     setPicked(true);
     const ok = await saveTheme(db, userId, t);
@@ -115,6 +140,7 @@ export default function ThemeSettings({
             key={o.key}
             type="button"
             aria-pressed={active === o.key}
+            disabled={!ready}
             onClick={() => choose(o.key)}
             className={cn(
               "p-2 rounded-xl border text-left transition-all",

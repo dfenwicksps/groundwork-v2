@@ -3,10 +3,12 @@
 @tailwind utilities;
 
 :root {
-  /* Populated by next/font in layout.tsx */
-  --font-display: var(--font-bricolage), system-ui, sans-serif;
-  --font-story: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  /* Loaded from Google Fonts in layout.tsx. The families are named directly,
+     not through another variable: a var() that isn't set invalidates the whole
+     stack, fallbacks included, and the browser drops to Times New Roman. */
+  --font-display: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-story: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Colours are stored as RGB channels so Tailwind's opacity modifiers
      (bg-navy/10) work, and so dark mode only has to redefine them below.

@@ -12,7 +12,7 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: _raw } = await supabase
+  const { data: _raw, error: profileError } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
@@ -50,6 +50,7 @@ export default async function SettingsPage() {
       initialLifeStage={await getLifeStage(supabase, user.id)}
       aiReflectionsEnabled={profile?.ai_reflections_enabled ?? true}
       initialTheme={parseTheme(profile?.theme)}
+      themeRead={!profileError}
     />
   );
 }
