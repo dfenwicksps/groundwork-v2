@@ -1372,7 +1372,7 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Weaving what you know about yourself into how you actually live.",
     description:
-      "Three missions in, you know more about yourself than you did at the start — who you are, what you care about, where you belong. This mission asks the final question: given all of that, what kind of life do you actually want to build? It starts by looking back, because every life gets built from somewhere. Not the life that would impress people. Not the one you think you should want. The one that would feel worth waking up inside. This is where exploration becomes intention.",
+      "By the end of this mission you'll have the thread that runs through everything you've found, a picture of an ordinary day in your future, and a letter about the life you want to build. Every step adds a piece to your Direction card, and the finished card opens My Story. Seven short steps, about an hour and a half in all, spread over a week.",
     colour: "#C2410C",
     colourLight: "#EA580C",
     textColour: "#FFFFFF",
@@ -1389,7 +1389,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "Where have you come from — and what are you carrying forward from it?",
         scenarios: [
-          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
+          "Someone's writing a book about your life so far. Each chapter starts on a new page with a short title at the top.",
           "Somewhere in your story there's a before and an after — a move, a new school, a loss, a friendship, a win, something someone said that stuck. You're slightly different on the after side.",
           "Before you could choose anything, you were handed a lot: how your family does money, arguments and feelings, what counts as doing well, where you're from, who people expect you to be. Some of it fits. Some doesn't. Some fits once you adjust it.",
           "Reworking isn't rejecting. You might keep your family's work ethic but drop the never-resting part, or keep your culture's food and language while making up your own mind about one of its rules.",
@@ -1430,15 +1430,74 @@ export const MISSIONS: Mission[] = [
         skippableSteps: [1, 2, 3],
         recall: { activityId: "chapters-so-far", missionId: 1, label: "Your chapters, from Mission 1", step: 0 },
         wrapUp:
-          "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: where it's heading, starting with an ordinary Tuesday at 21.",
+          "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: who you are right now, online.",
         whyItMatters:
           "Identity researchers agree that who you are isn't only about the present — it's a story connecting where you've come from to where you're going. Erik Erikson noticed that young people build an identity by sorting through what they absorbed as kids: keeping some of it, reworking some, letting some go. Narrative researchers call the related skill autobiographical reasoning — linking past experiences to who you are now — and it's one of the main ways a steady sense of self gets built during the teens and early twenties.",
         timeEstimate: "About 10 minutes",
       },
       {
+        id: "digital-self",
+        wrapUp:
+          "You've seen which version of you is online \u2014 and how much of what you see was chosen by you versus fed to you. Seeing it clearly is how you take the wheel back. Next: where it's heading, starting with an ordinary Tuesday at 21.",
+        scenarios: [
+          "Pick the place you spend most screen time \u2014 a group chat, a game, a video app, a platform. Now imagine someone who only knows you from there \u2014 that's the only you they've ever met.",
+          "Open whatever recommends things to you \u2014 videos, music, games, a feed \u2014 and pretend it's a mirror built from everything you've ever clicked. It's showing you who the algorithm thinks you are.",
+          "There's probably a message or comment you've sent online that in-person you would never have said out loud.",
+          "Across every chat, game, account and profile \u2014 line up all the versions of you that exist on screens.",
+        ],
+        starterOptions: [
+          [
+            "Pretty much me, just with better timing",
+            "Funnier and more confident than in-person me",
+            "Quieter \u2014 I watch and rarely post",
+            "A curated highlight reel \u2014 the good bits only",
+            "A different character \u2014 barely me at all",
+          ],
+          [
+            "Fairly accurate, honestly",
+            "It shows who I was, not who I'm becoming",
+            "It feeds my worst habits, not my real interests",
+            "It's who the internet wants me to be",
+            "It knows my guilty pleasures better than my friends do",
+          ],
+          [
+            "Braver \u2014 I say things I'd choke on face-to-face",
+            "Harsher \u2014 distance makes me sharper than I mean to be",
+            "More honest about how I actually feel",
+            "More fake-positive than I really am",
+            "Not really \u2014 I'm careful everywhere",
+          ],
+          [
+            "The group-chat me with close friends is realest",
+            "Anonymous me \u2014 no name means no performance",
+            "A profile or account is the most managed and least real",
+            "In-person me is realest; online is all performance",
+            "They're all a bit real, all a bit performed \u2014 a remix",
+          ],
+        ],
+        type: "journal",
+        title: "Digital Self",
+        subtitle: "Step 2 of 7 · Who you are now, online",
+        intro:
+          "Before picturing the future, a look at who you are right now online. Group chats, games, videos, accounts: there's a version of you there too. It isn't fake, but it is filtered. Algorithms pick what you see, and every app shapes how you show yourself. This step looks at how much of that was chosen by you.",
+        warmUp:
+          "Think about the last thing you posted, liked, or commented on publicly. Would the people who know you best be surprised by it — or is that completely them?",
+        prompt:
+          "How do you show up online compared to offline? What does the gap between those versions of you tell you about yourself?",
+        scaffoldingSteps: [
+          "Pick one place you spend time online — a platform, a group chat, a community. How do you show up there, and is that version of you different from who you are face-to-face?",
+          "What gets recommended to you — videos, music, games, a feed — is shaped by everything you've clicked, watched and searched. Look at it honestly: what does it reflect back at you about who you are, and is that accurate?",
+          "Have you ever said something online you wouldn't say in person, or been a version of yourself that you couldn't quite be offline? What made that possible?",
+          "Across everywhere you exist online, which version of you feels most real? Which one feels most like a performance — and for who?",
+        ],
+        whyItMatters:
+          "Researchers Alice Marwick and danah boyd describe 'context collapse': online, your friends, family, teachers and strangers can all end up as one audience, so people adjust how they show themselves. Recommendation algorithms add another layer, choosing what you see based on what you've already clicked. The version of you online is partly co-written by the app. Seeing that clearly isn't cause for alarm: it's how you take back the choices that are yours.",
+        timeEstimate: "About 10 minutes",
+      },
+      {
         id: "future-self",
         wrapUp:
-          "You now hold a specific picture of a future you \u2014 an ordinary Tuesday, not a fantasy. Specific futures pull way harder than vague ones. Next: checking how much of your identity the internet is quietly writing for you.",
+          "You now hold a specific picture of a future you \u2014 an ordinary Tuesday, not a fantasy. Specific futures pull way harder than vague ones. Next: finding the single thread through everything you've discovered.",
         scenarios: [
           "It's a random Tuesday and you're 21. Your alarm goes off. Walk through the day like a camera is following you \u2014 where you wake up, what you do, who you talk to, what fills the afternoon.",
           "That 21-year-old has figured some things out that current-you is still wrestling with. One of them would be a genuine relief to have sorted.",
@@ -1477,7 +1536,8 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Future Self",
-        subtitle: "Step 2 of 7 · Your future",
+        subtitle: "Step 3 of 7 · Your future",
+        storyBefore: "The Slow Way There",
         intro:
           "Before deciding what life to build, it helps to picture it. Not a list of qualities or a career, but an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
@@ -1491,66 +1551,7 @@ export const MISSIONS: Mission[] = [
           "What's one thing the version of you right now could start doing that would make the 21-year-old version grateful?",
         ],
         whyItMatters:
-          "Research on 'possible selves' — the versions of yourself you imagine in the future — shows that having a clear, concrete positive image of who you could become is one of the strongest predictors of motivated, directed behaviour in adolescence. But the detail matters: vague future selves ('I want to be successful') have almost no effect. Specific ones do. The more clearly you can see a Tuesday at 21, the more concretely you can begin moving toward it.",
-        timeEstimate: "About 10 minutes",
-      },
-      {
-        id: "digital-self",
-        wrapUp:
-          "You've seen which version of you the internet gets \u2014 and how much of your feed was chosen by you versus fed to you. Seeing it clearly is how you take the wheel back. Next: finding the single thread through everything you've discovered.",
-        scenarios: [
-          "Pick the place you spend most screen time. Now imagine someone who only knows you from there \u2014 that's the only you they've ever met.",
-          "Open your feed and pretend it's a mirror built from everything you've ever clicked. It's showing you who the algorithm thinks you are.",
-          "There's probably a message, comment, or post you made online that in-person you would never have said out loud.",
-          "Across every platform, chat, and profile \u2014 line up all the versions of you that exist on screens.",
-        ],
-        starterOptions: [
-          [
-            "Pretty much me, just with better timing",
-            "Funnier and more confident than in-person me",
-            "Quieter \u2014 I watch and rarely post",
-            "A curated highlight reel \u2014 the good bits only",
-            "A different character \u2014 barely me at all",
-          ],
-          [
-            "Fairly accurate, honestly",
-            "It shows who I was, not who I'm becoming",
-            "It feeds my worst habits, not my real interests",
-            "It's who the internet wants me to be",
-            "It knows my guilty pleasures better than my friends do",
-          ],
-          [
-            "Braver \u2014 I say things I'd choke on face-to-face",
-            "Harsher \u2014 distance makes me sharper than I mean to be",
-            "More honest about how I actually feel",
-            "More fake-positive than I really am",
-            "Not really \u2014 I'm careful everywhere",
-          ],
-          [
-            "The group-chat me with close friends is realest",
-            "Anonymous me \u2014 no name means no performance",
-            "My main profile is the most managed and least real",
-            "In-person me is realest; online is all performance",
-            "They're all a bit real, all a bit performed \u2014 a remix",
-          ],
-        ],
-        type: "journal",
-        title: "Digital Self",
-        subtitle: "Step 3 of 7 · Your digital life",
-        intro:
-          "There's a version of you online too. It isn't fake, but it is filtered: algorithms pick what you see, and platforms shape how you show yourself. This step looks honestly at how much of who you are online was chosen by you, and how much by the feed.",
-        warmUp:
-          "Think about the last thing you posted, liked, or commented on publicly. Would the people who know you best be surprised by it — or is that completely them?",
-        prompt:
-          "How do you show up online compared to offline? What does the gap between those versions of you tell you about yourself?",
-        scaffoldingSteps: [
-          "Pick one place you spend time online — a platform, a group chat, a community. How do you show up there, and is that version of you different from who you are face-to-face?",
-          "Your feed and recommendations are shaped by everything you've clicked, searched, and engaged with. Look at it honestly: what does it reflect back at you about who you are — and is that accurate?",
-          "Have you ever said something online you wouldn't say in person, or been a version of yourself that you couldn't quite be offline? What made that possible?",
-          "Across everywhere you exist online, which version of you feels most real? Which one feels most like a performance — and for who?",
-        ],
-        whyItMatters:
-          "Networked Social Identity Theory describes how digital platforms don't just reflect identity — they actively shape it, through algorithmic curation, social comparison, and the pressure to perform consistency across audiences. The version of you that exists online is co-authored by the platform, not just by you. Understanding that isn't cause for alarm — it's a way of reclaiming authorship. You can't make intentional choices about how you present yourself until you can see clearly how the context is already shaping you.",
+          "Psychologist Daphna Oyserman's research on 'possible selves' (the versions of yourself you imagine in the future) finds they help most when they're specific and come with a plan for getting there. A vague hope ('I want to be successful') does little; a clear picture with a first step does more. The more clearly you can see an ordinary Tuesday at 21, the easier it is to start moving toward it.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -1599,19 +1600,19 @@ export const MISSIONS: Mission[] = [
         title: "The Through-Line",
         subtitle: "Step 4 of 7 · The thread",
         intro:
-          "You've looked at who you are, what you care about, where you belong, and where you've come from. This step asks what sits underneath all of it: the thread running through.",
+          "You've looked at who you are, what you care about, where you belong, and where you've come from. Your three cards are below, so you don't have to remember them. This step asks what sits underneath all of it: the thread running through.",
         warmUp:
           "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
           "Look back across everything you've learned about yourself in this journey. What's the single thread that connects who you are, what you care about, and where you belong?",
         scaffoldingSteps: [
-          "What's the most important thing you learned about yourself in Mission 1 — something about your inner compass that still feels true?",
-          "What's the most honest thing you discovered about what you care about and want to contribute in Mission 2?",
-          "What did Mission 3 tell you about the relationships and communities that matter most to you?",
+          "Look at your Who I Am card from Mission 1 (shown above). What's the most important thing on it — something that still feels true?",
+          "Now your Purpose card from Mission 2. What's the most honest thing on it about what you care about and want to contribute?",
+          "And your Connection card from Mission 3. What does it say about the people and places that matter most to you?",
           "Now say the thread itself, in one sentence. Not where it leads — just the thing that stays true across all three.",
         ],
         whyItMatters:
-          "Integration — the third phase of identity development — isn't about having everything figured out. It's about finding the through-line: the thread that connects your values, your purpose, and your relationships into something coherent. Psychologists find that this coherence is what separates people who feel like they're drifting from people who feel like they're building something — even when their external circumstances look similar. The thread doesn't have to be obvious. But naming it tends to make it real.",
+          "Identity researchers like Dan McAdams find that people build a steadier sense of self by linking the parts of their life into one story: who they are, what they care about, and who they belong with. It isn't about having everything figured out. People whose story hangs together tend to report more meaning in life, even when their circumstances look much like everyone else's. The thread doesn't have to be obvious. Naming it tends to make it real.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -1658,6 +1659,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "A Life Worth Building",
+        storyBefore: "Enough",
         // The letter is where the thread goes, so the thread sits above its first question.
         recall: { activityId: "the-through-line", missionId: 4, label: "The thread you found", step: 0, answer: 3 },
         subtitle: "Step 5 of 7 · Milestone",
@@ -1675,7 +1677,7 @@ export const MISSIONS: Mission[] = [
           "Future-you will forget why this mattered. Put the reason on the record, plainly, for the week they need it.",
         ],
         whyItMatters:
-          "Research on expressive writing — particularly writing to your future self — shows it does something structurally different from ordinary reflection: it activates a sense of continuity between who you are now and who you're becoming, which psychologists call 'identity coherence.' People who score higher on identity coherence report higher life satisfaction, better decision-making under pressure, and more resilience when things go wrong. The cost question is here for a related reason: a direction you've never priced is a preference, and naming what you'd trade for something is most of what separates a decision from a daydream.",
+          "Psychologist Hal Hershfield's research finds that people who feel more connected to their future selves make more future-minded choices, and writing to your future self is one of the ways that connection gets built. The cost question is here for a related reason: a direction you've never priced is a preference, and naming what you'd trade for something is most of what separates a decision from a daydream.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -1689,7 +1691,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
         prompt:
-          "This week, make one deliberate choice that aligns with the life you described in your letter — something you'd do if you were already the person you're becoming. It could be how you spend your time, what you say yes or no to, or how you show up for someone who matters to you. Notice what it feels like to do it on purpose rather than by accident.",
+          "Pick ONE for this week:\n\n• Start the one thing you wrote in Future Self.\n• Say no to one thing that pulls you off course, on purpose.\n• Spend an hour on the direction from your letter.\n• Tell one person what you're building toward.\n\nPick one. Keep it small. Notice what it feels like to do it on purpose rather than by accident.",
+        // The one thing Future Self asked them to start.
+        recall: { activityId: "future-self", missionId: 4, label: "The thing you said you'd start, from Future Self", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
