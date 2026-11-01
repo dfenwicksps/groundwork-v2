@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { clearThemeCache } from "@/lib/theme";
 import {
   PIN_LENGTH,
   RELOCK_AFTER_MS,
@@ -80,6 +81,7 @@ export default function DeviceLock() {
     // Removing the lock means signing out; getting back in takes the password.
     await createClient().auth.signOut();
     clearLock();
+    clearThemeCache();
     window.location.href = "/auth";
   }
 
