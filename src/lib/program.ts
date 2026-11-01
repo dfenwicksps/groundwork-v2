@@ -307,11 +307,11 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         kind: "entry",
         activityId: "fitting-in-vs-belonging",
         missionId: 3,
-        recallLabel: "Where you genuinely belong, and where you're just fitting in",
+        recallLabel: "Where fitting in costs you, and what you decided to do about it",
         href: "/missions/3/activities/fitting-in-vs-belonging",
         label: "Fitting In vs. Belonging",
         whyNeeded:
-          "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you find the rooms where you aren't — about ten minutes.",
+          "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you decide what to do about the room where you adjust most — about ten minutes.",
         soWhat:
           "Being trusted means being the same person in both of those rooms. Your promise this week will be easier to keep in one than the other — notice which, and why.",
       }

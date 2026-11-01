@@ -170,9 +170,15 @@ export default async function ActivityPage({
     const { missionId, activityId, answer } = activity.recall;
     const response = (recallRow as { response: string } | null)?.response;
     // One answer when the step names it; otherwise every answer in the entry.
+    // Read against the questions as this student saw them (a stage can reword
+    // them); older entries still parse by question number.
+    const recalledBase = getActivity(missionId, activityId);
+    const recalledQuestions = recalledBase
+      ? activityForStage(recalledBase, lifeStage).scaffoldingSteps
+      : undefined;
     const raw =
       answer !== undefined
-        ? answerAt(missionId, activityId, response, answer)
+        ? answerAt(missionId, activityId, response, answer, recalledQuestions)
         : answersOnly(missionId, activityId, response);
     const text = raw === LEFT_OUT_ANSWER ? "" : raw;
     if (text) recalled = { label: activity.recall.label, text };

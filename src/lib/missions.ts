@@ -1006,7 +1006,7 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Understanding how your relationships shape and reflect who you are.",
     description:
-      "Mission 2 asked what you care about in the world. This mission turns toward the people you care about — and the ones who've shaped you without you fully realising it. Your social identity isn't just about being in groups. It's about where you feel genuinely known, what makes connection real rather than just convenient, and who — across ease and difficulty — has left something lasting in you. This mission examines all three.",
+      "By the end of this mission you'll have where you belong and why, someone you connect with across a real difference, and the people who shaped you. Every step adds a piece to your Connection card. Six short steps, about an hour in all, spread over a week. If you haven't found your people yet, that's common, and this mission is a good place to start.",
     colour: "#15803D",
     colourLight: "#16A34A",
     textColour: "#FFFFFF",
@@ -1014,7 +1014,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "belonging",
         wrapUp:
-          "You've just worked out where you're actually known versus just around people \u2014 most adults never name that difference. Next we sharpen it further: the difference between fitting in and belonging.",
+          "You've just worked out where you're actually known versus just around people \u2014 most adults never name that difference. It's the first piece of your Connection card. Next: what to do about the places where you're only fitting in.",
         scenarios: [
           "There's one place you walk into and something in your shoulders drops. You don't check the room before you speak. You just... arrive.",
           "Watch what the people in that place actually do. There's something specific about how they treat you that makes it safe to be all of you.",
@@ -1055,7 +1055,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You Belong",
         subtitle: "Step 1 of 6 · Your social self",
         intro:
-          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself.",
+          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself. If nowhere comes to mind yet, that's an honest answer, and a common one.",
         warmUp:
           "Think about the last time you were with someone and felt completely at ease — no managing yourself, no performing, just present. Who were you with, and what made that possible?",
         storyBefore: "The Friend Who Stayed",
@@ -1068,34 +1068,20 @@ export const MISSIONS: Mission[] = [
           "What does belonging actually require, based on your experience? What makes it different from just being around people?",
         ],
         whyItMatters:
-          "Social identity theory identifies our sense of belonging within groups as one of the core pillars of a stable identity — but not all group membership provides genuine belonging. Research consistently finds that feeling authentically known by others (not just accepted) is one of the strongest predictors of adolescent wellbeing and resilience. This activity is about telling the difference between being around people and actually belonging with them.",
+          "Social identity theory sees the groups we belong to as part of who we are, but not every group gives you real belonging. Research on young people links feeling known and cared about by others with better wellbeing and coping. This step is about telling the difference between being around people and actually belonging with them.",
         timeEstimate: "About 10 minutes",
       },
       {
         id: "fitting-in-vs-belonging",
         wrapUp:
-          "Now you can tell when you're editing yourself to be accepted and when you're accepted as-is \u2014 and what the editing quietly costs you. Next: the surprising kind of belonging that crosses big differences.",
+          "You've decided what to do about the place that costs you most, and found someone who could belong more because of you. That's the part of belonging you can give, and it's on your Connection card now. Next: belonging that crosses a real difference.",
         scenarios: [
-          "With one particular group, you're completely yourself \u2014 your jokes land wrong sometimes and it doesn't matter, you say what you actually think, you never rehearse.",
-          "With another group, there's a version of you that gets deployed. You know the rules there: what to laugh at, what to wear, what not to mention.",
-          "Being that adjusted version works \u2014 you're accepted. But acceptance-with-conditions has a running cost that nobody talks about.",
+          "In Mission 1's Mask Check you noticed how you change between rooms. One of those rooms costs you more than the others: you know the rules there, what to laugh at, what not to mention.",
+          "Picture the next time you're with that group. There's a choice in there you don't usually notice you're making.",
           "There might be a group where you've quietly decided the entry fee is too high \u2014 or one where you can't tell yet if you belong.",
+          "Now look from the other side. In every group there's someone on the edge, checking the room before they speak, the way you sometimes do.",
         ],
         starterOptions: [
-          [
-            "My closest one or two friends",
-            "My main friend group, most of the time",
-            "One family member who gets me completely",
-            "My team or club, when we're actually doing the thing",
-            "A friend I only see online \u2014 weirdly, the realest one",
-          ],
-          [
-            "I get quieter and let others set the tone",
-            "I act more confident than I feel",
-            "I hide interests they'd think are weird",
-            "I laugh at stuff I don't actually find funny",
-            "I shrink my opinions down to fit",
-          ],
           [
             "It's exhausting \u2014 like a shift I don't get paid for",
             "I lose track of which version is actually me",
@@ -1104,36 +1090,53 @@ export const MISSIONS: Mission[] = [
             "Small \u2014 honestly, adapting doesn't cost me much",
           ],
           [
-            "Yes \u2014 I've stepped back from a group over this",
-            "I'm in one now, and I'm rethinking it",
-            "There's a group I want in with, at the price of editing myself",
-            "I can't tell yet \u2014 that's what bothers me",
+            "Keep adjusting \u2014 it's worth it there, for now",
+            "Change one thing: say what I actually think, once",
+            "Spend more time where I don't have to adjust",
+            "Step back from that group a bit",
+            "Not sure yet \u2014 I want to notice how it feels first",
+          ],
+          [
+            "There's a group I want in with, but not at any price",
+            "I'm still looking for my people",
+            "I'm in a group now and rethinking it",
+            "I can't tell yet if I belong somewhere",
             "No \u2014 where I am now is mostly real",
           ],
+          [
+            "Someone new \u2014 I could invite them along",
+            "A quiet one in my group \u2014 I could ask what they think",
+            "A friend who's been left out lately \u2014 I could check in",
+            "Someone younger \u2014 I could show them the ropes",
+            "I'm not sure \u2014 I want to start noticing",
+          ],
         ],
+        // What they said about changing between rooms in Mission 1, so this
+        // step starts from there instead of asking it again.
+        recall: { activityId: "mask-check", missionId: 1, label: "How you change between rooms, from Mission 1", step: 0, answer: 0 },
         type: "journal",
         title: "Fitting In vs. Belonging",
         subtitle: "Step 2 of 6 · Your social self",
         intro:
-          "There's a difference between fitting in and belonging — and it matters. Fitting in means changing yourself so that a group accepts you. Belonging means being accepted as yourself. They can look the same from the outside, but they feel very different from the inside. This step asks you to tell them apart in your own life.",
+          "Fitting in means changing yourself so a group accepts you. Belonging means being accepted as yourself. In Mission 1 you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it. Then it flips round to the people who need to belong around you.",
         warmUp:
-          "Think about a group you're part of — a friend group, a team, a class or workplace, a community. Do you feel like you belong there, or do you feel like you fit in? Is there a difference, in your experience, between the two?",
+          "Look at what you wrote in Mission 1 about how you change between rooms. Which room costs you the most?",
         prompt:
-          "Describe a situation where you feel you genuinely belong — and one where you're just fitting in. What's the difference between how those feel?",
+          "Think about the group where you adjust the most. What does it cost you, what do you want to do about it, and who around you needs to belong more?",
         scaffoldingSteps: [
-          "Think of a group or situation where you feel genuinely yourself — no performance, no editing. What's that like? What makes it possible?",
-          "Think of a group or situation where you feel more like you're adjusting yourself to be accepted. What do you do differently there? What do you hold back?",
-          "What does it cost you to fit in — not the obvious stuff, but the quieter cost of being a slightly different version of yourself?",
-          "Is there a group where you've decided the cost of fitting in is too high? Or one where you're not sure whether you belong yet? What would genuine belonging look like there?",
+          "Think of the group where you adjust yourself most to fit in. What does it cost you — not the obvious stuff, but the quieter cost of being a slightly different version of yourself?",
+          "What do you want to do about that group: keep adjusting, change one thing, spend more time elsewhere, or step back? Why?",
+          "Is there a group where you're still looking for your place, or not sure yet whether you belong? What would real belonging look like there?",
+          "Now flip it. Who's on the edge of a group you're in, or who could belong more because of you? What could you do so they don't have to adjust to fit?",
         ],
         whyItMatters:
-          "Research on belonging draws a sharp distinction between fitting in and genuinely belonging. Fitting in means reading a situation and adjusting yourself to be accepted. Belonging means being accepted as yourself. The two can look identical from the outside but feel completely different. Studies find that people who try hardest to fit in often report the lowest sense of belonging — because the adjustment itself signals that the real self isn't safe there. Telling the difference is the first step to choosing differently.",
+          "Researcher Brené Brown draws the line this way: fitting in is being accepted for being like everyone else; belonging is being accepted for being you. In her interviews, people who worked hardest to fit in often felt they belonged least. Belonging also works the other way: Greg Walton and Geoffrey Cohen found that small signals that you belong can change how people get on for years. You can be that signal for someone.",
         timeEstimate: "About 10 minutes",
       },
       {
         id: "across-the-gap",
         wrapUp:
-          "You've seen that real connection doesn't need sameness \u2014 bridging a genuine gap builds the strongest kind of belonging there is. Now for the milestone: the people whose fingerprints are on who you're becoming.",
+          "You've seen that real connection doesn't need sameness, and it's on your Connection card now. Now for the milestone: the people whose fingerprints are on who you're becoming.",
         scenarios: [
           "There's someone in your life from a genuinely different world \u2014 a grandparent, a neighbour, a teammate, a family friend. Different generation, background, beliefs, or just a completely different head.",
           "And yet \u2014 somewhere in there, a real moment of connection happened between you. Not agreement. Connection.",
@@ -1187,13 +1190,13 @@ export const MISSIONS: Mission[] = [
           "Is there a relationship in your life where the gap feels too wide right now — where you're not sure connection is possible? What would even a small step toward it look like?",
         ],
         whyItMatters:
-          "Research on social identity consistently finds that the most resilient sense of belonging isn't built only within homogeneous groups — it's built through what psychologists call 'bridging relationships': connections that cross real differences. These relationships are harder to form, but they tend to be more durable and to expand your sense of who you are in ways that same-group relationships can't. They also predict greater openness, flexibility, and empathy over time.",
+          "Political scientist Robert Putnam calls connections that cross real differences 'bridging' relationships, as opposed to the 'bonding' ones with people like you. Both matter, but bridging ones widen what you know and who you can work with. Research on contact between different groups finds that real connection across a difference tends to build understanding and reduce prejudice over time.",
         timeEstimate: "About 12 minutes",
       },
       {
         id: "people-who-shaped-you",
         wrapUp:
-          "You just took authorship of your own story \u2014 you can now see who built parts of you, and what you chose to keep. That's not sentimental; it's power. One more step: building connection on purpose this week.",
+          "You just took authorship of your own story \u2014 you can now see who built parts of you, and what you chose to keep. The people who shaped you are on your Connection card now. Next: building connection on purpose this week.",
         scenarios: [
           "Line up who you were three years ago next to who you are now. Some of the differences didn't come from you \u2014 they came through specific people.",
           "Catch yourself mid-week doing something \u2014 a saying, a habit, a way you handle pressure \u2014 and realise: that's not originally mine. I caught it from someone.",
@@ -1234,7 +1237,7 @@ export const MISSIONS: Mission[] = [
         title: "The People Who Shaped You",
         subtitle: "Step 4 of 6 · Milestone",
         intro:
-          "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly.",
+          "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly. One question asks about someone who shaped you through something hard. You can leave it out.",
         warmUp:
           "Think about who you were three or four years ago, and who you are now. The ways you've changed — some of them were shaped by specific people. Who were they? You don't have to include everyone. Just the ones who actually left something in you.",
         prompt:
@@ -1243,9 +1246,12 @@ export const MISSIONS: Mission[] = [
         scaffoldingSteps: [
           "Name two or three people who have left something lasting in you — not necessarily the most obvious choices, but the ones who actually changed something. What did each of them give you?",
           "Think about one of them more carefully: what specific thing — a moment, a habit, a way of seeing something — do you carry from them? Where do you notice it showing up in you?",
-          "Has any relationship shaped you in a way you didn't choose — or wouldn't have chosen? What did that leave in you?",
+          "Has any relationship shaped you in a way you didn't choose — or wouldn't have chosen? What did that leave in you? (You can leave this one out.)",
           "Looking at all of them together: what does it say about the kind of person you're becoming, that these are the people who shaped you?",
         ],
+        // The hard-shaping question can reach things a student isn't ready to
+        // write about; leaving it out is a real answer, and the step still counts.
+        skippableSteps: [2],
         whyItMatters:
           "Psychologist Dan McAdams calls each of us an 'autobiographical author' — the person who makes meaning of our own story. His research shows that people who can clearly identify who has shaped them, and how, tend to have a more coherent, resilient sense of identity — not because their story is simpler, but because they understand how they came to be who they are. Seeing the people who shaped you isn't sentimental. It's how you take authorship of your own narrative.",
         timeEstimate: "About 15 minutes",
@@ -1261,7 +1267,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Belonging isn't passive. It's built — slowly, through small acts of reaching toward people. This challenge asks you to take one small step toward genuine connection: not a grand gesture, but something real. Notice what happens when you actually try.",
         prompt:
-          "This week, reach toward someone — genuinely. It could be a conversation you've been avoiding, checking in on someone you've been thinking about, or being a little more honest than you usually are with someone you trust. The goal is one real moment of connection that you actually initiated. Notice what it costs and what it gives.",
+          "Pick ONE for this week:\n\n• Take the small step you wrote in Step 3, toward someone across the gap.\n• Message one person you've been meaning to check in on.\n• Make room for someone on the edge: invite them, sit with them, or ask what they think.\n• Ask someone one real question, and actually listen to the answer.\n\nIf reaching out feels big right now, the message counts. Notice what it costs and what it gives.",
+        // The small step they wrote at the end of Across the Gap.
+        recall: { activityId: "across-the-gap", missionId: 3, label: "Your small step, from Step 3", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",

@@ -156,7 +156,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["Belonging seems to require", "It's different from just being around people because", "Based on my experience,"],
     ],
     stuck: [
-      ["Accepted, not just tolerated — what's the difference for you?", "Could be one person rather than a group."],
+      ["Accepted, not just tolerated — what's the difference for you?", "Nobody yet? That's common. Where might you look: a club, a team, an online community?"],
       ["Often it's what they don't do — no judgement, no repeating things.", "Think about how they react when you get something wrong."],
       ["Almost everyone has one — naming it isn't a weakness.", "Is it the place, or how you show up there?"],
       ["You've just described two situations — what separates them?", "Is it being known, being liked, or being useful?"],
@@ -164,16 +164,16 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   },
   "fitting-in-vs-belonging": {
     stems: [
-      ["Where I feel most myself is", "What makes it possible is", "There I don't have to"],
-      ["Where I adjust myself is", "What I do differently there is", "What I hold back is"],
-      ["What fitting in costs me is", "The quieter cost is", "Over time that means"],
-      ["A group where the cost is too high is", "Genuine belonging there would look like", "I'm not sure whether I belong in"],
+      ["Where I adjust most is", "What fitting in there costs me is", "The quieter cost is"],
+      ["What I want to do about it is", "One thing I could change is", "I'm going to keep adjusting there because"],
+      ["Somewhere I'm still finding my place is", "Real belonging there would look like", "I'm not sure whether I belong in"],
+      ["Someone on the edge of my group is", "I could make room for them by", "Someone who could belong more because of me is"],
     ],
     stuck: [
-      ["No performance, no editing — where's that?", "It might be one person rather than a group."],
-      ["What do you not say in that room?", "Do you change your humour, your opinions, or your volume?"],
-      ["Not the obvious cost — the slow one.", "What do you lose by being slightly edited all the time?"],
-      ["Deciding the cost is too high is a legitimate answer.", "What would have to change for it to be real?"],
+      ["Your Mission 1 answer is above. Start from the room that costs you most.", "What do you lose by being slightly edited all the time?"],
+      ["Keeping things as they are is a legitimate choice.", "What's the smallest change that would feel more like you?"],
+      ["Still looking is a real answer.", "What would have to change for it to be real?"],
+      ["Who checks the room before they speak?", "It can be small: an invite, a question, sitting with someone."],
     ],
   },
   "across-the-gap": {
