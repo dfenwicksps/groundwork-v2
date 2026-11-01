@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { IdentityCard as Card } from "@/lib/identityCard";
+import { pieceDone, type IdentityCard as Card } from "@/lib/identityCard";
 
 /**
  * Mission 1's answer to "Who am I?", built one piece per step (see
@@ -43,7 +43,7 @@ export default function IdentityCard({
               key={p.key}
               className="h-1.5 flex-1 rounded-full"
               style={{
-                background: p.text || p.chips.length ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.25)",
+                background: pieceDone(p) ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.25)",
               }}
             />
           ))}
@@ -56,11 +56,19 @@ export default function IdentityCard({
               ? "Each step you finish adds a piece here. Start with Step 1."
               : "Each step you finish adds a piece. Keep going to fill the card."}
         </p>
+        {complete && card.doneLink && (
+          <Link
+            href={card.doneLink.href}
+            className="inline-flex mt-3 text-sm font-semibold bg-white/20 hover:bg-white/30 transition-colors rounded-lg px-3 py-1.5"
+          >
+            {card.doneLink.text}
+          </Link>
+        )}
       </div>
 
       <ul className="divide-y" style={{ borderColor: "var(--border)" }}>
         {card.pieces.map((p, i) => {
-          const filled = !!(p.text || p.chips.length);
+          const filled = pieceDone(p);
           return (
             <li key={p.key} className="px-5 py-3.5">
               <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: filled ? colour : "var(--ink-muted)" }}>
@@ -79,8 +87,11 @@ export default function IdentityCard({
                       </span>
                     ))}
                   </div>
-                ) : (
+                ) : p.text ? (
                   <p className="text-sm text-[--ink] leading-relaxed">{p.text}</p>
+                ) : (
+                  // The step is done but this question was left out, which the app allows.
+                  <p className="text-sm text-[--ink-muted] italic leading-relaxed">Left this one out, and that&apos;s fine.</p>
                 )
               ) : (
                 <Link
