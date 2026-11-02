@@ -105,41 +105,55 @@
   --virtue-transcendence: #FCD34D;
 }
 
-/* Bold: neon pink and lime on near-black, sticker cards with hard shadows.
+/* Bold (the default look): cyberpunk neon on near-black. Fluoro pink, cyan,
+   green and yellow, with hot pink as the brand fill.
    Pink (navy) is a FILL that carries white labels (5.1:1); text in pink uses
-   the brighter navy-light instead (see the .text-navy override below). Lime,
-   neon green and yellow are bright enough that labels on them go near-black
-   (--c-on-accent). */
+   the brighter navy-light instead (see the .text-navy override below). Cyan,
+   green and yellow are bright enough that labels on them go near-black
+   (--c-on-accent). Every text colour here is 6:1 or better on the cards. */
 :root[data-theme="bold"] {
   --c-navy: 214 0 111;          /* hot pink fill — white text 5.1:1 */
-  --c-navy-light: 255 92 180;   /* hot pink for TEXT — 6.3:1 on cards */
+  --c-navy-light: 255 79 176;   /* hot pink for TEXT — 6.2:1 on cards */
   --c-navy-dark: 176 0 92;
-  --c-teal: 212 255 0;          /* fluro lime — links + accents */
-  --c-teal-light: 229 255 77;
-  --c-teal-dark: 184 224 0;
-  --c-gold: 255 230 0;          /* fluro yellow */
+  --c-teal: 0 229 255;          /* fluoro cyan — links + accents, 12:1 */
+  --c-teal-light: 102 240 255;
+  --c-teal-dark: 0 184 212;
+  --c-gold: 255 230 0;          /* fluoro yellow */
   --c-gold-light: 255 240 77;
   --c-gold-dark: 245 200 0;
   --c-gold-text: 255 230 0;
-  --c-sage: 124 255 79;         /* neon green */
-  --c-sage-light: 166 255 138;
-  --c-sage-dark: 76 224 58;
-  --c-coral: 255 61 165;        /* bright pink */
+  --c-sage: 57 255 106;         /* neon green */
+  --c-sage-light: 140 255 168;
+  --c-sage-dark: 30 214 80;
+  --c-coral: 255 46 151;        /* fluoro pink */
   --c-coral-light: 255 124 196;
   --c-coral-dark: 230 0 126;
-  --c-surface: 22 22 28;
-  --c-surface-muted: 11 11 15;
-  --c-border: 74 44 70;         /* a pink-tinted edge */
-  --c-ink: 250 250 250;
-  --c-ink-muted: 196 196 206;
-  --c-ink-faint: 130 130 145;
-  --c-on-accent: 11 11 15;
-  --virtue-wisdom: #FF7CC4;
-  --virtue-courage: #FFB347;
-  --virtue-humanity: #FF5CB4;
-  --virtue-justice: #5CF2FF;
-  --virtue-temperance: #A6FF8A;
+  --c-surface: 18 18 28;
+  --c-surface-muted: 7 7 12;
+  --c-border: 60 42 90;         /* electric violet edge */
+  --c-ink: 250 250 255;
+  --c-ink-muted: 196 196 214;
+  --c-ink-faint: 138 138 163;
+  --c-on-accent: 7 7 12;
+  --virtue-wisdom: #FF4FB0;
+  --virtue-courage: #FFB020;
+  --virtue-humanity: #FF2E97;
+  --virtue-justice: #00E5FF;
+  --virtue-temperance: #39FF6A;
   --virtue-transcendence: #FFE600;
+
+  /* Neon accents for the Bold-only styling below */
+  --neon-pink: 255 46 151;
+  --neon-cyan: 0 229 255;
+  --neon-green: 57 255 106;
+  --neon-yellow: 255 230 0;
+  --neon-blue: 0 194 255;
+
+  /* Blocky display faces (loaded in layout.tsx). Redefining --font-display
+     reaches the headings that set it inline, too. */
+  --font-display: "Russo One", "Bricolage Grotesque", system-ui, sans-serif;
+  --font-title: "Orbitron", "Russo One", system-ui, sans-serif;
+  --font-block: var(--font-display);
 }
 
 /* True viewport height on mobile */
@@ -583,16 +597,20 @@ body {
 }
 
 /* ── Bold look ────────────────────────────────────────────────────────────
-   Inspired by street-poster collage: halftone dots, neon glows, heavy
-   headings, sticker cards with hard offset shadows. Layout never changes
+   Cyberpunk: a neon grid behind everything, glowing pink and cyan, blocky
+   type (Orbitron for page titles, Russo One for headings, buttons and
+   labels; body text stays DM Sans so reading and writing stay easy), and
+   cards with a hard neon offset plus a soft glow. Layout never changes
    between looks — only paint. */
 [data-theme="bold"] body {
   background-color: var(--surface-muted);
   background-image:
-    radial-gradient(circle at 100% 0%, rgb(255 61 165 / 0.22), transparent 38%),
-    radial-gradient(circle at 0% 100%, rgb(212 255 0 / 0.13), transparent 40%),
-    radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1.6px);
-  background-size: 100% 100%, 100% 100%, 14px 14px;
+    radial-gradient(circle at 100% 0%, rgb(var(--neon-pink) / 0.24), transparent 40%),
+    radial-gradient(circle at 0% 100%, rgb(var(--neon-cyan) / 0.18), transparent 45%),
+    radial-gradient(circle at 0% 0%, rgb(var(--neon-green) / 0.07), transparent 30%),
+    linear-gradient(rgb(var(--neon-cyan) / 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--neon-cyan) / 0.055) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
   background-attachment: fixed;
 }
 
@@ -616,74 +634,198 @@ body {
   color: #fff;
 }
 
-[data-theme="bold"] h1,
+/* ── Blocky type ── */
+/* Page titles: Orbitron, wide and sci-fi, with a pink/cyan split glow.
+   !important because most titles set the display font inline. Titles in the
+   story voice (inline --font-story: a story's title, a mission's question)
+   are left out, as are story lines inside a title (set on an inner element),
+   so they keep Fraunces. */
+[data-theme="bold"] h1:not([style*="--font-story"]),
+[data-theme="bold"] .heading-display:not([style*="--font-story"]) {
+  font-family: var(--font-title) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+  text-shadow:
+    -1px 0 rgb(var(--neon-cyan) / 0.55),
+    1px 0 rgb(var(--neon-pink) / 0.55),
+    0 0 18px rgb(var(--neon-pink) / 0.35);
+}
+
+/* Orbitron is wide: keep page titles from crowding a phone screen. */
+@media (max-width: 640px) {
+  [data-theme="bold"] h1:not([style*="--font-story"]) {
+    font-size: min(1.75rem, 8vw);
+    line-height: 1.15;
+  }
+}
+
+/* Section headings, buttons, nav and small labels: Russo One, chunky and
+   square. It has one weight (400); asking for bolder would fake it. */
 [data-theme="bold"] h2,
 [data-theme="bold"] h3,
-[data-theme="bold"] .heading-display {
-  font-weight: 800;
-  letter-spacing: -0.02em;
+[data-theme="bold"] .btn,
+[data-theme="bold"] nav,
+[data-theme="bold"] .uppercase.text-xs,
+[data-theme="bold"] .starter-chip {
+  font-family: var(--font-block);
+  font-weight: 400;
 }
 
-[data-theme="bold"] h1 {
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
+[data-theme="bold"] h2,
+[data-theme="bold"] h3 {
+  letter-spacing: 0.01em;
 }
 
+[data-theme="bold"] .uppercase.text-xs {
+  letter-spacing: 0.1em;
+}
+
+/* Story voice (Fraunces) stays itself, even inside a blocky heading. */
+[data-theme="bold"] .font-story {
+  font-family: var(--font-story);
+  text-transform: none;
+  text-shadow: none;
+}
+
+/* ── Surfaces ── */
 [data-theme="bold"] .card,
 [data-theme="bold"] .question-card {
-  border-width: 2px;
-  box-shadow: 4px 4px 0 rgb(var(--c-navy) / 0.85);
+  border-width: 1.5px;
+  box-shadow:
+    4px 4px 0 rgb(var(--neon-pink) / 0.85),
+    0 0 24px rgb(var(--neon-cyan) / 0.07);
 }
 
 [data-theme="bold"] .card-elevated {
-  border-width: 2px;
-  box-shadow: 5px 5px 0 rgb(var(--c-teal) / 0.85);
+  border-width: 1.5px;
+  border-color: rgb(var(--neon-cyan) / 0.45);
+  box-shadow:
+    5px 5px 0 rgb(var(--neon-cyan) / 0.85),
+    0 0 28px rgb(var(--neon-cyan) / 0.12);
 }
 
+/* ── Buttons ── */
 [data-theme="bold"] .btn {
-  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 [data-theme="bold"] .btn-primary {
-  box-shadow: 3px 3px 0 rgb(var(--c-teal));
+  box-shadow:
+    3px 3px 0 rgb(var(--neon-yellow)),
+    0 0 18px rgb(var(--neon-pink) / 0.45);
 }
 
 [data-theme="bold"] .btn-primary:hover {
   background: rgb(var(--c-navy));
   transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 rgb(var(--c-teal));
+  box-shadow:
+    5px 5px 0 rgb(var(--neon-yellow)),
+    0 0 26px rgb(var(--neon-pink) / 0.6);
+}
+
+[data-theme="bold"] .btn-secondary {
+  border-color: rgb(var(--neon-pink) / 0.55);
 }
 
 [data-theme="bold"] .btn-secondary:hover {
   border-color: rgb(var(--c-navy-light));
   background: rgb(var(--c-navy) / 0.12);
+  box-shadow: 0 0 16px rgb(var(--neon-pink) / 0.3);
 }
 
 [data-theme="bold"] .btn-teal {
   color: rgb(var(--c-on-accent));
-  box-shadow: 3px 3px 0 rgb(var(--c-navy));
+  box-shadow:
+    3px 3px 0 rgb(var(--c-navy)),
+    0 0 18px rgb(var(--neon-cyan) / 0.4);
 }
 
 [data-theme="bold"] .btn-teal:hover {
   background: rgb(var(--c-teal-light));
-  box-shadow: 5px 5px 0 rgb(var(--c-navy));
+  box-shadow:
+    5px 5px 0 rgb(var(--c-navy)),
+    0 0 26px rgb(var(--neon-cyan) / 0.55);
 }
 
+/* ── Inputs ── */
 [data-theme="bold"] .input:focus,
 [data-theme="bold"] .journal-textarea:focus,
 [data-theme="bold"] .conv-textarea:focus {
-  box-shadow: 0 0 0 3px rgb(var(--c-teal) / 0.25);
+  box-shadow:
+    0 0 0 3px rgb(var(--neon-cyan) / 0.25),
+    0 0 18px rgb(var(--neon-cyan) / 0.2);
 }
 
 [data-theme="bold"] .starter-chip:hover,
 [data-theme="bold"] .starter-chip:active {
   background: rgb(var(--c-teal) / 0.08);
+  box-shadow: 0 0 12px rgb(var(--neon-cyan) / 0.25);
 }
 
+/* ── Missions tab: each mission is its own fluoro block ──
+   Pink, blue, green, yellow for missions 1 to 4 (data-mission on the card),
+   with near-black text: 5.8:1 on pink and better on the rest. Secondary text
+   is 82% black, which still clears 4.5:1 on pink. */
+[data-theme="bold"] [data-mission="1"] { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
+[data-theme="bold"] [data-mission="2"] { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
+[data-theme="bold"] [data-mission="3"] { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
+[data-theme="bold"] [data-mission="4"] { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
+
+[data-theme="bold"] [data-mission] {
+  background: rgb(var(--m)) !important; /* the cards set their colour inline */
+  border-color: rgb(var(--m));
+  color: rgb(7 7 12);
+  box-shadow:
+    4px 4px 0 rgb(var(--m-shadow)),
+    0 0 22px rgb(var(--m) / 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="bold"] [data-mission]:hover {
+  transform: translate(-1px, -1px);
+  box-shadow:
+    6px 6px 0 rgb(var(--m-shadow)),
+    0 0 30px rgb(var(--m) / 0.5);
+}
+
+[data-theme="bold"] [data-mission] .text-ink,
+[data-theme="bold"] [data-mission] .text-white,
+[data-theme="bold"] [data-mission] [class*="text-white/"] {
+  color: rgb(7 7 12);
+}
+
+[data-theme="bold"] [data-mission] .text-ink-muted {
+  color: rgb(7 7 12 / 0.82);
+}
+
+[data-theme="bold"] [data-mission] [class*="opacity-"] {
+  opacity: 1;
+}
+
+/* The number badge (and the "Carry on" pill) flip to black with neon text. */
+[data-theme="bold"] [data-mission] .mission-badge,
+[data-theme="bold"] [data-mission] .bg-white\/20 {
+  background: rgb(7 7 12) !important;
+  color: rgb(var(--m));
+}
+
+/* ── Progress: the whole neon spectrum ── */
 [data-theme="bold"] .progress-fill {
-  background: linear-gradient(90deg, rgb(var(--c-navy-light)), rgb(var(--c-teal)));
+  background: linear-gradient(
+    90deg,
+    rgb(var(--neon-pink)),
+    rgb(var(--neon-yellow)),
+    rgb(var(--neon-green)),
+    rgb(var(--neon-cyan))
+  );
+  box-shadow: 0 0 10px rgb(var(--neon-cyan) / 0.5);
+}
+
+[data-theme="bold"] .progress-bar {
+  background: rgb(var(--neon-blue) / 0.15);
 }
 
 /* Device passcode (lib/deviceLock.ts): while locked, only the code screen shows. */
