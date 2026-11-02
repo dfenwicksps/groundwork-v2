@@ -1,6 +1,6 @@
 # Check-in v2: draft items for review
 
-**Status:** 12-item version chosen (§3); wording still open for edits. No app code uses these yet.
+**Status:** wording approved and **built** (2 November 2026) as `groundwork-interim-v2` in `src/lib/checkin.ts`. New start check-ins use it; anyone who started on v1 finishes on v1.
 **Decision this implements** (2 November 2026): five outcomes, measured in the app in Groundwork's own words, inspired by validated scales but not copying them:
 - self-esteem
 - self-efficacy
@@ -124,19 +124,19 @@ There are no scores out of 100 and no labels like "low". The current design show
 
 ---
 
-## 5. Code changes needed once you approve the wording
+## 5. How it was built
 
 1. **`checkin.ts`:**
-   - add `groundwork-interim-v2` with the five constructs;
-   - give each construct its own scale labels (efficacy uses scale B);
-   - give items a life-stage wording variant.
-2. **Keep v1 in the code.** A student whose start check-in was v1 must get v1 at the end too, or there's nothing to compare. The end check-in uses the start's `item_set`, and v2 applies only to new starts. This is the most important part of the change.
-3. **`CheckinForm.tsx`:** show the right scale per item and the efficacy stem. It needs the student's life stage, which is already captured at onboarding.
-4. **`CheckinClient.tsx`:** results for five areas; v1 students keep seeing their three.
-5. **`/api/checkin`:** validate against the set being answered, not a fixed list.
-6. **No database migration.** Answers are already stored as JSON with their `item_set`.
+   - both sets live in `ITEM_SETS`, and `CURRENT_SET` is v2;
+   - items carry their scale (`like` or `sure`) and an optional left-school wording;
+   - `setForWave` picks the set: the current one for a start, the start's own for an end.
+2. **`/api/checkin`** reads the student's start row, answers in the same set, validates against it and saves `item_set` with it.
+3. **`CheckinForm`** shows each item's own scale labels and the life-stage wording.
+4. **`/check-in`** compares by the start's set, so v1 students still see their three areas.
+5. **Copy:** the question count in onboarding, Home and /check-in comes from the set, not a hard-coded "nine". The privacy page no longer gives a number.
+6. **No database migration.** Answers were already stored as JSON with their `item_set`.
 
-## 6. Questions for you
+## 6. Questions for you (answered)
 
 1. Any item that doesn't sound like Groundwork, or like your students?
 2. 17 items, or the 12-item version?

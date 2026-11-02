@@ -8,7 +8,7 @@
 - the small amount of code a pilot would need.
 
 **Status, November 2026:**
-- The app runs its own nine-question check-in (`src/lib/checkin.ts`). It's taken during onboarding and again 70 days later, with a record of how much of the app the student used each time.
+- The app runs its own twelve-question check-in (`src/lib/checkin.ts`), covering the five outcomes below. Students who started on the earlier nine questions finish on them. It's taken during onboarding and again 70 days later, with a record of how much of the app the student used each time.
 - The questions are Groundwork's own wording. They aren't validated, so their results aren't evidence.
 - Nothing is analysed across students. The privacy page says answers are only shown back to the student.
 

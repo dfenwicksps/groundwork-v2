@@ -5,11 +5,10 @@ import { MISSIONS, requiredDone, type ProgressRow } from "@/lib/missions";
 import { missionsCompleted } from "@/lib/missionProgress";
 import { CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import {
-  CHECKIN_ITEMS,
-  ITEM_SET,
   complete,
   endDue,
   score,
+  setForWave,
   type Answers,
   type CheckinContext,
   type Dose,
@@ -37,13 +36,7 @@ export async function POST(req: Request) {
   } | null;
   const wave = body?.wave;
   const context: CheckinContext = body?.context === "onboarding" ? "onboarding" : "home";
-  // Only the known items, only whole numbers 1–5.
-  const answers: Answers = {};
-  for (const { key } of CHECKIN_ITEMS) {
-    const v = Number(body?.answers?.[key]);
-    if (Number.isInteger(v) && v >= 1 && v <= 5) answers[key] = v;
-  }
-  if ((wave !== "start" && wave !== "end") || !complete(answers)) {
+  if (wave !== "start" && wave !== "end") {
     return NextResponse.json({ error: "Incomplete check-in" }, { status: 400 });
   }
 
@@ -56,7 +49,7 @@ export async function POST(req: Request) {
     { data: profile },
     lifeStage,
   ] = await Promise.all([
-    db.from("outcome_checkins").select("wave, created_at").eq("user_id", user.id),
+    db.from("outcome_checkins").select("wave, item_set, created_at").eq("user_id", user.id),
     db.from("mission_progress").select("mission_id, activity_id, completed_at").eq("user_id", user.id),
     db.from("program_progress").select("week, completed_at").eq("user_id", user.id),
     db
@@ -71,8 +64,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "The check-in isn't switched on yet." }, { status: 503 });
   }
 
-  const rows = (existing || []) as { wave: Wave; created_at: string }[];
-  const startAt = rows.find((r) => r.wave === "start")?.created_at ?? null;
+  const rows = (existing || []) as { wave: Wave; item_set: string; created_at: string }[];
+  const startRow = rows.find((r) => r.wave === "start");
+  const startAt = startRow?.created_at ?? null;
+  // An end is answered in its start's set, so the two can be compared.
+  const set = setForWave(wave, startRow?.item_set);
+  // Only the known items, only whole numbers 1–5.
+  const answers: Answers = {};
+  for (const { key } of set.items) {
+    const v = Number(body?.answers?.[key]);
+    if (Number.isInteger(v) && v >= 1 && v <= 5) answers[key] = v;
+  }
+  if (!complete(set, answers)) {
+    return NextResponse.json({ error: "Incomplete check-in" }, { status: 400 });
+  }
   if (wave === "start" && startAt) {
     return NextResponse.json({ error: "Already done" }, { status: 409 });
   }
@@ -94,11 +99,11 @@ export async function POST(req: Request) {
     daysSinceJoined: joined ? Math.floor((Date.now() - new Date(joined).getTime()) / 86_400_000) : null,
   };
 
-  const scores = score(answers);
+  const scores = score(set, answers);
   const row = {
     user_id: user.id,
     wave,
-    item_set: ITEM_SET,
+    item_set: set.id,
     answers,
     scores,
     life_stage: lifeStage,
