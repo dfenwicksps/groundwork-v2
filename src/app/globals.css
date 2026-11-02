@@ -636,10 +636,12 @@ body {
 
 /* ── Blocky type ── */
 /* Page titles: Orbitron, wide and sci-fi, with a pink/cyan split glow.
-   !important because some titles set their font inline; story lines inside
-   a title set theirs on an inner element, so they keep Fraunces. */
-[data-theme="bold"] h1,
-[data-theme="bold"] .heading-display {
+   !important because most titles set the display font inline. Titles in the
+   story voice (inline --font-story: a story's title, a mission's question)
+   are left out, as are story lines inside a title (set on an inner element),
+   so they keep Fraunces. */
+[data-theme="bold"] h1:not([style*="--font-story"]),
+[data-theme="bold"] .heading-display:not([style*="--font-story"]) {
   font-family: var(--font-title) !important;
   font-weight: 900 !important;
   letter-spacing: 0.01em !important;
@@ -653,7 +655,7 @@ body {
 
 /* Orbitron is wide: keep page titles from crowding a phone screen. */
 @media (max-width: 640px) {
-  [data-theme="bold"] h1 {
+  [data-theme="bold"] h1:not([style*="--font-story"]) {
     font-size: min(1.75rem, 8vw);
     line-height: 1.15;
   }
