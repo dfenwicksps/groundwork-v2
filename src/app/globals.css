@@ -767,7 +767,7 @@ body {
   box-shadow: 0 0 12px rgb(var(--neon-cyan) / 0.25);
 }
 
-/* ── Fluoro blocks: mission, dashboard and journal cards ──
+/* ── Fluoro blocks: mission, dashboard, journal and Me tab cards ──
    A card becomes a solid fluoro block in Bold when it carries data-mission
    (missions 1 to 4: pink, blue, green, yellow, matching the missions tab) or
    data-fluoro="pink" | "blue" | "green" | "yellow" | "orange" | "violet".
@@ -807,7 +807,7 @@ body {
   color: rgb(7 7 12) !important;
 }
 
-[data-theme="bold"] :is([data-mission], [data-fluoro]) .text-ink-muted {
+[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.text-ink-muted, .text-ink-faint) {
   color: rgb(7 7 12 / 0.82) !important;
 }
 
@@ -820,12 +820,35 @@ body {
   border-color: rgb(7 7 12 / 0.3);
 }
 
-/* Badges, pills and icon tiles flip to black with neon text. */
+/* Badges, pills, icon tiles, selected chips and buttons flip to black with
+   neon text (a pink or cyan fill would vanish into a fluoro card). */
 [data-theme="bold"] :is([data-mission], [data-fluoro])
   :is(.mission-badge, .entry-dot, .bg-white\/15, .bg-white\/20, .bg-surface-muted,
-      .bg-navy\/10, .bg-coral\/10, .bg-teal\/10) {
+      .bg-navy\/10, .bg-coral\/10, .bg-teal\/10, .bg-navy, .bg-\[--navy\],
+      .bg-teal, .bg-sage, .btn-primary, .btn-teal) {
   background: rgb(7 7 12) !important;
   color: rgb(var(--m)) !important;
+}
+
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is(.mission-badge, .bg-navy, .bg-\[--navy\], .bg-teal, .bg-sage, .btn-primary,
+      .btn-teal, .bg-white\/15, .bg-white\/20) * {
+  color: inherit !important;
+}
+
+/* White chips and cards inside a fluoro block go see-through, so their dark
+   text sits on the fluoro colour. */
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is(.bg-white, .bg-white\/95, .bg-white\/96, .card:not([data-fluoro]):not([data-mission])) {
+  background: transparent;
+  border-color: rgb(7 7 12 / 0.3);
+  box-shadow: none;
+}
+
+/* Form fields stay dark with light text: they're for writing in. */
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is(input, textarea, select, .input, .journal-textarea, .conv-textarea) {
+  color: var(--ink) !important;
 }
 
 /* ── Progress: the whole neon spectrum ── */

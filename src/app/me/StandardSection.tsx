@@ -136,7 +136,7 @@ export default function StandardSection({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           The Standard
         </h2>
-        <div className="card p-5 flex items-center gap-4">
+        <div data-fluoro="yellow" className="card p-5 flex items-center gap-4">
           <span className="text-3xl flex-shrink-0" aria-hidden>
             🧰
           </span>
@@ -160,7 +160,7 @@ export default function StandardSection({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           {editing ? "Editing your last check-in" : "The Standard"}
         </h2>
-        <div className="card p-5">
+        <div data-fluoro="orange" className="card p-5">
           <p className="text-xs text-ink-muted mb-5 leading-relaxed">
             Answer honestly, not impressively. Nobody else sees this — and a
             weak honest answer is worth more to you than a strong invented one.
@@ -269,7 +269,7 @@ export default function StandardSection({
           putting into the rooms you&apos;re in — and you answer them again and
           again, for as long as you use this app.
         </p>
-        <div className="card p-5">
+        <div data-fluoro="violet" className="card p-5">
           <div className="space-y-3 mb-5">
             {STANDARD_QUESTIONS.map((q) => (
               <div key={q.key} className="flex items-start gap-2.5">
@@ -310,7 +310,7 @@ export default function StandardSection({
 
       {supportNeeded && <SupportCard />}
 
-      <div className="card p-5">
+      <div data-fluoro="pink" className="card p-5">
         <div className="flex items-center justify-between gap-2 mb-4">
           <span className="text-xs font-bold text-teal uppercase tracking-wider">
             Most recent

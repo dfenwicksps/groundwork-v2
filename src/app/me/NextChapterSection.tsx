@@ -19,7 +19,7 @@ export default function NextChapterSection({ plan }: { plan: NextChapter | null 
           ? "The plan you made for what's next."
           : "The options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask. About ten minutes."}
       </p>
-      <Link href="/next" className="card p-5 block hover:border-navy/30 transition-all">
+      <Link href="/next" data-fluoro="yellow" className="card p-5 block hover:border-navy/30 transition-all">
         {plan ? (
           <>
             <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-1">Hoping for</div>

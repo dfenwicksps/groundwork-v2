@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { fluoroAt } from "@/lib/fluoro";
 import { suggestPathways } from "@/lib/pathways";
 import { futureFirst, type LifeStage } from "@/lib/lifeStage";
 
@@ -39,10 +40,10 @@ export default function PathwaysSection({
           : "Your strengths, values and character profile suggest you may find meaning in pathways where you can… (open doors, never “you should become this.”)"}
       </p>
       <div className="space-y-2">
-        {suggestions.map(({ cluster, fromStrengths, fromValues }) => {
+        {suggestions.map(({ cluster, fromStrengths, fromValues }, i) => {
           const isOpen = open === cluster.key;
           return (
-            <div key={cluster.key} className="card overflow-hidden">
+            <div key={cluster.key} data-fluoro={fluoroAt(i + 1)} className="card overflow-hidden">
               <button
                 onClick={() => setOpen(isOpen ? null : cluster.key)}
                 className="w-full p-4 flex items-center gap-3 text-left"

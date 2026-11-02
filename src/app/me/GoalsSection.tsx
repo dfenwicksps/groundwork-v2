@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { fluoroAt } from "@/lib/fluoro";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { strengthName } from "@/lib/strengths";
@@ -180,8 +181,8 @@ export default function GoalsSection({
       {/* Active goals */}
       {active.length > 0 && (
         <div className="space-y-2 mb-3">
-          {active.map((g) => (
-            <div key={g.id} className="card p-4">
+          {active.map((g, i) => (
+            <div key={g.id} data-fluoro={fluoroAt(i + 2)} className="card p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-xs font-bold text-teal uppercase tracking-wider">
                   {domainLabels[g.domain].emoji} {domainLabels[g.domain].label}
@@ -279,7 +280,7 @@ export default function GoalsSection({
 
       {/* Create / edit */}
       {creating ? (
-        <div className="card p-5 space-y-3">
+        <div data-fluoro="green" className="card p-5 space-y-3">
           <div>
             <p className="text-xs font-semibold text-ink mb-2">Where does this goal live?</p>
             <div className="flex gap-2">
