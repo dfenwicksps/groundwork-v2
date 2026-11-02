@@ -896,7 +896,7 @@ body {
 [data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.text-ink, .text-white, [class*="text-white/"], .text-navy, .text-teal,
       [class*="text-teal/"], .text-sage, .text-coral, .text-gold-text,
-      .btn-secondary, [style*="color:"]) {
+      .text-red-600, .text-red-700, .text-red-800, .btn-secondary, [style*="color:"]) {
   color: rgb(7 7 12) !important;
 }
 
@@ -936,6 +936,20 @@ body {
   background: transparent;
   border-color: rgb(7 7 12 / 0.3);
   box-shadow: none;
+}
+
+/* A chosen option (life stage, look, a switch that's on): a black outline
+   and a darker wash, where a cyan ring could vanish into the card. */
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is([aria-pressed="true"], [aria-checked="true"]):not(.bg-navy):not(.bg-\[--navy\]) {
+  border-color: rgb(7 7 12) !important;
+  background-color: rgb(7 7 12 / 0.12) !important;
+  --tw-ring-color: rgb(7 7 12);
+}
+
+/* A switch's knob stays visible: neon on the black (on) or tinted (off) track. */
+[data-theme="bold"] :is([data-mission], [data-fluoro]) .switch-knob {
+  background: rgb(var(--m)) !important;
 }
 
 /* Form fields stay dark with light text: they're for writing in. */

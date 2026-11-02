@@ -126,7 +126,7 @@ export default function ThemeSettings({
   }
 
   return (
-    <div data-animate="3" className="card p-6">
+    <div data-animate="3" data-fluoro="blue" className="card p-6">
       <h2 className="font-semibold text-ink mb-1">Look</h2>
       <p className="text-sm text-ink-muted mb-4">
         Pick how Groundwork looks. It&apos;s saved to your account, so it follows you to
