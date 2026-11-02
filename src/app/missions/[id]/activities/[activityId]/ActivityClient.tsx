@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useId, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
-import { cn, parseReflection } from "@/lib/utils";
+import { cn, parseReflection, tint } from "@/lib/utils";
 import {
   TIERS,
   insertText,
@@ -181,11 +181,11 @@ interface CompletedTurn {
 
 function RecallCard({ recalled, accent }: { recalled: { label: string; text: string }; accent: string }) {
   return (
-    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${accent}35` }}>
+    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${tint(accent, "35")}` }}>
       <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: accent }}>
         {recalled.label}
       </div>
-      <blockquote className="text-sm text-[--ink] leading-relaxed border-l-2 pl-3 whitespace-pre-line" style={{ borderColor: `${accent}55` }}>
+      <blockquote className="text-sm text-[--ink] leading-relaxed border-l-2 pl-3 whitespace-pre-line" style={{ borderColor: `${tint(accent, "55")}` }}>
         {recalled.text}
       </blockquote>
     </div>
@@ -815,7 +815,7 @@ function ConversationalActivity({
               <div className="flex items-center gap-2 mb-3">
                 <span
                   className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                  style={{ background: `${mission.colour}18`, color: mission.colour }}
+                  style={{ background: `${tint(mission.colour, "18")}`, color: mission.colour }}
                 >
                   {mission.subtitle} — {mission.title}
                 </span>
@@ -869,7 +869,7 @@ function ConversationalActivity({
             {compass && (compass.strengths.length > 0 || compass.values.length > 0) && (
               <div
                 className="rounded-2xl p-4 mb-5 bg-white border-2"
-                style={{ borderColor: `${mission.colour}35` }}
+                style={{ borderColor: `${tint(mission.colour, "35")}` }}
               >
                 <div
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
@@ -905,7 +905,7 @@ function ConversationalActivity({
                         <span
                           key={v}
                           className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                          style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                          style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                         >
                           {v}
                         </span>
@@ -920,7 +920,7 @@ function ConversationalActivity({
                     </div>
                     <span
                       className="px-2.5 py-1 rounded-full text-xs font-semibold border inline-block capitalize"
-                      style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                      style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                     >
                       {compass.moralStyle}-led
                     </span>
@@ -954,7 +954,7 @@ function ConversationalActivity({
             {activity.interviewQuestions && activity.interviewQuestions.length > 0 && (
               <div
                 className="rounded-2xl p-4 mb-5 bg-white border-2"
-                style={{ borderColor: `${mission.colour}35` }}
+                style={{ borderColor: `${tint(mission.colour, "35")}` }}
               >
                 <div
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
@@ -1002,7 +1002,7 @@ function ConversationalActivity({
             {pairedStory && (
               <div
                 className="rounded-2xl mb-5 overflow-hidden"
-                style={{ border: `2px solid ${mission.colour}45`, background: `${mission.colour}0E` }}
+                style={{ border: `2px solid ${tint(mission.colour, "45")}`, background: `${tint(mission.colour, "0E")}` }}
               >
                 <button
                   type="button"
@@ -1055,7 +1055,7 @@ function ConversationalActivity({
                     </p>
                     <div
                       className="rounded-xl px-4 py-3 bg-white border"
-                      style={{ borderColor: `${mission.colour}35` }}
+                      style={{ borderColor: `${tint(mission.colour, "35")}` }}
                     >
                       <div
                         className="text-xs font-bold uppercase tracking-widest mb-1"
@@ -1085,7 +1085,7 @@ function ConversationalActivity({
                     <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
                       <span
                         className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
-                        style={{ background: `${mission.colour}60` }}
+                        style={{ background: mission.colour }}
                       >
                         {i + 1}
                       </span>
@@ -1101,7 +1101,7 @@ function ConversationalActivity({
               <div
                 role="status"
                 className="mb-3 px-4 py-3 rounded-xl border text-sm text-[--ink] leading-relaxed"
-                style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+                style={{ background: `${tint(mission.colour, "0D")}`, borderColor: `${tint(mission.colour, "25")}` }}
               >
                 We saved where you got to last time — you can pick up from
                 question {Math.min(qIdx + 1, questions.length)}.
@@ -1256,8 +1256,8 @@ function ConversationalActivity({
                 data-animate="1"
                 className="rounded-2xl p-4 border"
                 style={{
-                  background: `${mission.colour}0D`,
-                  borderColor: `${mission.colour}25`,
+                  background: `${tint(mission.colour, "0D")}`,
+                  borderColor: `${tint(mission.colour, "25")}`,
                 }}
               >
                 <div
@@ -1387,7 +1387,7 @@ function ConversationalActivity({
                 <div
                   data-animate="3"
                   className="rounded-2xl p-4 bg-white border-2"
-                  style={{ borderColor: `${mission.colour}35` }}
+                  style={{ borderColor: `${tint(mission.colour, "35")}` }}
                 >
                   <div
                     className="text-xs font-bold uppercase tracking-widest mb-2"
@@ -1400,7 +1400,7 @@ function ConversationalActivity({
                       <span
                         key={item}
                         className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                        style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                        style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                       >
                         {item}
                       </span>
@@ -1451,7 +1451,7 @@ function ConversationalActivity({
                   )}
                   style={
                     selectedOption === OTHER_OPTION
-                      ? { borderColor: mission.colour, background: `${mission.colour}0D` }
+                      ? { borderColor: mission.colour, background: `${tint(mission.colour, "0D")}` }
                       : { borderColor: "var(--border)" }
                   }
                 >
@@ -1485,7 +1485,7 @@ function ConversationalActivity({
                   >
                     <span className="text-[--ink]">
                       {stem.trimEnd()}
-                      <span className="text-[--ink-muted] opacity-60"> …</span>
+                      <span className="text-[--ink-muted]"> …</span>
                     </span>
                   </button>
                 ))}
@@ -1634,7 +1634,7 @@ function ConversationalActivity({
             (compass.strengths.length > 0 || compass.values.length > 0) && (
             <div
               className="rounded-2xl p-4 mb-5 bg-white border-2"
-              style={{ borderColor: `${mission.colour}35` }}
+              style={{ borderColor: `${tint(mission.colour, "35")}` }}
               data-animate="2"
             >
               <div
@@ -1657,7 +1657,7 @@ function ConversationalActivity({
                   <span
                     key={v}
                     className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                    style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                    style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                   >
                     {v}
                   </span>
@@ -2534,7 +2534,7 @@ function ChallengeActivity({
         {compass && compass.growthEdges.length > 0 && (
           <div
             className="rounded-2xl p-4 mb-5 bg-white border-2"
-            style={{ borderColor: `${mission.colour}35` }}
+            style={{ borderColor: `${tint(mission.colour, "35")}` }}
           >
             <div
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
@@ -2760,7 +2760,7 @@ function StrengthsAssessmentActivity({
             <div className="mb-6">
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{ background: `${mission.colour}18`, color: mission.colour }}
+                style={{ background: `${tint(mission.colour, "18")}`, color: mission.colour }}
               >
                 {mission.subtitle} — {mission.title}
               </span>
@@ -2949,7 +2949,7 @@ function StrengthsAssessmentActivity({
         <div className="max-w-lg lg:max-w-2xl mx-auto px-4 pt-6 space-y-4">
           <div
             className="rounded-2xl p-4 border"
-            style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+            style={{ background: `${tint(mission.colour, "0D")}`, borderColor: `${tint(mission.colour, "25")}` }}
             data-animate="1"
           >
             <div

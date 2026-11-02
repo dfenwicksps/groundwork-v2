@@ -162,7 +162,7 @@ export default function ScaffoldedInput({
             >
               <span>
                 {s.trimEnd()}
-                <span className="text-[--ink-muted] opacity-60"> …</span>
+                <span className="text-[--ink-muted]"> …</span>
               </span>
             </button>
           ))}

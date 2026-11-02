@@ -26,18 +26,35 @@
   --c-gold-light: 251 191 36;
   --c-gold-dark: 217 119 6;
   --c-gold-text: 146 97 12;     /* amber for TEXT — 5.0:1 on white */
-  --c-sage: 21 128 61;          /* vivid green — success + connection */
+  --c-sage: 22 101 52;          /* green — success + connection; 5.3:1 on its tint */
   --c-sage-light: 22 163 74;
-  --c-sage-dark: 22 101 52;
-  --c-coral: 225 29 72;         /* pop accent — milestones + celebrations */
+  --c-sage-dark: 20 83 45;
+  --c-coral: 190 18 60;         /* pop accent — milestones; 5.3:1 on its tint */
   --c-coral-light: 244 63 94;
-  --c-coral-dark: 190 18 60;
+  --c-coral-dark: 159 18 57;
   --c-surface: 255 255 255;
   --c-surface-muted: 250 245 236; /* warm cream instead of grey */
   --c-border: 235 226 210;      /* warm border to match the cream */
   --c-ink: 26 26 26;
   --c-ink-muted: 99 96 90;      /* warm grey, 5.6:1 on white */
   --c-ink-faint: 153 153 153;
+
+  /* Mission colours (lib/missions.ts reads these). Fills that carry white
+     labels in Light and Dark; Bold swaps in its fluoro set below. */
+  --mission-1: #4F46E5;
+  --mission-1-light: #6366F1;
+  --mission-2: #0E7490;
+  --mission-2-light: #0891B2;
+  --mission-3: #15803D;
+  --mission-3-light: #16A34A;
+  --mission-4: #C2410C;
+  --mission-4-light: #EA580C;
+  /* Mission colours as TEXT (inline color: mission.colour), retargeted below:
+     deeper in Light so they read on pale tints, lighter in Dark. */
+  --mission-1-text: #4338CA;
+  --mission-2-text: #155E75;
+  --mission-3-text: #166534;
+  --mission-4-text: #9A3412;
 
   --virtue-wisdom: #4338CA;
   --virtue-courage: #C2410C;
@@ -77,20 +94,27 @@
 :root[data-theme="dark"],
 :root[data-theme="bold"] {
   color-scheme: dark;
-  --c-on-accent: 255 255 255;
-  --c-navy: 99 102 241;
+  /* Labels on cyan and green fills go near-black: white on them is 2.4:1. */
+  --c-on-accent: 18 18 28;
+  /* Indigo is a FILL here (white labels 6.3:1); indigo TEXT uses navy-light
+     (5.6:1 on cards, see the .text-navy override). */
+  --c-navy: 79 70 229;
   --c-navy-light: 129 140 248;
-  --c-navy-dark: 79 70 229;
+  --c-navy-dark: 67 56 202;
   --c-teal: 6 182 212;
   --c-teal-light: 34 211 238;
   --c-teal-dark: 8 145 178;
   --c-gold-text: 251 191 36;
-  --c-sage: 22 163 74;
-  --c-sage-light: 34 197 94;
-  --c-sage-dark: 21 128 61;
-  --c-coral: 244 63 94;
-  --c-coral-light: 251 113 133;
-  --c-coral-dark: 225 29 72;
+  --c-sage: 34 197 94;
+  --c-sage-light: 74 222 128;
+  --c-sage-dark: 22 163 74;
+  --c-coral: 251 113 133;
+  --c-coral-light: 253 164 175;
+  --c-coral-dark: 251 113 133;
+  --mission-1-text: #A5B4FC;
+  --mission-2-text: #67E8F9;
+  --mission-3-text: #86EFAC;
+  --mission-4-text: #FDBA74;
   --c-surface: 28 28 41;
   --c-surface-muted: 18 18 28;
   --c-border: 46 46 66;
@@ -127,7 +151,7 @@
   --c-sage-dark: 30 214 80;
   --c-coral: 255 46 151;        /* fluoro pink */
   --c-coral-light: 255 124 196;
-  --c-coral-dark: 230 0 126;
+  --c-coral-dark: 255 79 176;   /* used as text too: 6.2:1 on cards */
   --c-surface: 18 18 28;
   --c-surface-muted: 7 7 12;
   --c-border: 60 42 90;         /* electric violet edge */
@@ -141,6 +165,22 @@
   --virtue-justice: #00E5FF;
   --virtue-temperance: #39FF6A;
   --virtue-transcendence: #FFE600;
+
+  /* Missions go fluoro: pink, blue, green, yellow. As text on the dark
+     cards they're 5.4:1 or better; as fills, text on them goes near-black
+     (see "Fluoro blocks"). */
+  --mission-1: #FF2E97;
+  --mission-1-light: #FF7CC4;
+  --mission-2: #00C2FF;
+  --mission-2-light: #66DAFF;
+  --mission-3: #39FF6A;
+  --mission-3-light: #8CFFA8;
+  --mission-4: #FFE600;
+  --mission-4-light: #FFF04D;
+  --mission-1-text: #FF2E97;
+  --mission-2-text: #00C2FF;
+  --mission-3-text: #39FF6A;
+  --mission-4-text: #FFE600;
 
   /* Neon accents for the Bold-only styling below */
   --neon-pink: 255 46 151;
@@ -598,6 +638,49 @@ body {
   background-size: 200% 100%;
 }
 
+/* Mission colours used as text (inline color: var(--mission-N)) take the
+   look's text variant. Matched on the inline style: ";color:" or a leading
+   "color:", so borders and backgrounds are left alone. Both spellings: the
+   server writes "color:var(…)", the browser "color: var(…);". */
+:is([style^="color:var(--mission-1)"], [style*=";color:var(--mission-1)"], [style^="color: var(--mission-1)"], [style*="; color: var(--mission-1)"]) { color: var(--mission-1-text) !important; }
+:is([style^="color:var(--mission-2)"], [style*=";color:var(--mission-2)"], [style^="color: var(--mission-2)"], [style*="; color: var(--mission-2)"]) { color: var(--mission-2-text) !important; }
+:is([style^="color:var(--mission-3)"], [style*=";color:var(--mission-3)"], [style^="color: var(--mission-3)"], [style*="; color: var(--mission-3)"]) { color: var(--mission-3-text) !important; }
+:is([style^="color:var(--mission-4)"], [style*=";color:var(--mission-4)"], [style^="color: var(--mission-4)"], [style*="; color: var(--mission-4)"]) { color: var(--mission-4-text) !important; }
+
+/* White labels on coloured fills are solid in every look: faded white is
+   below 4.5:1 on most of the fills (teal especially). Decorative shapes
+   (aria-hidden) keep their fade. */
+[class*="text-white/"] {
+  color: #fff;
+}
+.text-white :is(.opacity-60, .opacity-70, .opacity-75, .opacity-80, .opacity-90):not([aria-hidden]),
+:is(.opacity-60, .opacity-70, .opacity-75, .opacity-80, .opacity-90).text-white:not([aria-hidden]) {
+  opacity: 1;
+}
+
+/* Dark: the cyan button's fill is light enough that its label goes dark. */
+[data-theme="dark"] .btn-teal {
+  color: rgb(var(--c-on-accent));
+}
+
+/* Tailwind's red and amber utilities are written for light backgrounds. On
+   Dark and Bold: warnings and errors in a brighter red (6:1 or better on the
+   cards), and pale notice boxes become a dark tint so their light text reads. */
+:is([data-theme="dark"], [data-theme="bold"]) :is(.text-red-600, .text-red-700, .text-red-800) {
+  color: #FF6B6B;
+}
+:is([data-theme="dark"], [data-theme="bold"]) .hover\:text-red-400:hover { color: #FCA5A5; }
+:is([data-theme="dark"], [data-theme="bold"]) .bg-red-50 { background-color: rgb(255 77 77 / 0.1); }
+:is([data-theme="dark"], [data-theme="bold"]) .bg-red-50\/30 { background-color: rgb(255 77 77 / 0.05); }
+:is([data-theme="dark"], [data-theme="bold"]) .bg-red-100 { background-color: rgb(255 77 77 / 0.18); }
+:is([data-theme="dark"], [data-theme="bold"]) .hover\:bg-red-50:hover { background-color: rgb(255 77 77 / 0.12); }
+:is([data-theme="dark"], [data-theme="bold"]) .hover\:bg-red-100:hover { background-color: rgb(255 77 77 / 0.2); }
+:is([data-theme="dark"], [data-theme="bold"]) :is(.border-red-100, .border-red-200, .border-red-400) {
+  border-color: rgb(255 107 107 / 0.45);
+}
+:is([data-theme="dark"], [data-theme="bold"]) .bg-amber-50 { background-color: rgb(255 200 0 / 0.1); }
+:is([data-theme="dark"], [data-theme="bold"]) .border-amber-200 { border-color: rgb(255 200 0 / 0.4); }
+
 /* ── Bold look ────────────────────────────────────────────────────────────
    Cyberpunk: a neon grid behind everything, glowing pink and cyan, blocky
    type (Orbitron for page titles, Russo One for headings, buttons and
@@ -621,19 +704,22 @@ body {
   color: #fff;
 }
 
-/* Pink as text: the brighter pink, so it reads on near-black. */
-[data-theme="bold"] .text-navy,
-[data-theme="bold"] .text-\[--navy\],
-[data-theme="bold"] .hover\:text-\[--navy\]:hover,
-[data-theme="bold"] .btn-secondary {
+/* The brand fill as text: the brighter variant, so it reads on dark
+   (pink in Bold, indigo in Dark). */
+:is([data-theme="bold"], [data-theme="dark"]) :is(.text-navy, .text-\[--navy\], .btn-secondary),
+:is([data-theme="bold"], [data-theme="dark"]) .hover\:text-\[--navy\]:hover {
   color: rgb(var(--c-navy-light));
 }
 
 /* Translucent white loses contrast on the pink fill (white/70 is 3.0:1), so
    in Bold every text-white/NN label is opaque; size and weight still carry
-   the hierarchy. */
+   the hierarchy. The same goes for text faded with an opacity class.
+   Decorative shapes (aria-hidden) keep their fade. */
 [data-theme="bold"] [class*="text-white/"] {
   color: #fff;
+}
+[data-theme="bold"] :is(.opacity-60, .opacity-70, .opacity-75, .opacity-80, .opacity-90):not([aria-hidden]) {
+  opacity: 1;
 }
 
 /* ── Blocky type ── */
@@ -773,10 +859,10 @@ body {
    data-fluoro="pink" | "blue" | "green" | "yellow" | "orange" | "violet".
    Light and Dark ignore both. Text on them is near-black: 5.8:1 on pink and better on the rest;
    secondary text is 82% black, which still clears 4.5:1 on pink. */
-[data-theme="bold"] :is([data-mission="1"], [data-fluoro="pink"])   { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
-[data-theme="bold"] :is([data-mission="2"], [data-fluoro="blue"])   { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
-[data-theme="bold"] :is([data-mission="3"], [data-fluoro="green"])  { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
-[data-theme="bold"] :is([data-mission="4"], [data-fluoro="yellow"]) { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
+[data-theme="bold"] :is([data-mission="1"], [data-fluoro="pink"], [style*="background:var(--mission-1)"], [style*="background: var(--mission-1)"])   { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
+[data-theme="bold"] :is([data-mission="2"], [data-fluoro="blue"], [style*="background:var(--mission-2)"], [style*="background: var(--mission-2)"])   { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
+[data-theme="bold"] :is([data-mission="3"], [data-fluoro="green"], [style*="background:var(--mission-3)"], [style*="background: var(--mission-3)"])  { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
+[data-theme="bold"] :is([data-mission="4"], [data-fluoro="yellow"], [style*="background:var(--mission-4)"], [style*="background: var(--mission-4)"]) { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
 /* Two more for journal groups outside the missions: 8.5:1 and 7.4:1. */
 [data-theme="bold"] [data-fluoro="orange"] { --m: var(--neon-orange); --m-shadow: var(--neon-cyan); }
 [data-theme="bold"] [data-fluoro="violet"] { --m: var(--neon-violet); --m-shadow: var(--neon-yellow); }
@@ -798,47 +884,54 @@ body {
     0 0 30px rgb(var(--m) / 0.5);
 }
 
+/* Anything filled with a mission colour inline (headers, badges, buttons,
+   selected chips) is fluoro in Bold, so its own text goes near-black too. */
+[data-theme="bold"] [style*="background:var(--mission-"], [style*="background: var(--mission-"],
+[data-theme="bold"] [style*="background:var(--mission-"], [style*="background: var(--mission-"]:is(.text-white, [class*="text-white/"]) {
+  color: rgb(7 7 12);
+}
+
 /* Every coloured or white text inside goes near-black, including colours
    set inline. */
-[data-theme="bold"] :is([data-mission], [data-fluoro])
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.text-ink, .text-white, [class*="text-white/"], .text-navy, .text-teal,
       [class*="text-teal/"], .text-sage, .text-coral, .text-gold-text,
       .btn-secondary, [style*="color:"]) {
   color: rgb(7 7 12) !important;
 }
 
-[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.text-ink-muted, .text-ink-faint) {
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"]) :is(.text-ink-muted, .text-ink-faint) {
   color: rgb(7 7 12 / 0.82) !important;
 }
 
 /* Faded text goes solid; decorative shapes (aria-hidden) keep their fade. */
-[data-theme="bold"] :is([data-mission], [data-fluoro]) [class*="opacity-"]:not([aria-hidden]) {
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"]) :is(.opacity-60, .opacity-70, .opacity-75, .opacity-80, .opacity-90):not([aria-hidden]) {
   opacity: 1;
 }
 
-[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.border-surface-border, [class*="border-white/"], .btn-secondary) {
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"]) :is(.border-surface-border, [class*="border-white/"], .btn-secondary) {
   border-color: rgb(7 7 12 / 0.3);
 }
 
 /* Badges, pills, icon tiles, selected chips and buttons flip to black with
    neon text (a pink or cyan fill would vanish into a fluoro card). */
-[data-theme="bold"] :is([data-mission], [data-fluoro])
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.mission-badge, .entry-dot, .bg-white\/15, .bg-white\/20, .bg-surface-muted,
       .bg-navy\/10, .bg-coral\/10, .bg-teal\/10, .bg-navy, .bg-\[--navy\],
-      .bg-teal, .bg-sage, .btn-primary, .btn-teal) {
+      .bg-teal, .bg-sage, .btn-primary, .btn-teal, [class*="bg-black/"]) {
   background: rgb(7 7 12) !important;
   color: rgb(var(--m)) !important;
 }
 
-[data-theme="bold"] :is([data-mission], [data-fluoro])
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.mission-badge, .bg-navy, .bg-\[--navy\], .bg-teal, .bg-sage, .btn-primary,
-      .btn-teal, .bg-white\/15, .bg-white\/20) * {
+      .btn-teal, .bg-white\/15, .bg-white\/20, [class*="bg-black/"]) * {
   color: inherit !important;
 }
 
 /* White chips and cards inside a fluoro block go see-through, so their dark
    text sits on the fluoro colour. */
-[data-theme="bold"] :is([data-mission], [data-fluoro])
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.bg-white, .bg-white\/95, .bg-white\/96, .card:not([data-fluoro]):not([data-mission])) {
   background: transparent;
   border-color: rgb(7 7 12 / 0.3);
@@ -846,7 +939,7 @@ body {
 }
 
 /* Form fields stay dark with light text: they're for writing in. */
-[data-theme="bold"] :is([data-mission], [data-fluoro])
+[data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(input, textarea, select, .input, .journal-textarea, .conv-textarea) {
   color: var(--ink) !important;
 }

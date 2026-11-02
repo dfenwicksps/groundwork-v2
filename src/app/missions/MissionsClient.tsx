@@ -121,7 +121,7 @@ export default function MissionsClient({
               </p>
               </div>
               {/* A phone taps the card; a wide card wants somewhere to aim. */}
-              <span className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 bg-white/20 group-hover:bg-white/30 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium">
+              <span className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 bg-black/20 group-hover:bg-black/30 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium">
                 {started ? "Carry on" : "Start"} <span aria-hidden>→</span>
               </span>
             </Link>
