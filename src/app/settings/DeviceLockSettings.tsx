@@ -49,7 +49,7 @@ export default function DeviceLockSettings() {
   const pinInput = "input text-center tracking-[0.5em] text-lg";
 
   return (
-    <div className="card p-6">
+    <div data-fluoro="violet" className="card p-6">
       <h2 className="font-semibold text-ink mb-1">Lock on this device</h2>
       <p className="text-sm text-ink-muted mb-4 leading-relaxed">
         If other people use this phone or computer, ask for a {PIN_LENGTH}-digit code
