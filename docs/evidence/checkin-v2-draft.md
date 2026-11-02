@@ -1,6 +1,6 @@
 # Check-in v2: draft items for review
 
-**Status:** DRAFT for your edits. No app code uses these yet.
+**Status:** 12-item version chosen (§3); wording still open for edits. No app code uses these yet.
 **Decision this implements** (2 November 2026): five outcomes, measured in the app in Groundwork's own words, inspired by validated scales but not copying them:
 - self-esteem
 - self-efficacy
@@ -87,15 +87,28 @@ No reverse item. That's deliberate (see rule 2), and the cost is some sensitivit
 
 ---
 
-## 3. Order and length
+## 3. Chosen version: 12 items (decided 2 November 2026)
 
-**17 items, about 3 minutes.** That's up from 9, so onboarding gets longer. Order, alternating constructs and scales:
+The 12-item version is chosen. The other five items stay in §2 for reference, struck from use: **c3, e2, f2, s2, s4**.
 
-c1 · e1 · s1 · m1 · f1 · c2 · s2 · e2 · m2 · f2 · s3 · c3 · e3 · s4 · m3 · f3 · s5
+| Area | Items | Reverse |
+|---|---|---|
+| Knowing who you are (clarity) | c1, c2 | c2 |
+| Liking who you are (esteem) | e1, e3 | e3 |
+| Backing yourself (confidence) | f1, f3 | f3 |
+| Knowing you can (efficacy) | s1, s3, s5 | — |
+| Mattering to people | m1, m2, m3 | — |
 
-**If that's too long,** a 12-item version would be: c1, c2, e1, e3, f1, f3, s1, s3, s5, m1, m2, m3. It keeps at least two items per construct, and one reverse item each for clarity, esteem and confidence. Two-item results are rough, so I'd only drop to this if completion rates suffer.
+**Order** (no two items from the same area next to each other):
 
----
+c1 · e1 · s1 · m1 · f1 · c2 · s3 · e3 · m2 · f3 · s5 · m3
+
+**About 2 minutes**, three more items than the current nine.
+
+**What the shorter version costs:**
+- **Two-item areas are rough.** Clarity, esteem and confidence each rest on one forward and one reverse item. That's enough to show a student a broad shift, not a fine one. The pilot will show whether they hold together well enough.
+- **Clarity is only partly comparable with v1.** v1's clarity score averaged c1–c3; v2 averages c1 and c2. Compare old and new item by item (c1 with c1, c2 with c2), never as area scores.
+- **Self-efficacy loses the social area.** s2 (talking to someone new) and s4 (saying no to friends) are out, leaving study, feelings and getting better. If social confidence matters to you, swapping s1 or s3 for s2 keeps three areas without adding length.
 
 ## 4. What the student sees afterwards
 
