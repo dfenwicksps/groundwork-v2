@@ -50,7 +50,7 @@ export default function SelvesSection() {
           const s = SELF_BY_KEY[open];
           if (!s) return null;
           return (
-            <div className="card p-5 mt-3 space-y-3">
+            <div data-fluoro="blue" className="card p-5 mt-3 space-y-3">
               <p className="text-sm font-semibold text-ink">{s.short}</p>
               <p className="text-sm text-ink leading-relaxed">{s.what}</p>
 
@@ -81,7 +81,7 @@ export default function SelvesSection() {
         })()}
 
       {!open && (
-        <div className="card p-4 mt-3 space-y-2.5">
+        <div data-fluoro="green" className="card p-4 mt-3 space-y-2.5">
           <div className="text-xs font-bold text-ink-muted uppercase tracking-widest">
             The three that get mixed up most
           </div>

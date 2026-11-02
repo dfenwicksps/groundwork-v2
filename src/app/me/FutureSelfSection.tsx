@@ -33,7 +33,7 @@ export default function FutureSelfSection({
           : "Before pathways and goals mean much, it helps to have a picture of the life they're for."}
       </p>
 
-      <div className="card p-5">
+      <div data-fluoro="blue" className="card p-5">
         {excerpt ? (
           <>
             <blockquote className="text-sm text-ink leading-relaxed border-l-2 border-navy/25 pl-3 whitespace-pre-line line-clamp-6">

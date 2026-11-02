@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fluoroAt } from "@/lib/fluoro";
 import Link from "next/link";
 import { storySentence, type LifeStory } from "@/lib/program";
 import type { NextChapter } from "@/lib/nextChapter";
@@ -184,7 +185,7 @@ export default function MeClient({
   ];
 
   const soonNote = (
-    <div className="card p-5 flex items-center gap-4">
+    <div data-fluoro="blue" className="card p-5 flex items-center gap-4">
       <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
       <div>
         <p className="text-sm text-ink font-medium mb-0.5">More tools land here soon</p>
@@ -224,7 +225,7 @@ export default function MeClient({
         {hasProfile && (
           <div
             className="sticky top-0 z-20 -mx-4 px-4 py-2"
-            style={{ background: "rgba(250,245,236,0.95)", backdropFilter: "blur(6px)" }}
+            style={{ background: "rgb(var(--c-surface-muted) / 0.95)", backdropFilter: "blur(6px)" }}
           >
             <div className="flex gap-1.5 lg:max-w-xl" role="tablist">
               {TABS.map((t) => (
@@ -258,6 +259,7 @@ export default function MeClient({
         {hasProfile && tab === "profile" && (
           <div
             data-animate="1"
+            data-fluoro="pink"
             className="rounded-2xl p-4 lg:p-6 text-white order-1"
             style={{ background: "var(--navy)" }}
           >
@@ -277,7 +279,7 @@ export default function MeClient({
         )}
 
         {!hasProfile ? (
-          <div className="card p-8 text-center order-5" data-animate="2">
+          <div data-fluoro="green" className="card p-8 text-center order-5" data-animate="2">
             <div className="text-4xl mb-3" aria-hidden>🧭</div>
             <h2
               className="text-xl text-navy mb-2"
@@ -315,11 +317,12 @@ export default function MeClient({
                   return (
                     <div
                       key={k}
+                      data-fluoro={fluoroAt(i)}
                       className="card p-4 flex items-center gap-3"
                       style={{ borderLeft: `4px solid ${c}` }}
                     >
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
+                        className="mission-badge w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
                         style={{ background: c }}
                       >
                         {i + 1}
@@ -390,7 +393,7 @@ export default function MeClient({
                 All 24, ranked highest → lowest
               </button>
               {showAll && (
-                <div className="card p-4 space-y-2.5">
+                <div data-fluoro="yellow" className="card p-4 space-y-2.5">
                   {ranking!.map((k, i) => {
                     const s = STRENGTH_BY_KEY[k];
                     if (!s) return null;
@@ -445,7 +448,7 @@ export default function MeClient({
           <div className="split-col">
         {/* My story — past, present and future in one place (/story) */}
         {hasProfile && tab === "profile" && (
-          <Link href="/story" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all order-2" data-animate="2">
+          <Link href="/story" data-fluoro="orange" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all order-2" data-animate="2">
             <span className="w-10 h-10 rounded-xl bg-navy text-white flex items-center justify-center flex-shrink-0" aria-hidden>
               ✎
             </span>
@@ -466,7 +469,7 @@ export default function MeClient({
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
               My Character Code
             </h2>
-            <div className="card p-5">
+            <div data-fluoro="violet" className="card p-5">
               {characterStory && (
                 <p
                   className="text-ink leading-relaxed mb-4 pb-4 border-b border-border"
