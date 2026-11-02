@@ -1,5 +1,6 @@
 "use client";
 
+import { fluoroAt } from "@/lib/fluoro";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -137,8 +138,8 @@ export default function SupportClient({
           </h2>
           {contacts.length > 0 ? (
             <div className="space-y-2 mb-4">
-              {contacts.map((contact) => (
-                <div key={contact.id} className="card p-4 flex items-center gap-3">
+              {contacts.map((contact, i) => (
+                <div key={contact.id} data-fluoro={fluoroAt(i + 1)} className="card p-4 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-navy/10 flex items-center justify-center text-navy font-semibold flex-shrink-0">
                     {contact.name.charAt(0)}
                   </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { tint } from "@/lib/utils";
 import { pieceDone, type IdentityCard as Card } from "@/lib/identityCard";
 
 /**
@@ -22,7 +23,7 @@ export default function IdentityCard({
       id={missionId === 1 ? "who-i-am" : `mission-${missionId}-card`}
       aria-labelledby={`card-title-${missionId}`}
       className="rounded-2xl overflow-hidden border"
-      style={{ borderColor: `${colour}30`, background: "white" }}
+      style={{ borderColor: `${tint(colour, "30")}`, background: "var(--surface)" }}
     >
       <div className="px-5 pt-5 pb-4 text-white" style={{ background: colour }}>
         <div className="flex items-baseline justify-between gap-3">
@@ -59,7 +60,7 @@ export default function IdentityCard({
         {complete && card.doneLink && (
           <Link
             href={card.doneLink.href}
-            className="inline-flex mt-3 text-sm font-semibold bg-white/20 hover:bg-white/30 transition-colors rounded-lg px-3 py-1.5"
+            className="inline-flex mt-3 text-sm font-semibold bg-black/20 hover:bg-black/30 transition-colors rounded-lg px-3 py-1.5"
           >
             {card.doneLink.text}
           </Link>
@@ -81,7 +82,7 @@ export default function IdentityCard({
                       <span
                         key={c}
                         className="text-sm px-2.5 py-1 rounded-full font-medium"
-                        style={{ background: `${colour}12`, color: "var(--ink)" }}
+                        style={{ background: `${tint(colour, "12")}`, color: "var(--ink)" }}
                       >
                         {c}
                       </span>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
+import { cn, tint } from "@/lib/utils";
 import { requiredSteps, requiredDone, type Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import { WEEKLY_BY_KEY } from "@/lib/program";
@@ -72,6 +72,7 @@ export default function MissionDetailClient({
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10"
           style={{ background: "white", transform: "translate(40%, -40%)" }}
+          aria-hidden
         />
         <div className="max-w-2xl mx-auto relative">
           <Link
@@ -123,7 +124,7 @@ export default function MissionDetailClient({
             {mission.strands.map((k) => (
               <span
                 key={k}
-                className="font-semibold px-1.5 py-0.5 rounded bg-white/15 text-white"
+                className="font-semibold px-1.5 py-0.5 rounded bg-black/20 text-white"
               >
                 {WEEKLY_BY_KEY[k].emoji} {WEEKLY_BY_KEY[k].name}
               </span>
@@ -206,7 +207,7 @@ export default function MissionDetailClient({
                         <Link
                           href={`/stories/${story.id}`}
                           className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl border border-dashed transition-all hover:border-solid hover:shadow-soft group"
-                          style={{ borderColor: `${mission.colour}40`, background: `${mission.colour}06` }}
+                          style={{ borderColor: `${tint(mission.colour, "40")}`, background: `${tint(mission.colour, "06")}` }}
                         >
                           <div
                             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
@@ -262,7 +263,7 @@ export default function MissionDetailClient({
                               ? "ring-2 ring-teal hover:shadow-card"
                               : activity.optional
                               ? "hover:shadow-soft"
-                              : "hover:shadow-soft opacity-70"
+                              : "hover:shadow-soft"
                           )}
                         >
                           <div

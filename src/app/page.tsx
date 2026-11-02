@@ -150,33 +150,34 @@ export default function LandingPage() {
               n: "01",
               title: "Identity",
               q: "Who am I?",
-              col: "#4F46E5",
+              col: "var(--mission-1)",
             },
             {
               n: "02",
               title: "Purpose",
               q: "What do I care about?",
-              col: "#0E7490",
+              col: "var(--mission-2)",
             },
             {
               n: "03",
               title: "Connection",
               q: "Where do I belong?",
-              col: "#15803D",
+              col: "var(--mission-3)",
             },
             {
               n: "04",
               title: "Meaning",
               q: "What kind of life do I want?",
-              col: "#C2410C",
+              col: "var(--mission-4)",
             },
           ].map((m) => (
             <div
               key={m.n}
+              data-mission={Number(m.n)}
               className="rounded-2xl p-6 text-white"
               style={{ background: m.col }}
             >
-              <div className="text-xs font-semibold opacity-60 mb-3">
+              <div className="text-xs font-semibold opacity-90 mb-3">
                 Mission {m.n}
               </div>
               <div
@@ -186,7 +187,7 @@ export default function LandingPage() {
                 {m.title}
               </div>
               <div
-                className="text-sm opacity-80"
+                className="text-sm"
                 style={{ fontStyle: "italic" }}
               >
                 &ldquo;{m.q}&rdquo;

@@ -263,7 +263,7 @@ export default function JournalClient({
                 style={filter === m.id ? { background: m.colour } : {}}
               >
                 {m.title}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -282,7 +282,7 @@ export default function JournalClient({
                 )}
               >
                 {ENTRY_GROUP_LABELS[g]}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -330,7 +330,7 @@ export default function JournalClient({
                       <div className="flex items-start gap-3 min-w-0">
                         <div
                           className="entry-dot w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                          style={{ background: mission?.colour || "#4F46E5" }}
+                          style={{ background: mission?.colour || "var(--mission-1)" }}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">

@@ -160,7 +160,7 @@ export default function DashboardClient({
             {nextMissionStep.activityTitle}
           </p>
           <p className="text-sm opacity-90 italic">{nextMissionStep.question}</p>
-          <span className="inline-flex items-center gap-2 mt-4 bg-white/20 group-hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+          <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
             {nextMissionStep.step === 1 ? "Start" : "Carry on"}
             <Arrow />
           </span>
@@ -184,7 +184,7 @@ export default function DashboardClient({
         <p className="text-sm leading-relaxed opacity-90">
           {programWeek.allDone ? spine.programBlurb : programWeek.challenge}
         </p>
-        <span className="inline-flex items-center gap-2 mt-4 bg-white/15 group-hover:bg-white/25 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+        <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
           {programWeek.allDone
             ? "Open the weekly five"
             : programWeek.started

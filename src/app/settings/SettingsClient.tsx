@@ -385,7 +385,7 @@ export default function SettingsClient({
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="btn border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+              className="btn border border-red-200 text-red-700 hover:bg-red-50 transition-colors"
             >
               Delete account
             </button>

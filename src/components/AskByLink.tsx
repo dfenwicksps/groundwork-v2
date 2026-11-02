@@ -1,5 +1,6 @@
 "use client";
 
+import { tint } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -202,7 +203,7 @@ export default function AskByLink({
                     className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
                     style={
                       state === "answered"
-                        ? { background: `${accent}18`, color: accent }
+                        ? { background: `${tint(accent, "18")}`, color: accent }
                         : { background: "var(--surface-muted)", color: "var(--ink-muted)" }
                     }
                   >
@@ -308,7 +309,7 @@ export default function AskByLink({
           type="button"
           onClick={() => setMaking(true)}
           className="w-full rounded-xl border-2 border-dashed py-2.5 text-sm font-semibold"
-          style={{ borderColor: `${accent}55`, color: accent }}
+          style={{ borderColor: `${tint(accent, "55")}`, color: accent }}
         >
           {requests.length ? "Send to someone else" : "Make a link to send"}
         </button>
@@ -383,7 +384,7 @@ function SendPanel({ r, activityId, accent }: { r: ConversationRequest; activity
   const body = encodeURIComponent(message);
 
   return (
-    <div className="mt-2 rounded-xl p-3" style={{ background: `${accent}0D` }}>
+    <div className="mt-2 rounded-xl p-3" style={{ background: `${tint(accent, "0D")}` }}>
       <div className="text-xs font-semibold text-[--ink] mb-1">Send this to {r.for_label}</div>
       <p className="text-sm text-[--ink] leading-relaxed mb-3 select-all break-words">{message}</p>
       <div className="flex flex-wrap gap-2">
