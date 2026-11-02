@@ -1,5 +1,6 @@
 // ─── Look and feel ───────────────────────────────────────────────────────────
-// Three looks: light, dark and bold (neon pink and lime on near-black).
+// Four looks: light, dark, bold (neon pink and lime on near-black) and neon
+// (cyberpunk: electric cyan and magenta on a violet night sky).
 //
 // The choice lives on the student's account (users.theme), so it follows them
 // to any device. This browser keeps a copy in localStorage, because the look
@@ -17,9 +18,9 @@
 // flashes the wrong colours, and keeps following the phone while nothing is
 // picked. globals.css holds the colour tokens for each look.
 
-export type Theme = "light" | "dark" | "bold";
+export type Theme = "light" | "dark" | "bold" | "neon";
 
-export const THEMES: Theme[] = ["light", "dark", "bold"];
+export const THEMES: Theme[] = ["light", "dark", "bold", "neon"];
 export const THEME_KEY = "gw_theme_v1";
 /** The account the browser's copy belongs to. */
 export const THEME_OWNER_KEY = "gw_theme_owner";
@@ -31,6 +32,7 @@ export const THEME_BAR: Record<Theme, string> = {
   light: "#FAF5EC",
   dark: "#12121C",
   bold: "#0B0B0F",
+  neon: "#09061C",
 };
 
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */

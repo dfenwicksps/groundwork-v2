@@ -3,13 +3,26 @@ import BuildStamp from "@/components/BuildStamp";
 import VersionOfMeFilm from "@/components/stories/VersionOfMeFilm";
 import { LockIcon, PeopleIcon, SproutIcon } from "@/components/icons";
 
+// The landing page always wears the Neon look (globals.css), whatever look a
+// visitor has picked: its tokens and paint are scoped to this wrapper's
+// data-theme, so nothing here depends on the look on <html>.
+const MISSIONS = [
+  { n: "01", title: "Identity", q: "Who am I?", col: "255 92 230" },
+  { n: "02", title: "Purpose", q: "What do I care about?", col: "0 234 255" },
+  { n: "03", title: "Connection", q: "Where do I belong?", col: "0 255 156" },
+  { n: "04", title: "Meaning", q: "What kind of life do I want?", col: "252 238 10" },
+];
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-surface-muted">
+    <div data-theme="neon" className="min-h-screen bg-surface-muted text-ink">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-navy rounded-md flex items-center justify-center">
+          <div
+            className="w-7 h-7 bg-navy rounded-md flex items-center justify-center"
+            style={{ boxShadow: "0 0 12px rgb(var(--c-navy-light) / 0.7)" }}
+          >
             <span className="text-white text-xs font-semibold">G</span>
           </div>
           <span
@@ -45,7 +58,14 @@ export default function LandingPage() {
           data-animate="2"
         >
           Figure out who you are.{" "}
-          <span style={{ fontFamily: "var(--font-story)", fontStyle: "italic", color: "var(--teal)" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-story)",
+              fontStyle: "italic",
+              color: "var(--teal)",
+              textShadow: "0 0 18px rgb(var(--c-teal) / 0.6), 0 0 2px rgb(var(--c-teal) / 0.9)",
+            }}
+          >
             Build a life that matters.
           </span>
         </h1>
@@ -145,50 +165,31 @@ export default function LandingPage() {
         </h3>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              n: "01",
-              title: "Identity",
-              q: "Who am I?",
-              col: "#4F46E5",
-            },
-            {
-              n: "02",
-              title: "Purpose",
-              q: "What do I care about?",
-              col: "#0E7490",
-            },
-            {
-              n: "03",
-              title: "Connection",
-              q: "Where do I belong?",
-              col: "#15803D",
-            },
-            {
-              n: "04",
-              title: "Meaning",
-              q: "What kind of life do I want?",
-              col: "#C2410C",
-            },
-          ].map((m) => (
+          {MISSIONS.map((m) => (
             <div
               key={m.n}
-              className="rounded-2xl p-6 text-white"
-              style={{ background: m.col }}
+              className="rounded-2xl p-6"
+              style={{
+                background: "rgb(var(--c-surface) / 0.9)",
+                border: `1px solid rgb(${m.col} / 0.7)`,
+                boxShadow: `0 0 22px rgb(${m.col} / 0.25), inset 0 0 18px rgb(${m.col} / 0.08)`,
+              }}
             >
-              <div className="text-xs font-semibold opacity-60 mb-3">
+              <div className="text-xs font-semibold mb-3 text-ink-muted tracking-widest uppercase">
                 Mission {m.n}
               </div>
               <div
                 className="text-xl mb-2"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 600,
+                  color: `rgb(${m.col})`,
+                  textShadow: `0 0 12px rgb(${m.col} / 0.55)`,
+                }}
               >
                 {m.title}
               </div>
-              <div
-                className="text-sm opacity-80"
-                style={{ fontStyle: "italic" }}
-              >
+              <div className="text-sm text-ink" style={{ fontStyle: "italic" }}>
                 &ldquo;{m.q}&rdquo;
               </div>
             </div>
@@ -229,7 +230,15 @@ export default function LandingPage() {
 
       {/* CTA */}
       <section className="max-w-5xl mx-auto px-6 py-14">
-        <div className="bg-navy rounded-3xl p-12 text-center text-white">
+        <div
+          className="rounded-3xl p-12 text-center text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, rgb(var(--c-navy)), rgb(90 0 170) 55%, rgb(20 14 48))",
+            border: "1px solid rgb(var(--c-teal) / 0.5)",
+            boxShadow: "0 0 40px rgb(var(--c-navy-light) / 0.35)",
+          }}
+        >
           <h2
             className="text-3xl md:text-4xl mb-4"
             style={{ fontFamily: "var(--font-story)", fontWeight: 400, fontStyle: "italic" }}
@@ -242,7 +251,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/auth?mode=signup"
-            className="btn bg-white text-navy hover:bg-white/90 px-10 py-3.5 text-base"
+            className="btn btn-teal px-10 py-3.5 text-base"
           >
             Start Mission 1 — free
           </Link>

@@ -97,8 +97,11 @@ export default function CheckinForm({
                   aria-pressed={sel}
                   aria-label={`${value}: ${label}`}
                   onClick={() => setAnswers((a) => ({ ...a, [item.key]: value }))}
+                  // No colour fade: the 150ms transition showed a washed-out
+                  // half-selected colour right after the tap, which read as the
+                  // wrong colour. The selected state now lands at once.
                   className={cn(
-                    "py-2.5 rounded-xl border text-sm font-semibold transition-all",
+                    "py-2.5 rounded-xl border text-sm font-semibold",
                     sel ? "bg-navy text-white border-navy" : "bg-white text-ink border-border hover:border-navy/30"
                   )}
                 >

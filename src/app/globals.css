@@ -67,7 +67,7 @@
   --rail-width: 16rem; /* the side rail that replaces the tab bar from lg up */
 }
 
-/* Looks. lib/theme.ts puts data-theme="light" | "dark" | "bold" on <html>
+/* Looks. lib/theme.ts puts data-theme="light" | "dark" | "bold" | "neon" on <html>
    before first paint; with no choice saved it follows the phone.
 
    Dark: surfaces go deep blue-black; brand colours are lifted so they read as
@@ -140,6 +140,61 @@
   --virtue-justice: #5CF2FF;
   --virtue-temperance: #A6FF8A;
   --virtue-transcendence: #FFE600;
+}
+
+/* Neon: cyberpunk city at night. Electric cyan and hot magenta glowing on a
+   near-black violet sky, with a faint grid. Defined on [data-theme="neon"]
+   rather than :root alone, so a page can wear it on a wrapper whatever the
+   student's look (the landing page does). That's also why the derived
+   tokens (--navy and friends) are restated: a custom property resolved on
+   <html> doesn't re-resolve on a descendant.
+   Magenta (navy) is a FILL carrying white labels (5.2:1); magenta as TEXT
+   uses navy-light (7.0:1 on cards). Cyan, green and yellow are bright fills,
+   so labels on them go near-black (--c-on-accent). */
+[data-theme="neon"] {
+  color-scheme: dark;
+  --c-navy: 190 0 200;          /* magenta fill — white text 5.2:1 */
+  --c-navy-light: 255 92 230;   /* magenta for TEXT — 7.0:1 on cards */
+  --c-navy-dark: 150 0 165;
+  --c-teal: 0 234 255;          /* electric cyan — links + accents, 12.5:1 */
+  --c-teal-light: 110 245 255;
+  --c-teal-dark: 0 190 220;
+  --c-gold: 252 238 10;         /* acid yellow */
+  --c-gold-light: 255 245 110;
+  --c-gold-dark: 230 210 0;
+  --c-gold-text: 252 238 10;
+  --c-sage: 0 255 156;          /* neon green */
+  --c-sage-light: 110 255 196;
+  --c-sage-dark: 0 210 128;
+  --c-coral: 255 42 109;        /* hot red-pink */
+  --c-coral-light: 255 110 154;
+  --c-coral-dark: 220 0 80;
+  --c-surface: 20 14 48;        /* deep violet panel */
+  --c-surface-muted: 9 6 28;    /* night sky */
+  --c-border: 64 40 120;        /* violet edge */
+  --c-ink: 240 244 255;
+  --c-ink-muted: 178 186 222;   /* 9.7:1 on cards */
+  --c-ink-faint: 124 120 170;   /* 4.5:1 on cards */
+  --c-on-accent: 9 6 28;
+  --virtue-wisdom: #B794FF;
+  --virtue-courage: #FFB347;
+  --virtue-humanity: #FF5CE6;
+  --virtue-justice: #00EAFF;
+  --virtue-temperance: #00FF9C;
+  --virtue-transcendence: #FCEE0A;
+
+  --navy: rgb(var(--c-navy));
+  --teal: rgb(var(--c-teal));
+  --gold: rgb(var(--c-gold));
+  --gold-text: rgb(var(--c-gold-text));
+  --sage: rgb(var(--c-sage));
+  --coral: rgb(var(--c-coral));
+  --surface-muted: rgb(var(--c-surface-muted));
+  --surface: rgb(var(--c-surface));
+  --border: rgb(var(--c-border));
+  --ink: rgb(var(--c-ink));
+  --ink-muted: rgb(var(--c-ink-muted));
+  color: var(--ink);
 }
 
 /* True viewport height on mobile */
@@ -568,16 +623,16 @@ body {
 /* Tailwind's bg-white means "card surface" throughout the app, so in dark and
    bold it follows the surface token. (Translucent white on coloured cards —
    bg-white/20 and friends — is left alone: it's a highlight, not a surface.) */
-:is([data-theme="dark"], [data-theme="bold"]) .bg-white {
+:is([data-theme="dark"], [data-theme="bold"], [data-theme="neon"]) .bg-white {
   background-color: var(--surface);
 }
-:is([data-theme="dark"], [data-theme="bold"]) .bg-white\/95 {
+:is([data-theme="dark"], [data-theme="bold"], [data-theme="neon"]) .bg-white\/95 {
   background-color: rgb(var(--c-surface) / 0.95);
 }
-:is([data-theme="dark"], [data-theme="bold"]) .bg-white\/96 {
+:is([data-theme="dark"], [data-theme="bold"], [data-theme="neon"]) .bg-white\/96 {
   background-color: rgb(var(--c-surface) / 0.96);
 }
-:is([data-theme="dark"], [data-theme="bold"]) .skeleton {
+:is([data-theme="dark"], [data-theme="bold"], [data-theme="neon"]) .skeleton {
   background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
   background-size: 200% 100%;
 }
@@ -684,6 +739,146 @@ body {
 
 [data-theme="bold"] .progress-fill {
   background: linear-gradient(90deg, rgb(var(--c-navy-light)), rgb(var(--c-teal)));
+}
+
+/* ── Neon look ────────────────────────────────────────────────────────────
+   Cyberpunk at night: a faint perspective-free grid, magenta and cyan
+   glows, glass panels with lit edges. Layout never changes between looks,
+   only paint. These rules come after Bold's and restate the properties Bold
+   sets, so a Neon wrapper inside a Bold page (the landing page) stays Neon. */
+[data-theme="neon"] body,
+div[data-theme="neon"] {
+  background-color: var(--surface-muted);
+  background-image:
+    radial-gradient(circle at 100% 0%, rgb(190 0 200 / 0.28), transparent 42%),
+    radial-gradient(circle at 0% 100%, rgb(0 234 255 / 0.16), transparent 45%),
+    linear-gradient(rgb(0 234 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 234 255 / 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+  background-attachment: fixed;
+}
+
+/* On a wrapper (the landing page) a fixed background is painted against the
+   viewport inconsistently across browsers, and iOS ignores it. Let it scroll
+   with the page, the glows sized to the first screen and the grid repeating. */
+div[data-theme="neon"] {
+  background-image:
+    radial-gradient(circle at 100% 0%, rgb(190 0 200 / 0.28), transparent 42%),
+    radial-gradient(640px 40vh at 0% 50%, rgb(0 234 255 / 0.16), transparent),
+    linear-gradient(rgb(0 234 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 234 255 / 0.05) 1px, transparent 1px);
+  background-attachment: scroll;
+  background-size: 100% 100vh, 100% 100vh, 44px 44px, 44px 44px;
+  background-position: top right, 0 40vh, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat, repeat;
+}
+
+[data-theme="neon"] ::selection {
+  background: rgb(var(--c-teal));
+  color: rgb(var(--c-on-accent));
+}
+
+/* Magenta as text: the brighter magenta, so it reads on the night sky. */
+[data-theme="neon"] .text-navy,
+[data-theme="neon"] .text-\[--navy\],
+[data-theme="neon"] .hover\:text-\[--navy\]:hover,
+[data-theme="neon"] .btn-secondary {
+  color: rgb(var(--c-navy-light));
+}
+
+/* As in Bold: translucent white loses contrast on the magenta fill. */
+[data-theme="neon"] [class*="text-white/"] {
+  color: #fff;
+}
+
+[data-theme="neon"] h1,
+[data-theme="neon"] h2,
+[data-theme="neon"] h3,
+[data-theme="neon"] .heading-display {
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+[data-theme="neon"] h1 {
+  text-shadow: 0 0 18px rgb(var(--c-navy-light) / 0.55), 0 0 2px rgb(var(--c-navy-light) / 0.9);
+}
+
+[data-theme="neon"] h2,
+[data-theme="neon"] h3 {
+  text-shadow: 0 0 14px rgb(var(--c-teal) / 0.3);
+}
+
+[data-theme="neon"] .card,
+[data-theme="neon"] .question-card,
+[data-theme="neon"] .card-elevated {
+  border-width: 1px;
+  border-color: rgb(var(--c-teal) / 0.28);
+  background: rgb(var(--c-surface) / 0.88);
+  box-shadow: 0 0 0 1px rgb(var(--c-navy) / 0.12), 0 0 22px rgb(var(--c-navy-light) / 0.12);
+}
+
+[data-theme="neon"] .card-elevated {
+  border-color: rgb(var(--c-navy-light) / 0.4);
+  box-shadow: 0 0 26px rgb(var(--c-teal) / 0.16);
+}
+
+[data-theme="neon"] .btn {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="neon"] .btn-primary {
+  background: linear-gradient(90deg, rgb(var(--c-navy)), rgb(130 0 200));
+  box-shadow: 0 0 16px rgb(var(--c-navy-light) / 0.5);
+}
+
+[data-theme="neon"] .btn-primary:hover {
+  background: linear-gradient(90deg, rgb(var(--c-navy)), rgb(130 0 200));
+  transform: translateY(-1px);
+  box-shadow: 0 0 26px rgb(var(--c-navy-light) / 0.75);
+}
+
+[data-theme="neon"] .btn-secondary {
+  border-color: rgb(var(--c-teal) / 0.6);
+  color: rgb(var(--c-teal));
+}
+
+[data-theme="neon"] .btn-secondary:hover {
+  border-color: rgb(var(--c-teal));
+  background: rgb(var(--c-teal) / 0.08);
+  box-shadow: 0 0 16px rgb(var(--c-teal) / 0.4);
+}
+
+[data-theme="neon"] .btn-teal {
+  color: rgb(var(--c-on-accent));
+  box-shadow: 0 0 14px rgb(var(--c-teal) / 0.5);
+}
+
+[data-theme="neon"] .btn-teal:hover {
+  background: rgb(var(--c-teal-light));
+  box-shadow: 0 0 24px rgb(var(--c-teal) / 0.7);
+}
+
+[data-theme="neon"] .input:focus,
+[data-theme="neon"] .journal-textarea:focus,
+[data-theme="neon"] .conv-textarea:focus {
+  box-shadow: 0 0 0 3px rgb(var(--c-teal) / 0.25), 0 0 16px rgb(var(--c-teal) / 0.25);
+}
+
+[data-theme="neon"] .starter-chip:hover,
+[data-theme="neon"] .starter-chip:active {
+  background: rgb(var(--c-teal) / 0.08);
+}
+
+[data-theme="neon"] .progress-fill {
+  background: linear-gradient(90deg, rgb(var(--c-teal)), rgb(var(--c-navy-light)));
+  box-shadow: 0 0 10px rgb(var(--c-teal) / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="neon"] .btn-primary:hover { transform: none; }
 }
 
 /* Device passcode (lib/deviceLock.ts): while locked, only the code screen shows. */
