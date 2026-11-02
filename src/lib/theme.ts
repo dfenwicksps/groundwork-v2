@@ -10,12 +10,11 @@
 // whose it is, so a look left behind by someone else is never saved to the
 // account of whoever signs in next.
 //
-// No choice (null) means following the phone's light/dark setting.
+// No choice (null) means Bold, the default look.
 //
 // The look is a data-theme attribute on <html>. An inline script in the root
 // layout (THEME_BOOT_SCRIPT) sets it before first paint so the page never
-// flashes the wrong colours, and keeps following the phone while nothing is
-// picked. globals.css holds the colour tokens for each look.
+// flashes the wrong colours. globals.css holds the colour tokens for each look.
 
 export type Theme = "light" | "dark" | "bold";
 
@@ -26,15 +25,18 @@ export const THEME_OWNER_KEY = "gw_theme_owner";
 /** Set for this tab once the copy has been checked against the account. */
 export const THEME_SYNCED_KEY = "gw_theme_synced";
 
+/** The look anyone who hasn't picked one sees. */
+export const DEFAULT_THEME: Theme = "bold";
+
 /** Browser bar colour for each look (matches --c-surface-muted). */
 export const THEME_BAR: Record<Theme, string> = {
   light: "#FAF5EC",
   dark: "#12121C",
-  bold: "#0B0B0F",
+  bold: "#07070C",
 };
 
 /** Runs in <head>, before anything is painted. Keep it tiny and dependency-free. */
-export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement,m=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t=m&&m.matches?"dark":"light";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}window.__gwApplyTheme=s;s();document.addEventListener("DOMContentLoaded",s);if(m&&m.addEventListener)m.addEventListener("change",s)})()`;
+export const THEME_BOOT_SCRIPT = `(function(){var K="${THEME_KEY}",B=${JSON.stringify(THEME_BAR)},d=document.documentElement;function s(){var t=window.__gwTheme||null;if(!t)try{t=localStorage.getItem(K)}catch(e){}if(!B[t])t="${DEFAULT_THEME}";d.setAttribute("data-theme",t);var a=document.querySelectorAll('meta[name="theme-color"]');for(var i=0;i<a.length;i++)a[i].setAttribute("content",B[t])}window.__gwApplyTheme=s;s();document.addEventListener("DOMContentLoaded",s)})()`;
 
 type ThemeWindow = Window & {
   __gwTheme?: Theme;
@@ -46,7 +48,7 @@ export function parseTheme(v: unknown): Theme | null {
   return typeof v === "string" && (THEMES as string[]).includes(v) ? (v as Theme) : null;
 }
 
-/** The look this browser holds a copy of, or null while following the phone. */
+/** The look this browser holds a copy of, or null if none was picked (Bold). */
 export function getStoredTheme(): Theme | null {
   const mem = parseTheme((window as ThemeWindow).__gwTheme);
   if (mem) return mem;
@@ -59,7 +61,7 @@ export function getStoredTheme(): Theme | null {
 
 /** The look on screen right now. */
 export function getActiveTheme(): Theme {
-  return parseTheme(document.documentElement.getAttribute("data-theme")) ?? "light";
+  return parseTheme(document.documentElement.getAttribute("data-theme")) ?? DEFAULT_THEME;
 }
 
 /**
@@ -83,13 +85,13 @@ function getStoredCopy(): { theme: Theme | null; owner: string | null } {
 
 /**
  * Show a look and keep this browser's copy of it, recorded as `owner`'s; null
- * goes back to following the phone. Saving it to the account is the caller's
+ * goes back to the default (Bold). Saving it to the account is the caller's
  * job (saveTheme).
  */
 export function applyTheme(theme: Theme | null, owner?: string): void {
   const w = window as ThemeWindow;
-  // Also kept in memory, so a blocked localStorage doesn't let the boot
-  // script's phone-setting listener undo an explicit choice.
+  // Also kept in memory, so an explicit choice lasts the visit even when
+  // localStorage is blocked.
   if (theme) w.__gwTheme = theme;
   else delete w.__gwTheme;
   if (theme && owner) w.__gwThemeOwner = owner;
@@ -120,7 +122,7 @@ export async function saveTheme(db: any, userId: string, theme: Theme): Promise<
 
 /**
  * Bring this browser's copy into line with the account. Returns the look the
- * student has chosen (null: following the phone), and whether the copy and
+ * student has chosen (null: none, so Bold), and whether the copy and
  * the account now agree; only then should the tab be marked synced.
  *
  * - The account has a look: it wins, on this device too.

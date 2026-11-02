@@ -24,9 +24,9 @@ const OPTIONS: {
   a: string;
   b: string;
 }[] = [
+  { key: "bold", label: "Bold", sub: "The default. Neon, loud, yours.", bg: "#07070C", card: "#12121C", line: "#3C2A5A", a: "#D6006F", b: "#00E5FF" },
   { key: "light", label: "Light", sub: "Clean and bright", bg: "#FAF5EC", card: "#FFFFFF", line: "#EBE2D2", a: "#4338CA", b: "#0E7490" },
   { key: "dark", label: "Dark", sub: "Easy on the eyes", bg: "#12121C", card: "#1C1C29", line: "#2E2E42", a: "#6366F1", b: "#06B6D4" },
-  { key: "bold", label: "Bold", sub: "Neon. Loud. Yours.", bg: "#0B0B0F", card: "#16161C", line: "#4A2C46", a: "#D6006F", b: "#D4FF00" },
 ];
 
 function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
@@ -38,9 +38,9 @@ function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
       style={{
         background: o.bg,
         backgroundImage: bold
-          ? "radial-gradient(circle at 100% 0%, rgba(255,61,165,0.35), transparent 55%), radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1.6px)"
+          ? "radial-gradient(circle at 100% 0%, rgba(255,46,151,0.4), transparent 55%), radial-gradient(circle at 0% 100%, rgba(0,229,255,0.3), transparent 55%), linear-gradient(rgba(0,229,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.14) 1px, transparent 1px)"
           : undefined,
-        backgroundSize: bold ? "100% 100%, 8px 8px" : undefined,
+        backgroundSize: bold ? "100% 100%, 100% 100%, 8px 8px, 8px 8px" : undefined,
       }}
     >
       <div
@@ -51,12 +51,12 @@ function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
           boxShadow: bold ? `2px 2px 0 ${o.a}` : undefined,
         }}
       >
-        <div className="h-1.5 w-3/4 rounded-full" style={{ background: bold ? "#FAFAFA" : o.a }} />
+        <div className="h-1.5 w-3/4 rounded-full" style={{ background: bold ? "#FF4FB0" : o.a }} />
         <div className="h-1 w-1/2 rounded-full" style={{ background: o.b }} />
       </div>
       <div
         className="h-2.5 w-10 rounded"
-        style={{ background: o.a, boxShadow: bold ? `1.5px 1.5px 0 ${o.b}` : undefined }}
+        style={{ background: o.a, boxShadow: bold ? "1.5px 1.5px 0 #FFE600" : undefined }}
       />
     </div>
   );
@@ -70,13 +70,12 @@ export default function ThemeSettings({
 }: {
   db: any;
   userId: string;
-  /** The account's look (users.theme); null while following the phone. */
+  /** The account's look (users.theme); null if none was picked (Bold). */
   initialTheme: Theme | null;
   /** False if the server's read of the account failed: initialTheme is then unknown. */
   themeRead: boolean;
 }) {
-  // What's on screen is read after mount: following the phone is decided in
-  // the browser, not on the server.
+  // What's on screen is read after mount: the browser decides it, not the server.
   const [active, setActive] = useState<Theme | null>(initialTheme);
   const [picked, setPicked] = useState(initialTheme !== null);
   const [saved, setSaved] = useState<"idle" | "saved" | "failed">("idle");
@@ -89,7 +88,7 @@ export default function ThemeSettings({
 
   useEffect(() => {
     let cancelled = false;
-    // While following the phone, the boot script can switch the look under us.
+    // Keep the highlighted look in step with what's on screen.
     const obs = new MutationObserver(() => setActive(getActiveTheme()));
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     // The same check ThemeSync makes, with the account's value this page
@@ -132,7 +131,7 @@ export default function ThemeSettings({
       <p className="text-sm text-ink-muted mb-4">
         Pick how Groundwork looks. It&apos;s saved to your account, so it follows you to
         any device.
-        {!picked && " Until you pick, it follows your phone's light or dark setting."}
+        {!picked && " Until you pick, you get Bold."}
       </p>
       <div className="grid grid-cols-3 gap-2" role="group" aria-label="Look">
         {OPTIONS.map((o) => (
