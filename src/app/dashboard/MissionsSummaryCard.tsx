@@ -40,6 +40,7 @@ export default function MissionsSummaryCard({
       </div>
 
       <div
+        data-fluoro="yellow"
         className="rounded-2xl p-6 text-white relative overflow-hidden"
         style={{ background: "var(--navy)" }}
       >
