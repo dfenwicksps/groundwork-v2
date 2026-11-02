@@ -26,8 +26,12 @@ in the data model.
 
 ### Marcia — identity statuses (exploration → commitment) _(implied)_
 Marcia operationalised Erikson's stage into statuses defined by two axes —
-**exploration** and **commitment**. Groundwork sequences its missions along exactly
-this progression, adding a final **integration** phase:
+**exploration** and **commitment**. The statuses are not a fixed ladder: current models
+(Crocetti's three-factor model, Luyckx's five dimensions) describe repeated cycles of
+exploring, committing and reconsidering. Groundwork's missions *lean* from exploration
+towards commitment and end in **integration**; students cycle back, and the revisit chain
+is built for that. Years 7–9 are kept on the exploring side throughout
+(`stageContentMission2.ts`).
 
 | Mission | Theme | Question | Phase |
 | --- | --- | --- | --- |
@@ -39,19 +43,12 @@ this progression, adding a final **integration** phase:
 - **Where:** `phase: "exploration" | "commitment" | "integration"` and each mission's
   `phaseLabel` / `phaseDescription` in [`src/lib/missions.ts`](../src/lib/missions.ts).
 
-### Berzonsky — identity processing styles
-Groundwork detects how a young person tends to process identity-relevant information
-and adapts its content accordingly. The three styles are Berzonsky's, used verbatim:
-
-- **Informational** — explores deeply, wants to understand the "why."
-- **Normative** — prefers structure, clear steps, and guidance.
-- **Diffuse-avoidant** — tends to delay and avoid; needs gentle, low-pressure entry.
-
-- **Where:** [`src/lib/processingStyle.ts`](../src/lib/processingStyle.ts) (detection +
-  tallying), the onboarding style questions in
-  [`src/app/onboarding/page.tsx`](../src/app/onboarding/page.tsx), and the
-  `whyItMatters` ("the idea behind this") panel that is surfaced to *informational*
-  users in the activity UI.
+### Berzonsky — identity processing styles (retired)
+An earlier version detected Berzonsky's processing styles (informational, normative,
+diffuse-avoidant) at onboarding and adapted how much "why" it showed. That code
+(`processingStyle.ts`) no longer exists, and the app doesn't adapt by processing style. The
+Quick / Extended / Open scaffolding (§2c) now does the job of meeting students where they
+are, chosen by the student rather than inferred.
 
 ---
 
@@ -72,13 +69,18 @@ The app frames identity in **three layers**, used as its own integrating scaffol
 
 Underpinning research:
 
-- **Self-Determination Theory (Deci & Ryan)** — *Values Clarifier.* Acting from your
-  own values rather than external pressure predicts higher wellbeing and more durable
-  motivation.
-- **Self-monitoring (Snyder)** _(implied)_ — *The Mask Check.* The gap between the
-  private and public self; some gap is healthy, a large gap correlates with anxiety.
-- **Expressive writing** — *Identity Letter (milestone).* Writing to oneself in the
-  second person consolidates a fragmented self-image and reduces self-criticism.
+- **Self-Determination Theory (Deci & Ryan)** — *Values Clarifier.* Acting for reasons
+  you endorse (autonomous motivation) rather than from pressure goes with higher wellbeing
+  and more persistent motivation. The app doesn't claim that knowing your values changes
+  behaviour on its own: values-affirmation results are mixed in large replications.
+- **Authenticity and "false self" behaviour (Harter)**; **self-monitoring (Snyder)**
+  _(implied)_ — *The Mask Check.* Some adjusting between rooms is normal; feeling you must
+  hide large parts of yourself goes with stress and lower self-worth in adolescents.
+  Authenticity relates to wellbeing at about r = .40 (Sutton, 2020).
+- **Writing about yourself; distanced self-talk** — *Identity Letter (milestone).*
+  Expressive-writing benefits for 10–18 year olds are small (g ≈ 0.13; Travagin et al.,
+  2015), and the letter isn't the classic trauma-writing task, so the app claims only
+  small benefits. Addressing yourself as "you" draws on Kross's distanced self-talk.
 - **Strengths-based identity** — *Strengths Mapping.* Naming strengths in your own
   words activates them as part of identity, not just skills.
 
@@ -86,10 +88,11 @@ Underpinning research:
 
 - **William Damon — youth purpose** — distinguishes being *engaged* (doing things) from
   being *purposeful* (knowing why); purposeful adolescents are more resilient.
-- **Contribution-based purpose** — durable purpose comes from "I have something specific
-  to contribute," not generic "I want to help people."
-- **Community-supported purpose** — purpose backed by mentors, peers, and figures who
-  model a cause is far more likely to become action.
+- **Contribution-based purpose** — Damon's definition includes an aim you act on that
+  matters beyond you; the app makes it specific so it can be acted on. (It no longer claims
+  that specific purpose is proven to last longer; no study found compares the two.)
+- **Community-supported purpose** — purposeful youth usually have mentors or peers who
+  share or model their purpose (correlational).
 
 ### Mission 3 — Connection ("Where do I belong?")
 
@@ -99,8 +102,10 @@ Underpinning research:
   most resilient belonging is built through "bridging relationships" that cross real
   differences, not only within homogeneous groups.
 - **Dan McAdams — narrative identity** — *The People Who Shaped You.* Each person is an
-  "autobiographical author"; understanding who shaped you builds a coherent, resilient
-  identity.
+  "autobiographical author"; the people who shaped you are main characters in the story.
+  (McAdams' empirical findings are about narrative themes such as agency and redemption,
+  not about naming who shaped you, so the app doesn't attribute a specific finding to him
+  here.)
 
 ### Mission 4 — Meaning ("What kind of life do I want?")
 
@@ -185,12 +190,15 @@ the strengths assessment.
 
 Underpinning research and design constraints:
 
-- **Identity-based habit change** _(implied)_ — week 7 deliberately converts self-control
-  from a willpower problem into an identity statement ("I'm the kind of person who…"),
-  because willpower depletes and self-concept does not.
-- **Implementation intentions** _(implied)_ — weeks 4 and 5 require the student to name
-  their own promise or "hill" *before* any tracking appears; an unnamed commitment can't
-  be kept or measured, so the tracker stays hidden until they've written it.
+- **Identity-based self-control** _(implied)_ — week 7 frames self-control as a
+  description to live up to ("I'm the kind of person who…") rather than a rule to resist.
+  This is a design choice, not a finding: the "willpower runs out" (ego depletion) model it
+  used to cite failed a 23-lab replication (Hagger et al., 2016), and a 36-lab test was
+  inconclusive (Vohs et al., 2021).
+- **Implementation intentions** (Gollwitzer & Sheeran, 2006) — weeks 4 and 5 require the
+  student to name their own promise or "hill" *before* any tracking appears, then add an
+  if-then plan ("If it's [time or place], then I'll…"). The if-then is what makes it an
+  implementation intention; naming a goal alone is not.
 - **Contribution without recognition** — week 3's challenge explicitly forbids posting or
   mentioning the act, on the grounds that contribution exchanged for credit is trade.
 - **Non-streak tracking** — the 7-day grid is a record, never a run to break, matching the
@@ -306,73 +314,58 @@ Design rules:
 
 ---
 
-## 2e. The spine — one path, chosen by year level
+## 2e. The spine — one path
 
 Groundwork carries two bodies of work: the **Missions** (a library, explored in any order)
 and the **10-Week Program** (a cadence, walked in sequence). Presented as peers they
-compete — two tracks both saying "start here", with nothing telling a student which is
-theirs. The dashboard previously never mentioned the Program at all, so a student who
-didn't tap its nav icon never met it.
+compete. The spine picks which one Home offers first; it never hides anything.
 
-The spine picks which track leads, using the year level captured at onboarding. It never
-hides anything — both stay fully reachable from the nav. It only decides what the dashboard
-offers first, because the first card is the only one some students read.
+> **Updated November 2026.** This section previously described a year-level table, a
+> `TrackBanner` and **Start here** / **Anytime** badges. Those were removed in September
+> 2026, when Home was rebuilt around a single "Up next" card. The rule below is the current one;
+> [`src/lib/spine.ts`](../src/lib/spine.ts) is the source of truth.
 
-| Year level | Leads with | Then |
-| --- | --- | --- |
-| Junior (7–9) | **This week** (program) | Mission, mission map |
-| Middle (10–11) | Mission | This week, mission map |
-| Senior (12) | Mission | **Next year** (pathways/goals), then this week |
+- **Mission 1 comes first, for everyone.** Weeks 1 and 2 are built on its strengths and
+  values, so Mission 1 gates the program.
+- **Missions 2–4 gate only the weeks built on them:**
+  - Mission 2 gates week 3;
+  - Mission 3 gates week 6;
+  - Mission 4 gates week 9.
 
-The reasoning is developmental rather than cosmetic. At 14 the program's concreteness is
-the point — "do one unnoticed thing a day" lands in a way that "examine the gap between
-your inner and public self" does not. At 18 the near-future work is what the student
-actually arrived with, and a ten-week character cadence is not the answer to "what do I do
-next year"; it's offered below, not as the on-ramp.
+  Students start living the challenges after one mission instead of after about four
+  hours of writing.
+- **Life stage** no longer decides which track leads. For Year 12 and anyone who has
+  left school, it still puts pathways and goals above the program.
+- **Home shows one "Up next" card:** the next mission step while missions lead, then this
+  week of the program, with a one-line explanation of the order under it.
 
-Mission 1's question was also renamed from *"Who am I becoming?"* to **"What am I actually
-like?"** — it previously collided word-for-word with the Program's week 1, so a student
-moving between the two tracks met the identical headline twice with different content
-under each. The new wording is also more honest about what the mission does: strengths,
-values, the mask, the letter. Descriptive rather than aspirational.
+Mission 1's question is **"What am I actually like?"** rather than "Who am I becoming?", so
+it doesn't collide with the Program's week 1. Weeks 4 and 5 take their tap-examples from
+life stage (`commitmentScaffold` in [`src/lib/program.ts`](../src/lib/program.ts)).
 
-Weeks 4 and 5 also take their **examples** from year level, because register matters most
-where the student writes their own commitment: an 18-year-old offered "make my bed every
-morning" reads the whole exercise as written for children, and a 14-year-old offered "be on
-time to every shift" has no shift. Only the tap-examples change — the sentence-starters,
-the hints and the challenge itself are identical at every age
-(`commitmentScaffold` in [`src/lib/program.ts`](../src/lib/program.ts)).
+---
 
-### Saying it out loud
+## 2f. Outcomes: identity, then esteem, efficacy, confidence and mattering
 
-Ordering alone turned out not to be enough. A student reading the dashboard top to bottom
-still saw two equally weighted cards, and the nav offered **Journey** and **Program** — two
-abstractions that name neither the work nor the order — with neither page mentioning the
-other. The spine's decision existed but was never stated anywhere a student could read it.
+Since November 2026 Groundwork names five outcomes:
+- **self-esteem;**
+- **self-efficacy;**
+- **self-confidence** (the everyday sense);
+- **self-concept clarity;**
+- **mattering.**
 
-Three changes make it legible:
+The research route from identity to these outcomes, and the reasons for choosing them over
+the 22 candidates considered, are in
+[`evidence/self-outcomes-map.md`](evidence/self-outcomes-map.md). In short:
+- identity exploration and resolution raise self-esteem (Umaña-Taylor's Identity Project RCT);
+- competence in the areas a student values feeds esteem (Harter; O'Mara et al., 2006);
+- self-efficacy is built from Bandura's four sources (mastery, vicarious experience, persuasion, reading your nerves);
+- The Standard and week 3 build mattering: feeling valued and adding value. Helping strangers predicts later adolescent self-esteem (Fu et al., 2017).
 
-1. **The nav says what the thing is.** *Journey → Missions*, *Program → This week*. One
-   names a body of work; the other names a cadence. "Journey" and "Program" could each have
-   been either.
-2. **Every landing point carries the same marker.** `TrackBadge` renders **Start here**
-   (sage) on the track the spine leads with, and **Anytime** on the other. It appears on the
-   dashboard's two cards and at the top of `/program` and `/missions/[id]`, so the answer to
-   "which first?" is the same wherever a student meets it.
-3. **Each track describes the other.** `TrackBanner` sits at the top of both track pages: a
-   one-line description of where you are, then a divider link to the other track with its
-   own one-liner — prefixed **"Start with "** when the track you're on isn't the lead. A
-   student who lands on missions first is told, in place, that this week comes first for
-   them; nothing stops them carrying on.
-
-Nothing is gated. The badge reports a recommendation, and the link to the other track is
-always live — a junior who wants Mission 3 today can have it.
-
-- **Where:** [`src/lib/spine.ts`](../src/lib/spine.ts) (the rule),
-  [`src/components/TrackBanner.tsx`](../src/components/TrackBanner.tsx) (banner + badge),
-  [`src/components/layout/AppShell.tsx`](../src/components/layout/AppShell.tsx) (nav labels),
-  [`src/app/dashboard/page.tsx`](../src/app/dashboard/page.tsx) (year level + program state),
-  and `DashboardClient` (ordering + badges).
+How the outcomes are measured, in the app and in a pilot, is in
+[`evidence/checkin-v2-draft.md`](evidence/checkin-v2-draft.md) and
+[`evidence/evidence-plan.md`](evidence/evidence-plan.md). The claim-by-claim evidence check
+of the app's content is [`evidence/evidence-review-2026-11.md`](evidence/evidence-review-2026-11.md).
 
 ---
 
@@ -380,12 +373,9 @@ always live — a junior who wants Mission 3 today can have it.
 
 - **Sequencing** — missions follow the Erikson/Marcia arc: explore the self before
   committing to purpose and connection, then integrate it into a life direction.
-- **Adaptivity** — Berzonsky processing style (set at onboarding) tailors how much
-  conceptual "why" is surfaced.
-- **Starter vs. Advanced modes** — see [`src/lib/learningMode.ts`](../src/lib/learningMode.ts).
-  Starter mode (multiple-choice) lowers the barrier for young people who lack the
-  vocabulary for open-ended reflection; Advanced mode opens the open-ended writing that
-  the expressive-writing research relies on.
+- **Scaffolding** — Quick / Extended / Open (§2c), chosen by the student, lowers the
+  barrier for young people who lack the vocabulary for open-ended reflection. (It replaced
+  both the old Starter/Advanced modes and Berzonsky-style adaptivity.)
 - **Scenario-driven prompts** — Mission 1 questions lead with concrete scenarios so
   teenagers recognise a strength or value in a situation rather than introspecting from
   a blank page.
@@ -398,17 +388,20 @@ always live — a junior who wants Mission 3 today can have it.
 | --- | --- |
 | Erikson (psychosocial stage) | `phase` field comment, `missions.ts` |
 | Marcia (exploration/commitment) _(implied)_ | `phase` enum + `phaseLabel`, `missions.ts` |
-| Berzonsky (processing styles) | `processingStyle.ts`, `onboarding/page.tsx` |
+| Berzonsky (processing styles) | Retired; no longer in the code |
 | Self-Determination Theory | Values Clarifier `whyItMatters`, `missions.ts` |
-| Self-monitoring _(implied)_ | The Mask Check `whyItMatters`, `missions.ts` |
-| Expressive writing | Identity Letter & future-self `whyItMatters`, `missions.ts` |
+| Authenticity / false self; self-monitoring _(implied)_ | The Mask Check `whyItMatters`, `missions.ts` |
+| Writing about yourself; distanced self-talk | Identity Letter & future-self `whyItMatters`, `missions.ts` |
 | William Damon (purpose) | Mission 2 `whyItMatters`, `missions.ts` |
 | Social Identity Theory | Mission 3 `whyItMatters`, `missions.ts` |
 | Bridging/bonding _(implied)_ | Across the Gap `whyItMatters`, `missions.ts` |
 | Dan McAdams (narrative identity) | People Who Shaped You `whyItMatters`, `missions.ts` |
 | Possible selves (Markus & Nurius) | Future Self `whyItMatters`, `missions.ts` |
 | Contribution-based purpose / prosocial behaviour _(implied)_ | `standard.ts`, `StandardSection.tsx` |
-| Identity-based habit change / implementation intentions _(implied)_ | `program.ts` (weeks 4, 5, 7), `program/[week]/WeekClient.tsx` |
+| Identity-based self-control _(design choice)_; implementation intentions | `program.ts` (weeks 4, 5, 7), `program/[week]/WeekClient.tsx` |
+| Bandura's four sources of self-efficacy | `selves.ts`, week 5 (`program.ts`), boosts |
+| Mattering (Rosenberg & McCullough; Prilleltensky) | The Standard (`standard.ts`), week 3 |
+| Moral identity (Aquino & Reed) | Character Code, The Standard, moral compass |
 
 ## 5. Social-Emotional Learning (CASEL) mapping
 
@@ -429,4 +422,4 @@ ground the app's claim to be a character-education and SEL-aligned platform.
 For the Australian Curriculum (v9 HPE and general capabilities) and the Australian
 Student Wellbeing Framework, see [`curriculum-alignment.md`](curriculum-alignment.md).
 
-_Last updated: 2026-08-12._
+_Last updated: 2026-11-02._

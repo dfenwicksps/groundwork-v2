@@ -414,7 +414,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     title: "Can I manage myself?",
     focus: "Connecting self-control with identity rather than willpower.",
     intro:
-      "Willpower runs out; identity doesn't. 'I'm trying not to react' is a fight you'll lose eventually. 'I'm the kind of person who stops before reacting' is a description you start living up to.",
+      "Gritting your teeth against a rule is a fight you often lose. 'I'm trying not to react' is a rule. 'I'm the kind of person who stops before reacting' is a description of who you are, and a description gives you something to live up to.",
     questions: [
       "What actually triggers me?",
       "Which choices do I regret when I'm angry, tired or under pressure?",
@@ -1255,7 +1255,7 @@ export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
     ],
     stuck: [
       "Which of your three would someone who knows you agree with already?",
-      "Identity beats willpower — which of these could replace a rule you keep breaking?",
+      "Which of these could replace a rule you keep breaking?",
       "Is there one you avoided writing?",
     ],
   },
