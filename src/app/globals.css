@@ -147,7 +147,7 @@
   --neon-cyan: 0 229 255;
   --neon-green: 57 255 106;
   --neon-yellow: 255 230 0;
-  --neon-blue: 45 156 255;
+  --neon-blue: 0 194 255;
 
   /* Blocky display faces (loaded in layout.tsx). Redefining --font-display
      reaches the headings that set it inline, too. */
@@ -763,6 +763,53 @@ body {
 [data-theme="bold"] .starter-chip:active {
   background: rgb(var(--c-teal) / 0.08);
   box-shadow: 0 0 12px rgb(var(--neon-cyan) / 0.25);
+}
+
+/* ── Missions tab: each mission is its own fluoro block ──
+   Pink, blue, green, yellow for missions 1 to 4 (data-mission on the card),
+   with near-black text: 5.8:1 on pink and better on the rest. Secondary text
+   is 82% black, which still clears 4.5:1 on pink. */
+[data-theme="bold"] [data-mission="1"] { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
+[data-theme="bold"] [data-mission="2"] { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
+[data-theme="bold"] [data-mission="3"] { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
+[data-theme="bold"] [data-mission="4"] { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
+
+[data-theme="bold"] [data-mission] {
+  background: rgb(var(--m)) !important; /* the cards set their colour inline */
+  border-color: rgb(var(--m));
+  color: rgb(7 7 12);
+  box-shadow:
+    4px 4px 0 rgb(var(--m-shadow)),
+    0 0 22px rgb(var(--m) / 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="bold"] [data-mission]:hover {
+  transform: translate(-1px, -1px);
+  box-shadow:
+    6px 6px 0 rgb(var(--m-shadow)),
+    0 0 30px rgb(var(--m) / 0.5);
+}
+
+[data-theme="bold"] [data-mission] .text-ink,
+[data-theme="bold"] [data-mission] .text-white,
+[data-theme="bold"] [data-mission] [class*="text-white/"] {
+  color: rgb(7 7 12);
+}
+
+[data-theme="bold"] [data-mission] .text-ink-muted {
+  color: rgb(7 7 12 / 0.82);
+}
+
+[data-theme="bold"] [data-mission] [class*="opacity-"] {
+  opacity: 1;
+}
+
+/* The number badge (and the "Carry on" pill) flip to black with neon text. */
+[data-theme="bold"] [data-mission] .mission-badge,
+[data-theme="bold"] [data-mission] .bg-white\/20 {
+  background: rgb(7 7 12) !important;
+  color: rgb(var(--m));
 }
 
 /* ── Progress: the whole neon spectrum ── */
