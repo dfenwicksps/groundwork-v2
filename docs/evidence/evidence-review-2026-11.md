@@ -130,23 +130,14 @@ The research supports three routes from identity to these outcomes. Groundwork h
 
 ---
 
-## 5. Measuring self-confidence, self-efficacy and self-esteem
+## 5. Measuring the outcomes
 
-The pilot currently measures none of the three outcomes you named. Recommended additions to `evidence-plan.md`, run in the partner's survey tool, not the app:
+**Superseded on 2 November 2026.** The first version of this section recommended adding validated scales. After discussion, the decision is:
+- **five outcomes:** self-esteem, self-efficacy, self-confidence, self-concept clarity and mattering;
+- **in the app:** measured in Groundwork's own words, inspired by the validated scales but not copying them, so the app never feels like a mental-health assessment (`checkin-v2-draft.md`);
+- **outside the app:** the validated scales are run by the research partner, both to test effect and to check the in-app items (`evidence-plan.md` §2).
 
-| Outcome | Scale | Items | Ages | Licence (check before use) | Fit |
-|---|---|---|---|---|---|
-| Self-esteem | **Rosenberg Self-Esteem Scale** | 10 | Adolescent-validated; very widely used | University of Maryland says it's public domain, free without notification | Global self-esteem. Fairly stable, so expect small 10-week change. |
-| Self-efficacy | **Self-Efficacy Questionnaire for Children (SEQ-C)**, Muris (2001) | 24: academic, social and emotional, 8 each | Validated in young adolescents | No licence statement found; ask the author | Best fit. Domain-specific, matching the §3.2 logic. |
-| Self-efficacy (short alternative) | General Self-Efficacy Scale, Schwarzer & Jerusalem | 10 | 12+ | Free with attribution for research; check for commercial or digital use | General, so likely less sensitive than SEQ-C |
-| Self-worth floor (optional) | Self-Compassion Scale – Youth, Neff et al. (2021) | 17 | Early adolescents | Free for any purpose (author statement) | Tests the selves / hard-on-self thinking |
-| Domain self-concept (optional) | Harter Self-Perception Profile for Adolescents | 45 | Adolescents | Not verified; contact University of Denver | Best theoretical fit to Harter's model, but long |
-
-**Self-confidence** has no separate validated construct. Measure it as domain-specific self-efficacy (SEQ-C).
-
-**Length.** The current battery is about 44 items. A lean addition would be RSES (10) plus SEQ-C (24), for about 78 in all. That is fine in a consented school session, but consider dropping Self-Concept Clarity: the evidence plan already flags that it's insensitive to change over ten weeks.
-
-**In-app check-in.** If you want interim signals in the app, add 2–3 Groundwork-worded items for esteem and efficacy under a new `ITEM_SET`. Don't copy validated items in, for the licensing reasons the evidence plan gives.
+That section's earlier draft dropped self-confidence without saying so and put self-compassion in its place. Self-compassion is now a mechanism the app builds, not a measured outcome. Reasoning for the five is in `self-outcomes-map.md`.
 
 ---
 

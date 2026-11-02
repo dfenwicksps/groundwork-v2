@@ -310,7 +310,27 @@ flowchart LR
 
 ---
 
-## 4. A decision framework
+## 4. Decision (2 November 2026)
+
+**Measured outcomes (five):**
+
+| Outcome | Why it's in | Student-facing name |
+|---|---|---|
+| Self-esteem | Strongest prospective evidence of benefit; your stated aim | Liking who you are |
+| Self-efficacy | Strong evidence; the app's mastery work targets it directly | Knowing you can |
+| Self-confidence | Your stated aim, and the word schools and students use. Measured in the general sense; unvalidated, so the pilot checks it against efficacy and esteem | Backing yourself |
+| Self-concept clarity | The identity outcome, and the bridge to esteem; already measured | Knowing who you are |
+| Mattering | Gives the *character* half of the aim an outcome. It is what The Standard builds ("feeling valued and adding value") | Mattering to people |
+
+**No longer measured:** direction and purpose. Purpose is still built in Mission 2; we just make no claim about changing it.
+
+**Mechanisms the app builds deliberately** (not claimed as outcomes): reflective self-awareness, authenticity, self-compassion, agency, autonomy, self-control, perseverance and moral identity.
+
+**Lenses taught as vocabulary:** the selves page, corrected for self-efficacy and self-confidence. Candidates to add later: mattering, and reflection versus rumination.
+
+**Not targets:** resilience, grit (use "perseverance"), growth mindset as a headline, self-acceptance (duplicates), narcissism (watch for it).
+
+## 5. The framework that informed the decision
 
 The research suggests grouping outcomes by what Groundwork *does* with each one, rather than choosing three in isolation.
 
