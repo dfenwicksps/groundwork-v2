@@ -148,6 +148,8 @@
   --neon-green: 57 255 106;
   --neon-yellow: 255 230 0;
   --neon-blue: 0 194 255;
+  --neon-orange: 255 138 0;
+  --neon-violet: 191 128 255;
 
   /* Blocky display faces (loaded in layout.tsx). Redefining --font-display
      reaches the headings that set it inline, too. */
@@ -765,16 +767,19 @@ body {
   box-shadow: 0 0 12px rgb(var(--neon-cyan) / 0.25);
 }
 
-/* ── Fluoro blocks: mission cards and dashboard cards ──
+/* ── Fluoro blocks: mission, dashboard and journal cards ──
    A card becomes a solid fluoro block in Bold when it carries data-mission
    (missions 1 to 4: pink, blue, green, yellow, matching the missions tab) or
-   data-fluoro="pink" | "blue" | "green" | "yellow". Light and Dark ignore
-   both. Text on them is near-black: 5.8:1 on pink and better on the rest;
+   data-fluoro="pink" | "blue" | "green" | "yellow" | "orange" | "violet".
+   Light and Dark ignore both. Text on them is near-black: 5.8:1 on pink and better on the rest;
    secondary text is 82% black, which still clears 4.5:1 on pink. */
 [data-theme="bold"] :is([data-mission="1"], [data-fluoro="pink"])   { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
 [data-theme="bold"] :is([data-mission="2"], [data-fluoro="blue"])   { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
 [data-theme="bold"] :is([data-mission="3"], [data-fluoro="green"])  { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
 [data-theme="bold"] :is([data-mission="4"], [data-fluoro="yellow"]) { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
+/* Two more for journal groups outside the missions: 8.5:1 and 7.4:1. */
+[data-theme="bold"] [data-fluoro="orange"] { --m: var(--neon-orange); --m-shadow: var(--neon-cyan); }
+[data-theme="bold"] [data-fluoro="violet"] { --m: var(--neon-violet); --m-shadow: var(--neon-yellow); }
 
 [data-theme="bold"] :is([data-mission], [data-fluoro]) {
   background: rgb(var(--m)) !important; /* some cards set their colour inline */
@@ -797,7 +802,8 @@ body {
    set inline. */
 [data-theme="bold"] :is([data-mission], [data-fluoro])
   :is(.text-ink, .text-white, [class*="text-white/"], .text-navy, .text-teal,
-      .text-sage, .text-coral, .text-gold-text, [style*="color:"]) {
+      [class*="text-teal/"], .text-sage, .text-coral, .text-gold-text,
+      .btn-secondary, [style*="color:"]) {
   color: rgb(7 7 12) !important;
 }
 
@@ -810,13 +816,14 @@ body {
   opacity: 1;
 }
 
-[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.border-surface-border, [class*="border-white/"]) {
+[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.border-surface-border, [class*="border-white/"], .btn-secondary) {
   border-color: rgb(7 7 12 / 0.3);
 }
 
 /* Badges, pills and icon tiles flip to black with neon text. */
 [data-theme="bold"] :is([data-mission], [data-fluoro])
-  :is(.mission-badge, .bg-white\/15, .bg-white\/20, .bg-surface-muted, .bg-navy\/10) {
+  :is(.mission-badge, .entry-dot, .bg-white\/15, .bg-white\/20, .bg-surface-muted,
+      .bg-navy\/10, .bg-coral\/10, .bg-teal\/10) {
   background: rgb(7 7 12) !important;
   color: rgb(var(--m)) !important;
 }
