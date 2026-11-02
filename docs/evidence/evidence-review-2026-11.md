@@ -115,7 +115,15 @@ The research supports three routes from identity to these outcomes. Groundwork h
 
 ---
 
-## 4. Recommended changes (for approval)
+## 4. Recommended changes
+
+**Status, 2 November 2026: A, B and C are approved and done** on the `evidence-review` branch. How each B addition was built:
+1. **Domains that matter.** Week 5 shows the student's Mission 1 values and asks them to pick their hill in one. It reuses the week's existing "values" source, not a new Mission 1 step.
+2. **Before and after on mastery.** Week 5's reflection opens with "Something I can do now that I couldn't on day one is…" and "What I did that made the difference was…".
+3. **Nerves as readiness.** Added to week 5's challenge and the Courage boost.
+4. **If-then plans.** Weeks 4 and 5 ask for an if-then plan ("If it's [when or where], then I'll…"), with a stem and a hint. It's prompted, not enforced, so a tapped Quick answer still works.
+5. **Agency.** My Story's paragraph has a "One time I made something happen…" opening (Year 7–9: "Something I made happen was"), plus a hint.
+
 
 **A. Content corrections.** Low effort, high value: the 18 claims in §2, the selves rewrite in §3.1 and the docs drift.
 

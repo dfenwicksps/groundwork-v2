@@ -23,7 +23,7 @@ export const BOOSTS: Boost[] = [
     name: "Courage",
     emoji: "🦁",
     what: "Courage isn't the absence of fear — it's acting while the fear is still there. People who look fearless are usually just practised: they've done the scary thing enough times that their body trusts them to survive it.",
-    exercise: "Pick one thing you've been avoiding because of what people might think. Name the fear in one sentence, name what avoiding it costs you, then do the 10-second version of it (send the message, raise the hand, sign up). Courage grows by reps, not by waiting to feel ready.",
+    exercise: "Pick one thing you've been avoiding because of what people might think. Name the fear in one sentence, name what avoiding it costs you, then do the 10-second version of it (send the message, raise the hand, sign up). Courage grows by reps, not by waiting to feel ready. If your heart's racing first, that's your body getting ready, not a sign you can't.",
   },
   {
     key: "vulnerability",

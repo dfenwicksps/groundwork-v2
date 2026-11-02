@@ -288,7 +288,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
       target: 7,
       unit: "day",
       commitmentPrompt:
-        "Write the promise you're making. Be specific enough that at the end of a day you'd know for certain whether you kept it.",
+        "Write the promise you're making. Be specific enough that at the end of a day you'd know for certain whether you kept it. Then pick the moment: \"If it's [when or where], then I'll…\"",
     },
     sources: [
       {
@@ -338,14 +338,27 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     challenge: {
       title: "Choose your hill",
       description:
-        "Pick one personal hill — fitness, study, a skill, an instrument, a conversation you've been dodging, volunteering. Work on it four times this week. Not perfectly. Consistently.",
+        "Pick one personal hill — fitness, study, a skill, an instrument, a conversation you've been dodging, volunteering. Work on it four times this week. Not perfectly. Consistently. If your heart's racing before a session, that's your body getting ready, not a sign you can't.",
       kind: "sessions",
       target: 4,
       unit: "session",
       commitmentPrompt:
-        "Name your hill, and what one session of work on it actually looks like.",
+        "Name your hill, and what one session of work on it actually looks like. Then pick when: \"If it's [when or where], then I'll do a session.\"",
     },
     sources: [
+      {
+        // Self-concept work does most when it's aimed at an area the student
+        // actually values (O'Mara et al., 2006; Harter). Showing the values
+        // here is what links the hill to them. Not required: Mission 1 gates
+        // the program, so it's almost always there anyway.
+        kind: "values",
+        href: "/missions/1/activities/values-clarifier",
+        label: "Values Clarifier",
+        whyNeeded:
+          "Your hill counts for most in an area that matters to you. Mission 1's values are the quickest way to find one — about eight minutes.",
+        soWhat:
+          "Pick your hill in one of these. Getting better at something you value does more for how you see yourself than getting better at something you don't care about.",
+      },
       {
         kind: "entry",
         activityId: "the-other-side",
@@ -1211,15 +1224,18 @@ export const WEEK_REFLECTION_SCAFFOLDS: Record<number, Scaffold> = {
       "The first one was the hardest to start",
       "I enjoyed it more than I expected",
       "I only managed a couple, honestly",
+      "I can do something now that I couldn't at the start of the week",
     ],
     stems: [
+      "Something I can do now that I couldn't on day one is",
+      "What I did that made the difference was",
       "The session I nearly skipped was",
-      "What got me started anyway was",
       "The hill got easier when",
     ],
     stuck: [
+      "Compare your first session with your last. What's different, even slightly?",
+      "What did you do that changed it: more reps, a different approach, asking someone?",
       "What was the actual barrier — time, energy, or not wanting to be bad at it?",
-      "Did the hard part change across the week?",
       "Would you pick the same hill again?",
     ],
   },
@@ -1393,17 +1409,19 @@ const COMMITMENT_QUICK: Record<number, Record<LifeStage, string[]>> = {
 
 const COMMITMENT_REST: Record<number, Omit<Scaffold, "quick">> = {
   4: {
-    stems: ["Every day this week I will", "I'll know I kept it because"],
+    stems: ["Every day this week I will", "If it's", "I'll know I kept it because"],
     stuck: [
       "Small and kept beats ambitious and dropped.",
+      "Pick the moment in advance: \"If it's 4pm and I'm home, then I'll…\" Deciding when is what makes it happen.",
       "Could you tell at the end of a day whether you'd done it? If not, it's too vague.",
       "Pick something that only depends on you.",
     ],
   },
   5: {
-    stems: ["My hill is", "One session of work on it looks like"],
+    stems: ["My hill is", "One session of work on it looks like", "If it's"],
     stuck: [
       "Pick something that matters to you, not something that sounds impressive.",
+      "Pick when, in advance: \"If it's Tuesday after school, then I'll do a session.\" Deciding when is what makes it happen.",
       "Define one session concretely — 'do some study' isn't a session.",
       "What have you been avoiding because you'd be bad at it at first?",
     ],
