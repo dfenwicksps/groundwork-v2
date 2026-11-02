@@ -765,17 +765,19 @@ body {
   box-shadow: 0 0 12px rgb(var(--neon-cyan) / 0.25);
 }
 
-/* ── Missions tab: each mission is its own fluoro block ──
-   Pink, blue, green, yellow for missions 1 to 4 (data-mission on the card),
-   with near-black text: 5.8:1 on pink and better on the rest. Secondary text
-   is 82% black, which still clears 4.5:1 on pink. */
-[data-theme="bold"] [data-mission="1"] { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
-[data-theme="bold"] [data-mission="2"] { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
-[data-theme="bold"] [data-mission="3"] { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
-[data-theme="bold"] [data-mission="4"] { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
+/* ── Fluoro blocks: mission cards and dashboard cards ──
+   A card becomes a solid fluoro block in Bold when it carries data-mission
+   (missions 1 to 4: pink, blue, green, yellow, matching the missions tab) or
+   data-fluoro="pink" | "blue" | "green" | "yellow". Light and Dark ignore
+   both. Text on them is near-black: 5.8:1 on pink and better on the rest;
+   secondary text is 82% black, which still clears 4.5:1 on pink. */
+[data-theme="bold"] :is([data-mission="1"], [data-fluoro="pink"])   { --m: var(--neon-pink);   --m-shadow: var(--neon-cyan); }
+[data-theme="bold"] :is([data-mission="2"], [data-fluoro="blue"])   { --m: var(--neon-blue);   --m-shadow: var(--neon-pink); }
+[data-theme="bold"] :is([data-mission="3"], [data-fluoro="green"])  { --m: var(--neon-green);  --m-shadow: var(--neon-pink); }
+[data-theme="bold"] :is([data-mission="4"], [data-fluoro="yellow"]) { --m: var(--neon-yellow); --m-shadow: var(--neon-pink); }
 
-[data-theme="bold"] [data-mission] {
-  background: rgb(var(--m)) !important; /* the cards set their colour inline */
+[data-theme="bold"] :is([data-mission], [data-fluoro]) {
+  background: rgb(var(--m)) !important; /* some cards set their colour inline */
   border-color: rgb(var(--m));
   color: rgb(7 7 12);
   box-shadow:
@@ -784,32 +786,39 @@ body {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-[data-theme="bold"] [data-mission]:hover {
+[data-theme="bold"] :is(a[data-mission], a[data-fluoro]):hover {
   transform: translate(-1px, -1px);
   box-shadow:
     6px 6px 0 rgb(var(--m-shadow)),
     0 0 30px rgb(var(--m) / 0.5);
 }
 
-[data-theme="bold"] [data-mission] .text-ink,
-[data-theme="bold"] [data-mission] .text-white,
-[data-theme="bold"] [data-mission] [class*="text-white/"] {
-  color: rgb(7 7 12);
+/* Every coloured or white text inside goes near-black, including colours
+   set inline. */
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is(.text-ink, .text-white, [class*="text-white/"], .text-navy, .text-teal,
+      .text-sage, .text-coral, .text-gold-text, [style*="color:"]) {
+  color: rgb(7 7 12) !important;
 }
 
-[data-theme="bold"] [data-mission] .text-ink-muted {
-  color: rgb(7 7 12 / 0.82);
+[data-theme="bold"] :is([data-mission], [data-fluoro]) .text-ink-muted {
+  color: rgb(7 7 12 / 0.82) !important;
 }
 
-[data-theme="bold"] [data-mission] [class*="opacity-"] {
+/* Faded text goes solid; decorative shapes (aria-hidden) keep their fade. */
+[data-theme="bold"] :is([data-mission], [data-fluoro]) [class*="opacity-"]:not([aria-hidden]) {
   opacity: 1;
 }
 
-/* The number badge (and the "Carry on" pill) flip to black with neon text. */
-[data-theme="bold"] [data-mission] .mission-badge,
-[data-theme="bold"] [data-mission] .bg-white\/20 {
+[data-theme="bold"] :is([data-mission], [data-fluoro]) :is(.border-surface-border, [class*="border-white/"]) {
+  border-color: rgb(7 7 12 / 0.3);
+}
+
+/* Badges, pills and icon tiles flip to black with neon text. */
+[data-theme="bold"] :is([data-mission], [data-fluoro])
+  :is(.mission-badge, .bg-white\/15, .bg-white\/20, .bg-surface-muted, .bg-navy\/10) {
   background: rgb(7 7 12) !important;
-  color: rgb(var(--m));
+  color: rgb(var(--m)) !important;
 }
 
 /* ── Progress: the whole neon spectrum ── */
