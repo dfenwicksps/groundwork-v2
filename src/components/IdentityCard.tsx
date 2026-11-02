@@ -3,9 +3,10 @@ import { tint } from "@/lib/utils";
 import { pieceDone, type IdentityCard as Card } from "@/lib/identityCard";
 
 /**
- * Mission 1's answer to "Who am I?", built one piece per step (see
- * lib/identityCard.ts). Empty pieces say which step fills them and link there,
- * so the card doubles as the mission's to-do list.
+ * A mission's card, built one piece per step (see lib/identityCard.ts). It's
+ * also the mission's navigation: every piece links to the step that fills
+ * it ("Open" once it's done, so a step can be reopened or redone), and the
+ * next step to do is the one button on the card.
  */
 export default function IdentityCard({
   card,
@@ -17,6 +18,8 @@ export default function IdentityCard({
   const total = card.pieces.length;
   const complete = card.filled === total;
   const missionId = card.missionId ?? 1;
+  const nextIdx = card.pieces.findIndex((p) => !pieceDone(p));
+  const stepHref = (p: Card["pieces"][number]) => `/missions/${missionId}/activities/${p.activityId}`;
 
   return (
     <section
@@ -94,14 +97,32 @@ export default function IdentityCard({
                   // The step is done but this question was left out, which the app allows.
                   <p className="text-sm text-[--ink-muted] italic leading-relaxed">Left this one out, and that&apos;s fine.</p>
                 )
+              ) : i === nextIdx ? (
+                // The next step to do: the card's one button.
+                <Link
+                  href={stepHref(p)}
+                  className="inline-flex items-center gap-1.5 mt-0.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-white"
+                  style={{ background: colour }}
+                >
+                  {p.stale ? `Redo Step ${i + 1} · ${p.stepTitle}` : `Start Step ${i + 1} · ${p.stepTitle}`}
+                  <span aria-hidden>→</span>
+                </Link>
               ) : (
                 <Link
-                  href={`/missions/${missionId}/activities/${p.activityId}`}
+                  href={stepHref(p)}
                   className="text-sm text-[--ink-muted] hover:text-[--ink] transition-colors"
                 >
                   {p.stale
                     ? `This step's questions changed. Redo Step ${i + 1} to add this →`
                     : `Unlocks at Step ${i + 1} · ${p.stepTitle} →`}
+                </Link>
+              )}
+              {filled && (
+                <Link
+                  href={stepHref(p)}
+                  className="inline-block mt-1.5 text-xs text-[--ink-muted] hover:text-[--ink] hover:underline transition-colors"
+                >
+                  Open Step {i + 1} · {p.stepTitle} →
                 </Link>
               )}
             </li>
