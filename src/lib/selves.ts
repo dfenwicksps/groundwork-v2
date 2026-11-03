@@ -1,4 +1,4 @@
-// ─── The seven selves ─────────────────────────────────────────────────────────
+// ─── The selves ───────────────────────────────────────────────────────────────
 // Groundwork's stated aim includes developing language and understanding around
 // self-efficacy, self-confidence, self-esteem, self-concept, self-worth,
 // self-image and self-control. Four of those seven appeared nowhere in the app,
@@ -20,6 +20,19 @@
 // its definition. Self-confidence is the everyday word; research mostly
 // studies it as self-efficacy, and the general feeling is built from many
 // specific ones. See docs/evidence/self-outcomes-map.md.
+//
+// Two more were added (November 2026) because the research says they're the
+// distinctions that matter most for an app like this:
+//   - Self-reflection, set against going over it (rumination). Reflection is
+//     the app's main activity, and the curious kind helps while the repetitive,
+//     self-critical kind is linked to distress (Trapnell & Campbell, 1999;
+//     Luyckx's "ruminative exploration"). The hard-on-yourself card catches
+//     the second kind after the fact; this gives students the words before.
+//   - Mattering: being noticed, important and counted on (Rosenberg &
+//     McCullough, 1981), with Prilleltensky's two halves, feeling valued and
+//     adding value. It's what The Standard builds and the check-in measures,
+//     but the app never named it. Its self-check stays on the positive side
+//     on purpose: "would anyone notice if I was gone" is risk language.
 //
 // These are deliberately NOT Boosts. A Boost is a quality you practise this
 // week; these are lenses you use to understand what you're looking at. Mixing
@@ -63,6 +76,16 @@ export const SELVES: Self[] = [
     builtBy: { label: "Mission 4 — The Digital Self", href: "/missions/4/activities/digital-self" },
   },
   {
+    key: "self-reflection",
+    name: "Self-reflection",
+    emoji: "🔍",
+    short: "Looking at yourself with curiosity, and coming out with something.",
+    what: "Reflection is thinking back over what happened and what was going on for you, the way you'd look at a friend's situation: interested, not prosecuting. What happened? What was I feeling? What would I try next time? It's most of what this app asks you to do, and done this way it leaves you knowing yourself a bit better and with something to try.",
+    notThis: "Not going over it. Replaying the same bad moment, or the same harsh verdict on yourself, feels like reflecting but works the opposite way: it tends to leave people more anxious and flat, not clearer. The tell is where it lands. Reflection asks \"what happened\" and \"what next\" and gets somewhere. Going over it asks \"why am I like this\" on a loop and never does.",
+    selfCheck: "After you've thought something through, do you usually come out with something to try, or just feeling worse? If it's the second, stop, do something with your hands or your feet for ten minutes, or talk it through with someone instead.",
+    builtBy: { label: "Your journal", href: "/journal" },
+  },
+  {
     key: "self-esteem",
     name: "Self-esteem",
     emoji: "📈",
@@ -81,6 +104,16 @@ export const SELVES: Self[] = [
     notThis: "Not self-esteem, and not achievement. If it goes up when you win and down when you lose, that's self-esteem doing the work — and a floor made of results isn't a floor.",
     selfCheck: "If you achieved nothing at all this year, would you still be worth the same to the people who love you? Do you actually believe that about yourself?",
     builtBy: { label: "Your support circle", href: "/support" },
+  },
+  {
+    key: "mattering",
+    name: "Mattering",
+    emoji: "🤝",
+    short: "That people notice you, and count on you for something.",
+    what: "Mattering is the sense that you make a difference to people: someone notices how you're going, you're important to them, and they count on you for something. It has two halves. One is feeling valued, which mostly comes from other people. The other is adding value, the things you do that leave people better off, and that half you can do something about today.",
+    notThis: "Not belonging, and not self-worth. Belonging is being included; mattering is being important to someone in particular. And self-worth is the floor that holds even when nobody's noticing. Mattering helps build that floor, but it shouldn't be the only thing holding it up.",
+    selfCheck: "Name one person who'd notice if you were having a rough week, and one thing someone counts on you for. If either is hard to answer right now, that's common, it can change, and the support circle is a good place to start.",
+    builtBy: { label: "The Standard, on your Me page", href: "/me?tab=reflect#standard" },
   },
   {
     key: "self-confidence",

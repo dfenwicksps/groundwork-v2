@@ -52,7 +52,7 @@ The content descriptions are quoted from v9. Years 7–8 and 9–10 sit side by 
 |---|---|---|---|
 | **AC9HP8P04** / **AC9HP10P04** | the roles of respect, empathy, power and coercion in respectful relationships | The Standard, Q1 (*How am I making others feel safer and stronger?*) and its counterweight (*who feels less safe around me?*); Program week 4, *Can people trust me?*; Empathy and Compassion Boosts; Habit Check, *Reading how others feel* | **Partial**: respect and empathy yes; power and coercion not addressed |
 | **AC9HP8P05** / **AC9HP10P05** | value diversity; challenge biases, stereotypes, prejudices and discrimination; promote inclusion | Across the Gap (M3, bridging relationships across real differences); Culture and Heritage (M3, optional, including where students feel they have to hide that part of themselves); Habit Check, *Standing up for others*; story *Different Enough* | **Partial**: reflective and personal; doesn't teach about bias or discrimination as such |
-| **AC9HP8P06** / **AC9HP10P06** | emotional responses and strategies to self-manage emotions | The Mask Check (what you were protecting, what the fear costs); the Seven Selves (telling self-esteem from self-worth, so a bad day isn't treated as a verdict); *Being hard on yourself* card; Resilience Boost; Program week 9 (screen-free reflection) | **Partial**: emotional awareness is strong; regulation strategies are light |
+| **AC9HP8P06** / **AC9HP10P06** | emotional responses and strategies to self-manage emotions | The Mask Check (what you were protecting, what the fear costs); the selves lenses (telling self-esteem from self-worth, and reflecting from going over it, so a bad day isn't treated as a verdict); *Being hard on yourself* card; Resilience Boost; Program week 9 (screen-free reflection) | **Partial**: emotional awareness is strong; regulation strategies are light |
 | **AC9HP8P07** / **AC9HP10P07** | assertive communication; seeking, giving and denying consent | Habit Check, *Facing hard conversations*, touches assertive communication. Nothing on consent. | **Gap** |
 
 ### Making healthy and safe choices
@@ -79,8 +79,8 @@ v9 element and sub-element names, checked on the ACARA site.
 
 | Element | Sub-element | Where Groundwork develops it | Fit |
 |---|---|---|---|
-| **Self-awareness** | Personal awareness | VIA strengths assessment and Strengths Mapping; Values Clarifier; Seven Selves; Program week 1 | **Direct** |
-| | Emotional awareness | The Mask Check; Seven Selves; check-in | **Partial** |
+| **Self-awareness** | Personal awareness | VIA strengths assessment and Strengths Mapping; Values Clarifier; The selves lenses; Program week 1 | **Direct** |
+| | Emotional awareness | The Mask Check; The selves lenses; check-in | **Partial** |
 | | Reflective practice | The whole journal; Revisits (reading your own words months later); My Story; The Through-Line; the weekly five | **Direct**: this is Groundwork's core |
 | **Self-management** | Goal setting | Goals (WOOP-style, with if-then plans); Your Next Chapter; Commitment Statement; Program weeks 4 and 5, where the commitment is named before any tracking appears | **Direct** |
 | | Emotional regulation | Program week 7 (self-control as identity, not willpower); *Being hard on yourself* card | **Partial** |
@@ -207,7 +207,7 @@ For finding a code from an activity. M = mission.
 | Moral Compass | — | **EU** perspectives and frameworks; PSC decision-making |
 | Boosts | 8P06, 8P10 | PSC empathy, perseverance |
 | Habit Check | 8P05, 10P05 (partial) | PSC conflict resolution (partial) |
-| Seven Selves | 8P06 | PSC personal and emotional awareness |
+| The selves lenses | 8P06 | PSC personal and emotional awareness |
 | What You Were Handed | **8P01** | IU cultures and identities; EU influences |
 | Your Next Chapter / Pathways / Goals | **8P02**, **10P02** | PSC goal setting, decision-making |
 | Revisits / My Story | 10P02 | PSC reflective practice |
