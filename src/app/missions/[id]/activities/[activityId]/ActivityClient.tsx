@@ -24,6 +24,7 @@ import {
 import { hardOnSelfRecently } from "@/lib/hardOnSelf";
 import GentleCheck from "@/components/help/GentleCheck";
 import SmallStep from "@/components/SmallStep";
+import ListenButton from "@/components/ListenButton";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
@@ -1251,13 +1252,16 @@ function ConversationalActivity({
                   borderColor: `${tint(mission.colour, "25")}`,
                 }}
               >
-                <div
-                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
-                  style={{ color: mission.colour }}
-                >
-                  <span aria-hidden>✦</span> Picture this
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest"
+                    style={{ color: mission.colour }}
+                  >
+                    <span aria-hidden>✦</span> Picture this
+                  </div>
+                  <ListenButton targetId={`scenario-${qIdx}`} label="Listen to the scene" />
                 </div>
-                <p className="text-[--ink] leading-relaxed text-[0.95rem] italic">
+                <p id={`scenario-${qIdx}`} className="text-[--ink] leading-relaxed text-[0.95rem] italic">
                   {activity.scenarios[qIdx]}
                 </p>
               </div>
@@ -1275,15 +1279,18 @@ function ConversationalActivity({
 
             {/* Current question */}
             <div data-animate="2" className="question-card">
-              <div
-                className="text-xs font-bold uppercase tracking-widest mb-3"
-                style={{ color: mission.colour }}
-              >
-                {activity.scenarios?.[qIdx]
-                  ? "Now — you"
-                  : `Question ${qIdx + 1}`}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div
+                  className="text-xs font-bold uppercase tracking-widest"
+                  style={{ color: mission.colour }}
+                >
+                  {activity.scenarios?.[qIdx]
+                    ? "Now — you"
+                    : `Question ${qIdx + 1}`}
+                </div>
+                <ListenButton targetId={`question-${qIdx}`} label="Listen to the question" />
               </div>
-              <h2 className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
+              <h2 id={`question-${qIdx}`} className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
                 {questions[qIdx]}
               </h2>
               {/* The user's own diagnosed data appears inline with the question */}
@@ -2945,19 +2952,26 @@ function StrengthsAssessmentActivity({
             style={{ background: `${tint(mission.colour, "0D")}`, borderColor: `${tint(mission.colour, "25")}` }}
             data-animate="1"
           >
-            <div
-              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
-              style={{ color: mission.colour }}
-            >
-              <span aria-hidden>✦</span> Picture this
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest"
+                style={{ color: mission.colour }}
+              >
+                <span aria-hidden>✦</span> Picture this
+              </div>
+              <ListenButton targetId={`strength-scene-${idx}`} label="Listen to the scene" />
             </div>
-            <p className="text-[--ink] leading-relaxed text-[0.95rem]">{cur.scenario}</p>
+            <p id={`strength-scene-${idx}`} className="text-[--ink] leading-relaxed text-[0.95rem]">{cur.scenario}</p>
           </div>
 
           <div data-animate="2">
-            <p className="text-xs font-semibold text-[--ink] mb-2 px-0.5">
-              Tap the one MOST like you:
-            </p>
+            <div className="flex items-center justify-between gap-2 mb-2 px-0.5">
+              <p className="text-xs font-semibold text-[--ink]">Tap the one MOST like you:</p>
+              <ListenButton
+                text={cur.options.map((o) => o.text).join(". ")}
+                label="Listen to the answers"
+              />
+            </div>
             <div className="space-y-2">
               {cur.options.map((o) => {
                 const isMost = most[idx] === o.strength;

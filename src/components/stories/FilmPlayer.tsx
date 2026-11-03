@@ -2,6 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { markStoryRead } from "@/lib/storyEngagement";
+import {
+  SPEECH_EVENT,
+  currentlySpeaking,
+  getListenSettings,
+  speak,
+  speechSupported,
+  stopSpeaking,
+} from "@/lib/speech";
+
+const NARRATE_KEY = "gw_film_narrate";
 
 /**
  * The player shared by every animated story: poster, scene-by-scene playback
@@ -45,6 +55,64 @@ export default function FilmPlayer({
   const [done, setDone] = useState(false);
   const elapsedRef = useRef(0);
   const markedRef = useRef(false);
+  // Narration (lib/speech.ts): each scene's line read aloud as it plays, and
+  // the scene waits for the voice to finish, so a slow voice is never cut off.
+  // Off unless the student turns it on; remembered on this device.
+  const [canNarrate, setCanNarrate] = useState(false);
+  const [narrate, setNarrate] = useState(false);
+  const narratedRef = useRef(true);
+  const spokenSceneRef = useRef<number | null>(null);
+  const speechId = `film-${storyId}`;
+
+  useEffect(() => {
+    const sync = () => setCanNarrate(speechSupported() && getListenSettings().show);
+    sync();
+    try {
+      setNarrate(localStorage.getItem(NARRATE_KEY) === "1");
+    } catch {}
+    const onEvent = (e: Event) => {
+      if ("settings" in ((e as CustomEvent).detail || {})) sync();
+    };
+    window.addEventListener(SPEECH_EVENT, onEvent);
+    return () => {
+      window.removeEventListener(SPEECH_EVENT, onEvent);
+      if (currentlySpeaking() === speechId) stopSpeaking();
+    };
+  }, [speechId]);
+
+  /** Reads scene i's line; called from taps too, so iPhones allow the speech. */
+  const narrateScene = (i: number) => {
+    narratedRef.current = false;
+    spokenSceneRef.current = i;
+    void speak(speechId, scenes[i].caption).then(() => {
+      if (spokenSceneRef.current === i) narratedRef.current = true;
+    });
+  };
+
+  // Keep narration in step with the scene: start it when a scene begins
+  // playing, stop it on pause or at the end.
+  useEffect(() => {
+    if (!canNarrate) return;
+    if (narrate && playing && !done) {
+      if (spokenSceneRef.current !== scene || currentlySpeaking() !== speechId) narrateScene(scene);
+    } else {
+      spokenSceneRef.current = null;
+      narratedRef.current = true;
+      if (currentlySpeaking() === speechId) stopSpeaking();
+    }
+    // narrateScene only reads refs and props.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [narrate, playing, scene, done, canNarrate]);
+
+  const toggleNarrate = () => {
+    const next = !narrate;
+    setNarrate(next);
+    try {
+      localStorage.setItem(NARRATE_KEY, next ? "1" : "0");
+    } catch {}
+    if (next && playing && !done) narrateScene(scene);
+    if (!next && currentlySpeaking() === speechId) stopSpeaking();
+  };
 
   const markRead = () => {
     if (markedRef.current) return;
@@ -63,6 +131,12 @@ export default function FilmPlayer({
       elapsedRef.current += Math.min(now - last, 100);
       last = now;
       const duration = scenes[scene].duration;
+      // With narration on, a scene holds until its line has been read.
+      if (elapsedRef.current >= duration && !narratedRef.current) {
+        setProgress(1);
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       if (elapsedRef.current >= duration) {
         elapsedRef.current = 0;
         if (scene < scenes.length - 1) {
@@ -95,11 +169,13 @@ export default function FilmPlayer({
   const start = () => {
     setStarted(true);
     setPlaying(true);
+    if (narrate && canNarrate) narrateScene(0);
   };
 
   const replay = () => {
     goTo(0);
     setPlaying(true);
+    if (narrate && canNarrate) narrateScene(0);
   };
 
   const last = scenes.length - 1;
@@ -198,6 +274,22 @@ export default function FilmPlayer({
                     </svg>
                   )}
                 </button>
+                {canNarrate && (
+                  <button
+                    onClick={toggleNarrate}
+                    aria-pressed={narrate}
+                    aria-label={narrate ? "Turn narration off" : "Turn narration on: read each scene aloud"}
+                    className={`h-8 px-2.5 rounded-full border text-xs font-semibold flex items-center gap-1 transition-all ${
+                      narrate ? "border-teal bg-teal/15 text-teal" : "border-surface-border text-ink-muted hover:border-navy/30"
+                    }`}
+                  >
+                    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 6h2.5L9 3v10L5.5 10H3z" fill="currentColor" />
+                      <path d="M11.5 5.5a3.5 3.5 0 010 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                    </svg>
+                    Narrate
+                  </button>
+                )}
                 <button
                   onClick={() => goTo(scene + 1)}
                   disabled={scene === last}

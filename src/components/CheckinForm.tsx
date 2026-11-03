@@ -13,6 +13,7 @@ import {
   type Wave,
 } from "@/lib/checkin";
 import type { LifeStage } from "@/lib/lifeStage";
+import ListenButton from "@/components/ListenButton";
 
 /**
  * The check-in questions and their save button. Shared by onboarding (the
@@ -82,10 +83,18 @@ export default function CheckinForm({
         return (
         <fieldset key={item.key} className="card p-4">
           <legend className="sr-only">{text}</legend>
-          <p className="text-sm text-ink leading-relaxed mb-3" aria-hidden>
-            <span className="text-ink-muted mr-1.5">{i + 1}.</span>
-            {text}
-          </p>
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <p className="text-sm text-ink leading-relaxed" aria-hidden>
+              <span className="text-ink-muted mr-1.5">{i + 1}.</span>
+              {text}
+            </p>
+            <ListenButton
+              compact
+              text={`${text} From 1, ${scale[0]}, to 5, ${scale[4]}.`}
+              label={`Listen to question ${i + 1}`}
+              className="flex-shrink-0 -mt-1"
+            />
+          </div>
           <div className="grid grid-cols-5 gap-1.5">
             {scale.map((label, v) => {
               const value = v + 1;

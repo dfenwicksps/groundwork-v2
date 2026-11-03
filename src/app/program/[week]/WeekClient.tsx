@@ -38,6 +38,7 @@ import { smallStepOf, withSmallStep } from "@/lib/journal";
 import GentleCheck from "@/components/help/GentleCheck";
 import SmallStep from "@/components/SmallStep";
 import SupportCard from "@/components/help/SupportCard";
+import ListenButton from "@/components/ListenButton";
 
 /**
  * One week of the program: the question to sit with, the existing tool that
@@ -292,7 +293,8 @@ export default function WeekClient({
           >
             {week.emoji} {week.title}
           </h1>
-          <p className="text-sm text-ink leading-relaxed">{week.intro}</p>
+          <p id="week-intro" className="text-sm text-ink leading-relaxed">{week.intro}</p>
+          <ListenButton targetId="week-intro" label="Listen to this week's introduction" className="mt-2" />
         </div>
 
         {!ready && (
@@ -304,9 +306,12 @@ export default function WeekClient({
 
         {/* Questions */}
         <div data-animate="2">
-          <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-            Sit with these
-          </h2>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+              Sit with these
+            </h2>
+            <ListenButton text={week.questions.join(" ")} label="Listen to the questions" />
+          </div>
           <div className="card p-5 space-y-2.5">
             {week.questions.map((q) => (
               <p key={q} className="text-sm text-ink leading-relaxed flex gap-2.5">
@@ -474,9 +479,13 @@ export default function WeekClient({
             This week&apos;s challenge
           </h2>
           <div className="card p-5">
-            <p className="text-sm font-semibold text-ink mb-1.5">
-              {week.challenge.title}
-            </p>
+            <div className="flex items-start justify-between gap-2 mb-1.5">
+              <p className="text-sm font-semibold text-ink">{week.challenge.title}</p>
+              <ListenButton
+                text={`${week.challenge.title}. ${week.challenge.description}`}
+                label="Listen to the challenge"
+              />
+            </div>
             <p className="text-sm text-ink-muted leading-relaxed">
               {week.challenge.description}
             </p>

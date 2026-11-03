@@ -1310,6 +1310,13 @@ div[data-theme="neon"] {
   }
 }
 
+/* Read aloud (lib/speech.ts): the word being read. A background, not a text
+   colour, so it reads in every look. */
+::highlight(gw-reading) {
+  background-color: rgb(var(--c-teal) / 0.35);
+  color: inherit;
+}
+
 /* Device passcode (lib/deviceLock.ts): while locked, only the code screen shows. */
 html.gw-locked body > *:not(#gw-lock) {
   visibility: hidden !important;
