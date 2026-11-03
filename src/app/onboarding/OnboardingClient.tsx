@@ -18,6 +18,7 @@ import { mentionsCrisis } from "@/lib/help";
 import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
 import CheckinForm from "@/components/CheckinForm";
 import { CURRENT_SET, countWord, itemSet } from "@/lib/checkin";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 const CHECKIN_COUNT = countWord(itemSet(CURRENT_SET).items.length);
 
@@ -186,6 +187,8 @@ export default function OnboardingClient({
   }
 
   const current = steps[step - 1];
+  // Each screen opens at its top, not where the last one was scrolled to.
+  useScrollToTop(step);
   const isLast = step === TOTAL_STEPS;
 
   async function saveAnswer() {

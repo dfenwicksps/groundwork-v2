@@ -31,6 +31,7 @@ import {
   whoToYou,
   type NextChapter,
 } from "@/lib/nextChapter";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 /**
  * The guided flow for the next stage of life: what's on the table, the
@@ -60,6 +61,7 @@ export default function NextChapterClient({
   const [n, setN] = useState<NextChapter>(saved ? initial : EMPTY_NEXT_CHAPTER);
   const [entryId, setEntryId] = useState<string | null>(saved?.id ?? null);
   const [editing, setEditing] = useState(!saved);
+  useScrollToTop(editing);
   const [customQuestion, setCustomQuestion] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

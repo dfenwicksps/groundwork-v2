@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { describeAuthError, formatWait } from "@/lib/authErrors";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 type Mode = "login" | "signup";
 /** Password, or a one-tap link emailed to the student. */
@@ -26,6 +27,7 @@ export default function AuthForm() {
 
   // Set once we've sent something to the inbox and are waiting on the student.
   const [sent, setSent] = useState<null | { kind: "confirm" | "link"; email: string }>(null);
+  useScrollToTop(`${mode}-${sent?.kind ?? ""}`);
 
   // Epoch ms until which a rate limit blocks retries; drives the live countdown.
   const [retryAt, setRetryAt] = useState<number | null>(null);
