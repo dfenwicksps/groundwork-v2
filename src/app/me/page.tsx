@@ -11,6 +11,7 @@ import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter } from "@/lib/nextChapter";
 import { checkinState, type CheckinRow } from "@/lib/checkin";
+import type { SmallStepRow } from "@/lib/smallSteps";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,7 @@ export default async function MePage() {
     { data: codeRow },
     { count: supportCount },
     { data: checkinRows, error: checkinError },
+    { data: doneSteps, count: doneStepCount, error: stepsError },
   ] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id).single(),
     db
@@ -134,6 +136,13 @@ export default async function MePage() {
       .from("outcome_checkins")
       .select("wave, item_set, scores, created_at")
       .eq("user_id", user.id),
+    db
+      .from("small_steps")
+      .select("id, step, when_label, source_label, status, due_at, snoozes, done_at, created_at", { count: "exact" })
+      .eq("user_id", user.id)
+      .eq("status", "done")
+      .order("done_at", { ascending: false })
+      .limit(8),
   ]);
 
   const ranking: string[] | null = strengthRow?.ranking ?? null;
@@ -208,6 +217,8 @@ export default async function MePage() {
         )
       }
       supportCount={supportCount ?? 0}
+      // Missing table (migration 020): the section hides itself.
+      stepsTaken={stepsError ? null : { steps: (doneSteps || []) as SmallStepRow[], total: doneStepCount ?? 0 }}
       // A read error means migration 013 hasn't run: the section hides itself.
       checkin={checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]))}
       lifeStage={await getLifeStage(supabase, user.id)}

@@ -3,36 +3,90 @@
 import { useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import { mentionsCrisis } from "@/lib/help";
+import { createClient } from "@/lib/supabase";
 import SupportCard from "@/components/help/SupportCard";
+import {
+  WHEN_OPTIONS,
+  dueFor,
+  stepOptions,
+  stepWithWhen,
+  GENERIC_STEPS,
+  type StepSource,
+  type StepWhen,
+} from "@/lib/smallSteps";
 
 // ─── Ending on something you can do ──────────────────────────────────────────
 // After a reflection, the last word is an action, not the thing the student
 // was turning over. Optional: tap one, write one, or ignore it. Used after
 // mission steps, the week's reflection, the weekly five and the Next Chapter
-// debrief; each saves the step its own way, through onSave.
+// debrief; each saves the step's text copy its own way, through onSave.
+//
+// With a `source`, the options are written for that step or week, the student
+// picks when, and the step is kept in small_steps so Home can ask "Did you do
+// it?" once it's due and the Me page can list the done ones (lib/smallSteps).
 
-const SMALL_STEP_OPTIONS = [
-  "Tell one person one thing I wrote here",
-  "Do one small thing differently this week",
-  "Notice when this comes up, and jot it down",
-];
+function formatDay(d: Date): string {
+  return d.toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" });
+}
+
+/** Keeps the step for following up. A missing table (migration 020) is ignored. */
+async function recordStep(source: StepSource, entryId: string | null | undefined, step: string, when: StepWhen) {
+  const db = createClient() as any;
+  const { data } = await db.auth.getSession();
+  const userId = data?.session?.user?.id;
+  if (!userId) return;
+  const row = {
+    user_id: userId,
+    entry_id: entryId ?? null,
+    source_kind: source.kind,
+    source_key: source.key,
+    source_label: source.label,
+    step,
+    when_label: WHEN_OPTIONS.find((w) => w.key === when)?.label ?? null,
+    due_at: dueFor(when).toISOString(),
+    status: "open",
+    snoozes: 0,
+    done_at: null,
+    updated_at: new Date().toISOString(),
+  };
+  try {
+    if (entryId) await db.from("small_steps").upsert(row, { onConflict: "entry_id" });
+    else await db.from("small_steps").insert(row);
+  } catch {
+    // Following up is a bonus; the step is still saved on the entry.
+  }
+}
 
 export default function SmallStep({
   accent = "var(--navy)",
   saved,
   onSave,
-  prompt = "What's one small thing you could do in the next week because of what you just wrote? Optional, and it's saved with this entry.",
-  options = SMALL_STEP_OPTIONS,
+  prompt,
+  options,
+  source,
+  entryId,
 }: {
   accent?: string;
   /** The step already kept, if any */
   saved: string;
-  /** Saves the step; false keeps the form open with an error */
+  /** Saves the step's text copy on the entry; false keeps the form open with an error */
   onSave: (step: string) => Promise<boolean>;
   prompt?: string;
   options?: string[];
+  /** Where it was written: picks the options, and keeps the step for following up */
+  source?: StepSource;
+  /** The journal entry the step hangs off, so changing it replaces it */
+  entryId?: string | null;
 }) {
+  const choices = options ?? (source ? stepOptions(source) : GENERIC_STEPS);
+  const ask =
+    prompt ??
+    (source
+      ? "What's one small thing you'll do because of what you just wrote? Pick when, and we'll check back with you then. Optional."
+      : "What's one small thing you could do in the next week because of what you just wrote? Optional, and it's saved with this entry.");
   const [draft, setDraft] = useState("");
+  const [when, setWhen] = useState<StepWhen>("week");
+  const [checkBack, setCheckBack] = useState<Date | null>(null);
   const [editing, setEditing] = useState(!saved);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +100,12 @@ export default function SmallStep({
     setSupportNeeded(mentionsCrisis(step));
     setBusy(true);
     setError(null);
-    const ok = await onSave(step.replace(/\s*\n+\s*/g, " ").trim());
+    const clean = step.replace(/\s*\n+\s*/g, " ").trim();
+    const ok = await onSave(source ? stepWithWhen(clean, when) : clean);
+    if (ok && source) {
+      await recordStep(source, entryId, clean, when);
+      setCheckBack(dueFor(when));
+    }
     setBusy(false);
     if (!ok) {
       setError("Couldn't save that. Try again in a moment.");
@@ -64,6 +123,11 @@ export default function SmallStep({
             ✓ Your small step
           </div>
           <p className="text-sm text-[--ink] leading-relaxed">{saved}</p>
+          {checkBack && (
+            <p className="text-xs text-[--ink-muted] mt-1.5 leading-relaxed">
+              We&apos;ll ask how it went on {formatDay(checkBack)}. Done steps are kept on your Me page.
+            </p>
+          )}
           <button
             onClick={() => {
               setDraft(saved);
@@ -83,9 +147,9 @@ export default function SmallStep({
       <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: accent }}>
         Before you go: one small step
       </div>
-      <p className="text-xs text-[--ink-muted] leading-relaxed mb-3">{prompt}</p>
+      <p className="text-xs text-[--ink-muted] leading-relaxed mb-3">{ask}</p>
       <div className="space-y-1.5 mb-3">
-        {options.map((o) => (
+        {choices.map((o) => (
           <button
             key={o}
             type="button"
@@ -112,6 +176,28 @@ export default function SmallStep({
         onChange={(e) => setDraft(e.target.value)}
         placeholder="Or write your own"
       />
+      {source && (
+        <div className="mb-3" role="group" aria-label="When">
+          <div className="text-xs font-semibold text-[--ink-muted] mb-1.5">When?</div>
+          <div className="flex flex-wrap gap-1.5">
+            {WHEN_OPTIONS.map((w) => (
+              <button
+                key={w.key}
+                type="button"
+                onClick={() => setWhen(w.key)}
+                aria-pressed={when === w.key}
+                className={cn(
+                  "px-3 py-1.5 rounded-full border text-xs font-semibold",
+                  when === w.key ? "text-white" : "bg-white text-[--ink] border-[--border]"
+                )}
+                style={when === w.key ? { background: accent, borderColor: accent } : undefined}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       {error && (
         <p role="alert" className="text-xs text-red-600 mb-2">
           {error}

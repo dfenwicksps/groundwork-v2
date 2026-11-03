@@ -763,7 +763,12 @@ export default function WeekClient({
               )}
               {!supportNeeded && stepEntry && (
                 <div className="mt-4 -mb-5">
-                  <SmallStep saved={smallStepOf(stepEntry.response)} onSave={saveSmallStep} />
+                  <SmallStep
+                    saved={smallStepOf(stepEntry.response)}
+                    onSave={saveSmallStep}
+                    source={{ kind: "week", key: String(week.week), label: `Week ${week.week} · ${week.title}` }}
+                    entryId={stepEntry.id}
+                  />
                 </div>
               )}
               {blockedOnSource && !done && (

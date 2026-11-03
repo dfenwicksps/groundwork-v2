@@ -468,8 +468,10 @@ export default function NextChapterClient({
                       <SmallStep
                         saved={n.nextStep}
                         onSave={saveNextStep}
-                        prompt="What's one small thing you'll do because of what you found out? Optional, and it's kept with your plan."
+                        prompt="What's one small thing you'll do because of what you found out? Pick when, and we'll check back with you then. Optional."
                         options={DEBRIEF_STEPS}
+                        source={{ kind: "next", key: "debrief", label: "Your next chapter" }}
+                        entryId={entryId}
                       />
                     </div>
                   )}
