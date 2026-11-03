@@ -19,6 +19,8 @@ import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icon
 import CheckinForm from "@/components/CheckinForm";
 import { CURRENT_SET, countWord, itemSet } from "@/lib/checkin";
 import { useScrollToTop } from "@/lib/useScrollToTop";
+import ListenButton from "@/components/ListenButton";
+import { speechSupported } from "@/lib/speech";
 
 const CHECKIN_COUNT = countWord(itemSet(CURRENT_SET).items.length);
 
@@ -187,6 +189,9 @@ export default function OnboardingClient({
   }
 
   const current = steps[step - 1];
+  // Only mention narration where the device can read aloud (lib/speech.ts).
+  const [canSpeak, setCanSpeak] = useState(false);
+  useEffect(() => setCanSpeak(speechSupported()), []);
   // Each screen opens at its top, not where the last one was scrolled to.
   useScrollToTop(step);
   const isLast = step === TOTAL_STEPS;
@@ -267,6 +272,11 @@ export default function OnboardingClient({
             >
               Let&apos;s start with you.
             </h1>
+            <ListenButton
+              text="Let's start with you. Three quick questions: where you're at right now, what to call you, and what brings you here. Tap an answer for each, then Next."
+              label="Listen to this screen"
+              className="mb-3"
+            />
             <p className="text-ink-muted text-sm mb-6">
               {checkinReady
                 ? `Three quick questions, a one-minute story, then ${CHECKIN_COUNT} quick taps. That's it.`
@@ -448,10 +458,15 @@ export default function OnboardingClient({
           >
             One minute, one story.
           </h1>
-          <p className="text-ink-muted text-sm mb-5">
+          <p className="text-ink-muted text-sm mb-3">
             Priya&apos;s story sets up your first mission. Watch it, then answer one
             quick question.
           </p>
+          {canSpeak && (
+            <p className="text-xs text-ink-muted mb-5">
+              Tip: tap <span className="font-semibold">Narrate</span> under the film to hear each scene read aloud.
+            </p>
+          )}
 
           <VersionOfMeFilm storyId={storyId} />
 

@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import DeviceLockSettings from "./DeviceLockSettings";
 import ThemeSettings from "./ThemeSettings";
+import ListenSettings from "./ListenSettings";
 import { clearLock } from "@/lib/deviceLock";
 import { clearThemeCache, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -210,13 +211,16 @@ export default function SettingsClient({
           </div>
         </div>
 
-        {/* Look — light, dark or bold, kept on this device */}
+        {/* Look — neon, bold, light or dark, saved to the account */}
         <ThemeSettings
           db={db}
           userId={userId}
           initialTheme={initialTheme}
           themeRead={themeRead}
         />
+
+        {/* Read aloud: Listen buttons and their speed, kept on this device */}
+        <ListenSettings />
 
         {/* Your values */}
         <div data-animate="3" data-fluoro="green" className="card p-6">
