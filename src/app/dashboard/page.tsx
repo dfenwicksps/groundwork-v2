@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { checkinState, type CheckinRow } from "@/lib/checkin";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -326,22 +327,15 @@ export default async function DashboardPage() {
   const plan = planRow?.response ? parseNextChapter(planRow.response as string) : null;
   const nextChapter = plan ? { who: plan.who, due: talkDue(plan) } : null;
 
-  // The outcome check-in (lib/checkin.ts): offered once near the start and
-  // once the work it measures is done. Null when migration 013 hasn't run, so
+  // The outcome check-in (lib/checkin.ts), in the same state /check-in and
+  // the Me page use: "Also now" offers it when one is due, and the results
+  // show once both are done. Unavailable when migration 013 hasn't run, so
   // Home never offers something that can't be saved.
   const { data: checkinRows, error: checkinError } = await (supabase as any)
     .from("outcome_checkins")
-    .select("wave, created_at")
+    .select("wave, item_set, scores, created_at")
     .eq("user_id", user.id);
-  const checkins = checkinError
-    ? null
-    : ((checkinRows || []) as { wave: string; created_at: string }[]);
-  const checkin = checkins
-    ? {
-        startAt: checkins.find((c) => c.wave === "start")?.created_at ?? null,
-        endDone: checkins.some((c) => c.wave === "end"),
-      }
-    : null;
+  const checkin = checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]));
 
   return (
     <DashboardClient

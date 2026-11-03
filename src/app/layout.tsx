@@ -36,9 +36,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover", // enables env(safe-area-inset-*) on iOS notch devices
-  // Bold is the default look; the theme boot script swaps this for the
+  // Neon is the default look; the theme boot script swaps this for the
   // chosen look's colour (lib/theme.ts).
-  themeColor: "#07070C",
+  themeColor: "#09061C",
 };
 
 export default function RootLayout({
@@ -56,7 +56,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- app router root layout: applies to every page */}
         <link rel="stylesheet" href={GOOGLE_FONTS_HREF} />
-        {/* Sets the chosen look (light / dark / bold) before first paint, so
+        {/* Sets the chosen look (neon / bold / light / dark) before first paint, so
             the page never flashes the wrong colours (lib/theme.ts). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {/* Hides the page before first paint when this device has a passcode

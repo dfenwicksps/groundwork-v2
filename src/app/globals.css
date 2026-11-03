@@ -129,7 +129,7 @@
   --virtue-transcendence: #FCD34D;
 }
 
-/* Bold (the default look): cyberpunk neon on near-black. Fluoro pink, cyan,
+/* Bold: cyberpunk neon on near-black (Neon is the default look). Fluoro pink, cyan,
    green and yellow, with hot pink as the brand fill.
    Pink (navy) is a FILL that carries white labels (5.1:1); text in pink uses
    the brighter navy-light instead (see the .text-navy override below). Cyan,

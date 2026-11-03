@@ -24,10 +24,10 @@ const OPTIONS: {
   a: string;
   b: string;
 }[] = [
-  { key: "bold", label: "Bold", sub: "The default. Neon, loud, yours.", bg: "#07070C", card: "#12121C", line: "#3C2A5A", a: "#D6006F", b: "#00E5FF" },
+  { key: "neon", label: "Neon", sub: "The default. Glow on a violet night.", bg: "#09061C", card: "#140E30", line: "#00EAFF", a: "#BE00C8", b: "#00EAFF" },
+  { key: "bold", label: "Bold", sub: "Loud, blocky, fluoro", bg: "#07070C", card: "#12121C", line: "#3C2A5A", a: "#D6006F", b: "#00E5FF" },
   { key: "light", label: "Light", sub: "Clean and bright", bg: "#FAF5EC", card: "#FFFFFF", line: "#EBE2D2", a: "#4338CA", b: "#0E7490" },
   { key: "dark", label: "Dark", sub: "Easy on the eyes", bg: "#12121C", card: "#1C1C29", line: "#2E2E42", a: "#6366F1", b: "#06B6D4" },
-  { key: "neon", label: "Neon", sub: "Glow on a violet night", bg: "#09061C", card: "#140E30", line: "#00EAFF", a: "#BE00C8", b: "#00EAFF" },
 ];
 
 function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
@@ -142,7 +142,7 @@ export default function ThemeSettings({
       <p className="text-sm text-ink-muted mb-4">
         Pick how Groundwork looks. It&apos;s saved to your account, so it follows you to
         any device.
-        {!picked && " Until you pick, you get Bold."}
+        {!picked && " Until you pick, you get Neon."}
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="group" aria-label="Look">
         {OPTIONS.map((o) => (
