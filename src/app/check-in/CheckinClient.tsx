@@ -5,14 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/layout/AppShell";
 import CheckinForm from "@/components/CheckinForm";
-import { countWord, followUpDate, itemSet, CURRENT_SET, type Scores, type Wave } from "@/lib/checkin";
+import CheckinComparison from "@/components/CheckinComparison";
+import {
+  countWord,
+  followUpDate,
+  itemSet,
+  CURRENT_SET,
+  type CheckinState,
+  type Scores,
+  type Wave,
+} from "@/lib/checkin";
 import type { LifeStage } from "@/lib/lifeStage";
-
-export type CheckinState =
-  | { kind: "unavailable" }
-  | { kind: "take"; wave: Wave; start?: Scores; setId: string }
-  | { kind: "waiting"; startAt: string; setId: string }
-  | { kind: "compare"; start: Scores; end: Scores; startAt: string; setId: string };
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long" });
@@ -80,7 +83,11 @@ export default function CheckinClient({
   } else if (state.kind === "compare" || savedAs?.wave === "end") {
     const start = state.kind === "compare" ? state.start : (state as { start?: Scores }).start;
     const end = state.kind === "compare" ? state.end : savedAs!.scores;
-    body = <Comparison start={start ?? null} end={end} setId={set.id} />;
+    body = (
+      <div data-animate="2">
+        <CheckinComparison start={start ?? null} end={end} setId={set.id} />
+      </div>
+    );
   } else if (state.kind === "waiting") {
     body = (
       <div className="card p-5 text-sm text-ink-muted leading-relaxed" data-animate="2">
@@ -118,56 +125,5 @@ export default function CheckinClient({
         {body}
       </div>
     </AppShell>
-  );
-}
-
-function Comparison({ start, end, setId }: { start: Scores | null; end: Scores; setId: string }) {
-  return (
-    <div className="space-y-3" data-animate="2">
-      <p className="text-sm text-ink-muted leading-relaxed">
-        Where you started, and where you are now, out of 5.
-      </p>
-      {itemSet(setId).constructs.map(({ key, name, blurb }) => {
-        const a = start?.[key];
-        const b = end[key];
-        if (b === undefined) return null;
-        const diff = a !== undefined ? Math.round((b - a) * 10) / 10 : null;
-        return (
-          <div key={key} className="card p-4">
-            <div className="text-sm font-semibold text-ink">{name}</div>
-            <div className="text-xs text-ink-muted mb-3">{blurb}</div>
-            {(
-              [
-                ["Start", a],
-                ["Now", b],
-              ] as const
-            ).map(([label, v]) =>
-              v === undefined ? null : (
-                <div key={label} className="flex items-center gap-3 mb-1.5">
-                  <span className="text-xs text-ink-muted w-10">{label}</span>
-                  <div className="flex-1 h-2 rounded-full bg-surface-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-navy"
-                      style={{ width: `${(v / 5) * 100}%`, opacity: label === "Start" ? 0.45 : 1 }}
-                    />
-                  </div>
-                  <span className="text-xs font-semibold text-ink tabular-nums w-7 text-right">{v.toFixed(1)}</span>
-                </div>
-              )
-            )}
-            {diff !== null && (
-              <div className="text-xs text-ink-muted mt-2">
-                {diff > 0 ? `Up ${diff.toFixed(1)}` : diff < 0 ? `Down ${Math.abs(diff).toFixed(1)}` : "No change"}
-              </div>
-            )}
-          </div>
-        );
-      })}
-      <p className="text-xs text-ink-muted leading-relaxed">
-        A dip isn&apos;t a step backwards. Looking hard at who you are often makes you
-        less sure for a while before you&apos;re surer, and that&apos;s how it&apos;s
-        meant to go.
-      </p>
-    </div>
   );
 }

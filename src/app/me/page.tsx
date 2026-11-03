@@ -10,6 +10,7 @@ import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter } from "@/lib/nextChapter";
+import { checkinState, type CheckinRow } from "@/lib/checkin";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function MePage() {
     { data: standardRaw, error: standardError },
     { data: codeRow },
     { count: supportCount },
+    { data: checkinRows, error: checkinError },
   ] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id).single(),
     db
@@ -128,6 +130,10 @@ export default async function MePage() {
       .from("support_circle")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id),
+    db
+      .from("outcome_checkins")
+      .select("wave, item_set, scores, created_at")
+      .eq("user_id", user.id),
   ]);
 
   const ranking: string[] | null = strengthRow?.ranking ?? null;
@@ -202,6 +208,8 @@ export default async function MePage() {
         )
       }
       supportCount={supportCount ?? 0}
+      // A read error means migration 013 hasn't run: the section hides itself.
+      checkin={checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]))}
       lifeStage={await getLifeStage(supabase, user.id)}
       phase={phaseState.phase}
       reviewedAnchors={phaseState.reviewed}

@@ -19,6 +19,8 @@ import SelvesSection from "./SelvesSection";
 import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
+import CheckinSection from "./CheckinSection";
+import type { CheckinState } from "@/lib/checkin";
 import JourneyStrip from "./JourneyStrip";
 import PhaseBanner from "@/components/PhaseBanner";
 import type { Phase } from "@/lib/phase";
@@ -78,6 +80,7 @@ export default function MeClient({
   characterStory,
   nextChapter,
   supportCount,
+  checkin,
   featuresReady,
   lifeStage,
   phase,
@@ -112,6 +115,8 @@ export default function MeClient({
   /** The next-chapter plan, if one has been made (see /next) */
   nextChapter: NextChapter | null;
   supportCount: number;
+  /** Where the student is with the check-in (lib/checkin.ts) */
+  checkin: CheckinState;
   featuresReady: boolean;
   lifeStage: LifeStage;
   /** The global journey phase (lib/phase.ts), shown as a progress banner. */
@@ -153,7 +158,7 @@ export default function MeClient({
       profile: "profile", reflect: "reflect", grow: "grow", future: "future",
     };
     const HASH_TAB: Record<string, MeTab> = {
-      habits: "reflect", moral: "reflect", standard: "reflect",
+      habits: "reflect", moral: "reflect", standard: "reflect", checkin: "reflect",
       focus: "grow", practice: "grow", boosts: "grow", selves: "grow",
       pathways: "future", goals: "future", "future-self": "future",
     };
@@ -552,6 +557,7 @@ export default function MeClient({
             ) : (
               soonNote
             )}
+            <CheckinSection state={checkin} />
             <p className="text-xs text-ink-muted leading-relaxed pt-2 border-t border-surface-border">
               These are the slow ones. The quick weekly version lives in{" "}
               <Link href="/program#weekly" className="text-teal hover:underline">
