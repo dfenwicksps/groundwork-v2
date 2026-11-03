@@ -1107,7 +1107,6 @@ div[data-theme="neon"] {
 [data-theme="neon"] .heading-display {
   font-weight: 600;
   letter-spacing: 0;
-  text-transform: none;
 }
 
 [data-theme="neon"] h1 {

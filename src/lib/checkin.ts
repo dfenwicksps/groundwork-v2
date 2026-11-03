@@ -252,3 +252,48 @@ export function endDue(args: { startAt: string | null; endDone: boolean; now?: D
 export function followUpDate(startAt: string): Date {
   return new Date(new Date(startAt).getTime() + DAYS_TO_FOLLOW_UP * 86_400_000);
 }
+
+// ─── Where a student is with the check-in ─────────────────────────────────────
+// Shared by /check-in and the Me page, so the two always agree on what to
+// offer. The rule both follow: after the start there are no scores, because a
+// number on day one invites a student to answer the second time to beat it;
+// once the end is done, both are shown side by side.
+
+export interface CheckinRow {
+  wave: Wave;
+  item_set: string;
+  scores: Scores;
+  created_at: string;
+}
+
+export type CheckinState =
+  /** The table doesn't exist yet (migration 013 not run) */
+  | { kind: "unavailable" }
+  | { kind: "take"; wave: Wave; start?: Scores; setId: string }
+  | { kind: "waiting"; startAt: string; setId: string }
+  | { kind: "compare"; start: Scores; end: Scores; startAt: string; endAt: string; setId: string };
+
+/** `rows` in any order; null when the read failed. */
+export function checkinState(rows: CheckinRow[] | null, now: Date = new Date()): CheckinState {
+  if (!rows) return { kind: "unavailable" };
+  const list = [...rows].sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const start = list.find((r) => r.wave === "start") ?? null;
+  const end = [...list].reverse().find((r) => r.wave === "end") ?? null;
+  // Everything after a start uses the start's set, so the comparison lines up.
+  const setId = start ? itemSet(start.item_set).id : CURRENT_SET;
+  if (!start) return { kind: "take", wave: "start", setId };
+  if (end) {
+    return {
+      kind: "compare",
+      start: start.scores,
+      end: end.scores,
+      startAt: start.created_at,
+      endAt: end.created_at,
+      setId,
+    };
+  }
+  if (endDue({ startAt: start.created_at, endDone: false, now })) {
+    return { kind: "take", wave: "end", start: start.scores, setId };
+  }
+  return { kind: "waiting", startAt: start.created_at, setId };
+}
