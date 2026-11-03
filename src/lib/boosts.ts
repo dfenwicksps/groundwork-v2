@@ -23,7 +23,7 @@ export const BOOSTS: Boost[] = [
     name: "Courage",
     emoji: "🦁",
     what: "Courage isn't the absence of fear — it's acting while the fear is still there. People who look fearless are usually just practised: they've done the scary thing enough times that their body trusts them to survive it.",
-    exercise: "Pick one thing you've been avoiding because of what people might think. Name the fear in one sentence, name what avoiding it costs you, then do the 10-second version of it (send the message, raise the hand, sign up). Courage grows by reps, not by waiting to feel ready.",
+    exercise: "Pick one thing you've been avoiding because of what people might think. Name the fear in one sentence, name what avoiding it costs you, then do the 10-second version of it (send the message, raise the hand, sign up). Courage grows by reps, not by waiting to feel ready. If your heart's racing first, that's your body getting ready, not a sign you can't.",
   },
   {
     key: "vulnerability",
@@ -46,7 +46,7 @@ export const BOOSTS: Boost[] = [
     inPractice: "Trusting that you have something valuable to offer.",
     name: "Self-belief",
     emoji: "🌟",
-    what: "Confidence isn't a personality type — it follows evidence. People who believe in themselves are usually just people who keep track of their own wins while everyone else forgets theirs.",
+    what: "Confidence isn't a personality type. It tends to follow evidence, and most people forget their own. A wins log keeps it where you can see it.",
     exercise: "Start a wins log. Three times a week, write one small thing you did well — held your temper, spoke up, finished something. Before your next hard moment, read the log. You're not hyping yourself up; you're reviewing the data.",
   },
   {
@@ -78,8 +78,8 @@ export const BOOSTS: Boost[] = [
     inPractice: "Taking action to support, include or encourage others.",
     name: "Kindness",
     emoji: "🤝",
-    what: "Kindness is deliberate warmth — strongest when it costs you something and nobody's watching. Research is blunt about this one: doing kind things reliably raises the mood of the person doing them, not just the receiver.",
-    exercise: "One unrequested act of kindness a day for five days — the text you didn't have to send, the seat you gave up, the compliment said out loud. Anonymous ones count double. At the end of the five days, notice who felt better: them or you.",
+    what: "Kindness is deliberate warmth — strongest when it costs you something and nobody's watching. Research finds doing kind things tends to lift the mood of the person doing them a little, not just the receiver's.",
+    exercise: "One unrequested act of kindness a day for five days — the text you didn't have to send, the seat you gave up, the compliment said out loud. Try at least one where nobody knows it was you. At the end of the five days, notice who felt better: them or you.",
   },
 ];
 
@@ -114,7 +114,7 @@ export const STRENGTH_ACTIONS: Record<string, string> = {
   honesty: "Say one true thing this week that you'd usually soften or skip entirely.",
   zest: "Do one ordinary thing at full energy — walk faster, sing louder, actually celebrate the small win.",
   love: "Tell one person, specifically, what they mean to you. Not just 'thanks' — the real sentence.",
-  kindness: "Do one unrequested favour a day. Small counts. Anonymous counts double.",
+  kindness: "Do one unrequested favour a day. Small counts. Try one where nobody knows it was you.",
   "social-intelligence": "Once a day, silently name the feeling you think someone's having — then check if you were right.",
   teamwork: "In your next group task, take the job nobody wants — without announcing it.",
   fairness: "Notice one situation this week where someone's being left out, and even it up.",

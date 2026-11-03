@@ -7,12 +7,25 @@
 - a pilot design;
 - the small amount of code a pilot would need.
 
-**Status, October 2026:**
-- The app runs its own nine-question check-in (`src/lib/checkin.ts`). It's taken during onboarding and again 70 days later, with a record of how much of the app the student used each time.
+**Status, November 2026:**
+- The app runs its own twelve-question check-in (`src/lib/checkin.ts`), covering the five outcomes below. Students who started on the earlier nine questions finish on them. It's taken during onboarding and again 70 days later, with a record of how much of the app the student used each time.
 - The questions are Groundwork's own wording. They aren't validated, so their results aren't evidence.
 - Nothing is analysed across students. The privacy page says answers are only shown back to the student.
 
-Licensing details below were checked against public sources in October 2026. Confirm them with each rights holder before relying on them.
+**Decision, 2 November 2026:** Groundwork's outcomes are now five:
+- self-esteem;
+- self-efficacy;
+- self-confidence;
+- self-concept clarity;
+- mattering.
+
+Direction and purpose are no longer measured outcomes; purpose is still built in Mission 2. The reasoning is in `self-outcomes-map.md`, and the draft in-app items are in `checkin-v2-draft.md`.
+
+The in-app check-in stays in Groundwork's own words, inspired by the validated scales but never copying them, so the app never feels like a mental-health assessment. The validated scales below are run *outside* the app, by the research partner. They do two jobs:
+- test whether Groundwork changes anything;
+- check whether the in-app items measure what they claim.
+
+Licensing details below were checked against public sources in October–November 2026. Confirm them with each rights holder before relying on them.
 
 ---
 
@@ -21,26 +34,34 @@ Licensing details below were checked against public sources in October 2026. Con
 1. **Find a university research partner first.** They bring the ethics committee (HREC), the non-commercial licences for wellbeing measures, a survey platform, and credibility with schools.
 2. **Run the validated scales in the partner's survey tool, not in the app.** Link answers to app use with a study code. This avoids embedding licensed scales in a commercial product, and keeps research data under the university's governance.
 3. **Make the pilot about feasibility, not proof.** Can schools recruit? Do students stay? Do they use it? Is it safe? A small pilot can't show the app works, but it can show whether a proper trial is worth running.
-4. **Keep the in-app check-in for everyone.** Students still see what moved. The pilot can also test Groundwork's own nine questions against the validated scales, which would make them more useful afterwards.
+4. **Keep the in-app check-in for everyone.** Students still see what moved. The pilot also tests Groundwork's own questions against the validated scales. If they agree well, the in-app check-in becomes a usable light-touch measure afterwards. Until then, no claim of change in any of the five outcomes should rest on it.
 
 ---
 
-## 2. Validated scales, matched to what the check-in measures
+## 2. Validated scales, matched to the five outcomes
 
-The check-in measures three things, chosen to match the identity research. Each has a validated scale.
+Each outcome has a validated scale to check the in-app items against, except self-confidence, which has no separate validated construct.
 
-| What it measures | Validated scale | Items | Used with adolescents? | What using it needs |
+| Outcome | Validated scale | Items | Used with adolescents? | What using it needs |
 |---|---|---|---|---|
-| **Knowing who you are** (clarity) | Self-Concept Clarity Scale (Campbell et al., 1996) | 12, five-point agreement | Yes. Crocetti and colleagues used it in a six-wave study of Dutch adolescents and their parents. | Published in an APA journal. Research use is common without a formal licence. For anything beyond a university study, ask the lead author and APA permissions. |
-| **Having a direction** (commitment and exploration) | Utrecht-Management of Identity Commitments Scale, U-MICS (Crocetti, Rubini & Meeus, 2008) | 13 per domain: 5 commitment, 5 in-depth exploration, 3 reconsideration. Five-point agreement. | Yes. Validated in many countries and languages. | No licence statement found. Ask Elisabetta Crocetti (University of Bologna) for permission, and which domain fits best. The educational domain is the natural one. |
-| **Something bigger than you** (purpose) | Claremont Purpose Scale (Bronk, Riches & Mangan, 2018) | 12, each with its own five response labels | Yes, designed for grades 6–12. | Listed as open access. Contact Kendall Cotton Bronk (Claremont Graduate University) to confirm use. |
+| **Self-esteem** | Rosenberg Self-Esteem Scale (Rosenberg, 1965/1989) | 10, four-point agreement | Yes, very widely | The University of Maryland says it's public domain: no permission or notification needed. Cite the 1989 edition. |
+| **Self-efficacy** | Self-Efficacy Questionnaire for Children, SEQ-C (Muris, 2001) | 24: academic, social, emotional, 8 each; five-point | Yes. Validated with 330 young adolescents. | No licence statement found. Ask Peter Muris (Maastricht University). |
+| *(shorter alternative)* | General Self-Efficacy Scale (Schwarzer & Jerusalem, 1995) | 10, four-point | From age 12 | Free with attribution for research; check before any commercial or digital use. Less sensitive than SEQ-C, because it isn't domain-specific. |
+| **Self-confidence** | None that is separate. Check the in-app confidence items against SEQ-C and Rosenberg instead. | — | — | — |
+| **Self-concept clarity** | Self-Concept Clarity Scale (Campbell et al., 1996) | 12, five-point agreement | Yes. Crocetti and colleagues used it in a six-wave study of Dutch adolescents and their parents. | Published in an APA journal. Research use is common without a formal licence. For anything beyond a university study, ask the lead author and APA permissions. |
+| **Mattering** | General Mattering Scale (Marcus, 1991) | 5 | Used across ages; adolescent evidence is thinner | Items are printed in later papers (e.g. Taylor & Turner, 2001); no licence statement found. Check with the partner. |
+| *(adolescent alternative)* | Mattering to Others Questionnaire (Marshall, 2001, *Journal of Adolescence* 24) | Covers mattering to parents and to friends | Built for adolescents | Ask the author |
 | **Wellbeing** (safety and secondary outcome) | Short Warwick-Edinburgh Mental Wellbeing Scale, SWEMWBS | 7 | Yes. Warwick says the short version is validated from age 11. | Free under a non-commercial licence for universities, schools and charities. A company needs a paid commercial licence, and Warwick says anyone building it into a system needs a full commercial licence first. |
 
 **Things to know before choosing:**
-- **Length.** All four together come to about 44 items. That's too long for onboarding, but fine for a consented study session at school. That's another reason to run them in a research survey, not the app.
-- **Sensitivity to change.** Self-concept clarity was very stable from year to year in the Dutch study. Over ten weeks it may barely move. Treat clarity as a secondary outcome, and don't size a future trial on it without pilot data.
-- **Purpose scale format.** Its response labels differ for every question. Groundwork's check-in uses one shared five-point scale, so it couldn't show this scale without a change (see section 6).
+- **Length.** Rosenberg, SEQ-C, Self-Concept Clarity, General Mattering and SWEMWBS come to about 58 items. Add Groundwork's own 12–17 to check them against, and it's 70–75 in all. That's fine in a consented school session, but too long for anything else. If it has to shrink, swap SEQ-C for the General Self-Efficacy Scale (−14 items).
+- **Sensitivity to change.**
+  - Self-concept clarity was very stable from year to year in the Dutch study, and global self-esteem is fairly stable too. Over ten weeks either may barely move.
+  - Domain-specific efficacy is the most likely to change.
+  - Don't size a future trial on any of them without pilot data.
+- **Self-confidence has no validated scale.** The pilot's job for the confidence items is to show they hang together and relate to efficacy and esteem as expected, i.e. related but not identical. If they turn out indistinguishable from efficacy, report confidence as efficacy's everyday name.
 - **Is Groundwork commercial?** If it's run by a company, it counts as commercial for licensing, even if it's free to students. A university running the pilot under its own licences avoids that, but only if the university administers the scales, not the app.
+- **Earlier choices, kept for reference.** The plan previously used the U-MICS (identity commitment and exploration) and the Claremont Purpose Scale. They fit the old direction and purpose items. Use them only if those outcomes come back.
 
 ---
 
@@ -84,8 +105,12 @@ The check-in measures three things, chosen to match the identity research. Each 
   - SWEMWBS at both time points;
   - a distress protocol agreed with each school's wellbeing staff;
   - a count of how often the in-app support card appeared. This would need a small change, because today nothing about it is recorded.
-- **Early signal (exploratory):** U-MICS, Claremont Purpose Scale and Self-Concept Clarity Scale, before and after.
-- **Groundwork's own nine questions:** collected alongside the validated scales, to check how well they match. That would be the first real data on whether the in-app check-in measures what it claims to.
+- **Early signal (exploratory):** before and after, using
+  - Rosenberg Self-Esteem Scale;
+  - SEQ-C;
+  - Self-Concept Clarity Scale;
+  - General Mattering Scale (or Marshall's adolescent measure).
+- **Groundwork's own check-in items:** collected in the same sitting as the validated scales, to check how well they match: each in-app area against its scale, and the confidence items against SEQ-C and Rosenberg. That would be the first real data on whether the in-app check-in measures what it claims to.
 
 **Progression criteria:** agree before the pilot what would justify a full trial. For example: a minimum share completing follow-up, a minimum level of use, and no safety concerns. Set the thresholds with the research partner.
 
@@ -97,11 +122,12 @@ The check-in measures three things, chosen to match the identity research. Each 
 
 These are short drafts, adapted to whoever sends them. Ideally that's the research partner, since academic-to-academic requests tend to get faster answers. Check the contact details before sending.
 
-**To the U-MICS author (Elisabetta Crocetti, University of Bologna):**
-> We're planning a small university-led pilot of Groundwork, a self-guided identity-development app for Australian students aged 13 to 18, and would like to use the U-MICS as an outcome measure, administered in the university's survey platform rather than inside the app. Could you confirm permission for this use, and advise which domain (educational or interpersonal) you'd recommend for a general identity intervention at this age?
+**To the SEQ-C author (Peter Muris, Maastricht University):**
+> We're planning a small university-led pilot of Groundwork, a self-guided identity-development app for Australian students aged 13 to 18, and would like to use the SEQ-C as an outcome measure, administered in the university's survey platform rather than inside the app. Could you confirm permission for this use, and whether there's a version you'd recommend for students up to 18?
 
-**To the Claremont Purpose Scale author (Kendall Cotton Bronk, Claremont Graduate University):**
-> We'd like to use the Claremont Purpose Scale as an outcome measure in a small university-led pilot of a self-guided identity-development app for Australian students aged 13 to 18, administered in the university's survey platform. Could you confirm this use is permitted, and whether there's an Australian or adapted version we should use?
+**About mattering:** the research partner should confirm the terms for the General Mattering Scale, or contact Sheila Marshall (University of British Columbia) about the Mattering to Others Questionnaire if the adolescent measure is preferred.
+
+**Rosenberg Self-Esteem Scale:** no request needed; it's public domain. Cite it.
 
 **To Warwick Innovations (SWEMWBS):** the university partner registers for the non-commercial licence itself. Separately, ask Warwick in writing whether the pilot as designed sits within that licence, since Groundwork itself is the intervention being tested.
 
@@ -123,7 +149,12 @@ None of this is built yet. It should be shaped by what the HREC approves, so it'
    - never includes journal text or names.
 4. **A count of support-card appearances,** as a safety measure. It would record only that the card appeared and when, never what triggered it.
 5. **Privacy page and an in-app study information sheet,** in the HREC-approved wording.
-6. **Only if a scale is later moved into the app:** per-question response labels in the check-in, for the Claremont Purpose Scale. Plus a new `ITEM_SET` id, so answers to the new and old questions are never mixed. The check-in already stores which set each answer was given under.
+6. **The v2 check-in** (`checkin-v2-draft.md`):
+   - a new `ITEM_SET` id;
+   - per-area response labels (self-efficacy uses "how sure");
+   - life-stage wording variants.
+
+   A student's end check-in must use the same set as their start, so a v1 start is never compared with a v2 end. The check-in already stores which set each answer was given under.
 
 ---
 
@@ -135,3 +166,7 @@ None of this is built yet. It should be shaped by what the HREC approves, so it'
 - WEMWBS and SWEMWBS licensing: [Warwick Innovations FAQ](https://warwick.ac.uk/services/innovations/wemwbs/faq/) and [non-commercial licence registration](https://warwick.ac.uk/fac/sci/med/research/platform/wemwbs/using-old/non-commercial-licence-registration). Adolescent validation: Clarke et al. (2011), *BMC Public Health* ([PMC3141456](https://pmc.ncbi.nlm.nih.gov/articles/PMC3141456)).
 - National Statement on Ethical Conduct in Human Research (2023), Chapter 4.2 ([PDF copy](https://www.swslhd.health.nsw.gov.au/Ethics/content/pdf/National-Statement-Ethical-Conduct-Human-Research-2023.pdf)).
 - NSW SERAP: [Research in our schools](https://education.nsw.gov.au/about-us/education-data-and-research/research-with-us/researching-in-our-schools).
+- Rosenberg Self-Esteem Scale: public-domain statement and citation guidance from the University of Maryland ([using the scale](https://socy.umd.edu/about-us/using-rosenberg-self-esteem-scale)).
+- SEQ-C: Muris (2001), *Journal of Psychopathology and Behavioral Assessment*, 23, 145–149 ([EdInstruments listing](https://edinstruments.org/node/626)).
+- General Self-Efficacy Scale: Schwarzer & Jerusalem (1995) ([YouthREX copy](https://youthrex.com/wp-content/uploads/2019/10/General-Self-Efficacy-Scale.pdf)).
+- Mattering: Rosenberg & McCullough (1981); General Mattering Scale (Marcus, 1991) ([review of mattering measures](https://journals.copmadrid.org/clysa/archivos/1130-5274-clinsa-35-2-0057.pdf), [GMS-6 extension](https://journals.sagepub.com/doi/10.1177/07342829241255232)); Marshall (2001), *Journal of Adolescence*, 24, 473–490.

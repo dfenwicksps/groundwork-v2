@@ -5,26 +5,35 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/layout/AppShell";
 import CheckinForm from "@/components/CheckinForm";
-import { CONSTRUCTS, followUpDate, type Scores, type Wave } from "@/lib/checkin";
+import { countWord, followUpDate, itemSet, CURRENT_SET, type Scores, type Wave } from "@/lib/checkin";
+import type { LifeStage } from "@/lib/lifeStage";
 
 export type CheckinState =
   | { kind: "unavailable" }
-  | { kind: "take"; wave: Wave; start?: Scores }
-  | { kind: "waiting"; startAt: string }
-  | { kind: "compare"; start: Scores; end: Scores; startAt: string };
+  | { kind: "take"; wave: Wave; start?: Scores; setId: string }
+  | { kind: "waiting"; startAt: string; setId: string }
+  | { kind: "compare"; start: Scores; end: Scores; startAt: string; setId: string };
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long" });
 }
 
 /**
- * The nine-question check-in (see lib/checkin.ts). The start one shows no
+ * The check-in (see lib/checkin.ts). The start one shows no
  * numbers back: a score on day one invites a student to answer the second time
  * to beat it. The end one shows both, side by side, with a word about why a
  * dip can be a good sign.
  */
-export default function CheckinClient({ state }: { state: CheckinState }) {
+export default function CheckinClient({
+  state,
+  lifeStage,
+}: {
+  state: CheckinState;
+  lifeStage?: LifeStage;
+}) {
   const router = useRouter();
+  const set = itemSet(state.kind === "unavailable" ? CURRENT_SET : state.setId);
+  const count = countWord(set.items.length);
   const [savedAs, setSavedAs] = useState<{ wave: Wave; scores: Scores } | null>(null);
 
   function saved(wave: Wave, scores: Scores) {
@@ -60,7 +69,7 @@ export default function CheckinClient({ state }: { state: CheckinState }) {
       <div className="card p-5" data-animate="2">
         <div className="text-sm font-semibold text-ink mb-2">That&apos;s your starting point.</div>
         <p className="text-sm text-ink-muted leading-relaxed mb-4">
-          No scores yet, on purpose. In ten weeks the same nine questions come back,
+          No scores yet, on purpose. In ten weeks the same {count} questions come back,
           and you&apos;ll see both side by side.
         </p>
         <Link href="/dashboard" className="btn btn-primary w-full py-3 rounded-xl text-sm">
@@ -71,7 +80,7 @@ export default function CheckinClient({ state }: { state: CheckinState }) {
   } else if (state.kind === "compare" || savedAs?.wave === "end") {
     const start = state.kind === "compare" ? state.start : (state as { start?: Scores }).start;
     const end = state.kind === "compare" ? state.end : savedAs!.scores;
-    body = <Comparison start={start ?? null} end={end} />;
+    body = <Comparison start={start ?? null} end={end} setId={set.id} />;
   } else if (state.kind === "waiting") {
     body = (
       <div className="card p-5 text-sm text-ink-muted leading-relaxed" data-animate="2">
@@ -87,12 +96,14 @@ export default function CheckinClient({ state }: { state: CheckinState }) {
       <div className="space-y-4" data-animate="2">
         <p className="text-sm text-ink-muted leading-relaxed">
           {wave === "start"
-            ? "Nine quick questions about how you see yourself right now. No right answers, nothing to pass: answer how it is today. In ten weeks you'll answer the same nine again and see what's moved."
-            : "The same nine questions as ten weeks ago. Answer how it is today, not how you remember answering, and then see both side by side."}
+            ? `${count[0].toUpperCase()}${count.slice(1)} quick questions about how you see yourself right now. No right answers, nothing to pass: answer how it is today. In ten weeks you'll answer the same ${count} again and see what's moved.`
+            : `The same ${count} questions as ten weeks ago. Answer how it is today, not how you remember answering, and then see both side by side.`}
         </p>
         <CheckinForm
           wave={wave}
           context="home"
+          itemSetId={set.id}
+          lifeStage={lifeStage ?? "middle"}
           submitLabel={wave === "start" ? "Save my starting point" : "See what's moved"}
           onSaved={(scores) => saved(wave, scores)}
         />
@@ -110,15 +121,16 @@ export default function CheckinClient({ state }: { state: CheckinState }) {
   );
 }
 
-function Comparison({ start, end }: { start: Scores | null; end: Scores }) {
+function Comparison({ start, end, setId }: { start: Scores | null; end: Scores; setId: string }) {
   return (
     <div className="space-y-3" data-animate="2">
       <p className="text-sm text-ink-muted leading-relaxed">
         Where you started, and where you are now, out of 5.
       </p>
-      {CONSTRUCTS.map(({ key, name, blurb }) => {
+      {itemSet(setId).constructs.map(({ key, name, blurb }) => {
         const a = start?.[key];
         const b = end[key];
+        if (b === undefined) return null;
         const diff = a !== undefined ? Math.round((b - a) * 10) / 10 : null;
         return (
           <div key={key} className="card p-4">

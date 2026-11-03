@@ -14,7 +14,7 @@ import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeSta
 import type { Phase } from "@/lib/phase";
 import PhaseBanner from "@/components/PhaseBanner";
 import { whoToYou } from "@/lib/nextChapter";
-import { endDue } from "@/lib/checkin";
+import { CURRENT_SET, countWord, endDue, itemSet } from "@/lib/checkin";
 import { isStoryActivity } from "@/lib/revisit";
 
 type RevisitEntry = {
@@ -236,7 +236,7 @@ export default function DashboardClient({
       href: "/check-in",
       icon: "◔",
       title: "A one-minute check-in",
-      sub: "Nine quick questions now, so later you can see what's moved.",
+      sub: `${countWord(itemSet(CURRENT_SET).items.length).replace(/^./, (c) => c.toUpperCase())} quick questions now, so later you can see what's moved.`,
     });
   } else if (
     checkin &&
@@ -247,7 +247,7 @@ export default function DashboardClient({
       href: "/check-in",
       icon: "◕",
       title: "The check-in, one more time",
-      sub: "Ten weeks on: the same nine questions. See what's moved.",
+      sub: "Ten weeks on: the same questions as before. See what's moved.",
     });
   }
 

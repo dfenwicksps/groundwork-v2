@@ -13,7 +13,7 @@ import {
 } from "@/lib/theme";
 
 // Each preview is drawn in its own look's colours, whatever look is on now,
-// so the three are always comparable side by side.
+// so the four are always comparable side by side.
 const OPTIONS: {
   key: Theme;
   label: string;
@@ -27,10 +27,12 @@ const OPTIONS: {
   { key: "bold", label: "Bold", sub: "The default. Neon, loud, yours.", bg: "#07070C", card: "#12121C", line: "#3C2A5A", a: "#D6006F", b: "#00E5FF" },
   { key: "light", label: "Light", sub: "Clean and bright", bg: "#FAF5EC", card: "#FFFFFF", line: "#EBE2D2", a: "#4338CA", b: "#0E7490" },
   { key: "dark", label: "Dark", sub: "Easy on the eyes", bg: "#12121C", card: "#1C1C29", line: "#2E2E42", a: "#6366F1", b: "#06B6D4" },
+  { key: "neon", label: "Neon", sub: "Glow on a violet night", bg: "#09061C", card: "#140E30", line: "#00EAFF", a: "#BE00C8", b: "#00EAFF" },
 ];
 
 function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
   const bold = o.key === "bold";
+  const neon = o.key === "neon";
   return (
     <div
       aria-hidden
@@ -39,24 +41,33 @@ function Preview({ o }: { o: (typeof OPTIONS)[number] }) {
         background: o.bg,
         backgroundImage: bold
           ? "radial-gradient(circle at 100% 0%, rgba(255,46,151,0.4), transparent 55%), radial-gradient(circle at 0% 100%, rgba(0,229,255,0.3), transparent 55%), linear-gradient(rgba(0,229,255,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.14) 1px, transparent 1px)"
-          : undefined,
-        backgroundSize: bold ? "100% 100%, 100% 100%, 8px 8px, 8px 8px" : undefined,
+          : neon
+            ? "radial-gradient(circle at 100% 0%, rgba(190,0,200,0.45), transparent 60%), linear-gradient(rgba(0,234,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(0,234,255,0.12) 1px, transparent 1px)"
+            : undefined,
+        backgroundSize: bold
+          ? "100% 100%, 100% 100%, 8px 8px, 8px 8px"
+          : neon
+            ? "100% 100%, 10px 10px, 10px 10px"
+            : undefined,
       }}
     >
       <div
         className="rounded-md px-1.5 py-1 flex flex-col gap-1"
         style={{
           background: o.card,
-          border: `${bold ? 1.5 : 1}px solid ${o.line}`,
-          boxShadow: bold ? `2px 2px 0 ${o.a}` : undefined,
+          border: `${bold ? 1.5 : 1}px solid ${neon ? "rgba(0,234,255,0.45)" : o.line}`,
+          boxShadow: bold ? `2px 2px 0 ${o.a}` : neon ? "0 0 8px rgba(255,92,230,0.35)" : undefined,
         }}
       >
-        <div className="h-1.5 w-3/4 rounded-full" style={{ background: bold ? "#FF4FB0" : o.a }} />
+        <div className="h-1.5 w-3/4 rounded-full" style={{ background: bold ? "#FF4FB0" : neon ? "#FF5CE6" : o.a }} />
         <div className="h-1 w-1/2 rounded-full" style={{ background: o.b }} />
       </div>
       <div
         className="h-2.5 w-10 rounded"
-        style={{ background: o.a, boxShadow: bold ? "1.5px 1.5px 0 #FFE600" : undefined }}
+        style={{
+          background: o.a,
+          boxShadow: bold ? "1.5px 1.5px 0 #FFE600" : neon ? "0 0 6px rgba(255,92,230,0.8)" : undefined,
+        }}
       />
     </div>
   );
@@ -133,7 +144,7 @@ export default function ThemeSettings({
         any device.
         {!picked && " Until you pick, you get Bold."}
       </p>
-      <div className="grid grid-cols-3 gap-2" role="group" aria-label="Look">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="group" aria-label="Look">
         {OPTIONS.map((o) => (
           <button
             key={o.key}

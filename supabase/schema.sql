@@ -25,7 +25,7 @@ create table if not exists public.users (
   -- 'senior' (12), 'leaver' (just left school), 'adult' (a few years out)
   life_stage text check (life_stage is null or life_stage in ('junior', 'middle', 'senior', 'leaver', 'adult')),
   -- The Look setting (src/lib/theme.ts); null = follow the phone's light/dark
-  theme text check (theme is null or theme in ('light', 'dark', 'bold')),
+  theme text check (theme is null or theme in ('light', 'dark', 'bold', 'neon')),
   -- The three-phase journey (src/lib/phase.ts): 1 = first pass (tap), 2 = review
   -- & add, 3 = deepen. phase_meta holds unlock timestamps + reviewed anchors.
   journey_phase int not null default 1,

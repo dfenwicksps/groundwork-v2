@@ -17,6 +17,9 @@ import { markStoryActioned } from "@/lib/storyEngagement";
 import { mentionsCrisis } from "@/lib/help";
 import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
 import CheckinForm from "@/components/CheckinForm";
+import { CURRENT_SET, countWord, itemSet } from "@/lib/checkin";
+
+const CHECKIN_COUNT = countWord(itemSet(CURRENT_SET).items.length);
 
 const WHY_OPTIONS = [
   {
@@ -63,7 +66,7 @@ function gapOptions(stage: LifeStage | null): string[] {
  * Up to three screens. The first asks the three things the app tailors itself
  * by and creates the profile. The second is a real piece of Groundwork: a
  * one-minute story and one question about it, so a new student reaches the
- * actual thing within a minute or two. The last is the nine-question check-in,
+ * actual thing within a minute or two. The last is the check-in,
  * taken here so it's a real baseline: before any mission (see lib/checkin.ts).
  * It can be skipped, and is then offered from Home.
  *
@@ -263,7 +266,7 @@ export default function OnboardingClient({
             </h1>
             <p className="text-ink-muted text-sm mb-6">
               {checkinReady
-                ? "Three quick questions, a one-minute story, then nine quick taps. That's it."
+                ? `Three quick questions, a one-minute story, then ${CHECKIN_COUNT} quick taps. That's it.`
                 : "Three quick questions, then a one-minute story. That's it."}
             </p>
 
@@ -413,12 +416,14 @@ export default function OnboardingClient({
             Where you&apos;re starting from.
           </h1>
           <p className="text-ink-muted text-sm mb-5 leading-relaxed">
-            Nine quick taps about how you see yourself today. No right answers. In ten
-            weeks you&apos;ll answer the same nine again and see what&apos;s moved.
+            {CHECKIN_COUNT[0].toUpperCase() + CHECKIN_COUNT.slice(1)} quick taps about how you see yourself today. No right answers. In ten
+            weeks you&apos;ll answer the same {CHECKIN_COUNT} again and see what&apos;s moved.
           </p>
           <CheckinForm
             wave="start"
             context="onboarding"
+            itemSetId={CURRENT_SET}
+            lifeStage={lifeStage ?? "middle"}
             submitLabel={isLast ? "Save and go to my dashboard" : "Save and keep going"}
             onSaved={() => next()}
           />

@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             <strong>What you write and choose.</strong> Mission reflections and
             journal entries, your strengths results, the values you pick, goals,
             habits and practice notes, your Standard check-ins, your answers to
-            the nine-question check-in if you do it, and how far through the
+            the check-in if you do it, and how far through the
             missions and the ten-week program you are.
           </li>
           <li>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
           device and never saved or sent.
         </p>
         <p>
-          <strong>The nine-question check-in</strong> is optional. If you answer
+          <strong>The check-in</strong> (a few quick questions, at the start and ten weeks later) is optional. If you answer
           it, your answers are stored like everything else and shown back to you
           next to your later ones, along with a note of how much of the app
           you&apos;d done at the time. That is all they are used for. If we ever

@@ -410,7 +410,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "React to 18 everyday situations for a snapshot of the character strengths that come most naturally to you right now.",
         whyItMatters:
-          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
+          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Studies, mostly with adults, find that using your top ‘signature’ strengths in new ways tends to lift wellbeing a little. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
         timeEstimate: "About 8 minutes",
       },
       {
@@ -435,7 +435,7 @@ export const MISSIONS: Mission[] = [
         valuesOptions: VALUES_LIST,
         valuesCount: 5,
         whyItMatters:
-          "Self-determination theory — one of the most replicated frameworks in psychology — finds that people who act from their own values (rather than external pressure) consistently report higher wellbeing, more resilient motivation, and more stable behaviour over time. Knowing your values isn't just clarifying. It changes what you actually do, especially under pressure.",
+          "Self-determination theory — one of the most replicated frameworks in psychology — finds that people who act for reasons they genuinely agree with, rather than because of outside pressure, tend to report higher wellbeing and keep going for longer. Knowing your values gives you something to check your choices against, especially under pressure.",
         timeEstimate: "About 8 minutes",
       },
       {
@@ -564,7 +564,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         whyItMatters:
-          "Putting who you are into words, honestly and kindly, helps pull scattered thoughts about yourself into one clearer picture. Studies of expressive writing link it with less self-criticism and more clarity about what matters to you. Some research also suggests that talking to yourself as 'you' makes it easier to be kind to yourself, the way you would be to a friend.",
+          "Putting who you are into words, honestly and kindly, helps pull scattered thoughts about yourself into one clearer picture. Studies of writing about yourself find small benefits for young people's wellbeing. Some research also suggests that talking to yourself as 'you' makes it easier to be kind to yourself, the way you would be to a friend.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -801,7 +801,7 @@ export const MISSIONS: Mission[] = [
           "What would even a tiny version of that contribution look like in practice?",
         ],
         whyItMatters:
-          "Studies on youth purpose consistently find that the most durable form isn't 'I want to help people' — it's 'I have something specific to contribute.' Generic caring fades under pressure; specific contribution becomes part of identity. This is why connecting your particular strengths to a particular problem is more powerful than choosing a cause at random. Purpose that fits who you are tends to stick.",
+          "Purpose researchers describe purpose as something you actually do, not only something you feel: an aim you work towards that matters beyond you. 'I want to help people' is a start; 'here's the specific thing I can contribute' is something you can act on. That's why this step connects your particular strengths to a particular problem, rather than a cause chosen at random. Purpose that fits who you are is easier to keep acting on.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -861,7 +861,7 @@ export const MISSIONS: Mission[] = [
           "Is there a kind of person you'd want to be connected to through this cause? What would that community look like, and what would your place in it be?",
         ],
         whyItMatters:
-          "Purpose supported by community is significantly more durable than individual conviction alone. Research on purposeful adolescents finds that mentors, peers, and even historical figures who model a cause are often the critical factor in whether purpose becomes action or stays aspiration. Knowing you're not alone in caring about something isn't just comforting — it changes how seriously you take it, and how long it lasts.",
+          "Young people with a strong sense of purpose usually have people around them who share it or model it: mentors, peers, sometimes figures from history. Researchers see this pattern again and again, though it's hard to say how much is cause and how much is that purposeful people seek each other out. Either way, knowing you're not alone in caring about something can change how seriously you take it.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -926,7 +926,7 @@ export const MISSIONS: Mission[] = [
           "What would you want someone reading this to understand about why it genuinely matters to you?",
         ],
         whyItMatters:
-          "Saying clearly what you stand for is part of how something you care about becomes part of who you are. Research on commitment and follow-through finds the effect is strongest when the commitment is specific, and stronger again when you share it with someone. It doesn't have to be certain or permanent. It just has to be honest.",
+          "Saying clearly what you stand for is part of how something you care about becomes part of who you are. Research on commitment and follow-through finds the effect is strongest when the commitment is specific. If you tell someone, tell them what you'll do, and check back with them about it, rather than announcing who you'll be. Studies find that announcing who you're going to be can feel like you're already there, and people then do less. It doesn't have to be certain or permanent. It just has to be honest.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -1146,7 +1146,7 @@ export const MISSIONS: Mission[] = [
           "Now flip it. Who's on the edge of a group you're in, or who could belong more because of you? What could you do so they don't have to adjust to fit?",
         ],
         whyItMatters:
-          "Researcher Brené Brown draws the line this way: fitting in is being accepted for being like everyone else; belonging is being accepted for being you. In her interviews, people who worked hardest to fit in often felt they belonged least. Belonging also works the other way: Greg Walton and Geoffrey Cohen found that small signals that you belong can change how people get on for years. You can be that signal for someone.",
+          "Researcher Brené Brown draws the line this way: fitting in is being accepted for being like everyone else; belonging is being accepted for being you. In her interviews, people who worked hardest to fit in often felt they belonged least. Belonging also works the other way: experiments by Greg Walton and colleagues find that helping people see that feeling out of place is common, and usually passes, can improve how they get on, where the place gives them a real chance to belong. You can be that signal for someone.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -1269,7 +1269,7 @@ export const MISSIONS: Mission[] = [
         // write about; leaving it out is a real answer, and the step still counts.
         skippableSteps: [2],
         whyItMatters:
-          "Psychologist Dan McAdams calls each of us an 'autobiographical author' — the person who makes meaning of our own story. His research shows that people who can clearly identify who has shaped them, and how, tend to have a more coherent, resilient sense of identity — not because their story is simpler, but because they understand how they came to be who they are. Seeing the people who shaped you isn't sentimental. It's how you take authorship of your own narrative.",
+          "Psychologist Dan McAdams calls each of us an 'autobiographical author' — the person who makes meaning of our own story. In narrative identity research, the people who shaped you are some of the main characters in your story. Understanding how they shaped you is part of authoring it, not because the story gets simpler, but because you can see how you came to be who you are. Seeing the people who shaped you isn't sentimental. It's how you take authorship of your own narrative.",
         timeEstimate: "About 15 minutes",
       },
       {

@@ -167,10 +167,18 @@ export function wordCount(text: string): number {
 
 export const PARAGRAPH_MIN_WORDS = 30;
 
-/** The joining words are the point: each stem links one part to the next. */
+/**
+ * The joining words are the point: each stem links one part to the next.
+ *
+ * One stem asks for a time the student made something happen. Stories told
+ * only as things that happened *to* you miss agency, and in narrative-identity
+ * research agency in a person's story rose before their wellbeing improved
+ * (Adler, 2012; observational). It's also the story form of self-efficacy.
+ */
 const PARAGRAPH_STEMS = [
   "I grew up",
   "Then something changed:",
+  "One time I made something happen was when",
   "Since then, I've",
   "That's part of why I",
   "So now I'm heading towards",
@@ -184,6 +192,7 @@ export const STORY_PARAGRAPH_SCAFFOLD: Scaffold = {
   stuck: [
     "Go in order: where you started, a moment that shifted things, who that's made you, where it's pointing.",
     "Use joining words — because, since then, that's why, so. They're what turn a list into a story.",
+    "Put in at least one time you made something happen or changed how something was going, not only things that happened to you.",
     "Read your pieces above and pick one from each part. You don't have to use them all.",
     "It's allowed to change next year. This is this year's version, not the final one.",
   ],
@@ -195,6 +204,7 @@ export const STORY_PARAGRAPH_SCAFFOLD: Scaffold = {
 // to one lesson, and a promise that it will be asked again.
 const JUNIOR_PARAGRAPH_STEMS = [
   "Something that happened to me was",
+  "Something I made happen was",
   "It taught me",
   "Now I'm someone who",
   "Next year I want to",
@@ -218,6 +228,7 @@ export function paragraphGuide(stage: LifeStage): ParagraphGuide {
         stems: JUNIOR_PARAGRAPH_STEMS,
         stuck: [
           "You don't need one big theme yet. A few things that happened, and what each taught you, is a real story.",
+          "Try to include one thing you did, not only things that happened to you.",
           "Pick one piece from Part 1 and one from Part 2 or 3. You don't have to use them all.",
           "You'll write it again next year, and it usually joins up more as you get older.",
         ],
