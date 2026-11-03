@@ -1737,6 +1737,8 @@ function ConversationalActivity({
               accent={mission.colour}
               saved={smallStepOf(latestResponse)}
               onSave={saveSmallStep}
+              source={{ kind: "activity", key: activity.id, label: activity.title }}
+              entryId={entryIdRef.current}
             />
           )}
 

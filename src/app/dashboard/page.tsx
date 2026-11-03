@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { checkinState, type CheckinRow } from "@/lib/checkin";
+import type { SmallStepRow } from "@/lib/smallSteps";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -337,6 +338,18 @@ export default async function DashboardPage() {
     .eq("user_id", user.id);
   const checkin = checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]));
 
+  // A small step that's due (lib/smallSteps.ts): Home asks how it went. The
+  // oldest first, one at a time. Missing table (migration 020) → none.
+  const { data: dueSteps } = await (supabase as any)
+    .from("small_steps")
+    .select("id, step, when_label, source_label, status, due_at, snoozes, done_at, created_at")
+    .eq("user_id", user.id)
+    .eq("status", "open")
+    .lte("due_at", new Date().toISOString())
+    .order("due_at", { ascending: true })
+    .limit(1);
+  const dueStep = ((dueSteps || []) as SmallStepRow[])[0] ?? null;
+
   return (
     <DashboardClient
       profile={profile}
@@ -355,6 +368,7 @@ export default async function DashboardPage() {
       programWeek={programWeek}
       nextChapter={nextChapter}
       checkin={checkin}
+      dueStep={dueStep}
       newAnswers={newAnswers}
     />
   );

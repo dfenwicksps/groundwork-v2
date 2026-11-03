@@ -20,6 +20,8 @@ import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
 import CheckinSection from "./CheckinSection";
+import StepsTakenSection from "./StepsTakenSection";
+import type { SmallStepRow } from "@/lib/smallSteps";
 import type { CheckinState } from "@/lib/checkin";
 import JourneyStrip from "./JourneyStrip";
 import PhaseBanner from "@/components/PhaseBanner";
@@ -81,6 +83,7 @@ export default function MeClient({
   nextChapter,
   supportCount,
   checkin,
+  stepsTaken,
   featuresReady,
   lifeStage,
   phase,
@@ -117,6 +120,8 @@ export default function MeClient({
   supportCount: number;
   /** Where the student is with the check-in (lib/checkin.ts) */
   checkin: CheckinState;
+  /** Small steps done (lib/smallSteps.ts); null before migration 020 */
+  stepsTaken: { steps: SmallStepRow[]; total: number } | null;
   featuresReady: boolean;
   lifeStage: LifeStage;
   /** The global journey phase (lib/phase.ts), shown as a progress banner. */
@@ -159,7 +164,7 @@ export default function MeClient({
     };
     const HASH_TAB: Record<string, MeTab> = {
       habits: "reflect", moral: "reflect", standard: "reflect", checkin: "reflect",
-      focus: "grow", practice: "grow", boosts: "grow", selves: "grow",
+      focus: "grow", practice: "grow", boosts: "grow", selves: "grow", steps: "grow",
       pathways: "future", goals: "future", "future-self": "future",
     };
     const apply = () => {
@@ -597,6 +602,7 @@ export default function MeClient({
                 recent={recentPractices}
               />
             )}
+            {stepsTaken && <StepsTakenSection steps={stepsTaken.steps} total={stepsTaken.total} />}
             {/* Understand the words, then build the qualities. */}
             <SelvesSection />
             <BoostsSection />

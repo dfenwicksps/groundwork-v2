@@ -227,7 +227,12 @@ export default function WeeklyFiveSection({
       {supportNeeded && <SupportCard />}
       {!supportNeeded && hardOnSelf && <GentleCheck />}
       {!supportNeeded && stepEntry && (
-        <SmallStep saved={smallStepOf(stepEntry.response)} onSave={saveSmallStep} />
+        <SmallStep
+          saved={smallStepOf(stepEntry.response)}
+          onSave={saveSmallStep}
+          source={{ kind: "weekly", key: "weekly-five", label: "The weekly five" }}
+          entryId={stepEntry.id}
+        />
       )}
 
       {latest ? (

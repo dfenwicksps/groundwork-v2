@@ -16,6 +16,8 @@ import PhaseBanner from "@/components/PhaseBanner";
 import { whoToYou } from "@/lib/nextChapter";
 import { countWord, itemSet, type CheckinState } from "@/lib/checkin";
 import CheckinResultsCard from "./CheckinResultsCard";
+import SmallStepCheck from "./SmallStepCheck";
+import type { SmallStepRow } from "@/lib/smallSteps";
 import { isStoryActivity } from "@/lib/revisit";
 
 type RevisitEntry = {
@@ -73,6 +75,8 @@ interface Props {
   /** The outcome check-in: null when it isn't available yet */
   /** Where the student is with the check-in (lib/checkin.ts) */
   checkin: CheckinState;
+  /** A small step that's due for "Did you do it?", if any */
+  dueStep: SmallStepRow | null;
   /** Answers that came back by link and haven't been read (lib/askLink.ts) */
   newAnswers: { missionId: number; activityId: string; who: string; count: number } | null;
 }
@@ -132,6 +136,7 @@ export default function DashboardClient({
   missionSummary,
   nextChapter,
   checkin,
+  dueStep,
   newAnswers,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
@@ -322,7 +327,8 @@ export default function DashboardClient({
     });
   }
 
-  const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX);
+  // A due small step takes one of the slots, so the list never grows.
+  const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX - (dueStep ? 1 : 0));
 
   const tunedFor = (
     <p className="text-xs text-ink-muted">
@@ -437,12 +443,13 @@ export default function DashboardClient({
 
           <div className="split-col">
             {/* Also now */}
-            {shownAlsoNow.length > 0 && (
+            {(shownAlsoNow.length > 0 || dueStep) && (
               <section data-animate="3" aria-labelledby="also-now" className="order-2">
                 <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
                   Also now
                 </h2>
                 <div className="space-y-2">
+                  {dueStep && <SmallStepCheck key={dueStep.id} step={dueStep} />}
                   {shownAlsoNow.map((row, i) => (
                     <Link
                       key={row.key}
