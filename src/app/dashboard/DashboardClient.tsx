@@ -175,7 +175,7 @@ export default function DashboardClient({
         className="block rounded-2xl p-6 lg:p-8 text-white group"
         style={{ background: "var(--navy)" }}
       >
-        <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
+        <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold-on-navy)" }}>
           {programWeek.allDone
             ? "All ten weeks done"
             : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}

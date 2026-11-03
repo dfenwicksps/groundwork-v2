@@ -37,7 +37,7 @@
   --c-border: 235 226 210;      /* warm border to match the cream */
   --c-ink: 26 26 26;
   --c-ink-muted: 99 96 90;      /* warm grey, 5.6:1 on white */
-  --c-ink-faint: 153 153 153;
+  --c-ink-faint: 112 112 112;  /* 5.0:1 on white, 4.6:1 on cream */
 
   /* Mission colours (lib/missions.ts reads these). Fills that carry white
      labels in Light and Dark; Bold swaps in its fluoro set below. */
@@ -58,7 +58,7 @@
 
   --virtue-wisdom: #4338CA;
   --virtue-courage: #C2410C;
-  --virtue-humanity: #E11D48;
+  --virtue-humanity: #BE123C;   /* 5.5:1 on its pink tint */
   --virtue-justice: #0E7490;
   --virtue-temperance: #15803D;
   --virtue-transcendence: #92610C;
@@ -67,6 +67,10 @@
   --teal: rgb(var(--c-teal));
   --gold: rgb(var(--c-gold));
   --gold-text: rgb(var(--c-gold-text));
+  /* Amber as TEXT on an indigo/navy fill (eyebrows on the Up next card):
+     pale amber, 6.3:1 on Light's indigo and 5.0:1 on Dark's. Bold and Neon
+     keep their own gold. */
+  --gold-on-navy: #FDE68A;
   --sage: rgb(var(--c-sage));
   --coral: rgb(var(--c-coral));
   --surface-muted: rgb(var(--c-surface-muted));
@@ -146,6 +150,7 @@
   --c-gold-light: 255 240 77;
   --c-gold-dark: 245 200 0;
   --c-gold-text: 255 230 0;
+  --gold-on-navy: var(--gold);
   --c-sage: 57 255 106;         /* neon green */
   --c-sage-light: 140 255 168;
   --c-sage-dark: 30 214 80;
@@ -219,6 +224,7 @@
   --c-gold-light: 255 245 110;
   --c-gold-dark: 230 210 0;
   --c-gold-text: 252 238 10;
+  --gold-on-navy: var(--gold);
   --c-sage: 0 255 156;          /* neon green */
   --c-sage-light: 110 255 196;
   --c-sage-dark: 0 210 128;
@@ -972,7 +978,7 @@ body {
    set inline. */
 [data-theme="bold"] :is([data-mission], [data-fluoro], [style*="background:var(--mission-"], [style*="background: var(--mission-"])
   :is(.text-ink, .text-white, [class*="text-white/"], .text-navy, .text-teal,
-      [class*="text-teal/"], .text-sage, .text-coral, .text-gold-text,
+      [class*="text-teal/"], .text-\[--teal\], .text-sage, .text-coral, .text-gold-text,
       .text-red-600, .text-red-700, .text-red-800, .btn-secondary, [style*="color:"]) {
   color: rgb(7 7 12) !important;
 }
