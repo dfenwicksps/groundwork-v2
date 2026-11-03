@@ -96,6 +96,7 @@ export default function StoriesClient({
               <Link
                 key={story.id}
                 href={`/stories/${story.id}`}
+                data-mission={story.mission_id}
                 className={cn(
                   "card p-5 lg:p-6 hover:shadow-card transition-all group block",
                   complete && "bg-sage/5 border-sage/30"
@@ -107,7 +108,7 @@ export default function StoriesClient({
                       "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-semibold",
                       complete ? "text-on-accent" : "text-white"
                     )}
-                    style={{ background: complete ? "var(--sage)" : mission?.colour || "#4F46E5" }}
+                    style={{ background: complete ? "var(--sage)" : mission?.colour || "var(--mission-1)" }}
                     aria-label={complete ? "Read and reflected on" : undefined}
                   >
                     {complete ? "✓" : mission?.id}

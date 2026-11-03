@@ -65,3 +65,13 @@ export function parseReflection(text: string | null | undefined): ParsedReflecti
   }
   return { type: "plain", text };
 }
+
+/**
+ * A see-through version of a colour: `alphaHex` is the old two-digit alpha
+ * suffix ("18" ≈ 9%). Works for hex colours and CSS variables alike (mission
+ * colours are variables, so each look can recolour them), via color-mix.
+ */
+export function tint(colour: string, alphaHex: string): string {
+  const pct = Math.round((parseInt(alphaHex, 16) / 255) * 1000) / 10;
+  return `color-mix(in srgb, ${colour} ${pct}%, transparent)`;
+}

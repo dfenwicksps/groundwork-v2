@@ -1,3 +1,4 @@
+import { tint } from "@/lib/utils";
 import type { IdentityCard } from "@/lib/identityCard";
 
 /**
@@ -14,7 +15,7 @@ export default function CardRecap({ cards }: { cards: { colour: string; card: Id
         <section
           key={card.missionId ?? 1}
           className="rounded-2xl bg-white border overflow-hidden"
-          style={{ borderColor: `${colour}35` }}
+          style={{ borderColor: `${tint(colour, "35")}` }}
         >
           <div className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-white" style={{ background: colour }}>
             Mission {card.missionId ?? 1} · {card.title ?? "Who I am"}

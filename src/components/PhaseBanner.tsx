@@ -62,7 +62,7 @@ export default function PhaseBanner({
               <li key={id}>
                 <Link
                   href={ANCHOR_LINKS[id].href}
-                  className="flex items-center gap-2 text-sm rounded-lg px-2.5 py-1.5 bg-white/10 hover:bg-white/20 transition-colors"
+                  className="flex items-center gap-2 text-sm rounded-lg px-2.5 py-1.5 bg-black/15 hover:bg-black/25 transition-colors"
                 >
                   <span aria-hidden>{done.has(id) ? "✓" : "○"}</span>
                   <span className={done.has(id) ? "opacity-70" : ""}>{ANCHOR_LINKS[id].label}</span>
@@ -75,7 +75,7 @@ export default function PhaseBanner({
       )}
       <Link
         href={target}
-        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold bg-white/15 hover:bg-white/25 transition-colors rounded-xl px-3.5 py-2"
+        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold bg-black/20 hover:bg-black/30 transition-colors rounded-xl px-3.5 py-2"
       >
         {info.cta}
         <span aria-hidden>→</span>

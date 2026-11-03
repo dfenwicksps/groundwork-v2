@@ -134,6 +134,8 @@ export interface Mission {
   subtitle: string;
   question: string;
   description: string;
+  /** A CSS colour (a variable, so each look can recolour it): use it in
+   *  styles only. For a see-through version use tint() from lib/utils. */
   colour: string;
   /** Lighter companion shade for decorative gradients/tints */
   colourLight: string;
@@ -351,8 +353,8 @@ export const MISSIONS: Mission[] = [
       "Looking inward without pressure to have it figured out yet.",
     description:
       "By the end of this mission you'll have your top 5 strengths, your 5 core values, and a private letter to yourself about who you are right now. Every step adds a piece to your Who I Am card, so you can watch the picture build as you go. Seven short steps, about an hour in all, spread over a week. There are no right answers.",
-    colour: "#4F46E5",
-    colourLight: "#6366F1",
+    colour: "var(--mission-1)",
+    colourLight: "var(--mission-1-light)",
     textColour: "#FFFFFF",
     activities: [
       {
@@ -676,8 +678,8 @@ export const MISSIONS: Mission[] = [
       "Moving from self-knowledge to conscious choices about what matters.",
     description:
       "By the end of this mission you'll have the thing you care about, what you can bring to it, and one sentence that says it. Every step adds a piece to your Purpose card. Six short steps, about an hour in all, spread over a week. You don't need a cause to start: something you love doing is just as good a way in.",
-    colour: "#0E7490",
-    colourLight: "#0891B2",
+    colour: "var(--mission-2)",
+    colourLight: "var(--mission-2-light)",
     textColour: "#FFFFFF",
     activities: [
       {
@@ -1017,8 +1019,8 @@ export const MISSIONS: Mission[] = [
       "Understanding how your relationships shape and reflect who you are.",
     description:
       "By the end of this mission you'll have where you belong and why, someone you connect with across a real difference, and the people who shaped you. Every step adds a piece to your Connection card. Six short steps, about an hour in all, spread over a week. If you haven't found your people yet, that's common, and this mission is a good place to start.",
-    colour: "#15803D",
-    colourLight: "#16A34A",
+    colour: "var(--mission-3)",
+    colourLight: "var(--mission-3-light)",
     textColour: "#FFFFFF",
     activities: [
       {
@@ -1387,8 +1389,8 @@ export const MISSIONS: Mission[] = [
       "Weaving what you know about yourself into how you actually live.",
     description:
       "By the end of this mission you'll have the thread that runs through everything you've found, a picture of an ordinary day in your future, and a letter about the life you want to build. Every step adds a piece to your Direction card, and the finished card opens My Story. Seven short steps, about an hour and a half in all, spread over a week.",
-    colour: "#C2410C",
-    colourLight: "#EA580C",
+    colour: "var(--mission-4)",
+    colourLight: "var(--mission-4-light)",
     textColour: "#FFFFFF",
     activities: [
       {

@@ -40,6 +40,7 @@ export default function MissionsSummaryCard({
       </div>
 
       <div
+        data-fluoro="yellow"
         className="rounded-2xl p-6 text-white relative overflow-hidden"
         style={{ background: "var(--navy)" }}
       >
@@ -65,7 +66,7 @@ export default function MissionsSummaryCard({
                 {summary.strengths.map((k) => (
                   <span
                     key={k}
-                    className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/15"
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold bg-black/20"
                   >
                     <span aria-hidden className="mr-1">
                       {STRENGTH_BY_KEY[k]?.emoji}

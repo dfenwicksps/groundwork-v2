@@ -85,6 +85,9 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   4: "meaning-challenge",
 };
 
+/** Bold look: the "Also now" rows take turns through the fluoro colours. */
+const ALSO_NOW_FLUORO = ["pink", "yellow", "green", "blue"] as const;
+
 function Arrow({ className = "" }: { className?: string }) {
   return (
     <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className={className}>
@@ -139,6 +142,7 @@ export default function DashboardClient({
     spine.lead === "mission" && nextMissionStep ? (
       <Link
         href={`/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`}
+        data-mission={nextMissionStep.missionId}
         className="block rounded-2xl p-6 lg:p-8 text-white relative overflow-hidden group"
         style={{ background: nextMissionStep.colour }}
       >
@@ -156,7 +160,7 @@ export default function DashboardClient({
             {nextMissionStep.activityTitle}
           </p>
           <p className="text-sm opacity-90 italic">{nextMissionStep.question}</p>
-          <span className="inline-flex items-center gap-2 mt-4 bg-white/20 group-hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+          <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
             {nextMissionStep.step === 1 ? "Start" : "Carry on"}
             <Arrow />
           </span>
@@ -165,6 +169,7 @@ export default function DashboardClient({
     ) : (
       <Link
         href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
+        data-fluoro="pink"
         className="block rounded-2xl p-6 lg:p-8 text-white group"
         style={{ background: "var(--navy)" }}
       >
@@ -179,7 +184,7 @@ export default function DashboardClient({
         <p className="text-sm leading-relaxed opacity-90">
           {programWeek.allDone ? spine.programBlurb : programWeek.challenge}
         </p>
-        <span className="inline-flex items-center gap-2 mt-4 bg-white/15 group-hover:bg-white/25 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+        <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
           {programWeek.allDone
             ? "Open the weekly five"
             : programWeek.started
@@ -399,6 +404,7 @@ export default function DashboardClient({
                 </div>
                 <Link
                   href={`/stories/${featuredStory.id}`}
+                  data-fluoro="green"
                   className="card p-5 lg:p-6 block hover:shadow-card transition-all"
                 >
                   {featuredStory.film && (
@@ -431,10 +437,11 @@ export default function DashboardClient({
                   Also now
                 </h2>
                 <div className="space-y-2">
-                  {shownAlsoNow.map((row) => (
+                  {shownAlsoNow.map((row, i) => (
                     <Link
                       key={row.key}
                       href={row.href}
+                      data-fluoro={ALSO_NOW_FLUORO[i % ALSO_NOW_FLUORO.length]}
                       className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
                     >
                       <span
@@ -484,7 +491,7 @@ export default function DashboardClient({
                 <h2 id="where-things-stand" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
                   Where things stand
                 </h2>
-                <div className="card p-5 space-y-4">
+                <div data-fluoro="blue" className="card p-5 space-y-4">
                   {[
                     { href: "/missions", label: "Missions", done: missionsDone, total: 4 },
                     { href: "/program", label: "Weeks", done: programWeek.weeksDone, total: 10 },

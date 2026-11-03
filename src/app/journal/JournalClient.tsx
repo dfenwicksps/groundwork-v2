@@ -22,6 +22,10 @@ import {
   type RevisitEntry,
 } from "@/lib/revisit";
 
+/** Bold look: entries outside the four missions get their own fluoro colour
+ *  (missions use theirs, via data-mission). */
+const GROUP_FLUORO = { weeks: "orange", me: "violet" } as const;
+
 export default function JournalClient({
   entries,
   lifeStage,
@@ -259,7 +263,7 @@ export default function JournalClient({
                 style={filter === m.id ? { background: m.colour } : {}}
               >
                 {m.title}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -278,7 +282,7 @@ export default function JournalClient({
                 )}
               >
                 {ENTRY_GROUP_LABELS[g]}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -309,6 +313,9 @@ export default function JournalClient({
               return (
                 <div
                   key={entry.id}
+                  {...(typeof group === "number"
+                    ? { "data-mission": group }
+                    : { "data-fluoro": GROUP_FLUORO[group] })}
                   className={cn("card overflow-hidden", isOpen && "lg:ring-2 lg:ring-teal")}
                 >
                   <button
@@ -322,8 +329,8 @@ export default function JournalClient({
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
                         <div
-                          className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                          style={{ background: mission?.colour || "#4F46E5" }}
+                          className="entry-dot w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                          style={{ background: mission?.colour || "var(--mission-1)" }}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">

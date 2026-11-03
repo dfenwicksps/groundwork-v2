@@ -67,7 +67,7 @@ export default function HabitsSection({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           Habit check
         </h2>
-        <div className="card p-5">
+        <div data-fluoro="yellow" className="card p-5">
           <p className="text-xs text-ink-muted mb-4 leading-relaxed">
             Be honest — this is a mirror, not a test. Nobody else sees it.
           </p>
@@ -126,7 +126,7 @@ export default function HabitsSection({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           Habit check
         </h2>
-        <div className="card p-5 flex items-center gap-4">
+        <div data-fluoro="orange" className="card p-5 flex items-center gap-4">
           <span className="text-3xl flex-shrink-0" aria-hidden>🪞</span>
           <div className="flex-1">
             <p className="text-sm text-ink font-medium mb-0.5">
@@ -154,7 +154,7 @@ export default function HabitsSection({
       <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
         Habit check — your current patterns
       </h2>
-      <div className="card p-5 space-y-4">
+      <div data-fluoro="violet" className="card p-5 space-y-4">
         {local.keeps.length > 0 && (
           <div>
             <div className="text-xs font-bold text-sage uppercase tracking-wider mb-1.5">

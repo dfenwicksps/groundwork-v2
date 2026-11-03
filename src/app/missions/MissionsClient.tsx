@@ -98,6 +98,7 @@ export default function MissionsClient({
             </h2>
             <Link
               href={`/missions/${next.id}`}
+              data-mission={next.id}
               className="block rounded-2xl p-5 lg:p-8 text-white lg:flex lg:items-center lg:justify-between lg:gap-10 group"
               style={{ background: next.colour }}
             >
@@ -120,7 +121,7 @@ export default function MissionsClient({
               </p>
               </div>
               {/* A phone taps the card; a wide card wants somewhere to aim. */}
-              <span className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 bg-white/20 group-hover:bg-white/30 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium">
+              <span className="hidden lg:inline-flex flex-shrink-0 items-center gap-2 bg-black/20 group-hover:bg-black/30 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium">
                 {started ? "Carry on" : "Start"} <span aria-hidden>→</span>
               </span>
             </Link>
@@ -152,12 +153,13 @@ export default function MissionsClient({
               <Link
                 key={m.id}
                 href={`/missions/${m.id}`}
+                data-mission={m.id}
                 className={`card p-4 lg:p-5 flex items-center lg:items-start gap-3 lg:gap-4 transition-all ${
                   m.complete ? "bg-sage/5 border-sage/30" : "hover:border-navy/30"
                 }`}
               >
                 <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${m.complete ? "text-on-accent" : "text-white"}`}
+                  className={`mission-badge w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${m.complete ? "text-on-accent" : "text-white"}`}
                   style={{ background: m.complete ? "var(--sage)" : m.colour }}
                 >
                   {m.complete ? "✓" : m.id}

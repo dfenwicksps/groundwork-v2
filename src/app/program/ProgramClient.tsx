@@ -1,5 +1,6 @@
 "use client";
 
+import { fluoroAt } from "@/lib/fluoro";
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import WeeklyFiveSection, { type WeeklyCheckin } from "./WeeklyFiveSection";
@@ -228,6 +229,7 @@ export default function ProgramClient({
                 <Link
                   key={w.week}
                   href={`/program/${w.week}`}
+                  data-fluoro={fluoroAt(w.week - 1)}
                   className={`card p-4 flex items-center gap-3 transition-all ${
                     done ? "bg-sage/5 border-sage/30" : "hover:border-navy/30"
                   }`}

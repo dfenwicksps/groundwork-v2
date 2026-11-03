@@ -12,11 +12,15 @@ import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 // Headings are Bricolage Grotesque. Only 600 and 800 are loaded, so the many
 // headings that ask for weight 400 get 600 — bold enough to carry a screen on
 // a phone. Fraunces stays as the story voice: story titles and italic lines.
+// Orbitron (page titles) and Russo One (section headings, buttons, labels)
+// are the Bold look's blocky display faces; body text stays DM Sans.
 const GOOGLE_FONTS_HREF =
   "https://fonts.googleapis.com/css2" +
   "?family=Bricolage+Grotesque:wght@600;800" +
   "&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600" +
   "&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600" +
+  "&family=Orbitron:wght@700;900" +
+  "&family=Russo+One" +
   "&display=swap";
 
 export const metadata: Metadata = {
@@ -32,10 +36,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover", // enables env(safe-area-inset-*) on iOS notch devices
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF5EC" },
-    { media: "(prefers-color-scheme: dark)", color: "#12121C" },
-  ],
+  // Bold is the default look; the theme boot script swaps this for the
+  // chosen look's colour (lib/theme.ts).
+  themeColor: "#07070C",
 };
 
 export default function RootLayout({

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { MISSIONS, getActivityLabel } from "@/lib/missions";
-import { formatDate } from "@/lib/utils";
+import { formatDate, tint } from "@/lib/utils";
 import AppShell from "@/components/layout/AppShell";
 import ScaffoldedInput from "@/components/ScaffoldedInput";
 import { mentionsCrisis } from "@/lib/help";
@@ -168,13 +168,13 @@ export default function RevisitClient({
             <div className="mb-6 space-y-3" data-animate="1">
               <div
                 className="rounded-xl p-5 border"
-                style={{ background: `${accent}06`, borderColor: `${accent}25` }}
+                style={{ background: `${tint(accent, "06")}`, borderColor: `${tint(accent, "25")}` }}
               >
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   {mission && (
                     <span
                       className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                      style={{ background: `${accent}18`, color: accent }}
+                      style={{ background: `${tint(accent, "18")}`, color: accent }}
                     >
                       {mission.title}
                     </span>
