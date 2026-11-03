@@ -346,6 +346,7 @@ The research suggests grouping outcomes by what Groundwork *does* with each one,
 2. **Is confidence a separate outcome, or efficacy's student-facing name?** The research favours the name. Keeping it separate is defensible if you accept it's unvalidated.
 3. **Should "character" have an outcome of its own?** At present the outcomes are all self-beliefs. If character building is half the aim, moral identity or mattering is the research-backed candidate. Mattering fits The Standard almost exactly.
 4. **Which lenses does the selves page teach?** It currently has seven. Mattering, and reflection versus rumination, are the strongest additions; self-acceptance and hope aren't needed.
+   **Done (3 November 2026):** both added, making nine. Self-reflection is set against "going over it" (rumination) and links to the journal; Mattering links to The Standard. Mattering's self-check stays on the positive side, avoiding "would anyone notice if I was gone", which is risk language.
 
 ---
 
