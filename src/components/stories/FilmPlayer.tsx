@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { markStoryRead } from "@/lib/storyEngagement";
+import { markStoryOpened, markStoryRead } from "@/lib/storyEngagement";
 import {
   SPEECH_EVENT,
   currentlySpeaking,
@@ -169,6 +169,7 @@ export default function FilmPlayer({
   const start = () => {
     setStarted(true);
     setPlaying(true);
+    markStoryOpened(storyId);
     if (narrate && canNarrate) narrateScene(0);
   };
 

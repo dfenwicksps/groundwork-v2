@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LegalPage, { Section, Plainly } from "@/components/legal/LegalPage";
 import { OPERATOR, MIN_AGE, PARENTAL_AWARENESS_AGE } from "@/lib/legal";
+import { STORY_COUNTS_START } from "@/lib/completionCounts";
+
+const STORY_START_TEXT = new Date(`${STORY_COUNTS_START}T00:00:00`).toLocaleDateString("en-AU", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
 
 export const metadata: Metadata = {
   title: "Privacy — Groundwork",
@@ -13,6 +20,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Your privacy, in plain English"
+      updated="3 November 2026"
       intro="This is the real policy — not a summary of one. We wrote it so you can actually read it in a few minutes and know exactly where you stand."
     >
       <Section heading="Who we are">
@@ -193,8 +201,8 @@ export default function PrivacyPage() {
 
       <Section heading="What we count">
         <Plainly>
-          How many students finish each step, as totals. Never what you wrote, and
-          never who.
+          How many students finish each step, and open, finish and reflect on each
+          story, as totals. Never what you wrote, and never who.
         </Plainly>
         <p>
           To see where Groundwork loses people, and fix it, we count how many
@@ -204,6 +212,13 @@ export default function PrivacyPage() {
           nothing you wrote, and no way to tell which student finished what. Any
           count smaller than five is shown as &ldquo;fewer than five&rdquo;, so a
           small group can&apos;t be picked out. Nobody outside Groundwork sees them.
+        </p>
+        <p>
+          From {STORY_START_TEXT}, we&apos;ll also count, in the same way, how many
+          students open each story, finish it, and write a reflection on it, so we
+          can tell which stories help and which to change. To do that, the app now
+          notes when you open a story, alongside the finish and reflection it
+          already notes. Only the totals are ever looked at.
         </p>
       </Section>
 

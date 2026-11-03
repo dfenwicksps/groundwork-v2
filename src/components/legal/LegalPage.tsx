@@ -9,10 +9,13 @@ export default function LegalPage({
   title,
   intro,
   children,
+  updated,
 }: {
   title: string;
   intro: string;
   children: React.ReactNode;
+  /** This page's own "last updated" date, when it differs from the default */
+  updated?: string;
 }) {
   return (
     <div className="min-h-screen bg-surface-muted">
@@ -41,7 +44,7 @@ export default function LegalPage({
           {title}
         </h1>
         <p className="text-ink-muted leading-relaxed mb-2">{intro}</p>
-        <p className="text-xs text-ink-muted mb-10">Last updated {OPERATOR.lastUpdated}.</p>
+        <p className="text-xs text-ink-muted mb-10">Last updated {updated ?? OPERATOR.lastUpdated}.</p>
 
         <div className="space-y-8">{children}</div>
 

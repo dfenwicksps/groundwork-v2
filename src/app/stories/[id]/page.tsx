@@ -5,6 +5,7 @@ import { MISSIONS } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import StoryReflections from "@/components/stories/StoryReflections";
 import ListenButton from "@/components/ListenButton";
+import StoryOpened from "@/components/stories/StoryOpened";
 import StoryFilm from "@/components/stories/StoryFilm";
 import { storyHasFilm } from "@/components/stories/films";
 
@@ -52,6 +53,7 @@ export default async function StoryPage({
   return (
     <AppShell>
       <div className="page-read">
+        <StoryOpened storyId={story.id} />
         {/* Back */}
         <Link
           href="/stories"
