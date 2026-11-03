@@ -53,6 +53,7 @@ import {
   STRENGTH_BY_KEY,
 } from "@/lib/strengths";
 import type { JournalEntry, Challenge } from "@/types/database";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 interface Props {
   mission: Mission;
@@ -565,20 +566,10 @@ function ConversationalActivity({
   const questionTopRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Bring the TOP of the new question (its scenario) into view so the user
-  // reads from the start, rather than landing scrolled to the bottom.
-  useEffect(() => {
-    if (convPhase !== "q") return;
-    const t = setTimeout(() => {
-      // First question: reset the scroll area to the very top.
-      if (qIdx === 0 && scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTo({ top: 0, behavior: "auto" });
-      } else {
-        questionTopRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
-      }
-    }, 60);
-    return () => clearTimeout(t);
-  }, [qIdx, convPhase]);
+  // Every new screen (intro → each question → done) opens at the top, so
+  // the student reads it from the start. On a phone the page itself scrolls,
+  // so the window is reset as well as the inner scroll area.
+  useScrollToTop(`${convPhase}-${qIdx}`, scrollAreaRef);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -1907,6 +1898,7 @@ function ValuesPickerActivity({
   const blockedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingEntry);
+  useScrollToTop(submitted);
   // Holds the saved response locally so the summary + edit work even right
   // after a fresh submit (when the existingEntry prop is still null).
   const [savedResponse, setSavedResponse] = useState(existingEntry?.response || "");
@@ -2337,6 +2329,7 @@ function ChallengeActivity({
   const [submitted, setSubmitted] = useState(!!existingChallenge);
   const [debrief, setDebrief] = useState(existingChallenge?.debrief_response || "");
   const [debriefDone, setDebriefDone] = useState(!!existingChallenge?.completed_at);
+  useScrollToTop(`${submitted}-${debriefDone}`);
   const [debriefSupportNeeded, setDebriefSupportNeeded] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -2622,9 +2615,7 @@ function StrengthsAssessmentActivity({
   ); // ranking
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (phase === "q") scrollRef.current?.scrollTo({ top: 0 });
-  }, [idx, phase]);
+  useScrollToTop(`${phase}-${idx}`, scrollRef);
 
   const cur = scenarios[idx];
   const isLast = idx === scenarios.length - 1;

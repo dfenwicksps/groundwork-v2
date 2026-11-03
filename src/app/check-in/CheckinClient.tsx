@@ -16,6 +16,7 @@ import {
   type Wave,
 } from "@/lib/checkin";
 import type { LifeStage } from "@/lib/lifeStage";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-AU", { day: "numeric", month: "long" });
@@ -38,6 +39,7 @@ export default function CheckinClient({
   const set = itemSet(state.kind === "unavailable" ? CURRENT_SET : state.setId);
   const count = countWord(set.items.length);
   const [savedAs, setSavedAs] = useState<{ wave: Wave; scores: Scores } | null>(null);
+  useScrollToTop(savedAs?.wave ?? null);
 
   function saved(wave: Wave, scores: Scores) {
     setSavedAs({ wave, scores });

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 const MAX_ANSWER = 3000;
 
@@ -22,6 +23,7 @@ export default function AnswerForm({
   const [answers, setAnswers] = useState<string[]>(() => questions.map(() => ""));
   const [responder, setResponder] = useState("");
   const [state, setState] = useState<"form" | "sending" | "done">("form");
+  useScrollToTop(state === "done");
   const [error, setError] = useState<string | null>(null);
 
   const anyAnswer = answers.some((a) => a.trim().length > 0);

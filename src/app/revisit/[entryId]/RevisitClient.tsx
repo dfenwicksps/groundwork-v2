@@ -22,6 +22,7 @@ import {
   MIN_DAYS_BETWEEN_REVISITS,
   type RevisitChain,
 } from "@/lib/revisit";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 /**
  * Reading your own arc, then adding to it. The whole intervention is that the
@@ -46,6 +47,7 @@ export default function RevisitClient({
   const [response, setResponse] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  useScrollToTop(done);
   const [supportNeeded, setSupportNeeded] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
