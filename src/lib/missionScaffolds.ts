@@ -88,6 +88,20 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["Pick someone who actually likes you.", "If it feels arrogant to write down, that's usually the point."],
     ],
   },
+  "conversation-who-i-was": {
+    stems: [
+      ["I asked", "Instead of asking someone, I looked through", "Talking to them felt"],
+      ["They told me that when I was little I", "The bit I want to remember is", "In their words:"],
+      ["I didn't know that", "I was surprised they'd noticed", "I'd completely forgotten"],
+      ["Even back then I", "Something that hasn't changed is", "Little me and me now both"],
+    ],
+    stuck: [
+      ["Just say who it was. A name or 'my nan' is enough.", "Photos, videos and old school reports count too."],
+      ["Pick one story, not the whole conversation.", "Things they say all the time are often the best ones."],
+      ["Did they remember something differently from how you do?", "'Nothing really surprised me' is a fair answer too."],
+      ["Think about what you liked, how you acted, or what you cared about.", "It can be small, like still hating socks."],
+    ],
+  },
 
   // ── Mission 2 · Purpose ────────────────────────────────────────────────────
   "what-matters": {
