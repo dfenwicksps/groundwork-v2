@@ -1,7 +1,7 @@
 // ─── Look and feel ───────────────────────────────────────────────────────────
-// Four looks: light, dark, bold (the default: fluoro cyberpunk with blocky
-// type on near-black) and neon (cyan and magenta glow on a violet night sky,
-// glass cards, no blocky type).
+// Four looks: neon (the default: cyan and magenta glow on a violet night sky,
+// glass cards, no blocky type), bold (fluoro cyberpunk with blocky type on
+// near-black), light and dark.
 //
 // The choice lives on the student's account (users.theme), so it follows them
 // to any device. This browser keeps a copy in localStorage, because the look
@@ -12,7 +12,8 @@
 // whose it is, so a look left behind by someone else is never saved to the
 // account of whoever signs in next.
 //
-// No choice (null) means Bold, the default look.
+// No choice (null) means Neon, the default look. A student who picked Bold
+// (or any look) keeps it: only an unpicked look follows the default.
 //
 // The look is a data-theme attribute on <html>. An inline script in the root
 // layout (THEME_BOOT_SCRIPT) sets it before first paint so the page never
@@ -28,7 +29,7 @@ export const THEME_OWNER_KEY = "gw_theme_owner";
 export const THEME_SYNCED_KEY = "gw_theme_synced";
 
 /** The look anyone who hasn't picked one sees. */
-export const DEFAULT_THEME: Theme = "bold";
+export const DEFAULT_THEME: Theme = "neon";
 
 /** Browser bar colour for each look (matches --c-surface-muted). */
 export const THEME_BAR: Record<Theme, string> = {

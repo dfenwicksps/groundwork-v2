@@ -14,7 +14,8 @@ import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeSta
 import type { Phase } from "@/lib/phase";
 import PhaseBanner from "@/components/PhaseBanner";
 import { whoToYou } from "@/lib/nextChapter";
-import { CURRENT_SET, countWord, endDue, itemSet } from "@/lib/checkin";
+import { countWord, itemSet, type CheckinState } from "@/lib/checkin";
+import CheckinResultsCard from "./CheckinResultsCard";
 import { isStoryActivity } from "@/lib/revisit";
 
 type RevisitEntry = {
@@ -70,7 +71,8 @@ interface Props {
   /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
   nextChapter: { who: string; due: boolean } | null;
   /** The outcome check-in: null when it isn't available yet */
-  checkin: { startAt: string | null; endDone: boolean } | null;
+  /** Where the student is with the check-in (lib/checkin.ts) */
+  checkin: CheckinState;
   /** Answers that came back by link and haven't been read (lib/askLink.ts) */
   newAnswers: { missionId: number; activityId: string; who: string; count: number } | null;
 }
@@ -230,18 +232,15 @@ export default function DashboardClient({
 
   // 2. The check-in: a start only counts if it's taken early, and the end only
   // once it's due.
-  if (checkin && !checkin.startAt) {
+  if (checkin.kind === "take" && checkin.wave === "start") {
     alsoNow.push({
       key: "checkin",
       href: "/check-in",
       icon: "◔",
       title: "A one-minute check-in",
-      sub: `${countWord(itemSet(CURRENT_SET).items.length).replace(/^./, (c) => c.toUpperCase())} quick questions now, so later you can see what's moved.`,
+      sub: `${countWord(itemSet(checkin.setId).items.length).replace(/^./, (c) => c.toUpperCase())} quick questions now, so later you can see what's moved.`,
     });
-  } else if (
-    checkin &&
-    endDue({ startAt: checkin.startAt, endDone: checkin.endDone })
-  ) {
+  } else if (checkin.kind === "take" && checkin.wave === "end") {
     alsoNow.push({
       key: "checkin",
       href: "/check-in",
@@ -388,6 +387,13 @@ export default function DashboardClient({
             {missionSummary && (
               <div className="order-3">
                 <MissionsSummaryCard summary={missionSummary} />
+              </div>
+            )}
+
+            {/* The check-in, once there's a before and an after */}
+            {checkin.kind === "compare" && (
+              <div className="order-3">
+                <CheckinResultsCard start={checkin.start} end={checkin.end} setId={checkin.setId} />
               </div>
             )}
 
