@@ -6,11 +6,17 @@ import { hasLeftSchool, type LifeStage } from "./lifeStage";
 // Without something like this, nothing the app does can be shown to change
 // anything.
 //
-// Two item sets exist, and a student always answers their end check-in in the
+// Three item sets exist, and a student always answers their end check-in in the
 // same set as their start, so a start is never compared with an end it didn't
 // share questions with. New starts use CURRENT_SET.
 //
-// v2 (November 2026, current) — the five outcomes Groundwork is built to
+// v3 (4 November 2026, current) — v2 plus the two social self-efficacy items
+// the 12-item cut left out: starting a conversation with someone new (s2) and
+// saying no to friends (s4). Without them efficacy covered study, feelings and
+// getting better, but nothing about people, and people are most of what the
+// missions ask students to do. Fourteen items, still about two minutes.
+//
+// v2 (November 2026) — the five outcomes Groundwork is built to
 // develop (docs/evidence/self-outcomes-map.md, checkin-v2-draft.md):
 //   clarity     self-concept clarity (construct of Campbell et al., 1996)
 //   esteem      global self-esteem (Rosenberg; Harter's global self-worth)
@@ -22,6 +28,9 @@ import { hasLeftSchool, type LifeStage } from "./lifeStage";
 //               McCullough, 1981; Prilleltensky, 2020)
 // Clarity keeps v1's c1 and c2 word for word, so those two items can be
 // compared across sets one by one (never as area scores: v1 averaged three).
+//
+// v2's items are v3's, word for word, so v2 and v3 can be compared item by
+// item; only the efficacy area score differs (three items in v2, five in v3).
 //
 // v1 (interim, until November 2026) — clarity, direction (U-MICS construct)
 // and purpose (Damon; Claremont Purpose Scale construct), three items each.
@@ -163,10 +172,37 @@ const V2: ItemSet = {
   ],
 };
 
-export const ITEM_SETS: Record<string, ItemSet> = { [V1.id]: V1, [V2.id]: V2 };
+const S2: CheckinItem = {
+  key: "s2",
+  construct: "efficacy",
+  scale: "sure",
+  text: "How sure are you that you could start a conversation with someone in your year you don't really know?",
+  textLeftSchool: "How sure are you that you could start a conversation with someone at uni, TAFE or work you don't really know?",
+};
+const S4: CheckinItem = {
+  key: "s4",
+  construct: "efficacy",
+  scale: "sure",
+  text: "How sure are you that you could say no to friends when they want you to do something you don't want to do?",
+};
+
+/** v2's items with s2 and s4 placed so no two efficacy items sit side by side. */
+const V3: ItemSet = {
+  id: "groundwork-interim-v3",
+  constructs: V2.constructs,
+  items: (() => {
+    const by = Object.fromEntries(V2.items.map((i) => [i.key, i]));
+    return [
+      by.c1, by.e1, by.s1, by.m1, by.f1, S2, by.c2,
+      by.s3, by.e3, by.m2, S4, by.f3, by.s5, by.m3,
+    ];
+  })(),
+};
+
+export const ITEM_SETS: Record<string, ItemSet> = { [V1.id]: V1, [V2.id]: V2, [V3.id]: V3 };
 
 /** The set every new start check-in uses. */
-export const CURRENT_SET = V2.id;
+export const CURRENT_SET = V3.id;
 
 /** Kept for older imports: the id new check-ins are saved under. */
 export const ITEM_SET = CURRENT_SET;
@@ -189,9 +225,9 @@ export function scaleFor(item: CheckinItem): string[] {
   return SCALES[item.scale ?? "like"];
 }
 
-const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen"];
 
-/** "twelve", for copy like "Twelve quick questions". */
+/** "fourteen", for copy like "Fourteen quick questions". */
 export function countWord(n: number): string {
   return NUMBER_WORDS[n] ?? String(n);
 }

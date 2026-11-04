@@ -1,6 +1,8 @@
 # Check-in v2: draft items for review
 
 **Status:** wording approved and **built** (2 November 2026) as `groundwork-interim-v2` in `src/lib/checkin.ts`. New start check-ins use it; anyone who started on v1 finishes on v1.
+
+**Update (4 November 2026):** the two social self-efficacy items, s2 and s4, are back, as `groundwork-interim-v3` (14 items, order in §3). It's v2 plus those two, word for word, so v2 and v3 compare item by item; only the efficacy area score differs. New starts use v3; anyone who started on v2 finishes on v2.
 **Decision this implements** (2 November 2026): five outcomes, measured in the app in Groundwork's own words, inspired by validated scales but not copying them:
 - self-esteem
 - self-efficacy
@@ -87,7 +89,15 @@ No reverse item. That's deliberate (see rule 2), and the cost is some sensitivit
 
 ---
 
-## 3. Chosen version: 12 items (decided 2 November 2026)
+## 3. Chosen version: 14 items (v3, 4 November 2026)
+
+v2's 12 items plus s2 and s4, so self-efficacy covers five areas: study, people, feelings, standing your ground and getting better. Order:
+
+c1 · e1 · s1 · m1 · f1 · s2 · c2 · s3 · e3 · m2 · s4 · f3 · s5 · m3
+
+Still about two minutes. Struck from use: **c3, e2, f2**.
+
+### The 12-item version (v2, 2 November 2026)
 
 The 12-item version is chosen. The other five items stay in §2 for reference, struck from use: **c3, e2, f2, s2, s4**.
 
