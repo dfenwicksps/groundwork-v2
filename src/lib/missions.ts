@@ -1833,6 +1833,20 @@ export function missionFinished(m: Mission, rows: ProgressRow[]): boolean {
 }
 
 /**
+ * The next mission step: the first unfinished step of the first unfinished
+ * mission. A mission finished before its conversation counted is skipped
+ * (see missionFinished). Home's "Up next" and the phase banner both use it.
+ */
+export function nextMissionStep(
+  rows: ProgressRow[]
+): { mission: Mission; activity: Activity } | null {
+  const done = new Set(rows.map((r) => r.activity_id));
+  const mission = MISSIONS.find((m) => !missionFinished(m, rows));
+  const activity = mission ? requiredSteps(mission).find((a) => !done.has(a.id)) : undefined;
+  return mission && activity ? { mission, activity } : null;
+}
+
+/**
  * Entries from the most sensitive steps (marked keepFromAi: beliefs, gender,
  * sexuality, culture and heritage), and revisits of them. These are never surfaced anywhere a glance
  * at the screen could catch them: not suggested on Home, collapsed in the

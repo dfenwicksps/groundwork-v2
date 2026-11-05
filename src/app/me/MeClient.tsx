@@ -88,6 +88,7 @@ export default function MeClient({
   lifeStage,
   phase,
   reviewedAnchors,
+  nextActivityHref,
 }: {
   userId: string;
   displayName: string;
@@ -128,6 +129,8 @@ export default function MeClient({
   phase: Phase;
   /** Anchors reviewed so far, for the Phase 2 checklist. */
   reviewedAnchors: string[];
+  /** Phase 1: the next mission step's page, or null when there isn't one. */
+  nextActivityHref: string | null;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -220,14 +223,18 @@ export default function MeClient({
           </h1>
         </div>
 
-        {/* Phase banner — how deep the whole journey currently goes. The CTA
-            points to the first identity anchor, which is where a first pass,
-            a review and a deepen all begin. */}
+        {/* Phase banner — how deep the whole journey currently goes. In
+            Phase 1 the CTA goes to the next mission step; later it points to
+            the first identity anchor, where a review and a deepen begin. */}
         {hasProfile && (
           <PhaseBanner
             phase={phase}
             reviewed={reviewedAnchors}
-            href={phase === 1 ? "/missions" : "/missions/1/activities/strengths-mapping"}
+            href={
+              phase === 1
+                ? nextActivityHref ?? "/missions"
+                : "/missions/1/activities/strengths-mapping"
+            }
           />
         )}
 
