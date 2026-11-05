@@ -236,8 +236,9 @@ export default async function DashboardPage() {
   if (nextMissionStep && nextActivity) {
     nextMissionStep.activityTitle = activityForStage(nextActivity, lifeStage).title;
   }
-  // Global journey phase (lib/phase.ts); resolves + persists any newly earned.
-  const { phase, reviewed: reviewedAnchors } = await resolvePhaseState(supabase, user.id);
+  // Global journey phase (lib/phase.ts). The banner lives on the Me page, but
+  // resolving here still persists any newly earned phase on the main landing.
+  await resolvePhaseState(supabase, user.id);
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
@@ -362,8 +363,6 @@ export default async function DashboardPage() {
       featuredStory={featuredStory}
       spine={spine}
       lifeStage={lifeStage}
-      phase={phase}
-      reviewedAnchors={reviewedAnchors}
       missionSummary={summary}
       programWeek={programWeek}
       nextChapter={nextChapter}

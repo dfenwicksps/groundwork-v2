@@ -11,8 +11,6 @@ import PolicyNotice from "./PolicyNotice";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
-import type { Phase } from "@/lib/phase";
-import PhaseBanner from "@/components/PhaseBanner";
 import { whoToYou } from "@/lib/nextChapter";
 import { countWord, itemSet, type CheckinState } from "@/lib/checkin";
 import CheckinResultsCard from "./CheckinResultsCard";
@@ -64,10 +62,6 @@ interface Props {
   spine: Spine;
   programWeek: ProgramWeekCard;
   lifeStage: LifeStage;
-  /** The global journey phase (lib/phase.ts), shown as a progress banner. */
-  phase: Phase;
-  /** Anchors reviewed so far, for the Phase 2 checklist. */
-  reviewedAnchors: string[];
   /** Present only once all four missions are done */
   missionSummary: MissionSummary | null;
   /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
@@ -131,8 +125,6 @@ export default function DashboardClient({
   spine,
   programWeek,
   lifeStage,
-  phase,
-  reviewedAnchors,
   missionSummary,
   nextChapter,
   checkin,
@@ -361,19 +353,6 @@ export default function DashboardClient({
         </div>
 
         <PolicyNotice joinedAt={profile.created_at} />
-
-        {/* Where the whole journey is up to — tap-only first pass, then review,
-            then deepen. Phase 1 points at the next thing to do; later phases
-            point at the Me page where answers get reviewed and deepened. */}
-        <PhaseBanner
-          phase={phase}
-          reviewed={reviewedAnchors}
-          href={
-            phase === 1 && nextMissionStep
-              ? `/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`
-              : "/me"
-          }
-        />
 
         {/* One column on a phone, in the order the order-* classes give. On
             desktop the thing to do keeps the wide column and what's
