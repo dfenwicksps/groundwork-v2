@@ -6,6 +6,7 @@ import { parseAnswers } from "@/lib/standard";
 import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { resolvePhaseState } from "@/lib/phaseServer";
+import { nextMissionStep, type ProgressRow } from "@/lib/missions";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
@@ -179,6 +180,18 @@ export default async function MePage() {
 
   const phaseState = await resolvePhaseState(supabase, user.id);
 
+  // In Phase 1 the banner's button goes straight to the next mission step,
+  // as Home's "Up next" does. Only fetched when it's needed.
+  let nextActivityHref: string | null = null;
+  if (phaseState.phase === 1) {
+    const { data: progressRows } = await db
+      .from("mission_progress")
+      .select("mission_id, activity_id, completed_at")
+      .eq("user_id", user.id);
+    const next = nextMissionStep((progressRows || []) as ProgressRow[]);
+    if (next) nextActivityHref = `/missions/${next.mission.id}/activities/${next.activity.id}`;
+  }
+
   return (
     <MeClient
       userId={user.id}
@@ -224,6 +237,7 @@ export default async function MePage() {
       lifeStage={await getLifeStage(supabase, user.id)}
       phase={phaseState.phase}
       reviewedAnchors={phaseState.reviewed}
+      nextActivityHref={nextActivityHref}
       // If the goals table errors, the 003 migration hasn't run — the moral
       // compass, practice loop and goals need it, so we hide those rather than
       // let students hit save-time errors that read as "the app is broken".
