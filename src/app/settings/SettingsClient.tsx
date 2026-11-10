@@ -151,11 +151,12 @@ export default function SettingsClient({
         <div data-animate="2" data-fluoro="pink" className="card p-6 space-y-4">
           <h2 className="font-semibold text-ink">Profile</h2>
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
+            <label htmlFor="settings-name" className="block text-sm font-medium text-ink mb-1.5">
               Display name
             </label>
             <div className="flex gap-2">
               <input
+                id="settings-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -185,11 +186,12 @@ export default function SettingsClient({
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
+            <label htmlFor="settings-password" className="block text-sm font-medium text-ink mb-1.5">
               Change password
             </label>
             <div className="flex gap-2">
               <input
+                id="settings-password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}

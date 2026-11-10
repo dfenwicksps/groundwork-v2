@@ -1144,13 +1144,14 @@ function ConversationalActivity({
                     setConvPhase("intro");
                   }
                 }}
+                aria-label="Back"
                 className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
               >
                 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
-              <span className="flex-1 text-sm font-medium text-[--ink] truncate">
+              <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink] truncate">
                 {activity.title}
               </span>
               <span className="text-xs text-[--ink-muted] flex-shrink-0">
@@ -1593,7 +1594,7 @@ function ConversationalActivity({
       <div className="activity-header">
         <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
-          <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+          <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
           <GetHelpButton variant="inline" />
         </div>
       </div>
@@ -2035,7 +2036,7 @@ function ValuesPickerActivity({
         <div className="activity-header">
           <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
             <ActivityBackLink missionId={mission.id} />
-            <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+            <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
             <GetHelpButton variant="inline" />
           </div>
         </div>
@@ -2104,7 +2105,7 @@ function ValuesPickerActivity({
       <div className="activity-header">
         <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
-          <span className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
+          <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
           <span className="text-xs text-[--ink-muted]">
             {selectedValues.length} of {activity.valuesCount || 5}
           </span>
@@ -2229,7 +2230,7 @@ function ValuesPickerActivity({
                   aria-expanded={expanded}
                   aria-label={`What ${val} means`}
                   className={cn(
-                    "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
+                    "absolute top-1 right-1 w-6 h-6 rounded-full border",
                     "text-xs font-semibold leading-none",
                     "flex items-center justify-center transition-colors",
                     sel
@@ -2393,7 +2394,7 @@ function ChallengeActivity({
     <div className="activity-header">
       <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
-        <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+        <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
         <GetHelpButton variant="inline" />
       </div>
     </div>
@@ -2740,11 +2741,17 @@ function StrengthsAssessmentActivity({
     onComplete(summary);
   }
 
-  const header = (label: string) => (
+  // The intro has its own <h1>; elsewhere the header's name is the page heading.
+  const header = (label: string, isHeading = false) => (
     <div className="activity-header">
       <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
-        <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
+        <span
+          {...(isHeading ? { role: "heading", "aria-level": 1 } : {})}
+          className="text-sm font-medium text-[--ink] truncate"
+        >
+          {label}
+        </span>
         <GetHelpButton variant="inline" />
       </div>
     </div>
@@ -2805,7 +2812,7 @@ function StrengthsAssessmentActivity({
     const top5 = ranking ? topStrengths(ranking, 5) : [];
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
-        {header(activity.title)}
+        {header(activity.title, true)}
         <div className="flex-1 overflow-y-auto pb-nav">
           <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8">
             <div className="text-center mb-6" data-animate="1">
@@ -2917,13 +2924,14 @@ function StrengthsAssessmentActivity({
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={() => (idx > 0 ? setIdx(idx - 1) : setPhase("intro"))}
+              aria-label="Back"
               className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
             >
               <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <span className="flex-1 text-sm font-medium text-[--ink] truncate">{activity.title}</span>
+            <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink] truncate">{activity.title}</span>
             <span className="text-xs text-[--ink-muted] flex-shrink-0">
               {idx + 1} of {scenarios.length}
             </span>

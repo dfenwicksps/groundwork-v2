@@ -4,7 +4,7 @@ import LegalPage, { Section, Plainly } from "@/components/legal/LegalPage";
 import { OPERATOR, MIN_AGE } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: "Terms — Groundwork",
+  title: "Terms",
   description:
     "The deal between you and Groundwork: what you can expect from us, and what we ask of you.",
 };

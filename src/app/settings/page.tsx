@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import SettingsClient from "./SettingsClient";
@@ -6,6 +7,8 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import { parseTheme } from "@/lib/theme";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const supabase = createServerClient();

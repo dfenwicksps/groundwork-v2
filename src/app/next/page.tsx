@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -6,6 +7,8 @@ import { NEXT_CHAPTER_ACTIVITY_ID } from "@/lib/nextChapter";
 import NextChapterClient from "./NextChapterClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "What comes next" };
 
 export default async function NextChapterPage() {
   const supabase = createServerClient();

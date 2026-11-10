@@ -9,7 +9,7 @@
 //
 //   node scripts/audit/theme.js [look] [--only=<text>]
 // look: default (Neon, with nothing chosen), neon, bold, light or dark.
-const { BASE, loadPlaywright, authCookie, signedInRoutes, PUBLIC_ROUTES, only, outDir } = require("./lib");
+const { BASE, UID, loadPlaywright, authCookie, signedInRoutes, PUBLIC_ROUTES, only, outDir } = require("./lib");
 const fs = require("fs");
 
 const look = process.argv.slice(2).find((a) => !a.startsWith("--")) || "default";
@@ -79,7 +79,11 @@ async function main() {
     for (const vp of [{ width: 390, height: 844, name: "phone" }, { width: 1280, height: 900, name: "desktop" }]) {
       const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
       if (signedIn) await ctx.addCookies([authCookie()]);
-      await ctx.addInitScript((t) => { try { if (t !== "default") localStorage.setItem("gw_theme_v1", t); } catch {} }, look);
+      // The look must be marked as Sam's own, or ThemeSync drops it as left
+      // behind by someone else and the page falls back to Neon (lib/theme.ts).
+      await ctx.addInitScript(([t, uid]) => {
+        try { if (t !== "default") { localStorage.setItem("gw_theme_v1", t); localStorage.setItem("gw_theme_owner", uid); } } catch {}
+      }, [look, UID]);
       for (const r of list) {
         const p = await ctx.newPage();
         const errs = []; p.on("pageerror", (e) => errs.push(String(e).slice(0, 200)));

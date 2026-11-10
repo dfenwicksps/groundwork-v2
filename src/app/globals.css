@@ -25,7 +25,7 @@
   --c-gold: 245 158 11;         /* amber — fills (pair with dark text) */
   --c-gold-light: 251 191 36;
   --c-gold-dark: 217 119 6;
-  --c-gold-text: 146 97 12;     /* amber for TEXT — 5.0:1 on white */
+  --c-gold-text: 133 88 10;     /* amber for TEXT — 6.2:1 on white, 5.0:1 on its gold tint */
   --c-sage: 22 101 52;          /* green — success + connection; 5.3:1 on its tint */
   --c-sage-light: 22 163 74;
   --c-sage-dark: 20 83 45;
@@ -124,7 +124,7 @@
   --c-border: 46 46 66;
   --c-ink: 237 237 245;
   --c-ink-muted: 167 167 189;
-  --c-ink-faint: 117 117 140;
+  --c-ink-faint: 136 136 160;   /* 4.9:1 on cards */
   --virtue-wisdom: #A5B4FC;
   --virtue-courage: #FDBA74;
   --virtue-humanity: #FDA4AF;
@@ -327,6 +327,24 @@ body {
     border-radius: 4px;
   }
 
+  /* Links inside running text are underlined, so they aren't told apart by
+     colour alone (WCAG 1.4.1). Buttons styled as links are left alone. */
+  p a:not(.btn) {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+
+  /* Keep a focused control clear of the phone tab bar and the sticky Me tabs
+     when the browser scrolls it into view (WCAG 2.4.11). */
+  html {
+    scroll-padding-top: 4.5rem;
+    scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 1024px) {
+    html { scroll-padding-bottom: 1rem; }
+  }
+
   /* Textarea */
   textarea {
     resize: vertical;
@@ -397,6 +415,12 @@ body {
     border: none;
     text-decoration: none;
     white-space: nowrap;
+  }
+
+  /* On the narrowest screens (and at 400% zoom) a label wraps rather than
+     pushing the page sideways (WCAG 1.4.10). */
+  @media (max-width: 359px) {
+    .btn { white-space: normal; }
   }
 
   .btn-primary {

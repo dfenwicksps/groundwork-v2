@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import SupportClient from "./SupportClient";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Support circle" };
 
 export default async function SupportPage() {
   const supabase = createServerClient();

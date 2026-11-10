@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { checkinState, type CheckinRow } from "@/lib/checkin";
 import type { SmallStepRow } from "@/lib/smallSteps";
@@ -22,6 +23,8 @@ import { storyHasFilm } from "@/components/stories/films";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Home" };
 
 export default async function DashboardPage() {
   const supabase = createServerClient();

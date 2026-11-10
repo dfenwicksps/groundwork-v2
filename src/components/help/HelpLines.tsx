@@ -10,7 +10,7 @@ export default function HelpLines() {
             <span className="text-sm font-semibold text-ink">{line.name}</span>
             <a
               href={`tel:${line.tel}`}
-              className="text-sm font-semibold text-teal hover:underline tabular-nums"
+              className="inline-block py-1 -my-1 text-sm font-semibold text-teal hover:underline tabular-nums"
             >
               {line.display}
             </a>

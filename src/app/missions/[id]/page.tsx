@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getMission } from "@/lib/missions";
@@ -8,6 +9,11 @@ import type { IdentityCard } from "@/lib/identityCard";
 import MissionDetailClient from "./MissionDetailClient";
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }: { params: { id: string } }): Metadata {
+  const m = getMission(parseInt(params.id));
+  return { title: m ? `Mission ${m.id}: ${m.title}` : "Mission" };
+}
 
 export default async function MissionPage({
   params,

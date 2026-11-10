@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // A private link: never indexed, never previewed with the questions in it.
 export const metadata: Metadata = {
-  title: "A few questions — Groundwork",
+  title: "A few questions",
   robots: { index: false, follow: false },
 };
 

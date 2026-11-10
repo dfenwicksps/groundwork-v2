@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
@@ -8,6 +9,8 @@ export const dynamic = "force-dynamic";
 
 const COLS =
   "id, mission_id, activity_id, prompt, response, created_at, is_milestone, revisit_of";
+
+export const metadata: Metadata = { title: "Look back" };
 
 export default async function RevisitPage({
   params,

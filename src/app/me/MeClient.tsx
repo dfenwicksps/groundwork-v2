@@ -190,6 +190,22 @@ export default function MeClient({
     return () => window.removeEventListener("hashchange", apply);
   }, []);
 
+  // Arrow keys, Home and End move between the tabs (the ARIA tabs pattern):
+  // only the chosen tab is in the Tab order, so the bar is one stop.
+  function onTabKey(e: React.KeyboardEvent<HTMLDivElement>) {
+    const i = TABS.findIndex((t) => t.key === tab);
+    const next =
+      e.key === "ArrowRight" ? (i + 1) % TABS.length
+      : e.key === "ArrowLeft" ? (i - 1 + TABS.length) % TABS.length
+      : e.key === "Home" ? 0
+      : e.key === "End" ? TABS.length - 1
+      : -1;
+    if (next < 0) return;
+    e.preventDefault();
+    setTab(TABS[next].key);
+    document.getElementById(`me-tab-${TABS[next].key}`)?.focus();
+  }
+
   const TABS: { key: MeTab; label: string; emoji: string }[] = [
     { key: "profile", label: "Profile", emoji: "🧭" },
     { key: "reflect", label: "Reflect", emoji: "🪞" },
@@ -244,12 +260,15 @@ export default function MeClient({
             className="sticky top-0 z-20 -mx-4 px-4 py-2"
             style={{ background: "rgb(var(--c-surface-muted) / 0.95)", backdropFilter: "blur(6px)" }}
           >
-            <div className="flex gap-1.5 lg:max-w-xl" role="tablist">
+            <div className="flex gap-1.5 lg:max-w-xl" role="tablist" aria-label="Your profile" onKeyDown={onTabKey}>
               {TABS.map((t) => (
                 <button
                   key={t.key}
+                  id={`me-tab-${t.key}`}
                   role="tab"
                   aria-selected={tab === t.key}
+                  aria-controls="me-tabpanel"
+                  tabIndex={tab === t.key ? 0 : -1}
                   onClick={() => setTab(t.key)}
                   className={cn(
                     "flex-1 flex flex-col lg:flex-row lg:justify-center items-center gap-0.5 lg:gap-2 py-2 lg:py-2.5 rounded-xl text-xs lg:text-sm font-semibold transition-all",
@@ -269,6 +288,11 @@ export default function MeClient({
         {/* The profile tab. One column on a phone, in the order the order-*
             classes give; on desktop the strengths keep the left column and
             everything made out of them sits beside it. */}
+        {/* The tabs' content. One panel whose contents follow the chosen tab. */}
+        <div
+          className="space-y-8"
+          {...(hasProfile ? { id: "me-tabpanel", role: "tabpanel", "aria-labelledby": `me-tab-${tab}` } : {})}
+        >
         {(tab === "profile" || !hasProfile) && (
           <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
           <div className="split-col">
@@ -646,6 +670,8 @@ export default function MeClient({
           </div>
         )}
 
+
+        </div>
 
         {/* Settings link */}
         <div data-animate="6" className="pt-2 border-t border-surface-border">

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { MISSIONS, requiredSteps, requiredDone, missionFinished, type ProgressRow } from "@/lib/missions";
@@ -8,6 +9,8 @@ import { missionForStage } from "@/lib/stageContent";
 import MissionsClient from "./MissionsClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Missions" };
 
 /**
  * The missions index.

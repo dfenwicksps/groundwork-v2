@@ -11,7 +11,7 @@ const STORY_START_TEXT = new Date(`${STORY_COUNTS_START}T00:00:00`).toLocaleDate
 });
 
 export const metadata: Metadata = {
-  title: "Privacy — Groundwork",
+  title: "Privacy",
   description:
     "What Groundwork collects, what it never does with it, and how to get your data back or delete it.",
 };

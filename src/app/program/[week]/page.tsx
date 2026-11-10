@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import WeekClient from "./WeekClient";
@@ -26,6 +27,11 @@ import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 
 export const dynamic = "force-dynamic";
+
+export function generateMetadata({ params }: { params: { week: string } }): Metadata {
+  const w = WEEK_BY_NUMBER[Number(params.week)];
+  return { title: w ? `Week ${w.week}: ${w.title}` : "Weeks" };
+}
 
 export default async function WeekPage({
   params,

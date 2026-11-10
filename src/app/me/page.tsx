@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
@@ -15,6 +16,8 @@ import { checkinState, type CheckinRow } from "@/lib/checkin";
 import type { SmallStepRow } from "@/lib/smallSteps";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Me" };
 
 export default async function MePage() {
   const supabase = createServerClient();

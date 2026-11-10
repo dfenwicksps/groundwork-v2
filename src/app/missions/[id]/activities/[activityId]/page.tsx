@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
@@ -11,6 +12,11 @@ import type { IdentityCard } from "@/lib/identityCard";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }: { params: { id: string; activityId: string } }): Metadata {
+  const a = getActivity(parseInt(params.id), params.activityId);
+  return { title: a ? a.title : `Mission ${params.id}` };
+}
 
 export default async function ActivityPage({
   params,
@@ -220,6 +226,8 @@ export default async function ActivityPage({
   }
 
   return (
+    // Steps have no AppShell, so the page gives them their main landmark.
+    <main id="main-content">
     <ActivityClient
       mission={mission}
       activity={activity}
@@ -236,5 +244,6 @@ export default async function ActivityPage({
       phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}
     />
+    </main>
   );
 }
