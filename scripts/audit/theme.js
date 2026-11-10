@@ -92,7 +92,8 @@ async function main() {
           const resp = await p.goto(BASE + r, { waitUntil: "networkidle", timeout: 60000 });
           await p.waitForTimeout(700);
           const res = await p.evaluate(auditPage);
-          if (LIGHT_OK.test(r)) res.light = [];
+          // Light panels are only a leftover in the dark looks.
+          if (LIGHT_OK.test(r) || expected === "light") res.light = [];
           report[key] = { status: resp && resp.status(), finalUrl: p.url().replace(BASE, ""), ...res, errs };
           await p.screenshot({ path: `${out}/${vp.name}_${r.replace(/[^a-z0-9]+/gi, "_")}.png`, fullPage: true });
         } catch (e) { report[key] = { error: String(e).slice(0, 200) }; }
