@@ -191,7 +191,7 @@ export default function AuthForm() {
     : null;
 
   return (
-    <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
+    <main className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors">
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-60">
@@ -381,6 +381,6 @@ export default function AuthForm() {
           Plain English, and short — we checked.
         </p>
       </div>
-    </div>
+    </main>
   );
 }

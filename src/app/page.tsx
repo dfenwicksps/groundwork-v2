@@ -45,6 +45,8 @@ export default function LandingPage() {
         </div>
       </nav>
 
+      <main>
+
       {/* Hero */}
       <section className="max-w-5xl mx-auto px-6 pt-8 pb-10 text-center">
         <h1
@@ -259,6 +261,8 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
+      </main>
+
       <footer className="border-t border-surface-border py-8 text-center text-sm text-ink-muted px-6">
         <p>
           Groundwork is not a therapy replacement. If you need support, talk to

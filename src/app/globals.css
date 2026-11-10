@@ -1345,3 +1345,12 @@ div[data-theme="neon"] {
 html.gw-locked body > *:not(#gw-lock) {
   visibility: hidden !important;
 }
+
+/* Windows contrast themes drop backgrounds and shadows, so buttons, cards and
+   chips that rely on them get a real border back. Last in the file so no look
+   overrides it. */
+@media (forced-colors: active) {
+  .btn, .card, .card-elevated, .starter-chip, [data-mission], [data-fluoro] {
+    border: 1px solid ButtonText !important;
+  }
+}
