@@ -5,7 +5,7 @@ import { defineConfig } from "vitest/config";
 // (scripts/audit, `npm run audit`).
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "tests/**/*.test.ts"],
     environment: "node",
   },
   resolve: {
