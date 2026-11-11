@@ -34,7 +34,7 @@ import {
   type SelfTeacherNotes,
 } from "../../src/lib/v3/content";
 
-const DEFAULT_HTML = "docs/v3/source/Who am I becoming_ The Selves.html";
+const DEFAULT_HTML = "docs/v3/source/who-am-i-becoming.html";
 
 // ─── What the spec says should be there ──────────────────────────────────────
 
