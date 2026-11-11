@@ -6,7 +6,7 @@
 // minus what their school hides, plus what their school adds or edits.
 //
 // Types only. Nothing here reads or writes anything, and nothing in v2 imports
-// it. The database draft is supabase/v3/schema.sql; the rules about who can
+// it. The database draft is supabase/v3/supabase/migrations/20261112000000_v3_initial.sql; the rules about who can
 // read what are docs/v3/visibility.md.
 
 // ─── Year level, age band, rating ────────────────────────────────────────────

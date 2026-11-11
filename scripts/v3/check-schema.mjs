@@ -1,4 +1,4 @@
-// Loads supabase/v3/schema.sql into an in-memory Postgres and checks the rules
+// Loads supabase/v3/supabase/migrations/20261112000000_v3_initial.sql into an in-memory Postgres and checks the rules
 // in docs/v3/visibility.md against it: who can read what, the 5-or-more rule,
 // and "Share with my teacher". Nothing is installed in the app and nothing
 // outside this process is touched.
@@ -13,7 +13,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 
-const schema = readFileSync(process.argv[2] ?? "supabase/v3/schema.sql", "utf8");
+const schema = readFileSync(process.argv[2] ?? "supabase/v3/supabase/migrations/20261112000000_v3_initial.sql", "utf8");
 const db = new PGlite();
 let pass = 0, fail = 0;
 const ok = (name, cond, detail = "") => { cond ? pass++ : fail++; console.log(`${cond ? "ok  " : "FAIL"} ${name}${cond ? "" : "  -> " + detail}`); };

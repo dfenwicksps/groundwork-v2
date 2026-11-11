@@ -1,6 +1,6 @@
 # Groundwork v3: visibility and safeguarding rules
 
-Phase 0, task 3. This turns [SPEC.md](SPEC.md) section 3 into rules a test can check. Each rule has an ID. `supabase/v3/schema.sql` cites these IDs on every policy, and Phase 1's access tests cite them on every test.
+Phase 0, task 3. This turns [SPEC.md](SPEC.md) section 3 into rules a test can check. Each rule has an ID. `supabase/v3/supabase/migrations/20261112000000_v3_initial.sql` cites these IDs on every policy, and Phase 1's access tests cite them on every test.
 
 **Status: draft for sign-off.** The Phase 0 gate needs a school wellbeing lead to approve this document. Section 9 lists what they are being asked to agree to, in plain language.
 

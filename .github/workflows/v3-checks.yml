@@ -1,6 +1,7 @@
 # Checks for the v3 branch. Runs on pushes to v3 and on pull requests into it.
 # Nothing here deploys, and nothing here has a secret: the access tests run
-# against an in-memory Postgres inside the job (tests/v3/access/db.ts).
+# against an in-memory Postgres inside the job (tests/v3/access/db.ts), and
+# the second job starts a throwaway Supabase database inside the runner.
 name: v3 checks
 
 on:
@@ -39,3 +40,30 @@ jobs:
         run: npx --yes tsx scripts/v3/validate-selves.ts
       - name: Build
         run: npm run build
+
+  # Does the migration apply on real Supabase, with its own roles, auth schema
+  # and default grants (which the access tests only stub)?
+  real-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start a local Supabase database and apply the v3 migrations
+        run: supabase db start --workdir supabase/v3
+      - name: Apply them again from empty, as a new project would
+        run: supabase db reset --workdir supabase/v3
+      - name: Every v3 table exists and has row security on
+        env:
+          PGPASSWORD: postgres
+        run: |
+          q() { psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -At -v ON_ERROR_STOP=1 -c "$1"; }
+          tables=$(q "select count(*) from pg_tables where schemaname = 'public'")
+          open=$(q "select count(*) from pg_tables where schemaname = 'public' and not rowsecurity")
+          anon=$(q "select count(*) from information_schema.role_table_grants where table_schema = 'public' and grantee = 'anon'")
+          echo "tables: $tables, without row security: $open, table grants to anon: $anon"
+          test "$tables" -eq 31
+          test "$open" -eq 0
+          test "$anon" -eq 0

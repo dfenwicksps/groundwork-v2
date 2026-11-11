@@ -1,5 +1,5 @@
 // ─── Test database for the access tests ──────────────────────────────────────
-// Loads supabase/v3/schema.sql into an in-memory Postgres (PGlite) and seeds
+// Loads supabase/v3/supabase/migrations/20261112000000_v3_initial.sql into an in-memory Postgres (PGlite) and seeds
 // two schools. Every test asks its question the way a signed-in user would:
 // the `authenticated` role, with auth.uid() set to that user.
 //
@@ -50,7 +50,7 @@ const UUID = /^[0-9a-f-]{36}$/;
 export async function openDb(): Promise<Db> {
   const pg = new PGlite();
   await pg.exec(STUB);
-  await pg.exec(readFileSync(resolve(process.cwd(), "supabase/v3/schema.sql"), "utf8"));
+  await pg.exec(readFileSync(resolve(process.cwd(), "supabase/v3/supabase/migrations/20261112000000_v3_initial.sql"), "utf8"));
 
   return {
     async su(sql, params) {

@@ -1,10 +1,16 @@
 -- ============================================================================
--- GROUNDWORK v3: database schema  (DRAFT, Phase 0)
+-- GROUNDWORK v3: database schema, first migration
 -- ============================================================================
 --
--- NOT APPLIED ANYWHERE. Don't run this against the live Supabase project.
--- v2 still runs on supabase/schema.sql and supabase/migrations/, which this
--- file leaves alone. It becomes the v3 baseline in Phase 1, after review.
+-- For the v3 Supabase project ONLY. Never run this against the live project
+-- v2 uses. v2 still runs on supabase/schema.sql and supabase/migrations/ at
+-- the top of the repo, which this leaves alone.
+--
+-- This folder (supabase/v3/supabase) is a Supabase directory of its own: the
+-- working directory for the CLI and for Supabase's GitHub integration is
+-- supabase/v3 (D47). Until the v3 project exists this file may still be
+-- edited. Once it has been applied there, it is frozen: every later change
+-- is a new file in this folder.
 --
 -- What it is: one clean schema that replaces v2's schema.sql plus its 20
 -- migration files (v2 has no students and no data to keep), and adds schools,
@@ -21,11 +27,9 @@
 --   * class_patterns() hides small groups inside the database, so the true
 --     figure never reaches a browser.
 --
--- Checked in Phase 0 only by scripts/v3/check-schema.mjs, which loads it into
--- an in-memory Postgres (PGlite) with Supabase's auth schema, roles and
--- default grants stubbed, and runs the visibility rules against it. That
--- shows it parses and that the rules hold there; it does not prove they hold
--- on real Supabase. Phase 1's access tests, on a local Supabase, do that.
+-- Checked by tests/v3/access (one test per rule, on an in-memory Postgres
+-- with Supabase's roles stubbed) and by CI, which loads it into a real
+-- Supabase database started inside the job.
 -- ============================================================================
 
 
