@@ -636,36 +636,6 @@ export const MISSIONS: Mission[] = [
             "I still ask a million questions",
           ],
         ],
-        starterOptions: [
-          [
-            "A parent \u2014 it was nice to hear",
-            "A grandparent \u2014 they had heaps of stories",
-            "An older sibling or cousin \u2014 funny and a bit embarrassing",
-            "A teacher or coach who's known me a while",
-            "Nobody this time \u2014 I went through old photos and cards",
-          ],
-          [
-            "I was always asking questions",
-            "I looked after the other kids",
-            "I was fearless and into everything",
-            "I was quiet but noticed everything",
-            "I was the one who made everyone laugh",
-          ],
-          [
-            "How much they remembered",
-            "That I was more confident back then",
-            "That they'd noticed something I thought nobody saw",
-            "How much I've changed",
-            "Honestly, nothing surprised me",
-          ],
-          [
-            "I still ask a lot of questions",
-            "I still look out for people",
-            "I still throw myself into things I love",
-            "I still notice more than I say",
-            "I still like making people laugh",
-          ],
-        ],
         wrapUp:
           "You've added someone else's view to your own story: the version of you that existed before you can remember. It's on your Who I Am card now.",
         whyItMatters:
