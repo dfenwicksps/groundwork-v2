@@ -7,3 +7,6 @@ audit-output/
 
 # IDE files
 .idea/
+
+# Supabase CLI scratch files
+supabase/.temp/
