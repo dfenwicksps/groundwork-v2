@@ -5,14 +5,14 @@
 //
 // What this proves: the schema's row security, grants and functions keep the
 // rules in docs/v3/visibility.md on Postgres.
-// What it does NOT prove: Supabase's own auth schema, roles and default
-// grants are stubbed in STUB below. The tests only use `su()` and `as()`, so
-// pointing them at a real local Supabase later means writing a second
-// `openDb()` over a Postgres connection; no test changes.
+// By default Supabase's own auth schema, roles and default grants are stubbed
+// (STUB below). With GW_TEST_DATABASE_URL set, the same tests run on a real
+// Supabase database with nothing stubbed; CI does both.
 //
 // Nothing outside this process is touched. No live project, no network.
 
 import { PGlite } from "@electric-sql/pglite";
+import { Client } from "pg";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -47,10 +47,24 @@ const STUB = `
 
 const UUID = /^[0-9a-f-]{36}$/;
 
+const MIGRATION = "supabase/v3/supabase/migrations/20261112000000_v3_initial.sql";
+
+/**
+ * Set GW_TEST_DATABASE_URL to run the same tests on a real Supabase database
+ * (CI does, against one started inside the job). It must be a throwaway
+ * database with the v3 migrations applied: every table is emptied first.
+ * Unset, the tests use the in-memory database.
+ */
+export const REAL_DATABASE_URL = process.env.GW_TEST_DATABASE_URL || "";
+
 export async function openDb(): Promise<Db> {
+  return REAL_DATABASE_URL ? openRealDb(REAL_DATABASE_URL) : openMemoryDb();
+}
+
+async function openMemoryDb(): Promise<Db> {
   const pg = new PGlite();
   await pg.exec(STUB);
-  await pg.exec(readFileSync(resolve(process.cwd(), "supabase/v3/supabase/migrations/20261112000000_v3_initial.sql"), "utf8"));
+  await pg.exec(readFileSync(resolve(process.cwd(), MIGRATION), "utf8"));
 
   return {
     async su(sql, params) {
@@ -72,6 +86,59 @@ export async function openDb(): Promise<Db> {
       }
     },
     close: () => pg.close(),
+  };
+}
+
+/**
+ * A real Supabase database. Nothing is stubbed: `authenticated` and `anon`
+ * are Supabase's roles, auth.uid() is Supabase's function, and the grants are
+ * the ones its migrations and ours left behind.
+ */
+async function openRealDb(url: string): Promise<Db> {
+  // A guard against pointing this at anything that matters: local addresses only.
+  const host = new URL(url).hostname;
+  if (host !== "127.0.0.1" && host !== "localhost" && host !== "[::1]") {
+    throw new Error(`GW_TEST_DATABASE_URL must be a local database; refusing ${host}`);
+  }
+  const client = new Client({ connectionString: url });
+  await client.connect();
+
+  const owner = async () => {
+    await client.query("reset role");
+    await client.query("select set_config('request.jwt.claim.sub', '', false), set_config('request.jwt.claims', '', false)");
+  };
+
+  // Start from empty: every public table, then the sign-in records.
+  await owner();
+  const tables = await client.query(`select tablename from pg_tables where schemaname = 'public'`);
+  const names = tables.rows.map((r: Row) => `public."${r.tablename}"`).join(", ");
+  if (names) await client.query(`truncate table ${names} cascade`);
+  await client.query(`delete from auth.users`);
+
+  return {
+    async su(sql, params) {
+      await owner();
+      return (await client.query(sql, params as unknown[])).rows as Row[];
+    },
+    async as(uid, sql, params) {
+      if (uid !== null && !UUID.test(uid)) throw new Error(`not a user id: ${uid}`);
+      const role = uid ? "authenticated" : "anon";
+      await client.query("reset role");
+      await client.query("select set_config('request.jwt.claim.sub', $1, false), set_config('request.jwt.claims', $2, false)", [
+        uid ?? "",
+        JSON.stringify(uid ? { sub: uid, role } : { role }),
+      ]);
+      await client.query(`set role ${role}`);
+      try {
+        const r = await client.query(sql, params as unknown[]);
+        return { rows: r.rows as Row[], error: null };
+      } catch (e) {
+        return { rows: [], error: e instanceof Error ? e.message : String(e) };
+      } finally {
+        await client.query("reset role");
+      }
+    },
+    close: () => client.end(),
   };
 }
 

@@ -48,6 +48,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - uses: supabase/setup-cli@v1
         with:
           version: latest
@@ -67,3 +72,7 @@ jobs:
           test "$tables" -eq 31
           test "$open" -eq 0
           test "$anon" -eq 0
+      - name: Access tests against this database, nothing stubbed
+        env:
+          GW_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+        run: npx vitest run tests/v3/access --no-file-parallelism
