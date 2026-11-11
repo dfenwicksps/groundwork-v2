@@ -4,3 +4,6 @@ node_modules/
 *.tsbuildinfo
 .claude/settings.local.json
 audit-output/
+
+# IDE files
+.idea/
