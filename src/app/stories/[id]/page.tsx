@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import Link from "next/link";
@@ -10,6 +11,8 @@ import StoryFilm from "@/components/stories/StoryFilm";
 import { storyHasFilm } from "@/components/stories/films";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Story" };
 
 export default async function StoryPage({
   params,

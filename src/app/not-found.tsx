@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-6 text-center">
+    <main className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-6 text-center">
       <div className="w-10 h-10 bg-navy rounded-xl flex items-center justify-center mb-6">
         <span className="text-white text-base font-semibold">G</span>
       </div>
@@ -19,6 +19,6 @@ export default function NotFound() {
       <Link href="/dashboard" className="btn btn-primary px-8">
         Back to your dashboard
       </Link>
-    </div>
+    </main>
   );
 }

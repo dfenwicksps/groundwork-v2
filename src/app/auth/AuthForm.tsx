@@ -191,7 +191,7 @@ export default function AuthForm() {
     : null;
 
   return (
-    <div className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
+    <main className="min-h-screen bg-surface-muted flex flex-col items-center justify-center px-4 py-12">
       <div className="absolute top-6 left-6">
         <Link href="/" className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors">
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-60">
@@ -257,20 +257,20 @@ export default function AuthForm() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "signup" && (
                 <div>
-                  <label className="block text-sm font-medium text-ink mb-1.5">First name</label>
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)}
+                  <label htmlFor="auth-name" className="block text-sm font-medium text-ink mb-1.5">First name</label>
+                  <input id="auth-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
                     placeholder="Your name" className="input" required autoComplete="given-name" />
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-ink mb-1.5">Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                <label htmlFor="auth-email" className="block text-sm font-medium text-ink mb-1.5">Email</label>
+                <input id="auth-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com" className="input" required autoComplete="email" />
               </div>
               {method === "password" && (
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-medium text-ink">Password</label>
+                  <label htmlFor="auth-password" className="block text-sm font-medium text-ink">Password</label>
                   {mode === "login" && (
                     <button
                       type="button"
@@ -286,7 +286,7 @@ export default function AuthForm() {
                     </button>
                   )}
                 </div>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                <input id="auth-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                   placeholder={mode === "signup" ? "At least 8 characters" : "••••••••"}
                   className="input" required minLength={mode === "signup" ? 8 : undefined}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"} />
@@ -381,6 +381,6 @@ export default function AuthForm() {
           Plain English, and short — we checked.
         </p>
       </div>
-    </div>
+    </main>
   );
 }

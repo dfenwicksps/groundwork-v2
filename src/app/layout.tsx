@@ -24,7 +24,9 @@ const GOOGLE_FONTS_HREF =
   "&display=swap";
 
 export const metadata: Metadata = {
-  title: "Groundwork — Figure out who you are",
+  // Each page names itself ("Journal — Groundwork"), so tabs, history and
+  // screen readers can tell pages apart (WCAG 2.4.2).
+  title: { default: "Groundwork — Figure out who you are", template: "%s — Groundwork" },
   description:
     "Short missions, real-world challenges and stories for anyone working out who they are and where they're heading.",
   metadataBase: new URL(

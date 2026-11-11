@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // A private link: never indexed, never previewed with the questions in it.
 export const metadata: Metadata = {
-  title: "A few questions — Groundwork",
+  title: "A few questions",
   robots: { index: false, follow: false },
 };
 
@@ -29,7 +29,7 @@ export default async function AskPage({ params }: { params: { token: string } })
   } | null;
 
   return (
-    <div className="min-h-screen bg-surface-muted">
+    <main className="min-h-screen bg-surface-muted">
       <div className="max-w-xl mx-auto px-5 pt-8 pb-24">
         <div className="flex items-center gap-2 mb-8">
           <div className="w-7 h-7 bg-navy rounded-md flex items-center justify-center" aria-hidden>
@@ -63,7 +63,7 @@ export default async function AskPage({ params }: { params: { token: string } })
           />
         )}
       </div>
-    </div>
+    </main>
   );
 }
 

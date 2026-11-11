@@ -17,7 +17,7 @@ export default function LandingPage() {
   return (
     <div data-theme="neon" className="min-h-screen bg-surface-muted text-ink">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
+      <nav aria-label="Main" className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <div className="flex items-center gap-2">
           <div
             className="w-7 h-7 bg-navy rounded-md flex items-center justify-center"
@@ -44,6 +44,8 @@ export default function LandingPage() {
           </Link>
         </div>
       </nav>
+
+      <main>
 
       {/* Hero */}
       <section className="max-w-5xl mx-auto px-6 pt-8 pb-10 text-center">
@@ -259,6 +261,8 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
+      </main>
+
       <footer className="border-t border-surface-border py-8 text-center text-sm text-ink-muted px-6">
         <p>
           Groundwork is not a therapy replacement. If you need support, talk to
@@ -272,7 +276,7 @@ export default function LandingPage() {
           </a>
           .
         </p>
-        <nav className="flex items-center justify-center gap-6 mt-4">
+        <nav aria-label="Footer" className="flex items-center justify-center gap-6 mt-4">
           <Link href="/privacy" className="underline hover:text-ink transition-colors">
             Privacy
           </Link>

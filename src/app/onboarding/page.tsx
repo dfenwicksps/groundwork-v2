@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import OnboardingClient from "./OnboardingClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Welcome" };
 
 /**
  * Onboarding, guarded.

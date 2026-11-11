@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { checkinState, type CheckinRow } from "@/lib/checkin";
@@ -5,6 +6,8 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import CheckinClient from "./CheckinClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Check-in" };
 
 export default async function CheckinPage() {
   const supabase = createServerClient();

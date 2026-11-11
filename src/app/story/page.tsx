@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { topStrengths, strengthName } from "@/lib/strengths";
@@ -12,6 +13,8 @@ import { getLifeStage } from "@/lib/lifeStageServer";
 import StoryClient from "./StoryClient";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "My story" };
 
 export default async function MyStoryPage() {
   const supabase = createServerClient();
