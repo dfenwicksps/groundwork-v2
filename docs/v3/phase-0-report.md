@@ -212,5 +212,5 @@ David answered the questions in section 5. His answers are D27–D39 in [DECISIO
 - `navigation.md`: the outcome check-in moves to Home (D33), the three-phase journey becomes a setting (D34), the self-check has one statement per self (D30), and Grow is proposed ungated (D35).
 - Commit `11abf85` is PR #76 against `main` (D27).
 
-Still open: D31's reading (25 selves), D35 (no gates in Grow), who chooses the journey setting (D34), first or second person for `short`, and who the wellbeing lead is.
+David then confirmed the open points (D40–D45): 25 selves, no gates in Grow, the journey as a school setting that is off by default, `short` in second person, and no wellbeing-lead handout for now. **Phase 0 was approved on 12 Nov 2026 (D45).**
 
