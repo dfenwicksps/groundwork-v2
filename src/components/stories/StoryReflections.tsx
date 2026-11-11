@@ -127,7 +127,7 @@ function PromptCard({
         <div className="flex items-start gap-3">
           {done && (
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white mt-0.5"
+              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-on-accent mt-0.5"
               style={{ background: "var(--sage)" }}
               aria-label="Written"
             >

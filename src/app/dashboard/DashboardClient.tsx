@@ -11,10 +11,11 @@ import PolicyNotice from "./PolicyNotice";
 import type { MissionSummary } from "@/lib/missionSummary";
 import type { Spine } from "@/lib/spine";
 import { LIFE_STAGE_OPTIONS, hasLeftSchool, type LifeStage } from "@/lib/lifeStage";
-import type { Phase } from "@/lib/phase";
-import PhaseBanner from "@/components/PhaseBanner";
 import { whoToYou } from "@/lib/nextChapter";
-import { endDue } from "@/lib/checkin";
+import { countWord, itemSet, type CheckinState } from "@/lib/checkin";
+import CheckinResultsCard from "./CheckinResultsCard";
+import SmallStepCheck from "./SmallStepCheck";
+import type { SmallStepRow } from "@/lib/smallSteps";
 import { isStoryActivity } from "@/lib/revisit";
 
 type RevisitEntry = {
@@ -61,14 +62,17 @@ interface Props {
   spine: Spine;
   programWeek: ProgramWeekCard;
   lifeStage: LifeStage;
-  /** The global journey phase (lib/phase.ts), shown as a progress banner. */
-  phase: Phase;
   /** Present only once all four missions are done */
   missionSummary: MissionSummary | null;
   /** The next-chapter plan, if one has been made: who they'll ask, and whether it's time */
   nextChapter: { who: string; due: boolean } | null;
   /** The outcome check-in: null when it isn't available yet */
-  checkin: { startAt: string | null; endDone: boolean } | null;
+  /** Where the student is with the check-in (lib/checkin.ts) */
+  checkin: CheckinState;
+  /** A small step that's due for "Did you do it?", if any */
+  dueStep: SmallStepRow | null;
+  /** Answers that came back by link and haven't been read (lib/askLink.ts) */
+  newAnswers: { missionId: number; activityId: string; who: string; count: number } | null;
 }
 
 /** Home's "Also now" shows at most this many, so it never outweighs "Up next". */
@@ -80,6 +84,9 @@ const MISSION_CHALLENGE_ACTIVITY: Record<number, string> = {
   3: "connection-challenge",
   4: "meaning-challenge",
 };
+
+/** Bold look: the "Also now" rows take turns through the fluoro colours. */
+const ALSO_NOW_FLUORO = ["pink", "yellow", "green", "blue"] as const;
 
 function Arrow({ className = "" }: { className?: string }) {
   return (
@@ -118,10 +125,11 @@ export default function DashboardClient({
   spine,
   programWeek,
   lifeStage,
-  phase,
   missionSummary,
   nextChapter,
   checkin,
+  dueStep,
+  newAnswers,
 }: Props) {
   const firstName = profile.display_name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
@@ -133,6 +141,7 @@ export default function DashboardClient({
     spine.lead === "mission" && nextMissionStep ? (
       <Link
         href={`/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`}
+        data-mission={nextMissionStep.missionId}
         className="block rounded-2xl p-6 lg:p-8 text-white relative overflow-hidden group"
         style={{ background: nextMissionStep.colour }}
       >
@@ -150,7 +159,7 @@ export default function DashboardClient({
             {nextMissionStep.activityTitle}
           </p>
           <p className="text-sm opacity-90 italic">{nextMissionStep.question}</p>
-          <span className="inline-flex items-center gap-2 mt-4 bg-white/20 group-hover:bg-white/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+          <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
             {nextMissionStep.step === 1 ? "Start" : "Carry on"}
             <Arrow />
           </span>
@@ -159,10 +168,11 @@ export default function DashboardClient({
     ) : (
       <Link
         href={programWeek.allDone ? "/program#weekly" : `/program/${programWeek.week}`}
+        data-fluoro="pink"
         className="block rounded-2xl p-6 lg:p-8 text-white group"
         style={{ background: "var(--navy)" }}
       >
-        <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold)" }}>
+        <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "var(--gold-on-navy)" }}>
           {programWeek.allDone
             ? "All ten weeks done"
             : `Week ${programWeek.week} of 10 · ${programWeek.emoji}`}
@@ -173,7 +183,7 @@ export default function DashboardClient({
         <p className="text-sm leading-relaxed opacity-90">
           {programWeek.allDone ? spine.programBlurb : programWeek.challenge}
         </p>
-        <span className="inline-flex items-center gap-2 mt-4 bg-white/15 group-hover:bg-white/25 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
+        <span className="inline-flex items-center gap-2 mt-4 bg-black/20 group-hover:bg-black/30 transition-colors px-4 py-2 rounded-lg text-sm font-medium">
           {programWeek.allDone
             ? "Open the weekly five"
             : programWeek.started
@@ -191,6 +201,21 @@ export default function DashboardClient({
   // two are dealt with, and a revisit keeps.
   const alsoNow: { key: string; href: string; icon: string; title: string; sub: string }[] = [];
 
+  // 0. Someone answered the questions a student sent them. It's the reply to
+  // something they did, and it's what they'll most want to see.
+  if (newAnswers) {
+    alsoNow.push({
+      key: "answers",
+      href: `/missions/${newAnswers.missionId}/activities/${newAnswers.activityId}`,
+      icon: "💬",
+      title:
+        newAnswers.count > 1
+          ? `${truncate(newAnswers.who, 30)} and ${newAnswers.count - 1} more answered your questions`
+          : `${truncate(newAnswers.who, 40)} answered your questions`,
+      sub: "Read what they said, then write it up.",
+    });
+  }
+
   // 1. A planned conversation that's happened: what they found out fades fast.
   if (nextChapter?.due) {
     alsoNow.push({
@@ -204,24 +229,21 @@ export default function DashboardClient({
 
   // 2. The check-in: a start only counts if it's taken early, and the end only
   // once it's due.
-  if (checkin && !checkin.startAt) {
+  if (checkin.kind === "take" && checkin.wave === "start") {
     alsoNow.push({
       key: "checkin",
       href: "/check-in",
       icon: "◔",
       title: "A one-minute check-in",
-      sub: "Nine quick questions now, so later you can see what's moved.",
+      sub: `${countWord(itemSet(checkin.setId).items.length).replace(/^./, (c) => c.toUpperCase())} quick questions now, so later you can see what's moved.`,
     });
-  } else if (
-    checkin &&
-    endDue({ startAt: checkin.startAt, endDone: checkin.endDone })
-  ) {
+  } else if (checkin.kind === "take" && checkin.wave === "end") {
     alsoNow.push({
       key: "checkin",
       href: "/check-in",
       icon: "◕",
       title: "The check-in, one more time",
-      sub: "Ten weeks on: the same nine questions. See what's moved.",
+      sub: "Ten weeks on: the same questions as before. See what's moved.",
     });
   }
 
@@ -290,14 +312,15 @@ export default function DashboardClient({
       key: "revisit",
       href: `/revisit/${revisitEntry.id}`,
       icon: "↩",
-      title: `Look back at ${getActivityLabel(revisitEntry.activity_id)}`,
+      title: `Look back at ${getActivityLabel(revisitEntry.activity_id, lifeStage)}`,
       sub: isStoryActivity(revisitEntry.activity_id)
         ? `Written ${formatRelativeDate(revisitEntry.created_at)}. What would you add to your story now?`
         : `Written ${formatRelativeDate(revisitEntry.created_at)}. Does it still feel true?`,
     });
   }
 
-  const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX);
+  // A due small step takes one of the slots, so the list never grows.
+  const shownAlsoNow = alsoNow.slice(0, ALSO_NOW_MAX - (dueStep ? 1 : 0));
 
   const tunedFor = (
     <p className="text-xs text-ink-muted">
@@ -331,18 +354,6 @@ export default function DashboardClient({
 
         <PolicyNotice joinedAt={profile.created_at} />
 
-        {/* Where the whole journey is up to — tap-only first pass, then review,
-            then deepen. Phase 1 points at the next thing to do; later phases
-            point at the Me page where answers get reviewed and deepened. */}
-        <PhaseBanner
-          phase={phase}
-          href={
-            phase === 1 && nextMissionStep
-              ? `/missions/${nextMissionStep.missionId}/activities/${nextMissionStep.activityId}`
-              : "/me"
-          }
-        />
-
         {/* One column on a phone, in the order the order-* classes give. On
             desktop the thing to do keeps the wide column and what's
             time-sensitive sits beside it, so neither is below the fold. */}
@@ -364,6 +375,13 @@ export default function DashboardClient({
               </div>
             )}
 
+            {/* The check-in, once there's a before and an after */}
+            {checkin.kind === "compare" && (
+              <div className="order-3">
+                <CheckinResultsCard start={checkin.start} end={checkin.end} setId={checkin.setId} />
+              </div>
+            )}
+
             {/* A story, because most students never go looking for one */}
             {featuredStory && (
               <section data-animate="4" aria-labelledby="story-for-you" className="order-4">
@@ -377,6 +395,7 @@ export default function DashboardClient({
                 </div>
                 <Link
                   href={`/stories/${featuredStory.id}`}
+                  data-fluoro="green"
                   className="card p-5 lg:p-6 block hover:shadow-card transition-all"
                 >
                   {featuredStory.film && (
@@ -403,16 +422,18 @@ export default function DashboardClient({
 
           <div className="split-col">
             {/* Also now */}
-            {shownAlsoNow.length > 0 && (
+            {(shownAlsoNow.length > 0 || dueStep) && (
               <section data-animate="3" aria-labelledby="also-now" className="order-2">
                 <h2 id="also-now" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
                   Also now
                 </h2>
                 <div className="space-y-2">
-                  {shownAlsoNow.map((row) => (
+                  {dueStep && <SmallStepCheck key={dueStep.id} step={dueStep} />}
+                  {shownAlsoNow.map((row, i) => (
                     <Link
                       key={row.key}
                       href={row.href}
+                      data-fluoro={ALSO_NOW_FLUORO[i % ALSO_NOW_FLUORO.length]}
                       className="card p-4 flex items-center gap-3 hover:border-navy/30 transition-all"
                     >
                       <span
@@ -462,7 +483,7 @@ export default function DashboardClient({
                 <h2 id="where-things-stand" className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
                   Where things stand
                 </h2>
-                <div className="card p-5 space-y-4">
+                <div data-fluoro="blue" className="card p-5 space-y-4">
                   {[
                     { href: "/missions", label: "Missions", done: missionsDone, total: 4 },
                     { href: "/program", label: "Weeks", done: programWeek.weeksDone, total: 10 },

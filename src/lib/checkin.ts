@@ -1,26 +1,49 @@
+import { hasLeftSchool, type LifeStage } from "./lifeStage";
+
 // ─── The check-in: is any of this working? ────────────────────────────────────
-// Nine questions, once near the start and once near the end, so a student can
-// see what moved and so the app can one day show whether it helps. Without
-// something like this, nothing the app does can be shown to change anything.
+// A short set of questions, once near the start and once ten weeks later, so a
+// student can see what moved and so the app can one day show whether it helps.
+// Without something like this, nothing the app does can be shown to change
+// anything.
 //
-// Three things are measured, three questions each, matching the outcomes the
-// identity research says matter:
-//   clarity    how clear and steady a student's sense of themselves is
-//              (the construct of the Self-Concept Clarity Scale, Campbell et
-//              al. 1996)
-//   direction  having explored and committed to a direction of your own
-//              (commitment and in-depth exploration, as in the U-MICS, Crocetti
-//              et al. 2008)
-//   purpose    something meaningful to you that reaches beyond you
-//              (purpose as defined by Damon et al. 2003; the Claremont Purpose
-//              Scale, Bronk et al. 2018)
+// Three item sets exist, and a student always answers their end check-in in the
+// same set as their start, so a start is never compared with an end it didn't
+// share questions with. New starts use CURRENT_SET.
 //
-// IMPORTANT: these items are Groundwork's own wording, written to the same
-// constructs. They are NOT the validated scales, and results from them are not
-// evidence in the way validated-scale results would be. To use the real scales,
-// get permission from their authors, add the items as a new ITEM_SET and bump
-// the id: answers are stored with the set they were given under, so the two
-// are never mixed.
+// v3 (4 November 2026, current) — v2 plus the two social self-efficacy items
+// the 12-item cut left out: starting a conversation with someone new (s2) and
+// saying no to friends (s4). Without them efficacy covered study, feelings and
+// getting better, but nothing about people, and people are most of what the
+// missions ask students to do. Fourteen items, still about two minutes.
+//
+// v2 (November 2026) — the five outcomes Groundwork is built to
+// develop (docs/evidence/self-outcomes-map.md, checkin-v2-draft.md):
+//   clarity     self-concept clarity (construct of Campbell et al., 1996)
+//   esteem      global self-esteem (Rosenberg; Harter's global self-worth)
+//   confidence  the everyday sense of backing yourself; no validated scale
+//               exists, so the pilot checks it against efficacy and esteem
+//   efficacy    "how sure are you that you could…", three areas (Bandura's
+//               method; areas inspired by the SEQ-C, Muris, 2001)
+//   mattering   being noticed, counted on and adding value (Rosenberg &
+//               McCullough, 1981; Prilleltensky, 2020)
+// Clarity keeps v1's c1 and c2 word for word, so those two items can be
+// compared across sets one by one (never as area scores: v1 averaged three).
+//
+// v2's items are v3's, word for word, so v2 and v3 can be compared item by
+// item; only the efficacy area score differs (three items in v2, five in v3).
+//
+// v1 (interim, until November 2026) — clarity, direction (U-MICS construct)
+// and purpose (Damon; Claremont Purpose Scale construct), three items each.
+// Kept so students who started on it finish on it.
+//
+// IMPORTANT: every item is Groundwork's own wording, written to a construct.
+// None is a validated scale, and results from them are not evidence in the way
+// validated-scale results would be. The validated scales are run outside the
+// app, by a research partner, and used to check these items
+// (docs/evidence/evidence-plan.md). The wording deliberately avoids a clinical
+// register: no item names a construct, no harsh negative items, and mattering
+// has no reverse item because "nobody would notice me" is too close to risk
+// language for a self-guided app.
 //
 // How it's designed to be evaluable:
 //   - The start check-in is taken during onboarding, before any mission, so it
@@ -39,61 +62,188 @@
 // student and used for nothing else, and the privacy page says so. Counting
 // them in totals needs ethics review, a consent flow (usually with a parent or
 // carer's consent too; the ethics committee decides), and an updated privacy
-// page first. The plan for
-// that, including which validated scales to use and how, is in
-// docs/evidence/evidence-plan.md.
+// page first. The plan for that is in docs/evidence/evidence-plan.md.
 
-export const ITEM_SET = "groundwork-interim-v1";
-
-export type Construct = "clarity" | "direction" | "purpose";
+export type Construct =
+  | "clarity"
+  | "esteem"
+  | "confidence"
+  | "efficacy"
+  | "mattering"
+  // v1 only
+  | "direction"
+  | "purpose";
 export type Wave = "start" | "end";
 
-export const CONSTRUCTS: { key: Construct; name: string; blurb: string }[] = [
-  { key: "clarity", name: "Knowing who you are", blurb: "How clear and steady your sense of yourself feels" },
-  { key: "direction", name: "Having a direction", blurb: "Whether you've thought it through and have a way you're heading" },
-  { key: "purpose", name: "Something bigger than you", blurb: "Caring about something beyond yourself, and acting on it" },
-];
+/** Which response scale an item is answered on. */
+export type ScaleKind = "like" | "sure";
+
+export const SCALES: Record<ScaleKind, string[]> = {
+  like: ["Not like me", "A bit like me", "Somewhat like me", "Quite like me", "Very like me"],
+  sure: ["Not at all sure", "A bit sure", "Fairly sure", "Very sure", "Completely sure"],
+};
+
+/** The original scale, kept for anything that still imports it. */
+export const SCALE = SCALES.like;
+
+export interface ConstructInfo {
+  key: Construct;
+  name: string;
+  blurb: string;
+}
 
 export interface CheckinItem {
   key: string;
   construct: Construct;
   text: string;
+  /** Wording for students who have left school, when it differs */
+  textLeftSchool?: string;
   /** Agreeing means less of the construct, so the score is flipped */
   reverse?: boolean;
+  /** Defaults to "like" */
+  scale?: ScaleKind;
 }
 
-export const CHECKIN_ITEMS: CheckinItem[] = [
-  { key: "c1", construct: "clarity", text: "I could describe who I am to someone in a few honest sentences." },
-  { key: "d1", construct: "direction", text: "I have a direction I'm heading in, even if the details might change." },
-  { key: "p1", construct: "purpose", text: "There's something I care about that's bigger than just me." },
-  { key: "c2", construct: "clarity", text: "My sense of who I am changes a lot depending on who I'm with.", reverse: true },
-  { key: "d2", construct: "direction", text: "I've properly thought about what I want, rather than just going along with things." },
-  { key: "p2", construct: "purpose", text: "I'm doing things now that move me towards what matters to me." },
-  { key: "c3", construct: "clarity", text: "I know what I value, even when the people around me don't share it." },
-  { key: "d3", construct: "direction", text: "I'm not sure the path I'm on is really mine.", reverse: true },
-  { key: "p3", construct: "purpose", text: "I know what kind of difference I want to make." },
-];
+export interface ItemSet {
+  id: string;
+  constructs: ConstructInfo[];
+  /** In the order they're shown: no two from the same area side by side */
+  items: CheckinItem[];
+}
 
-export const SCALE = [
-  "Not like me",
-  "A bit like me",
-  "Somewhat like me",
-  "Quite like me",
-  "Very like me",
-];
+const V1: ItemSet = {
+  id: "groundwork-interim-v1",
+  constructs: [
+    { key: "clarity", name: "Knowing who you are", blurb: "How clear and steady your sense of yourself feels" },
+    { key: "direction", name: "Having a direction", blurb: "Whether you've thought it through and have a way you're heading" },
+    { key: "purpose", name: "Something bigger than you", blurb: "Caring about something beyond yourself, and acting on it" },
+  ],
+  items: [
+    { key: "c1", construct: "clarity", text: "I could describe who I am to someone in a few honest sentences." },
+    { key: "d1", construct: "direction", text: "I have a direction I'm heading in, even if the details might change." },
+    { key: "p1", construct: "purpose", text: "There's something I care about that's bigger than just me." },
+    { key: "c2", construct: "clarity", text: "My sense of who I am changes a lot depending on who I'm with.", reverse: true },
+    { key: "d2", construct: "direction", text: "I've properly thought about what I want, rather than just going along with things." },
+    { key: "p2", construct: "purpose", text: "I'm doing things now that move me towards what matters to me." },
+    { key: "c3", construct: "clarity", text: "I know what I value, even when the people around me don't share it." },
+    { key: "d3", construct: "direction", text: "I'm not sure the path I'm on is really mine.", reverse: true },
+    { key: "p3", construct: "purpose", text: "I know what kind of difference I want to make." },
+  ],
+};
+
+const V2: ItemSet = {
+  id: "groundwork-interim-v2",
+  constructs: [
+    { key: "clarity", name: "Knowing who you are", blurb: "How clear and steady your sense of yourself feels" },
+    { key: "esteem", name: "Liking who you are", blurb: "How you feel about yourself overall" },
+    { key: "confidence", name: "Backing yourself", blurb: "How ready you are to have a go" },
+    { key: "efficacy", name: "Knowing you can", blurb: "How sure you are you could handle specific hard things" },
+    { key: "mattering", name: "Mattering to people", blurb: "Feeling noticed, counted on and useful to others" },
+  ],
+  items: [
+    { key: "c1", construct: "clarity", text: "I could describe who I am to someone in a few honest sentences." },
+    { key: "e1", construct: "esteem", text: "On the whole, I like the person I am." },
+    {
+      key: "s1",
+      construct: "efficacy",
+      scale: "sure",
+      text: "How sure are you that you could keep going with schoolwork that's hard, when you'd rather stop?",
+      textLeftSchool: "How sure are you that you could keep going with study or work that's hard, when you'd rather stop?",
+    },
+    { key: "m1", construct: "mattering", text: "There are people who notice how I'm going." },
+    { key: "f1", construct: "confidence", text: "I'm usually willing to have a go, even when I'm not sure it'll work." },
+    { key: "c2", construct: "clarity", text: "My sense of who I am changes a lot depending on who I'm with.", reverse: true },
+    {
+      key: "s3",
+      construct: "efficacy",
+      scale: "sure",
+      text: "How sure are you that you could calm yourself down after something's really upset you?",
+    },
+    { key: "e3", construct: "esteem", text: "I often wish I was someone else.", reverse: true },
+    { key: "m2", construct: "mattering", text: "Someone counts on me for something." },
+    { key: "f3", construct: "confidence", text: "I hold back from trying things in case I look silly.", reverse: true },
+    {
+      key: "s5",
+      construct: "efficacy",
+      scale: "sure",
+      text: "How sure are you that you could stick at practising something difficult until you're noticeably better at it?",
+    },
+    { key: "m3", construct: "mattering", text: "Some people are better off because of things I do." },
+  ],
+};
+
+const S2: CheckinItem = {
+  key: "s2",
+  construct: "efficacy",
+  scale: "sure",
+  text: "How sure are you that you could start a conversation with someone in your year you don't really know?",
+  textLeftSchool: "How sure are you that you could start a conversation with someone at uni, TAFE or work you don't really know?",
+};
+const S4: CheckinItem = {
+  key: "s4",
+  construct: "efficacy",
+  scale: "sure",
+  text: "How sure are you that you could say no to friends when they want you to do something you don't want to do?",
+};
+
+/** v2's items with s2 and s4 placed so no two efficacy items sit side by side. */
+const V3: ItemSet = {
+  id: "groundwork-interim-v3",
+  constructs: V2.constructs,
+  items: (() => {
+    const by = Object.fromEntries(V2.items.map((i) => [i.key, i]));
+    return [
+      by.c1, by.e1, by.s1, by.m1, by.f1, S2, by.c2,
+      by.s3, by.e3, by.m2, S4, by.f3, by.s5, by.m3,
+    ];
+  })(),
+};
+
+export const ITEM_SETS: Record<string, ItemSet> = { [V1.id]: V1, [V2.id]: V2, [V3.id]: V3 };
+
+/** The set every new start check-in uses. */
+export const CURRENT_SET = V3.id;
+
+/** Kept for older imports: the id new check-ins are saved under. */
+export const ITEM_SET = CURRENT_SET;
+
+/** A set by id; an unknown or missing id falls back to the current set. */
+export function itemSet(id: string | null | undefined): ItemSet {
+  return (id && ITEM_SETS[id]) || ITEM_SETS[CURRENT_SET];
+}
+
+/** The set a wave should be answered in: the end always follows its start. */
+export function setForWave(wave: Wave, startSetId: string | null | undefined): ItemSet {
+  return wave === "end" ? itemSet(startSetId) : itemSet(CURRENT_SET);
+}
+
+export function itemText(item: CheckinItem, stage: LifeStage): string {
+  return hasLeftSchool(stage) && item.textLeftSchool ? item.textLeftSchool : item.text;
+}
+
+export function scaleFor(item: CheckinItem): string[] {
+  return SCALES[item.scale ?? "like"];
+}
+
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen"];
+
+/** "fourteen", for copy like "Fourteen quick questions". */
+export function countWord(n: number): string {
+  return NUMBER_WORDS[n] ?? String(n);
+}
 
 export type Answers = Record<string, number>;
-export type Scores = Record<Construct, number>;
+export type Scores = Partial<Record<Construct, number>>;
 
-export function complete(answers: Answers): boolean {
-  return CHECKIN_ITEMS.every((i) => answers[i.key] >= 1 && answers[i.key] <= 5);
+export function complete(set: ItemSet, answers: Answers): boolean {
+  return set.items.every((i) => answers[i.key] >= 1 && answers[i.key] <= 5);
 }
 
 /** Mean per construct on the 1–5 scale, reverse items flipped, to one decimal. */
-export function score(answers: Answers): Scores {
-  const out = {} as Scores;
-  for (const { key } of CONSTRUCTS) {
-    const items = CHECKIN_ITEMS.filter((i) => i.construct === key);
+export function score(set: ItemSet, answers: Answers): Scores {
+  const out: Scores = {};
+  for (const { key } of set.constructs) {
+    const items = set.items.filter((i) => i.construct === key);
     const total = items.reduce((sum, i) => {
       const a = answers[i.key];
       return sum + (i.reverse ? 6 - a : a);
@@ -137,4 +287,49 @@ export function endDue(args: { startAt: string | null; endDone: boolean; now?: D
 /** The date the end check-in opens, for telling a student when to expect it. */
 export function followUpDate(startAt: string): Date {
   return new Date(new Date(startAt).getTime() + DAYS_TO_FOLLOW_UP * 86_400_000);
+}
+
+// ─── Where a student is with the check-in ─────────────────────────────────────
+// Shared by /check-in and the Me page, so the two always agree on what to
+// offer. The rule both follow: after the start there are no scores, because a
+// number on day one invites a student to answer the second time to beat it;
+// once the end is done, both are shown side by side.
+
+export interface CheckinRow {
+  wave: Wave;
+  item_set: string;
+  scores: Scores;
+  created_at: string;
+}
+
+export type CheckinState =
+  /** The table doesn't exist yet (migration 013 not run) */
+  | { kind: "unavailable" }
+  | { kind: "take"; wave: Wave; start?: Scores; setId: string }
+  | { kind: "waiting"; startAt: string; setId: string }
+  | { kind: "compare"; start: Scores; end: Scores; startAt: string; endAt: string; setId: string };
+
+/** `rows` in any order; null when the read failed. */
+export function checkinState(rows: CheckinRow[] | null, now: Date = new Date()): CheckinState {
+  if (!rows) return { kind: "unavailable" };
+  const list = [...rows].sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const start = list.find((r) => r.wave === "start") ?? null;
+  const end = [...list].reverse().find((r) => r.wave === "end") ?? null;
+  // Everything after a start uses the start's set, so the comparison lines up.
+  const setId = start ? itemSet(start.item_set).id : CURRENT_SET;
+  if (!start) return { kind: "take", wave: "start", setId };
+  if (end) {
+    return {
+      kind: "compare",
+      start: start.scores,
+      end: end.scores,
+      startAt: start.created_at,
+      endAt: end.created_at,
+      setId,
+    };
+  }
+  if (endDue({ startAt: start.created_at, endDone: false, now })) {
+    return { kind: "take", wave: "end", start: start.scores, setId };
+  }
+  return { kind: "waiting", startAt: start.created_at, setId };
 }

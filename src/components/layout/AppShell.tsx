@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import ConfirmEmailBanner from "@/components/common/ConfirmEmailBanner";
 import ReturnBanner from "@/components/ReturnBanner";
 import GetHelpButton from "@/components/help/GetHelpButton";
+import ThemeSync from "@/components/ThemeSync";
 
 const NAV_ITEMS = [
   {
@@ -160,7 +161,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // both track pages and on the landing page, which is where it belongs.
 
   return (
-    <div className="min-h-screen bg-[--surface-muted]">
+    <div className="min-h-screen">
+      <ThemeSync />
       {/* Keyboard users can jump past the app chrome */}
       <a
         href="#main-content"

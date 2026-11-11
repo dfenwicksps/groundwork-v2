@@ -21,3 +21,19 @@ export const SMALL_COUNT = 5;
 export function shownCount(n: number): string {
   return n > 0 && n < SMALL_COUNT ? `fewer than ${SMALL_COUNT}` : String(n);
 }
+
+// ─── Story totals ─────────────────────────────────────────────────────────────
+// How many students open, finish and reflect on each story
+// (supabase/migrations/021_story_counts.sql), so the multimedia review's
+// question, whether the stories earn their place, can be answered with data.
+// Announced the same way as the step counts: a card on Home and the privacy
+// page, then two weeks before anything is read.
+//
+// If this ships later than STORY_COUNTS_ANNOUNCED, move both dates so the
+// notice has been live for two weeks before STORY_COUNTS_START.
+
+/** When story totals were announced in the app and on the privacy page. */
+export const STORY_COUNTS_ANNOUNCED = "2026-11-03";
+
+/** The first day story totals may be read. */
+export const STORY_COUNTS_START = "2026-11-17";

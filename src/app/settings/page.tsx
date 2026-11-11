@@ -1,17 +1,21 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import SettingsClient from "./SettingsClient";
 import { clarifierValues } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
+import { parseTheme } from "@/lib/theme";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const supabase = createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
-  const { data: _raw } = await supabase
+  const { data: _raw, error: profileError } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
@@ -19,6 +23,7 @@ export default async function SettingsPage() {
   const profile = _raw as {
     display_name: string | null;
     ai_reflections_enabled: boolean | null;
+    theme?: string | null;
   } | null;
 
   const { data: onboarding } = await supabase
@@ -47,6 +52,8 @@ export default async function SettingsPage() {
       missionValues={missionValues}
       initialLifeStage={await getLifeStage(supabase, user.id)}
       aiReflectionsEnabled={profile?.ai_reflections_enabled ?? true}
+      initialTheme={parseTheme(profile?.theme)}
+      themeRead={!profileError}
     />
   );
 }

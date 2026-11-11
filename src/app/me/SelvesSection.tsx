@@ -5,7 +5,7 @@ import Link from "next/link";
 import { SELVES, CONFUSED_PAIRS, SELF_BY_KEY } from "@/lib/selves";
 
 /**
- * "The words for it" — the seven selves, and what separates them.
+ * "The words for it": the selves, and what separates them.
  *
  * Deliberately a reference rather than another thing to fill in. The app has
  * plenty of places to write; what it had none of was somewhere to find out that
@@ -13,6 +13,21 @@ import { SELVES, CONFUSED_PAIRS, SELF_BY_KEY } from "@/lib/selves";
  * not evidence about your worth. Each one names what it gets confused with,
  * because the confusion is the part that actually costs students something.
  */
+const COUNT_WORDS: Record<number, string> = { 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten" };
+
+/**
+ * A link to another part of the Me page (such as The Standard, on the Reflect
+ * tab). A client-side navigation to the same page doesn't remount it, so the
+ * Me page's tab-from-hash logic never hears about it; announcing the hash
+ * change lets it switch tabs and scroll there.
+ */
+function followInPage(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+  if (!href.startsWith("/me") || !href.includes("#")) return;
+  e.preventDefault();
+  window.history.pushState(null, "", href);
+  window.dispatchEvent(new HashChangeEvent("hashchange"));
+}
+
 export default function SelvesSection() {
   const [open, setOpen] = useState<string | null>(null);
 
@@ -22,9 +37,9 @@ export default function SelvesSection() {
         The words for it
       </h2>
       <p className="text-xs text-ink-muted mb-3 leading-relaxed">
-        Seven words that get used as if they mean the same thing. They don&apos;t
-        — and the differences are worth having, because most of the time
-        you&apos;re feeling one of them and blaming another.
+        {COUNT_WORDS[SELVES.length] ?? SELVES.length} words that get used as if they mean the same thing.
+        They don&apos;t, and the differences are worth having, because most of
+        the time you&apos;re feeling one of them and blaming another.
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -50,7 +65,7 @@ export default function SelvesSection() {
           const s = SELF_BY_KEY[open];
           if (!s) return null;
           return (
-            <div className="card p-5 mt-3 space-y-3">
+            <div data-fluoro="blue" className="card p-5 mt-3 space-y-3">
               <p className="text-sm font-semibold text-ink">{s.short}</p>
               <p className="text-sm text-ink leading-relaxed">{s.what}</p>
 
@@ -72,6 +87,7 @@ export default function SelvesSection() {
                   other half happens or this is just a glossary. */}
               <Link
                 href={s.builtBy.href}
+                onClick={(e) => followInPage(e, s.builtBy.href)}
                 className="text-xs text-teal hover:underline inline-block"
               >
                 Where this one gets built: {s.builtBy.label} →
@@ -81,7 +97,7 @@ export default function SelvesSection() {
         })()}
 
       {!open && (
-        <div className="card p-4 mt-3 space-y-2.5">
+        <div data-fluoro="green" className="card p-4 mt-3 space-y-2.5">
           <div className="text-xs font-bold text-ink-muted uppercase tracking-widest">
             The three that get mixed up most
           </div>

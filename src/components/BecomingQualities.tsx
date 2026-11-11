@@ -245,7 +245,7 @@ export default function BecomingQualities({
                     aria-expanded={openKey === s.key}
                     aria-label={`What ${s.name} means`}
                     className={cn(
-                      "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
+                      "absolute top-1 right-1 w-6 h-6 rounded-full border",
                       "text-xs font-semibold leading-none flex items-center justify-center transition-colors",
                       sel
                         ? "border-white/50 text-white/90 hover:bg-white/20"

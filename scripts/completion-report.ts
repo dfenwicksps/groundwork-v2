@@ -1,18 +1,22 @@
-// Prints how many students have finished each mission step and program week:
-// totals only, from the views in supabase/migrations/015_completion_counts.sql.
+// Prints how many students have finished each mission step and program week,
+// and how many opened, finished and reflected on each story: totals only, from
+// the views in supabase/migrations/015_completion_counts.sql and
+// 021_story_counts.sql.
 //
 //   npm run report:completion
 //
 // Needs NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, from the
 // environment or .env.local. Counts under five are shown as "fewer than 5",
 // and so is any share worked out from one, so a small group can't be picked
-// out. It won't run before COUNTS_START: students were told in the app first.
+// out. It won't run before COUNTS_START, and leaves the stories out before
+// STORY_COUNTS_START: students were told in the app first, each time.
 
 import { readFileSync, existsSync } from "node:fs";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { MISSIONS, requiredSteps } from "../src/lib/missions";
 import { PROGRAM_WEEKS } from "../src/lib/program";
-import { COUNTS_START, SMALL_COUNT, shownCount } from "../src/lib/completionCounts";
+import { COUNTS_START, SMALL_COUNT, STORY_COUNTS_START, shownCount } from "../src/lib/completionCounts";
+import { storyHasFilm } from "../src/components/stories/films";
 
 function env(name: string): string | undefined {
   if (process.env[name]) return process.env[name];
@@ -89,7 +93,37 @@ async function main() {
     const r = byWeek.get(w.week);
     console.log(`  Week ${w.week} · ${w.title}: ${shownCount(r?.started ?? 0)} / ${shownCount(r?.finished ?? 0)}`);
   }
+  await storySection(db);
   console.log(`\nShares are against the line above. Counts under ${SMALL_COUNT} are hidden.`);
+}
+
+/**
+ * Each story: opened, finished, reflected, with each share against the line
+ * before, so where students drop off stands out. Sorted by how many finish,
+ * which is the first question the multimedia review asks of each story.
+ */
+async function storySection(db: SupabaseClient) {
+  console.log("\nStories (opened / finished / reflected)");
+  if (new Date() < new Date(`${STORY_COUNTS_START}T00:00:00`)) {
+    console.log(`  Not yet: story totals may be read from ${STORY_COUNTS_START}, two weeks after students were told.`);
+    return;
+  }
+  const { data, error } = await db
+    .from("story_engagement_counts")
+    .select("story_id, mission_id, title, opened, finished, reflected");
+  if (error) {
+    console.log(`  Couldn't read them (has migration 021 been run?): ${error.message}`);
+    return;
+  }
+  const rows = (data as { mission_id: number; title: string; opened: number; finished: number; reflected: number }[])
+    .slice()
+    .sort((a, b) => b.finished - a.finished || a.mission_id - b.mission_id);
+  for (const r of rows) {
+    const kind = storyHasFilm(r.title) ? "film" : "text";
+    console.log(
+      `  M${r.mission_id} · ${r.title} (${kind}): ${shownCount(r.opened)} / ${shownCount(r.finished)}${share(r.finished, r.opened)} / ${shownCount(r.reflected)}${share(r.reflected, r.finished)}`
+    );
+  }
 }
 
 main();

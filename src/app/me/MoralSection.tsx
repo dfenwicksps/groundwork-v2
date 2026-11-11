@@ -117,7 +117,7 @@ export default function MoralSection({
             {idx + 1} of {scenarios.length}
           </span>
         </div>
-        <div className="card p-5">
+        <div data-fluoro="pink" className="card p-5">
           <p className="text-sm text-ink leading-relaxed mb-4">{sc.scenario}</p>
           {saveError && (
             <p role="alert" className="text-sm text-red-600 mb-3">{saveError}</p>
@@ -167,7 +167,7 @@ export default function MoralSection({
         <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
           Your moral compass
         </h2>
-        <div className="card p-5 flex items-center gap-4">
+        <div data-fluoro="blue" className="card p-5 flex items-center gap-4">
           <span className="text-3xl flex-shrink-0" aria-hidden>🧭</span>
           <div className="flex-1">
             <p className="text-sm text-ink font-medium mb-0.5">
@@ -197,7 +197,7 @@ export default function MoralSection({
       <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
         Your moral compass
       </h2>
-      <div className="card p-5">
+      <div data-fluoro="green" className="card p-5">
         <div className="flex items-center gap-3 mb-3">
           <span className="text-3xl" aria-hidden>{info.emoji}</span>
           <div>

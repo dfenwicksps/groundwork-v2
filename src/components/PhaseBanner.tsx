@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PHASE_INFO, type Phase } from "@/lib/phase";
+import { ANCHOR_ACTIVITY_IDS, ANCHOR_LINKS, PHASE_INFO, type Phase } from "@/lib/phase";
 
 /**
  * Shows which of the three journey phases the student is in, what it's for, and
@@ -12,13 +12,20 @@ import { PHASE_INFO, type Phase } from "@/lib/phase";
 export default function PhaseBanner({
   phase,
   href,
+  reviewed = [],
 }: {
   phase: Phase;
   /** Where the CTA points; defaults to the Me page. */
   href?: string;
+  /** Anchors already reviewed — Phase 2 shows them as a checklist. */
+  reviewed?: string[];
 }) {
   const info = PHASE_INFO[phase];
-  const target = href ?? "/me";
+  const done = new Set(reviewed);
+  // In Phase 2 the CTA goes to the first anchor still to review.
+  const nextAnchor = ANCHOR_ACTIVITY_IDS.find((id) => !done.has(id));
+  const target =
+    phase === 2 && nextAnchor ? ANCHOR_LINKS[nextAnchor].href : href ?? "/me";
 
   return (
     <div
@@ -44,9 +51,31 @@ export default function PhaseBanner({
           <p className="text-sm leading-relaxed mt-1 opacity-95">{info.blurb}</p>
         </div>
       </div>
+      {phase === 2 && (
+        <div className="mt-3">
+          <p className="text-xs opacity-80 mb-1.5">
+            {done.size} of {ANCHOR_ACTIVITY_IDS.length} reviewed. Review all{" "}
+            {ANCHOR_ACTIVITY_IDS.length} to unlock Phase 3.
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+            {ANCHOR_ACTIVITY_IDS.map((id) => (
+              <li key={id}>
+                <Link
+                  href={ANCHOR_LINKS[id].href}
+                  className="flex items-center gap-2 text-sm rounded-lg px-2.5 py-1.5 bg-black/15 hover:bg-black/25 transition-colors"
+                >
+                  <span aria-hidden>{done.has(id) ? "✓" : "○"}</span>
+                  <span className={done.has(id) ? "opacity-70" : ""}>{ANCHOR_LINKS[id].label}</span>
+                  <span className="sr-only">{done.has(id) ? "(reviewed)" : "(to review)"}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <Link
         href={target}
-        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold bg-white/15 hover:bg-white/25 transition-colors rounded-xl px-3.5 py-2"
+        className="inline-flex items-center gap-1.5 mt-3 text-sm font-semibold bg-black/20 hover:bg-black/30 transition-colors rounded-xl px-3.5 py-2"
       >
         {info.cta}
         <span aria-hidden>→</span>

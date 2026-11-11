@@ -7,7 +7,10 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import DeviceLockSettings from "./DeviceLockSettings";
+import ThemeSettings from "./ThemeSettings";
+import ListenSettings from "./ListenSettings";
 import { clearLock } from "@/lib/deviceLock";
+import { clearThemeCache, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { LIFE_STAGE_OPTIONS, saveLifeStage, type LifeStage } from "@/lib/lifeStage";
 
@@ -19,6 +22,8 @@ export default function SettingsClient({
   missionValues,
   initialLifeStage,
   aiReflectionsEnabled,
+  initialTheme,
+  themeRead,
 }: {
   userId: string;
   email: string;
@@ -28,6 +33,9 @@ export default function SettingsClient({
   missionValues: string[];
   initialLifeStage: LifeStage;
   aiReflectionsEnabled: boolean;
+  initialTheme: Theme | null;
+  /** False if the profile read failed, so initialTheme is unknown, not "none". */
+  themeRead: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -97,6 +105,7 @@ export default function SettingsClient({
 
   async function handleSignOut() {
     await supabase.auth.signOut();
+    clearThemeCache();
     router.push("/");
   }
 
@@ -118,6 +127,7 @@ export default function SettingsClient({
       // drop this device's passcode, which guarded an account that's gone.
       await supabase.auth.signOut();
       clearLock();
+      clearThemeCache();
       router.push("/");
     } catch {
       setDeleteError("Couldn't reach the server. Check your connection and try again.");
@@ -138,14 +148,15 @@ export default function SettingsClient({
         </div>
 
         {/* Profile */}
-        <div data-animate="2" className="card p-6 space-y-4">
+        <div data-animate="2" data-fluoro="pink" className="card p-6 space-y-4">
           <h2 className="font-semibold text-ink">Profile</h2>
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
+            <label htmlFor="settings-name" className="block text-sm font-medium text-ink mb-1.5">
               Display name
             </label>
             <div className="flex gap-2">
               <input
+                id="settings-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -175,11 +186,12 @@ export default function SettingsClient({
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-ink mb-1.5">
+            <label htmlFor="settings-password" className="block text-sm font-medium text-ink mb-1.5">
               Change password
             </label>
             <div className="flex gap-2">
               <input
+                id="settings-password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -201,8 +213,19 @@ export default function SettingsClient({
           </div>
         </div>
 
+        {/* Look — neon, bold, light or dark, saved to the account */}
+        <ThemeSettings
+          db={db}
+          userId={userId}
+          initialTheme={initialTheme}
+          themeRead={themeRead}
+        />
+
+        {/* Read aloud: Listen buttons and their speed, kept on this device */}
+        <ListenSettings />
+
         {/* Your values */}
-        <div data-animate="3" className="card p-6">
+        <div data-animate="3" data-fluoro="green" className="card p-6">
           <h2 className="font-semibold text-ink mb-1">Your values</h2>
           {missionValues.length > 0 ? (
             <p className="text-sm text-ink-muted mb-4">
@@ -242,7 +265,7 @@ export default function SettingsClient({
         </div>
 
         {/* Life stage — tunes what the app emphasises */}
-        <div data-animate="4" className="card p-6">
+        <div data-animate="4" data-fluoro="yellow" className="card p-6">
           <h2 className="font-semibold text-ink mb-1">Where you&apos;re at</h2>
           <p className="text-sm text-ink-muted mb-4">
             We tailor what we show you. Year 12 and anyone who&apos;s left school see pathways
@@ -288,7 +311,7 @@ export default function SettingsClient({
         </div>
 
         {/* Privacy controls */}
-        <div data-animate="4" className="card p-6">
+        <div data-animate="4" data-fluoro="orange" className="card p-6">
           <h2 className="font-semibold text-ink mb-1">Privacy</h2>
           <p className="text-sm text-ink-muted mb-4">
             After a reflection, Groundwork can offer three follow-up questions to
@@ -317,7 +340,7 @@ export default function SettingsClient({
             >
               <span
                 className={cn(
-                  "absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all",
+                  "switch-knob absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all",
                   aiEnabled ? "left-[1.125rem]" : "left-0.5"
                 )}
               />
@@ -345,7 +368,7 @@ export default function SettingsClient({
         </div>
 
         {/* Account actions */}
-        <div data-animate="5" className="card p-6 space-y-3">
+        <div data-animate="5" data-fluoro="pink" className="card p-6 space-y-3">
           <h2 className="font-semibold text-ink">Account</h2>
           <button
             onClick={handleSignOut}
@@ -368,7 +391,7 @@ export default function SettingsClient({
           {!showDeleteConfirm ? (
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="btn border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+              className="btn border border-red-200 text-red-700 hover:bg-red-50 transition-colors"
             >
               Delete account
             </button>

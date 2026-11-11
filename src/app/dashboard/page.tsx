@@ -1,13 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { checkinState, type CheckinRow } from "@/lib/checkin";
+import type { SmallStepRow } from "@/lib/smallSteps";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter, talkDue } from "@/lib/nextChapter";
 import { createServerClient } from "@/lib/supabase-server";
 import { getLifeStage } from "@/lib/lifeStageServer";
-import { resolvePhase } from "@/lib/phaseServer";
+import { activityForStage } from "@/lib/stageContent";
+import { resolvePhaseState } from "@/lib/phaseServer";
 import { spineFor } from "@/lib/spine";
 import { parseDays, currentWeek, isWeekComplete, PROGRAM_WEEKS, weekForStage, type WeekProgress } from "@/lib/program";
 import { MIN_DAYS_BETWEEN_REVISITS, daysBetween } from "@/lib/revisit";
 import { STORY_PARAGRAPH_ACTIVITY_ID } from "@/lib/myStory";
-import { MISSIONS, requiredSteps, isSensitiveActivity, missionFinished, type ProgressRow } from "@/lib/missions";
+import { requiredSteps, isSensitiveActivity, nextMissionStep as nextStepFor, type ProgressRow } from "@/lib/missions";
 import { missionsCompleted, missionComplete } from "@/lib/missionProgress";
 import { MISSION_COUNT } from "@/lib/spine";
 import {
@@ -19,6 +23,8 @@ import { storyHasFilm } from "@/components/stories/films";
 import DashboardClient from "./DashboardClient";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Home" };
 
 export default async function DashboardPage() {
   const supabase = createServerClient();
@@ -63,6 +69,31 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
   const challenge = _challenge as import("@/types/database").Challenge | null;
+
+  // Answers that came back by link and haven't been read yet (lib/askLink.ts).
+  // An error means migration 017 hasn't run: no card, nothing else changes.
+  const { data: _answers } = await (supabase as any)
+    .from("conversation_requests")
+    .select("mission_id, activity_id, for_label, responder_name")
+    .eq("user_id", user.id)
+    .not("answered_at", "is", null)
+    .is("seen_at", null)
+    .order("answered_at", { ascending: false })
+    .limit(10);
+  const unreadAnswers = (_answers || []) as {
+    mission_id: number;
+    activity_id: string;
+    for_label: string;
+    responder_name: string | null;
+  }[];
+  const newAnswers = unreadAnswers.length
+    ? {
+        missionId: unreadAnswers[0].mission_id,
+        activityId: unreadAnswers[0].activity_id,
+        who: unreadAnswers[0].responder_name || unreadAnswers[0].for_label,
+        count: unreadAnswers.length,
+      }
+    : null;
 
   // Fetch support circle
   const { data: supportCircle } = await supabase
@@ -157,11 +188,9 @@ export default async function DashboardPage() {
   // mission. Home's "Up next" offers it while the missions lead.
   // A mission finished before its conversation counted is skipped here; Home
   // offers that conversation separately (conversationToOffer).
-  const completedIds = new Set(progressRows.map((p) => p.activity_id));
-  const nextMission = MISSIONS.find((m) => !missionFinished(m, progressRows));
-  const nextActivity = nextMission
-    ? requiredSteps(nextMission).find((a) => !completedIds.has(a.id))
-    : undefined;
+  const next = nextStepFor(progressRows);
+  const nextMission = next?.mission;
+  const nextActivity = next?.activity;
   const nextMissionStep =
     nextMission && nextActivity
       ? {
@@ -204,8 +233,13 @@ export default async function DashboardPage() {
   // Which track leads is a function of life stage, not of what happens to be
   // furthest along. See src/lib/spine.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
-  // Global journey phase (lib/phase.ts); resolves + persists any newly earned.
-  const phase = await resolvePhase(supabase, user.id);
+  // "Up next" names the step the way this student will see it (lib/stageContent.ts).
+  if (nextMissionStep && nextActivity) {
+    nextMissionStep.activityTitle = activityForStage(nextActivity, lifeStage).title;
+  }
+  // Global journey phase (lib/phase.ts). The banner lives on the Me page, but
+  // resolving here still persists any newly earned phase on the main landing.
+  await resolvePhaseState(supabase, user.id);
 
   // The missions are the foundation and the program is the practice layer that
   // follows, so the program is held back until all four are done — see spine.ts.
@@ -296,22 +330,27 @@ export default async function DashboardPage() {
   const plan = planRow?.response ? parseNextChapter(planRow.response as string) : null;
   const nextChapter = plan ? { who: plan.who, due: talkDue(plan) } : null;
 
-  // The outcome check-in (lib/checkin.ts): offered once near the start and
-  // once the work it measures is done. Null when migration 013 hasn't run, so
+  // The outcome check-in (lib/checkin.ts), in the same state /check-in and
+  // the Me page use: "Also now" offers it when one is due, and the results
+  // show once both are done. Unavailable when migration 013 hasn't run, so
   // Home never offers something that can't be saved.
   const { data: checkinRows, error: checkinError } = await (supabase as any)
     .from("outcome_checkins")
-    .select("wave, created_at")
+    .select("wave, item_set, scores, created_at")
     .eq("user_id", user.id);
-  const checkins = checkinError
-    ? null
-    : ((checkinRows || []) as { wave: string; created_at: string }[]);
-  const checkin = checkins
-    ? {
-        startAt: checkins.find((c) => c.wave === "start")?.created_at ?? null,
-        endDone: checkins.some((c) => c.wave === "end"),
-      }
-    : null;
+  const checkin = checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]));
+
+  // A small step that's due (lib/smallSteps.ts): Home asks how it went. The
+  // oldest first, one at a time. Missing table (migration 020) → none.
+  const { data: dueSteps } = await (supabase as any)
+    .from("small_steps")
+    .select("id, step, when_label, source_label, status, due_at, snoozes, done_at, created_at")
+    .eq("user_id", user.id)
+    .eq("status", "open")
+    .lte("due_at", new Date().toISOString())
+    .order("due_at", { ascending: true })
+    .limit(1);
+  const dueStep = ((dueSteps || []) as SmallStepRow[])[0] ?? null;
 
   return (
     <DashboardClient
@@ -325,11 +364,12 @@ export default async function DashboardPage() {
       featuredStory={featuredStory}
       spine={spine}
       lifeStage={lifeStage}
-      phase={phase}
       missionSummary={summary}
       programWeek={programWeek}
       nextChapter={nextChapter}
       checkin={checkin}
+      dueStep={dueStep}
+      newAnswers={newAnswers}
     />
   );
 }

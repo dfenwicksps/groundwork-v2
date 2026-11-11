@@ -153,7 +153,7 @@ export function ValueBehaviours({
                     }
                     aria-expanded={openValue === p.value}
                     aria-label={`What ${p.value} means`}
-                    className="w-[18px] h-[18px] rounded-full border border-[rgba(0,0,0,0.22)] text-xs font-semibold leading-none text-ink-muted hover:border-navy hover:text-navy flex items-center justify-center flex-shrink-0"
+                    className="w-6 h-6 rounded-full border border-[rgba(0,0,0,0.22)] text-xs font-semibold leading-none text-ink-muted hover:border-navy hover:text-navy flex items-center justify-center flex-shrink-0"
                   >
                     i
                   </button>

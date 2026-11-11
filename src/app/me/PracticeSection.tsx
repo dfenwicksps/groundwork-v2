@@ -137,7 +137,7 @@ export default function PracticeSection({
 
       {/* Active practice — check-in */}
       {active ? (
-        <div className="card p-5">
+        <div data-fluoro="orange" className="card p-5">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl" aria-hidden>
               {STRENGTH_BY_KEY[active.strength_key]?.emoji}
@@ -187,7 +187,7 @@ export default function PracticeSection({
           </button>
         </div>
       ) : choosing ? (
-        <div className="card p-5">
+        <div data-fluoro="violet" className="card p-5">
           <p className="text-sm font-medium text-ink mb-3">
             Pick the strength you want to practise this week — your call:
           </p>
@@ -252,7 +252,7 @@ export default function PracticeSection({
           </div>
         </div>
       ) : (
-        <div className="card p-5 flex items-center gap-4">
+        <div data-fluoro="pink" className="card p-5 flex items-center gap-4">
           <span className="text-3xl flex-shrink-0" aria-hidden>🌱</span>
           <div className="flex-1">
             <p className="text-sm text-ink font-medium mb-0.5">

@@ -1,13 +1,18 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import Link from "next/link";
 import { MISSIONS } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import StoryReflections from "@/components/stories/StoryReflections";
+import ListenButton from "@/components/ListenButton";
+import StoryOpened from "@/components/stories/StoryOpened";
 import StoryFilm from "@/components/stories/StoryFilm";
 import { storyHasFilm } from "@/components/stories/films";
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = { title: "Story" };
 
 export default async function StoryPage({
   params,
@@ -51,10 +56,11 @@ export default async function StoryPage({
   return (
     <AppShell>
       <div className="page-read">
+        <StoryOpened storyId={story.id} />
         {/* Back */}
         <Link
           href="/stories"
-          className="inline-flex items-center gap-1 text-ink-muted hover:text-ink text-sm mb-6 transition-colors"
+          className="flex w-fit items-center gap-1 text-ink-muted hover:text-ink text-sm mb-6 transition-colors"
         >
           <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path
@@ -71,7 +77,7 @@ export default async function StoryPage({
         {/* Mission tag */}
         <div
           className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full text-white mb-4"
-          style={{ background: mission?.colour || "#4F46E5" }}
+          style={{ background: mission?.colour || "var(--mission-1)" }}
         >
           {mission?.subtitle} — {mission?.title}
         </div>
@@ -92,7 +98,7 @@ export default async function StoryPage({
         {complete && (
           <div className="flex items-center gap-2 text-xs font-medium text-sage mb-6 -mt-3">
             <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
+              className="w-5 h-5 rounded-full flex items-center justify-center text-on-accent text-xs font-bold"
               style={{ background: "var(--sage)" }}
               aria-hidden="true"
             >
@@ -110,30 +116,36 @@ export default async function StoryPage({
           <>
             {/* Context */}
             <div data-animate="2">
-              <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-                The situation
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                  The situation
+                </div>
+                <ListenButton targetId="story-situation" label="Listen to the situation" />
               </div>
               <div className="card p-6 mb-6">
-                <p className="text-ink leading-relaxed">{story.context}</p>
+                <p id="story-situation" className="text-ink leading-relaxed">{story.context}</p>
               </div>
             </div>
 
             {/* Turning point */}
             <div data-animate="3">
-              <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
-                The turning point
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                  The turning point
+                </div>
+                <ListenButton targetId="story-turning" label="Listen to the turning point" />
               </div>
               <div
                 className="rounded-xl p-6 mb-6 border-l-4"
                 style={{
-                  borderLeftColor: mission?.colour || "#4F46E5",
+                  borderLeftColor: mission?.colour || "var(--mission-1)",
                   background: "var(--surface)",
                   borderTop: "1px solid var(--border)",
                   borderRight: "1px solid var(--border)",
                   borderBottom: "1px solid var(--border)",
                 }}
               >
-                <p className="text-ink leading-relaxed">{story.turning_point}</p>
+                <p id="story-turning" className="text-ink leading-relaxed">{story.turning_point}</p>
               </div>
             </div>
           </>

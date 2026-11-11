@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getActivity, getMission } from "@/lib/missions";
@@ -5,10 +6,17 @@ import { topStrengths, bottomStrengths, strengthName } from "@/lib/strengths";
 import { answersOnly, answerAt, LEFT_OUT_ANSWER } from "@/lib/journal";
 import { getLifeStage } from "@/lib/lifeStageServer";
 import { resolvePhase } from "@/lib/phaseServer";
-import { activityForStage } from "@/lib/stageContent";
+import { activityForStage, hiddenForStage } from "@/lib/stageContent";
+import { loadMissionCard } from "@/lib/missionCardsServer";
+import type { IdentityCard } from "@/lib/identityCard";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }: { params: { id: string; activityId: string } }): Metadata {
+  const a = getActivity(parseInt(params.id), params.activityId);
+  return { title: a ? a.title : `Mission ${params.id}` };
+}
 
 export default async function ActivityPage({
   params,
@@ -28,6 +36,8 @@ export default async function ActivityPage({
 
   // A few steps are worded for school or a fixed age; see lib/stageContent.ts.
   const lifeStage = await getLifeStage(supabase, user.id);
+  // A step hidden at this stage isn't reachable by URL either.
+  if (hiddenForStage(baseActivity.id, lifeStage)) redirect(`/missions/${missionId}`);
   const activity = activityForStage(baseActivity, lifeStage);
 
   // The global journey phase sets the default writing depth (lib/phase.ts) and
@@ -168,9 +178,15 @@ export default async function ActivityPage({
     const { missionId, activityId, answer } = activity.recall;
     const response = (recallRow as { response: string } | null)?.response;
     // One answer when the step names it; otherwise every answer in the entry.
+    // Read against the questions as this student saw them (a stage can reword
+    // them); older entries still parse by question number.
+    const recalledBase = getActivity(missionId, activityId);
+    const recalledQuestions = recalledBase
+      ? activityForStage(recalledBase, lifeStage).scaffoldingSteps
+      : undefined;
     const raw =
       answer !== undefined
-        ? answerAt(missionId, activityId, response, answer)
+        ? answerAt(missionId, activityId, response, answer, recalledQuestions)
         : answersOnly(missionId, activityId, response);
     const text = raw === LEFT_OUT_ANSWER ? "" : raw;
     if (text) recalled = { label: activity.recall.label, text };
@@ -196,7 +212,22 @@ export default async function ActivityPage({
     }
   }
 
+  // The Through-Line reads the first three missions' cards rather than asking
+  // the student to recall three missions from memory.
+  let priorCards: { colour: string; card: IdentityCard }[] | null = null;
+  if (activity.id === "the-through-line") {
+    const loaded = await Promise.all(
+      [1, 2, 3].map(async (id) => {
+        const card = await loadMissionCard(supabase, user.id, id, lifeStage);
+        return card ? { colour: getMission(id)!.colour, card } : null;
+      })
+    );
+    priorCards = loaded.filter((c): c is { colour: string; card: IdentityCard } => !!c);
+  }
+
   return (
+    // Steps have no AppShell, so the page gives them their main landmark.
+    <main id="main-content">
     <ActivityClient
       mission={mission}
       activity={activity}
@@ -208,9 +239,11 @@ export default async function ActivityPage({
       compass={compass}
       strengthProfile={strengthProfile}
       recalled={recalled}
+      priorCards={priorCards}
       lifeStage={lifeStage}
       phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}
     />
+    </main>
   );
 }

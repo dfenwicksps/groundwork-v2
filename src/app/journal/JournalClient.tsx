@@ -1,5 +1,6 @@
 "use client";
 
+import type { LifeStage } from "@/lib/lifeStage";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -21,7 +22,18 @@ import {
   type RevisitEntry,
 } from "@/lib/revisit";
 
-export default function JournalClient({ entries }: { entries: JournalEntry[] }) {
+/** Bold look: entries outside the four missions get their own fluoro colour
+ *  (missions use theirs, via data-mission). */
+const GROUP_FLUORO = { weeks: "orange", me: "violet" } as const;
+
+export default function JournalClient({
+  entries,
+  lifeStage,
+}: {
+  entries: JournalEntry[];
+  /** Labels steps the way this student saw them (lib/stageContent.ts) */
+  lifeStage?: LifeStage;
+}) {
   const [filter, setFilter] = useState<EntryGroup | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -58,10 +70,10 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
         // A sensitive entry is found by its name, never by what's written in
         // it, so a search can't surface those words on screen.
         isSensitiveActivity(e.activity_id)
-          ? getActivityLabel(e.activity_id).toLowerCase().includes(q)
+          ? getActivityLabel(e.activity_id, lifeStage).toLowerCase().includes(q)
           : e.response.toLowerCase().includes(q) ||
             e.prompt.toLowerCase().includes(q) ||
-            getActivityLabel(e.activity_id).toLowerCase().includes(q)
+            getActivityLabel(e.activity_id, lifeStage).toLowerCase().includes(q)
       )
     : byMission;
 
@@ -251,7 +263,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                 style={filter === m.id ? { background: m.colour } : {}}
               >
                 {m.title}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -270,7 +282,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                 )}
               >
                 {ENTRY_GROUP_LABELS[g]}
-                <span className="text-xs opacity-70">{count}</span>
+                <span className="text-xs">{count}</span>
               </button>
             );
           })}
@@ -295,12 +307,15 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                 typeof group === "number" ? MISSIONS.find((m) => m.id === group) : undefined;
               const isOpen = expanded === entry.id;
               const label =
-                getActivityLabel(entry.activity_id);
+                getActivityLabel(entry.activity_id, lifeStage);
               const sensitive = isSensitiveActivity(entry.activity_id);
 
               return (
                 <div
                   key={entry.id}
+                  {...(typeof group === "number"
+                    ? { "data-mission": group }
+                    : { "data-fluoro": GROUP_FLUORO[group] })}
                   className={cn("card overflow-hidden", isOpen && "lg:ring-2 lg:ring-teal")}
                 >
                   <button
@@ -314,8 +329,8 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
                         <div
-                          className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                          style={{ background: mission?.colour || "#4F46E5" }}
+                          className="entry-dot w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                          style={{ background: mission?.colour || "var(--mission-1)" }}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -391,7 +406,7 @@ export default function JournalClient({ entries }: { entries: JournalEntry[] }) 
                   className="text-2xl text-navy mb-1"
                   style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
                 >
-                  {getActivityLabel(selected.activity_id)}
+                  {getActivityLabel(selected.activity_id, lifeStage)}
                 </h2>
                 <p className="text-xs text-ink-muted">
                   {formatDate(selected.created_at)} ·{" "}

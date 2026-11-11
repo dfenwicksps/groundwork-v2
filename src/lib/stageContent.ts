@@ -18,13 +18,48 @@
 // stage a student was at when they wrote them. (Which questions can be left
 // out may change; that doesn't affect how an entry reads.)
 
-import type { Activity } from "./missions";
-import { futureSelfAge, hasLeftSchool, type LifeStage } from "./lifeStage";
+import type { Activity, Mission } from "./missions";
+import { futureSelfAge, type LifeStage } from "./lifeStage";
+import {
+  JUNIOR_M1,
+  SENIOR_M1,
+  LEFT_SCHOOL_M1,
+  LEAVER_M1,
+  ADULT_M1,
+  MISSION_DESCRIPTIONS,
+} from "./stageContentMission1";
+import {
+  JUNIOR_M2,
+  SENIOR_M2,
+  LEFT_SCHOOL_M2,
+  LEAVER_M2,
+  ADULT_M2,
+  MISSION2_DESCRIPTIONS,
+} from "./stageContentMission2";
+import {
+  JUNIOR_M3,
+  SENIOR_M3,
+  LEFT_SCHOOL_M3,
+  LEAVER_M3,
+  ADULT_M3,
+  MISSION3_DESCRIPTIONS,
+} from "./stageContentMission3";
+import { JUNIOR_M4, SENIOR_M4, LEFT_SCHOOL_M4, MISSION4_DESCRIPTIONS } from "./stageContentMission4";
 
-/** Lines replaced for students who have left school, by activity id. */
-interface StageLines {
+/** Lines replaced for one life stage, by activity id. */
+export interface StageLines {
+  /** A step whose purpose changes at a stage (Year 7–9's "What I Want to Explore") */
+  title?: string;
+  whyItMatters?: string;
+  /** Replaces the activity's list, so each stage names the versions it has moved on from */
+  retiredQuestions?: string[];
   prompt?: string;
   warmUp?: string;
+  intro?: string;
+  wrapUp?: string;
+  alternative?: string;
+  /** Replacements by index, like steps */
+  interviewQuestions?: Record<number, string>;
   /** Replacements by index for the questions themselves */
   steps?: Record<number, string>;
   skippableSteps?: number[];
@@ -108,8 +143,15 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
   if (!lines) return activity;
   return {
     ...activity,
+    title: lines.title ?? activity.title,
+    whyItMatters: lines.whyItMatters ?? activity.whyItMatters,
+    retiredQuestions: lines.retiredQuestions ?? activity.retiredQuestions,
     prompt: lines.prompt ?? activity.prompt,
     warmUp: lines.warmUp ?? activity.warmUp,
+    intro: lines.intro ?? activity.intro,
+    wrapUp: lines.wrapUp ?? activity.wrapUp,
+    alternative: lines.alternative ?? activity.alternative,
+    interviewQuestions: activity.interviewQuestions?.map((q, i) => lines.interviewQuestions?.[i] ?? q),
     scaffoldingSteps: activity.scaffoldingSteps?.map((s, i) => lines.steps?.[i] ?? s),
     skippableSteps: lines.skippableSteps
       ? Array.from(new Set([...(activity.skippableSteps ?? []), ...lines.skippableSteps]))
@@ -121,11 +163,20 @@ function withLines(activity: Activity, lines: StageLines | undefined): Activity 
 
 /** The activity as this student should see it. */
 export function activityForStage(activity: Activity, stage: LifeStage): Activity {
-  let a = hasLeftSchool(stage)
-    ? withLines(activity, LEFT_SCHOOL[activity.id])
-    : stage === "junior"
-      ? withLines(activity, JUNIOR[activity.id])
-      : activity;
+  const id = activity.id;
+  // Applied in order, later layers winning: what anyone past school needs, then
+  // the stage's own lines. Middle (Year 10–11) reads missions.ts as written.
+  const layers: (StageLines | undefined)[] =
+    stage === "leaver"
+      ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], LEFT_SCHOOL_M4[id], LEAVER_M1[id], LEAVER_M2[id], LEAVER_M3[id]]
+      : stage === "adult"
+        ? [LEFT_SCHOOL[id], LEFT_SCHOOL_M1[id], LEFT_SCHOOL_M2[id], LEFT_SCHOOL_M3[id], LEFT_SCHOOL_M4[id], ADULT_M1[id], ADULT_M2[id], ADULT_M3[id]]
+        : stage === "junior"
+          ? [JUNIOR[id], JUNIOR_M1[id], JUNIOR_M2[id], JUNIOR_M3[id], JUNIOR_M4[id]]
+          : stage === "senior"
+            ? [SENIOR_M1[id], SENIOR_M2[id], SENIOR_M3[id], SENIOR_M4[id]]
+            : [];
+  let a = layers.reduce<Activity>((acc, lines) => withLines(acc, lines), activity);
 
   const age = futureSelfAge(stage);
   if (a.id === "future-self") {
@@ -136,8 +187,8 @@ export function activityForStage(activity: Activity, stage: LifeStage): Activity
       scaffoldingSteps: a.scaffoldingSteps?.map((s) => atAge(s, age)!),
       whyItMatters: atAge(a.whyItMatters, age),
     };
-  } else if (a.id === "where-ive-come-from") {
-    // Its wrap-up hands over to the Future Self by name.
+  } else if (a.id === "digital-self") {
+    // The step before the Future Self; its wrap-up hands over by name, age included.
     a = { ...a, wrapUp: atAge(a.wrapUp, age) };
   }
   return a;
@@ -152,4 +203,39 @@ export function futureSelfLine(text: string, stage: LifeStage): string {
     .replace(/between 15 and 21/, `between now and ${age}`)
     .replace(/for six years/, "for a few years")
     .replace(/\b21\b/g, String(age));
+}
+
+/**
+ * Steps a stage doesn't see at all. Parts of Who You Are asks about beliefs,
+ * gender and sexuality; for Year 7–9 (12 to 15) that's a conversation for
+ * families and school wellbeing staff, not a self-guided app, so the step is
+ * hidden rather than reworded. It's optional and never counts towards a
+ * mission, so hiding it changes nothing about progress. Anything a student
+ * already wrote there stays theirs, in the Journal.
+ */
+const HIDDEN_BY_STAGE: Partial<Record<LifeStage, string[]>> = {
+  junior: ["parts-of-you"],
+};
+
+export function hiddenForStage(activityId: string, stage: LifeStage): boolean {
+  return !!HIDDEN_BY_STAGE[stage]?.includes(activityId);
+}
+
+/** The mission as this student should see it: its description, and every step. */
+export function missionForStage(mission: Mission, stage: LifeStage): Mission {
+  return {
+    ...mission,
+    description:
+      (mission.id === 2
+        ? MISSION2_DESCRIPTIONS[stage]
+        : mission.id === 3
+          ? MISSION3_DESCRIPTIONS[stage]
+          : mission.id === 4
+            ? MISSION4_DESCRIPTIONS[stage]
+            : MISSION_DESCRIPTIONS[stage]?.[mission.id]) ??
+      mission.description,
+    activities: mission.activities
+      .filter((a) => !hiddenForStage(a.id, stage))
+      .map((a) => activityForStage(a, stage)),
+  };
 }

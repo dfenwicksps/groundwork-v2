@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { fluoroAt } from "@/lib/fluoro";
 import Link from "next/link";
 import { storySentence, type LifeStory } from "@/lib/program";
 import type { NextChapter } from "@/lib/nextChapter";
@@ -18,6 +19,10 @@ import SelvesSection from "./SelvesSection";
 import HabitsSection from "./HabitsSection";
 import BecomingQualities from "@/components/BecomingQualities";
 import StandardSection from "./StandardSection";
+import CheckinSection from "./CheckinSection";
+import StepsTakenSection from "./StepsTakenSection";
+import type { SmallStepRow } from "@/lib/smallSteps";
+import type { CheckinState } from "@/lib/checkin";
 import JourneyStrip from "./JourneyStrip";
 import PhaseBanner from "@/components/PhaseBanner";
 import type { Phase } from "@/lib/phase";
@@ -77,9 +82,13 @@ export default function MeClient({
   characterStory,
   nextChapter,
   supportCount,
+  checkin,
+  stepsTaken,
   featuresReady,
   lifeStage,
   phase,
+  reviewedAnchors,
+  nextActivityHref,
 }: {
   userId: string;
   displayName: string;
@@ -110,10 +119,18 @@ export default function MeClient({
   /** The next-chapter plan, if one has been made (see /next) */
   nextChapter: NextChapter | null;
   supportCount: number;
+  /** Where the student is with the check-in (lib/checkin.ts) */
+  checkin: CheckinState;
+  /** Small steps done (lib/smallSteps.ts); null before migration 020 */
+  stepsTaken: { steps: SmallStepRow[]; total: number } | null;
   featuresReady: boolean;
   lifeStage: LifeStage;
   /** The global journey phase (lib/phase.ts), shown as a progress banner. */
   phase: Phase;
+  /** Anchors reviewed so far, for the Phase 2 checklist. */
+  reviewedAnchors: string[];
+  /** Phase 1: the next mission step's page, or null when there isn't one. */
+  nextActivityHref: string | null;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -149,8 +166,8 @@ export default function MeClient({
       profile: "profile", reflect: "reflect", grow: "grow", future: "future",
     };
     const HASH_TAB: Record<string, MeTab> = {
-      habits: "reflect", moral: "reflect", standard: "reflect",
-      focus: "grow", practice: "grow", boosts: "grow", selves: "grow",
+      habits: "reflect", moral: "reflect", standard: "reflect", checkin: "reflect",
+      focus: "grow", practice: "grow", boosts: "grow", selves: "grow", steps: "grow",
       pathways: "future", goals: "future", "future-self": "future",
     };
     const apply = () => {
@@ -173,6 +190,22 @@ export default function MeClient({
     return () => window.removeEventListener("hashchange", apply);
   }, []);
 
+  // Arrow keys, Home and End move between the tabs (the ARIA tabs pattern):
+  // only the chosen tab is in the Tab order, so the bar is one stop.
+  function onTabKey(e: React.KeyboardEvent<HTMLDivElement>) {
+    const i = TABS.findIndex((t) => t.key === tab);
+    const next =
+      e.key === "ArrowRight" ? (i + 1) % TABS.length
+      : e.key === "ArrowLeft" ? (i - 1 + TABS.length) % TABS.length
+      : e.key === "Home" ? 0
+      : e.key === "End" ? TABS.length - 1
+      : -1;
+    if (next < 0) return;
+    e.preventDefault();
+    setTab(TABS[next].key);
+    document.getElementById(`me-tab-${TABS[next].key}`)?.focus();
+  }
+
   const TABS: { key: MeTab; label: string; emoji: string }[] = [
     { key: "profile", label: "Profile", emoji: "🧭" },
     { key: "reflect", label: "Reflect", emoji: "🪞" },
@@ -181,7 +214,7 @@ export default function MeClient({
   ];
 
   const soonNote = (
-    <div className="card p-5 flex items-center gap-4">
+    <div data-fluoro="blue" className="card p-5 flex items-center gap-4">
       <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
       <div>
         <p className="text-sm text-ink font-medium mb-0.5">More tools land here soon</p>
@@ -206,13 +239,18 @@ export default function MeClient({
           </h1>
         </div>
 
-        {/* Phase banner — how deep the whole journey currently goes. The CTA
-            points to the first identity anchor, which is where a first pass,
-            a review and a deepen all begin. */}
+        {/* Phase banner — how deep the whole journey currently goes. In
+            Phase 1 the CTA goes to the next mission step; later it points to
+            the first identity anchor, where a review and a deepen begin. */}
         {hasProfile && (
           <PhaseBanner
             phase={phase}
-            href={phase === 1 ? "/missions" : "/missions/1/activities/strengths-mapping"}
+            reviewed={reviewedAnchors}
+            href={
+              phase === 1
+                ? nextActivityHref ?? "/missions"
+                : "/missions/1/activities/strengths-mapping"
+            }
           />
         )}
 
@@ -220,14 +258,17 @@ export default function MeClient({
         {hasProfile && (
           <div
             className="sticky top-0 z-20 -mx-4 px-4 py-2"
-            style={{ background: "rgba(250,245,236,0.95)", backdropFilter: "blur(6px)" }}
+            style={{ background: "rgb(var(--c-surface-muted) / 0.95)", backdropFilter: "blur(6px)" }}
           >
-            <div className="flex gap-1.5 lg:max-w-xl" role="tablist">
+            <div className="flex gap-1.5 lg:max-w-xl" role="tablist" aria-label="Your profile" onKeyDown={onTabKey}>
               {TABS.map((t) => (
                 <button
                   key={t.key}
+                  id={`me-tab-${t.key}`}
                   role="tab"
                   aria-selected={tab === t.key}
+                  aria-controls="me-tabpanel"
+                  tabIndex={tab === t.key ? 0 : -1}
                   onClick={() => setTab(t.key)}
                   className={cn(
                     "flex-1 flex flex-col lg:flex-row lg:justify-center items-center gap-0.5 lg:gap-2 py-2 lg:py-2.5 rounded-xl text-xs lg:text-sm font-semibold transition-all",
@@ -247,6 +288,11 @@ export default function MeClient({
         {/* The profile tab. One column on a phone, in the order the order-*
             classes give; on desktop the strengths keep the left column and
             everything made out of them sits beside it. */}
+        {/* The tabs' content. One panel whose contents follow the chosen tab. */}
+        <div
+          className="space-y-8"
+          {...(hasProfile ? { id: "me-tabpanel", role: "tabpanel", "aria-labelledby": `me-tab-${tab}` } : {})}
+        >
         {(tab === "profile" || !hasProfile) && (
           <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
           <div className="split-col">
@@ -254,6 +300,7 @@ export default function MeClient({
         {hasProfile && tab === "profile" && (
           <div
             data-animate="1"
+            data-fluoro="pink"
             className="rounded-2xl p-4 lg:p-6 text-white order-1"
             style={{ background: "var(--navy)" }}
           >
@@ -273,7 +320,7 @@ export default function MeClient({
         )}
 
         {!hasProfile ? (
-          <div className="card p-8 text-center order-5" data-animate="2">
+          <div data-fluoro="green" className="card p-8 text-center order-5" data-animate="2">
             <div className="text-4xl mb-3" aria-hidden>🧭</div>
             <h2
               className="text-xl text-navy mb-2"
@@ -311,11 +358,12 @@ export default function MeClient({
                   return (
                     <div
                       key={k}
+                      data-fluoro={fluoroAt(i)}
                       className="card p-4 flex items-center gap-3"
                       style={{ borderLeft: `4px solid ${c}` }}
                     >
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
+                        className="mission-badge w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-white"
                         style={{ background: c }}
                       >
                         {i + 1}
@@ -386,7 +434,7 @@ export default function MeClient({
                 All 24, ranked highest → lowest
               </button>
               {showAll && (
-                <div className="card p-4 space-y-2.5">
+                <div data-fluoro="yellow" className="card p-4 space-y-2.5">
                   {ranking!.map((k, i) => {
                     const s = STRENGTH_BY_KEY[k];
                     if (!s) return null;
@@ -441,7 +489,7 @@ export default function MeClient({
           <div className="split-col">
         {/* My story — past, present and future in one place (/story) */}
         {hasProfile && tab === "profile" && (
-          <Link href="/story" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all order-2" data-animate="2">
+          <Link href="/story" data-fluoro="orange" className="card p-5 flex items-center gap-4 hover:border-navy/30 transition-all order-2" data-animate="2">
             <span className="w-10 h-10 rounded-xl bg-navy text-white flex items-center justify-center flex-shrink-0" aria-hidden>
               ✎
             </span>
@@ -462,7 +510,7 @@ export default function MeClient({
             <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
               My Character Code
             </h2>
-            <div className="card p-5">
+            <div data-fluoro="violet" className="card p-5">
               {characterStory && (
                 <p
                   className="text-ink leading-relaxed mb-4 pb-4 border-b border-border"
@@ -545,6 +593,7 @@ export default function MeClient({
             ) : (
               soonNote
             )}
+            <CheckinSection state={checkin} />
             <p className="text-xs text-ink-muted leading-relaxed pt-2 border-t border-surface-border">
               These are the slow ones. The quick weekly version lives in{" "}
               <Link href="/program#weekly" className="text-teal hover:underline">
@@ -584,6 +633,7 @@ export default function MeClient({
                 recent={recentPractices}
               />
             )}
+            {stepsTaken && <StepsTakenSection steps={stepsTaken.steps} total={stepsTaken.total} />}
             {/* Understand the words, then build the qualities. */}
             <SelvesSection />
             <BoostsSection />
@@ -620,6 +670,8 @@ export default function MeClient({
           </div>
         )}
 
+
+        </div>
 
         {/* Settings link */}
         <div data-animate="6" className="pt-2 border-t border-surface-border">

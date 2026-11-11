@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
+import { getLifeStage } from "@/lib/lifeStageServer";
 import RevisitClient from "./RevisitClient";
 import { buildChain, type RevisitEntry } from "@/lib/revisit";
 
@@ -7,6 +9,8 @@ export const dynamic = "force-dynamic";
 
 const COLS =
   "id, mission_id, activity_id, prompt, response, created_at, is_milestone, revisit_of";
+
+export const metadata: Metadata = { title: "Look back" };
 
 export default async function RevisitPage({
   params,
@@ -44,6 +48,7 @@ export default async function RevisitPage({
       <RevisitClient
         chain={{ original: fallback as RevisitEntry, revisits: [] }}
         userId={user.id}
+        lifeStage={await getLifeStage(supabase, user.id)}
         ready={false}
       />
     );
@@ -77,6 +82,7 @@ export default async function RevisitPage({
     <RevisitClient
       chain={buildChain(root, (revisitsRaw || []) as RevisitEntry[])}
       userId={user.id}
+      lifeStage={await getLifeStage(supabase, user.id)}
       ready
     />
   );

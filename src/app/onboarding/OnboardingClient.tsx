@@ -17,6 +17,12 @@ import { markStoryActioned } from "@/lib/storyEngagement";
 import { mentionsCrisis } from "@/lib/help";
 import { CompassIcon, WavesIcon, TargetIcon, SparkIcon } from "@/components/icons";
 import CheckinForm from "@/components/CheckinForm";
+import { CURRENT_SET, countWord, itemSet } from "@/lib/checkin";
+import { useScrollToTop } from "@/lib/useScrollToTop";
+import ListenButton from "@/components/ListenButton";
+import { speechSupported } from "@/lib/speech";
+
+const CHECKIN_COUNT = countWord(itemSet(CURRENT_SET).items.length);
 
 const WHY_OPTIONS = [
   {
@@ -63,7 +69,7 @@ function gapOptions(stage: LifeStage | null): string[] {
  * Up to three screens. The first asks the three things the app tailors itself
  * by and creates the profile. The second is a real piece of Groundwork: a
  * one-minute story and one question about it, so a new student reaches the
- * actual thing within a minute or two. The last is the nine-question check-in,
+ * actual thing within a minute or two. The last is the check-in,
  * taken here so it's a real baseline: before any mission (see lib/checkin.ts).
  * It can be skipped, and is then offered from Home.
  *
@@ -183,6 +189,11 @@ export default function OnboardingClient({
   }
 
   const current = steps[step - 1];
+  // Only mention narration where the device can read aloud (lib/speech.ts).
+  const [canSpeak, setCanSpeak] = useState(false);
+  useEffect(() => setCanSpeak(speechSupported()), []);
+  // Each screen opens at its top, not where the last one was scrolled to.
+  useScrollToTop(step);
   const isLast = step === TOTAL_STEPS;
 
   async function saveAnswer() {
@@ -261,9 +272,14 @@ export default function OnboardingClient({
             >
               Let&apos;s start with you.
             </h1>
+            <ListenButton
+              text="Let's start with you. Three quick questions: where you're at right now, what to call you, and what brings you here. Tap an answer for each, then Next."
+              label="Listen to this screen"
+              className="mb-3"
+            />
             <p className="text-ink-muted text-sm mb-6">
               {checkinReady
-                ? "Three quick questions, a one-minute story, then nine quick taps. That's it."
+                ? `Three quick questions, a one-minute story, then ${CHECKIN_COUNT} quick taps. That's it.`
                 : "Three quick questions, then a one-minute story. That's it."}
             </p>
 
@@ -359,7 +375,7 @@ export default function OnboardingClient({
                         </div>
                       </div>
                       {whyHere === opt.value && (
-                        <div className="ml-auto w-4 h-4 rounded-full bg-teal flex items-center justify-center flex-shrink-0">
+                        <div className="ml-auto w-4 h-4 rounded-full bg-teal text-on-accent flex items-center justify-center flex-shrink-0">
                           <svg aria-hidden="true"
                             width="8"
                             height="8"
@@ -368,7 +384,7 @@ export default function OnboardingClient({
                           >
                             <path
                               d="M1.5 4L3 5.5L6.5 2"
-                              stroke="white"
+                              stroke="currentColor"
                               strokeWidth="1.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -413,12 +429,14 @@ export default function OnboardingClient({
             Where you&apos;re starting from.
           </h1>
           <p className="text-ink-muted text-sm mb-5 leading-relaxed">
-            Nine quick taps about how you see yourself today. No right answers. In ten
-            weeks you&apos;ll answer the same nine again and see what&apos;s moved.
+            {CHECKIN_COUNT[0].toUpperCase() + CHECKIN_COUNT.slice(1)} quick taps about how you see yourself today. No right answers. In ten
+            weeks you&apos;ll answer the same {CHECKIN_COUNT} again and see what&apos;s moved.
           </p>
           <CheckinForm
             wave="start"
             context="onboarding"
+            itemSetId={CURRENT_SET}
+            lifeStage={lifeStage ?? "middle"}
             submitLabel={isLast ? "Save and go to my dashboard" : "Save and keep going"}
             onSaved={() => next()}
           />
@@ -440,10 +458,15 @@ export default function OnboardingClient({
           >
             One minute, one story.
           </h1>
-          <p className="text-ink-muted text-sm mb-5">
+          <p className="text-ink-muted text-sm mb-3">
             Priya&apos;s story sets up your first mission. Watch it, then answer one
             quick question.
           </p>
+          {canSpeak && (
+            <p className="text-xs text-ink-muted mb-5">
+              Tip: tap <span className="font-semibold">Narrate</span> under the film to hear each scene read aloud.
+            </p>
+          )}
 
           <VersionOfMeFilm storyId={storyId} />
 

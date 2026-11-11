@@ -1,4 +1,6 @@
 import { WEEK_BY_NUMBER, CHARACTER_CODE_ACTIVITY_ID, type Strand } from "./program";
+import type { LifeStage } from "./lifeStage";
+import { activityForStage } from "./stageContent";
 
 export interface Activity {
   id: string;
@@ -110,6 +112,13 @@ export interface Activity {
     answer?: number;
   };
   /**
+   * The first question of earlier versions of this step whose questions were
+   * replaced, not just reworded (lib/journal.ts isRetiredEntry). An entry
+   * written under one of them is kept as written, but reopening the step
+   * starts fresh and saves a new entry, and cards don't read the old one.
+   */
+  retiredQuestions?: string[];
+  /**
    * Never sent to the AI for follow-up questions. For the most sensitive
    * writing in the app (beliefs, gender, sexuality, culture and heritage),
    * which stays in the student's own account; culture also because a model's
@@ -125,6 +134,8 @@ export interface Mission {
   subtitle: string;
   question: string;
   description: string;
+  /** A CSS colour (a variable, so each look can recolour it): use it in
+   *  styles only. For a see-through version use tint() from lib/utils. */
   colour: string;
   /** Lighter companion shade for decorative gradients/tints */
   colourLight: string;
@@ -341,9 +352,9 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Looking inward without pressure to have it figured out yet.",
     description:
-      "Identity has three layers worth knowing: your inner compass (the self you feel from the inside), your public self (the version you show others), and your social self (the groups that shape who you are). This mission starts with the story so far, then explores all three — mapping your strengths, naming what you value, and examining the gap between who you feel you are and who you present yourself to be. There are no right answers. The goal is honest self-knowledge, not a finished picture.",
-    colour: "#4F46E5",
-    colourLight: "#6366F1",
+      "By the end of this mission you'll have your top 5 strengths, your 5 core values, and a private letter to yourself about who you are right now. Every step adds a piece to your Who I Am card, so you can watch the picture build as you go. Seven short steps, about an hour in all, spread over a week. There are no right answers.",
+    colour: "var(--mission-1)",
+    colourLight: "var(--mission-1-light)",
     textColour: "#FFFFFF",
     activities: [
       {
@@ -355,12 +366,28 @@ export const MISSIONS: Mission[] = [
           "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this in Mission 4, and either question can be left out.",
         prompt: "If your life so far were a book, what would the chapters be called?",
         scenarios: [
-          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
-          "The episode playing right now has a title too \u2014 maybe one you'd only admit to yourself.",
+          "Someone's writing a book about your life so far. Each chapter starts on a new page with a short title at the top.",
+          "The chapter you're in right now has a title too \u2014 maybe one you'd only admit to yourself.",
         ],
         scaffoldingSteps: [
-          "If your life so far were a book, what would the chapters be called? Give three or four short titles, roughly in order.",
+          "If your life so far were a book, what would the chapters be called? Give two to four short titles, roughly in order.",
           "What's the chapter you're in right now called, and what's it about?",
+        ],
+        starterOptions: [
+          [
+            "The Little Kid Years \u2192 Starting School \u2192 Right Now",
+            "Before the Move \u2192 The New Place \u2192 Finding My Feet",
+            "The Shy Years \u2192 Finding My Thing \u2192 Getting Louder",
+            "When Things Changed at Home \u2192 Learning to Cope \u2192 Steadier Now",
+            "The Sport Years \u2192 Trying New Stuff \u2192 Working Out What's Mine",
+          ],
+          [
+            "Figuring It Out \u2014 a lot is changing and I'm not sure where it's going",
+            "Everything at Once \u2014 school, friends and home all busy",
+            "Finding My People \u2014 working out who I want around me",
+            "Starting Fresh \u2014 a new place, group or start",
+            "Keeping My Head Down \u2014 just getting through for now",
+          ],
         ],
         skippableSteps: [0, 1],
         wrapUp:
@@ -372,7 +399,7 @@ export const MISSIONS: Mission[] = [
       {
         id: "strengths-mapping",
         wrapUp:
-          "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and the app will point back to them from here on. Next: the other half — the values underneath why those strengths matter to you.",
+          "Those are your signature strengths — the ones that fire up most naturally for you, out of all 24. They’re the first half of your inner compass, and they’re on your Who I Am card now. Next: the other half — the values underneath why those strengths matter to you.",
         type: "strengths_assessment",
         title: "Strengths Mapping",
         subtitle: "Step 2 of 7 · Inner compass",
@@ -383,13 +410,13 @@ export const MISSIONS: Mission[] = [
         prompt:
           "React to 18 everyday situations for a snapshot of the character strengths that come most naturally to you right now.",
         whyItMatters:
-          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Research shows that knowing and using your top ‘signature’ strengths predicts higher wellbeing, engagement, and resilience. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
+          "This is based on the VIA Classification of Character Strengths (Peterson & Seligman) — 24 strengths grouped under six virtues, found across cultures worldwide. Studies, mostly with adults, find that using your top ‘signature’ strengths in new ways tends to lift wellbeing a little. This is a quick indicative snapshot to surface your signature strengths — not the full clinical survey — but it’s enough to start steering by. Answering the LEAST-like question as well as the MOST-like one roughly halves the number of strengths left unranked, so it’s worth doing both.",
         timeEstimate: "About 8 minutes",
       },
       {
         id: "values-clarifier",
         wrapUp:
-          "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
+          "Those five values are the other half of your inner compass. Strengths are what you're good at; values are what you refuse to trade away. Together they're what steady decisions get made from, and both are on your Who I Am card now. Next, we stress-test the compass: the rooms where you show all of it, and the rooms where you hide some.",
         type: "values_picker",
         title: "Values Clarifier",
         subtitle: "Step 3 of 7 · Inner compass",
@@ -400,7 +427,7 @@ export const MISSIONS: Mission[] = [
         scenarios: [
           "You find out a friend has been quietly spreading something untrue about another friend. Calling it out could cost you — but staying quiet doesn't sit right either. What's the part of you that won't let it go?",
           "Two free Saturdays, two versions of you. One stays in, deep into something you love, totally absorbed and happy on your own. The other is out, around people, in the middle of everything. Which one feels more like a good day — and what does that say you need?",
-          "An adult you respect breaks a promise to you and never mentions it again. It stings more than you expected. Which part stings most — the unfairness, the broken trust, the not being taken seriously?",
+          "Someone you look up to breaks a promise to you and never mentions it again. It stings more than you expected. Which part stings most — the unfairness, the broken trust, the not being taken seriously?",
           "You're handed the chance to do something new that you might genuinely be bad at in front of people. Part of you wants to run. Part of you is curious. Which part usually wins — and how do you feel about that?",
         ],
         prompt:
@@ -408,7 +435,7 @@ export const MISSIONS: Mission[] = [
         valuesOptions: VALUES_LIST,
         valuesCount: 5,
         whyItMatters:
-          "Self-determination theory — one of the most replicated frameworks in psychology — finds that people who act from their own values (rather than external pressure) consistently report higher wellbeing, more resilient motivation, and more stable behaviour over time. Knowing your values isn't just clarifying. It changes what you actually do, especially under pressure.",
+          "Self-determination theory — one of the most replicated frameworks in psychology — finds that people who act for reasons they genuinely agree with, rather than because of outside pressure, tend to report higher wellbeing and keep going for longer. Knowing your values gives you something to check your choices against, especially under pressure.",
         timeEstimate: "About 8 minutes",
       },
       {
@@ -416,7 +443,7 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
+          "You just tested your compass against the real world \u2014 and found where it gets dimmed: which parts of you stay hidden in which rooms, and what that costs. Where you can just be you is on your card now. That gap is exactly why the next step matters: a letter from the real you, to the real you, with nobody else in the room.",
         type: "journal",
         title: "The Mask Check",
         subtitle: "Step 4 of 7 · Your public self",
@@ -438,7 +465,7 @@ export const MISSIONS: Mission[] = [
         scaffoldingSteps: [
           "Pick two of those rooms. How does the 'you' that shows up actually change between them — your volume, your opinions, how much you let show?",
           "What's one part of you that stays mostly hidden? You don't have to reveal it in detail — just name that it's there and where it lives.",
-          "What were you protecting in that moment — what did you think might happen if you'd left it as it was? What does that fear cost you over time?",
+          "Think of a time you edited yourself, like that deleted post. What were you protecting — what did you think might happen if you'd left it as it was? What does holding back cost you over time?",
           "What's different about that place or person? What do they give you that the harder rooms don't — and what would it take to feel a little more of that elsewhere?",
         ],
         starterOptions: [
@@ -472,7 +499,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         whyItMatters:
-          "Psychologists call the gap between your private and public self 'self-monitoring'. Some gap is normal and healthy — we all adapt to context. But when the gap gets very large, it tends to correlate with higher anxiety and a fragmented sense of identity. This activity isn't about eliminating the gap. It's about seeing it clearly so you can decide — consciously — where you want to close it.",
+          "Psychologists have studied for decades how people adjust themselves to fit different situations. Some adjusting is normal and healthy — everyone does it. But research on authenticity finds that feeling you have to hide big parts of yourself, most of the time, goes with more stress and a shakier sense of who you are. This step isn't about getting rid of the gap. It's about seeing it clearly so you can decide where you'd like to close it.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -480,14 +507,14 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "That letter is the truest snapshot of you that exists anywhere \u2014 compass, masks and all. Nobody can mark it, judge it, or take it. Future-you will read it on a day they need it. One thing left: living one small piece of it out loud.",
+          "That's a snapshot of who you are right now, in lines you chose. Nobody can mark it or judge it, and you can add to it whenever you come back. One line from it is now on your Who I Am card. Next: living one small piece of it out loud.",
         type: "milestone_letter",
         title: "Identity Letter",
         subtitle: "Step 5 of 7 · Milestone",
         intro:
           "You've mapped your strengths and values, and seen where you perform and where you're real. This letter holds it together: you, writing to yourself about who you are right now, and who you sense you're becoming.",
         warmUp:
-          "You've already done the hard noticing in the last three steps. This letter just gathers it up. Write it to yourself as 'you' — it's private, permanent, and only ever for you.",
+          "You've already done the hard noticing in the last three steps. This letter just gathers it up. Tap the lines that ring true or use your own words. It's private and only ever for you.",
         storyBefore: "What the Mirror Doesn't Show",
         prompt:
           "Write a short letter to yourself — not who you think you should be, but who you actually are right now. Be honest. Be kind.",
@@ -501,7 +528,7 @@ export const MISSIONS: Mission[] = [
           "The kindest person who really knows you is asked to describe you in one honest sentence. They don't flatter you — they just see you clearly.",
         ],
         scaffoldingSteps: [
-          "What would you want them to understand about you first — your personality, your quirks, what actually matters to you, not your achievements?",
+          "What would you want that new person to understand about you first — your personality, your quirks, what actually matters to you, not your achievements?",
           "What's the true thing future-you might need reminding of on that hard day?",
           "What does that moment quietly tell you about something you're still working on — said kindly, the way you'd say it to a friend?",
           "What's their one sentence — and is it something you'd struggle to say about yourself? Try saying it anyway.",
@@ -537,7 +564,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         whyItMatters:
-          "Writing about yourself in the second person — addressing yourself as 'you' — activates a different kind of self-awareness than thinking in the first person does. Studies on expressive writing show it can reduce self-criticism, increase clarity about values, and help consolidate fragmented self-perceptions into a more coherent sense of identity. The letter format isn't arbitrary — it works.",
+          "Putting who you are into words, honestly and kindly, helps pull scattered thoughts about yourself into one clearer picture. Studies of writing about yourself find small benefits for young people's wellbeing. Some research also suggests that talking to yourself as 'you' makes it easier to be kind to yourself, the way you would be to a friend.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -562,55 +589,55 @@ export const MISSIONS: Mission[] = [
         title: "Who Was I?",
         subtitle: "Step 7 of 7 · Talk to someone",
         intro:
-          "Part of who you are comes from the stories other people tell about you. This step is a conversation: ask someone who knew you when you were little, like a parent, grandparent, older brother or sister, or a primary school teacher, a few questions. Then come back and write up what you heard.",
+          "Part of who you are comes from the stories other people tell about you. This step is a conversation: ask someone who knew you when you were small, like a parent, grandparent, older sibling or old teacher, a few questions. Then come back and write up what you heard.",
         alternative:
           "Nobody who knew you then that you can ask, or you'd rather not? Go through old photos, videos, school reports or birthday cards instead, or ask a teacher, coach or friend who's known you a few years. Answer the questions from what you find.",
         interviewQuestions: [
           "What was I like when I was five or six?",
-          "What's a funny or embarrassing story about me that you still tell people?",
+          "What's a story about me you still tell people?",
           "What did you notice about me back then that I might not know?",
-          "What's stayed the same about me since then?",
+          "What's stayed the same about me?",
         ],
         prompt:
           "Ask someone who knew you when you were little what you were like, then write up what you heard.",
         scaffoldingSteps: [
-          "Who did you ask? If you didn't ask anyone, what did you look through instead?",
-          "What's one thing they told you (or you found) that you want to remember? Use their exact words if you can.",
-          "What surprised you? Maybe something you'd forgotten, or something you didn't think anyone had noticed.",
-          "What's one thing about little you that's still true about you now?",
+          "Who did you talk to, or what did you look through instead, and what was it like?",
+          "What did they tell you? Write down the bit you most want to remember, in their words if you can.",
+          "What surprised you — something you didn't know, or didn't expect them to have noticed?",
+          "What's one thing from it that still feels true about you now?",
         ],
         starterOptions: [
           [
-            "My mum, dad, or whoever raised me",
-            "A grandparent, aunt or uncle",
-            "An older brother, sister or cousin",
-            "A teacher, coach or family friend",
-            "No one. I looked through old photos, videos or school reports",
+            "A parent \u2014 it was nice to hear",
+            "A grandparent \u2014 they had heaps of stories",
+            "An older sibling or cousin \u2014 funny and a bit embarrassing",
+            "A teacher or coach who's known me a while",
+            "Nobody this time \u2014 I went through old photos and cards",
           ],
           [
-            "A funny story about something I did as a kid",
-            "What I was obsessed with when I was little",
-            "Something I was good at without even trying",
-            "Something I used to be scared of or find hard",
-            "How I used to be around other people",
+            "I was always asking questions",
+            "I looked after the other kids",
+            "I was fearless and into everything",
+            "I was quiet but noticed everything",
+            "I was the one who made everyone laugh",
           ],
           [
-            "I was braver or louder than I remember",
-            "I was quieter or more sensitive than I remember",
-            "They noticed things I thought nobody saw",
-            "A story I'd completely forgotten about",
-            "Not much. It mostly matched what I remember",
+            "How much they remembered",
+            "That I was more confident back then",
+            "That they'd noticed something I thought nobody saw",
+            "How much I've changed",
+            "Honestly, nothing surprised me",
           ],
           [
-            "I still love the same kinds of things",
-            "I still make people laugh",
-            "I still care a lot about how other people feel",
-            "I'm still stubborn and like doing things my own way",
-            "I still ask a million questions",
+            "I still ask a lot of questions",
+            "I still look out for people",
+            "I still throw myself into things I love",
+            "I still notice more than I say",
+            "I still like making people laugh",
           ],
         ],
         wrapUp:
-          "You've added someone else's view to your own story: the version of you that existed before you can remember.",
+          "You've added someone else's view to your own story: the version of you that existed before you can remember. It's on your Who I Am card now.",
         whyItMatters:
           "Psychologists who study how young people build a life story have found it doesn't happen alone. Teenagers make sense of who they are partly through the stories other people tell about them, and with them. Hearing how someone saw you as a kid gives you material your own memory doesn't have, and shows you which parts of you have stayed constant.",
         timeEstimate: "A conversation, then 5 minutes",
@@ -650,17 +677,17 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Moving from self-knowledge to conscious choices about what matters.",
     description:
-      "Mission 1 helped you map who you are. This mission asks the next question: given who you are, what in the world actually pulls you? Purpose isn't found — it's built, gradually, from the intersection of your inner compass and the things you can't ignore. This mission moves through three dimensions: the cause that genuinely matters to you, the particular contribution you could make to it, and the people who share your care. The goal isn't a plan. It's a commitment.",
-    colour: "#0E7490",
-    colourLight: "#0891B2",
+      "By the end of this mission you'll have the thing you care about, what you can bring to it, and one sentence that says it. Every step adds a piece to your Purpose card. Six short steps, about an hour in all, spread over a week. You don't need a cause to start: something you love doing is just as good a way in.",
+    colour: "var(--mission-2)",
+    colourLight: "var(--mission-2-light)",
     textColour: "#FFFFFF",
     activities: [
       {
         id: "what-matters",
         wrapUp:
-          "You've named the thing that actually pulls at you \u2014 not what you're supposed to care about, what you genuinely do. That pull is where purpose starts for everyone. Next: working out what you, specifically, could bring to it.",
+          "You've named the thing that actually pulls at you \u2014 not what you're supposed to care about, what you genuinely do. That pull is where purpose starts for everyone, and it's the first piece of your Purpose card. Next: working out what you, specifically, could bring to it.",
         scenarios: [
-          "You're scrolling before bed. Post after post slides past \u2014 then one story stops your thumb. It sits in your chest a bit heavier than the rest, and you're still thinking about it when you put the phone down.",
+          "Two moments from your week. In one, you're scrolling and a story stops your thumb, and you're still thinking about it when you put the phone down. In the other, you're doing something and look up to find two hours have gone. Either one is a clue.",
           "School assembly. A guest speaker is telling their story. Most of the room is half-listening, but something about this person has actually got you \u2014 and a week later, you still remember them.",
           "Imagine it's ten years from now and you bump into a mate from school. They ask what you've been up to \u2014 and you get to say one thing that makes you quietly proud.",
           "Look back at what stopped your thumb, who got your attention, and what you'd want to be proud of. Line them up like clues.",
@@ -669,9 +696,10 @@ export const MISSIONS: Mission[] = [
           [
             "People being treated unfairly when they did nothing wrong",
             "The planet or animals being wrecked and ignored",
-            "Bullying, cruelty, or people being humiliated",
-            "People stuck with no real chance to get ahead",
             "People struggling alone when nobody checks on them",
+            "Making things \u2014 art, music, code, videos, food",
+            "Sport, training, or getting better at something physical",
+            "Working out how things work \u2014 science, tech, puzzles",
           ],
           [
             "They stood up for something when it was easier to stay quiet",
@@ -699,20 +727,20 @@ export const MISSIONS: Mission[] = [
         title: "What Matters",
         subtitle: "Step 1 of 6 · Your motivated self",
         intro:
-          "Mission 1 looked inward. This one looks outward. Purpose often starts with a quiet anger or a pull: something in the world that bothers you, or something you keep coming back to. This step is about naming that thing honestly.",
+          "Mission 1 looked inward. This one looks outward. Purpose usually starts in one of two places: something in the world that bothers you, or something you love doing so much you lose track of time. Either is a way in. Most people your age don't have a cause yet, and that's normal.",
         warmUp:
           "Think about the last time you felt genuinely bothered by something in the world — not just inconvenienced, but actually troubled. Hold that feeling in mind before you write. That's usually where purpose begins.",
         storyBefore: "The Thing She Couldn't Ignore",
         prompt:
           "Write about something that genuinely matters to you — a problem in the world, a person you admire, a cause you care about. Why does it matter?",
         scaffoldingSteps: [
-          "What's a problem in the world — local or global — that actually bothers you? Not one you feel you should care about, but one you actually do.",
+          "What pulls at you most? It can be a problem in the world that actually bothers you, or something you love doing so much you lose track of time. Not what you feel you should say.",
           "Is there a person you admire — real or historical — whose life or work pulls you toward something? What is it about them?",
           "When you think about your future, what kind of impact, however small, would feel meaningful?",
           "What do all of these have in common? What does that tell you about what you're actually oriented toward?",
         ],
         whyItMatters:
-          "Researcher William Damon distinguishes between being 'engaged' (doing things) and being 'purposeful' (knowing why). Purposeful adolescents are more resilient under pressure and report significantly higher wellbeing — not because their lives are easier, but because they have a direction. The quiet anger or persistent pull you feel about something isn't random. It's identity data, pointing you somewhere specific.",
+          "Researcher William Damon distinguishes between being 'engaged' (doing things) and being 'purposeful' (knowing why). Young people with a sense of purpose tend to cope better under pressure and report higher wellbeing, not because their lives are easier but because they have a direction. Peter Benson's research on 'sparks' found purpose often grows out of something a young person loves doing, not only from a problem they want to fix. Whichever way in you took, the pull you feel isn't random.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -720,10 +748,10 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer'. Next: discovering you're not the only one who cares.",
+          "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer', and it's on your Purpose card now. Next: discovering you're not the only one who cares.",
         scenarios: [
           "Your school is running a big fundraiser for a cause. At the first meeting, jobs get handed out \u2014 posters, speeches, budgets, the group chat, the actual event. You look at the list, and one job quietly has your name on it.",
-          "Think about the cause you named in Step 1. Now imagine you're right there, in the middle of it \u2014 at the beach clean-up, the food drive, the campaign, whatever it is. A moment happens where something in you switches on.",
+          "Think about what you named in Step 1, the cause or the thing you love. Now imagine you're right in the middle of it \u2014 the clean-up, the training session, the studio, the campaign, whatever it is. A moment happens where something in you switches on.",
           "The organisers pull you aside: 'We've got heaps of helpers. What we don't have is someone who can do the thing YOU do.' What's the thing?",
           "It's this Saturday morning. You've got two free hours and zero excuses. The smallest real version of your contribution is sitting right there.",
         ],
@@ -768,12 +796,12 @@ export const MISSIONS: Mission[] = [
           "What's the connection between who you are and what you care about? How do your particular strengths and values fit the thing that matters to you?",
         scaffoldingSteps: [
           "Look at the strengths you identified in Mission 1. How might they be genuinely useful in relation to what you care about — even in a small way?",
-          "Look at the values you chose. Which ones feel most alive when you think about the problem or cause from Step 1?",
+          "Look at the values you chose. Which ones feel most alive when you think about what you named in Step 1, the cause or the thing you love?",
           "Is there a kind of contribution — however small — that only you, with your particular inner compass, could make to this?",
           "What would even a tiny version of that contribution look like in practice?",
         ],
         whyItMatters:
-          "Studies on youth purpose consistently find that the most durable form isn't 'I want to help people' — it's 'I have something specific to contribute.' Generic caring fades under pressure; specific contribution becomes part of identity. This is why connecting your particular strengths to a particular problem is more powerful than choosing a cause at random. Purpose that fits who you are tends to stick.",
+          "Purpose researchers describe purpose as something you actually do, not only something you feel: an aim you work towards that matters beyond you. 'I want to help people' is a start; 'here's the specific thing I can contribute' is something you can act on. That's why this step connects your particular strengths to a particular problem, rather than a cause chosen at random. Purpose that fits who you are is easier to keep acting on.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -817,7 +845,7 @@ export const MISSIONS: Mission[] = [
           ],
         ],
         type: "journal",
-        title: "The Other Side",
+        title: "Who Else Cares",
         subtitle: "Step 3 of 6 · Your people",
         intro:
           "Purpose gets real when you realise you're not alone in caring. There are people — in your life, in history, in communities you haven't found yet — who care about the same things you do. This step asks you to find one of them and pay attention to what their story tells you about yours.",
@@ -833,7 +861,7 @@ export const MISSIONS: Mission[] = [
           "Is there a kind of person you'd want to be connected to through this cause? What would that community look like, and what would your place in it be?",
         ],
         whyItMatters:
-          "Purpose supported by community is significantly more durable than individual conviction alone. Research on purposeful adolescents finds that mentors, peers, and even historical figures who model a cause are often the critical factor in whether purpose becomes action or stays aspiration. Knowing you're not alone in caring about something isn't just comforting — it changes how seriously you take it, and how long it lasts.",
+          "Young people with a strong sense of purpose usually have people around them who share it or model it: mentors, peers, sometimes figures from history. Researchers see this pattern again and again, though it's hard to say how much is cause and how much is that purposeful people seek each other out. Either way, knowing you're not alone in caring about something can change how seriously you take it.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -841,7 +869,7 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You put it in writing: what you stand for and why it's yours. That's a commitment, not a contract \u2014 it's allowed to grow and change with you. Last step: acting on it once, in the real world, this week.",
+          "You put it in writing: what you stand for and why it's yours. It's on your Purpose card now. That's a commitment, not a contract \u2014 it's allowed to grow and change with you. Next: acting on it once, in the real world, this week.",
         scenarios: [
           "There's a wall of causes at school, each with one sentence and a name signed under it. Yours is going up where people you know will read it.",
           "A good friend catches you working on this and asks, genuinely: 'Why do you care so much about that?' They're not mocking you \u2014 they actually want to know.",
@@ -880,12 +908,14 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "Commitment Statement",
+        // Year 7–9 answer "What I Want to Explore" (stageContentMission2.ts); a
+        // student who has moved up starts the commitment fresh.
+        retiredQuestions: ["What's the thing you want to explore? Say it as clearly as you can."],
         subtitle: "Step 4 of 6 · Milestone",
         intro:
           "You've named what matters, linked it to who you are, and found others who care too. Now you move from exploring to committing: not for ever, and not with certainty, but enough to say this is mine and I'm taking it seriously.",
         warmUp:
           "Think about what it would mean to genuinely commit to this — not as a project or a task, but as part of who you are and what you stand for. What would change if you took it seriously? Sit with that for a moment before you write.",
-        storyBefore: "The Coach Who Stopped Winning",
         prompt:
           "Write a commitment statement — a clear, personal declaration of what you care about and why. Not a plan. Not a promise to the world. Just an honest statement of what you're standing for.",
         isMilestone: true,
@@ -896,7 +926,7 @@ export const MISSIONS: Mission[] = [
           "What would you want someone reading this to understand about why it genuinely matters to you?",
         ],
         whyItMatters:
-          "Research on identity development finds that articulating a commitment — even privately, before acting on it — significantly increases psychological investment and follow-through. This isn't superstition. It's the mechanics of how belief becomes identity: the moment you say 'this is mine,' something shifts. The commitment doesn't have to be certain or permanent. It just has to be honest.",
+          "Saying clearly what you stand for is part of how something you care about becomes part of who you are. Research on commitment and follow-through finds the effect is strongest when the commitment is specific. If you tell someone, tell them what you'll do, and check back with them about it, rather than announcing who you'll be. Studies find that announcing who you're going to be can feel like you're already there, and people then do less. It doesn't have to be certain or permanent. It just has to be honest.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -910,7 +940,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Commitment isn't proven by what you say — it's tested by what you actually do. This challenge asks you to take one real step toward what you care about. Not a grand gesture. Just the smallest version of genuine engagement that feels real to you.",
         prompt:
-          "This week, do one concrete thing that connects you to what you care about. It could be learning more, talking to someone, showing up somewhere, making something, or helping in a small way. The action matters less than the fact that you actually did it.",
+          "Pick ONE for this week:\n\n• Do the tiny first step you planned in Step 2.\n• Learn one thing properly \u2014 spend 30 minutes reading, watching or asking about what you care about.\n• Talk to one person about it \u2014 tell them why it matters to you.\n• Show up once \u2014 go to one thing connected to it, or help with one task.\n\nPick one. Keep it small. Doing it matters more than doing it well.",
+        // The tiny version they wrote in Step 2, shown above the choices.
+        recall: { activityId: "contribution-map", missionId: 2, label: "Your tiny first step, from Step 2", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -938,6 +970,36 @@ export const MISSIONS: Mission[] = [
           "What did they do about it — and what did it cost them, if anything?",
           "What does their story tell you about the thing you care about?",
         ],
+        starterOptions: [
+          [
+            "A family member who volunteers",
+            "A teacher, coach or boss who cares about a cause",
+            "A friend or older sibling who's into it",
+            "Someone in my community doing something about it",
+            "Nobody this time — I read or watched someone's story",
+          ],
+          [
+            "Something happened to them or someone close",
+            "They saw something unfair and couldn't ignore it",
+            "Someone else got them involved",
+            "It grew slowly from something they already loved",
+            "They're not totally sure — it just stuck",
+          ],
+          [
+            "Time — they gave up a lot of weekends",
+            "Money, or a better-paying path",
+            "Some friends didn't get it",
+            "It wore them out sometimes",
+            "Not much — it mostly gave back",
+          ],
+          [
+            "You can start small and still matter",
+            "Caring about it is normal, not weird",
+            "It takes a long time to make a difference",
+            "I need people around me who care too",
+            "I care about it more than I realised",
+          ],
+        ],
         wrapUp:
           "You've seen what caring about something looks like over years rather than a week, including what it costs.",
         whyItMatters:
@@ -956,15 +1018,15 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Understanding how your relationships shape and reflect who you are.",
     description:
-      "Mission 2 asked what you care about in the world. This mission turns toward the people you care about — and the ones who've shaped you without you fully realising it. Your social identity isn't just about being in groups. It's about where you feel genuinely known, what makes connection real rather than just convenient, and who — across ease and difficulty — has left something lasting in you. This mission examines all three.",
-    colour: "#15803D",
-    colourLight: "#16A34A",
+      "By the end of this mission you'll have where you belong and why, someone you connect with across a real difference, and the people who shaped you. Every step adds a piece to your Connection card. Six short steps, about an hour in all, spread over a week. If you haven't found your people yet, that's common, and this mission is a good place to start.",
+    colour: "var(--mission-3)",
+    colourLight: "var(--mission-3-light)",
     textColour: "#FFFFFF",
     activities: [
       {
         id: "belonging",
         wrapUp:
-          "You've just worked out where you're actually known versus just around people \u2014 most adults never name that difference. Next we sharpen it further: the difference between fitting in and belonging.",
+          "You've just worked out where you're actually known versus just around people \u2014 most adults never name that difference. It's the first piece of your Connection card. Next: what to do about the places where you're only fitting in.",
         scenarios: [
           "There's one place you walk into and something in your shoulders drops. You don't check the room before you speak. You just... arrive.",
           "Watch what the people in that place actually do. There's something specific about how they treat you that makes it safe to be all of you.",
@@ -1005,7 +1067,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You Belong",
         subtitle: "Step 1 of 6 · Your social self",
         intro:
-          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself.",
+          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself. If nowhere comes to mind yet, that's an honest answer, and a common one.",
         warmUp:
           "Think about the last time you were with someone and felt completely at ease — no managing yourself, no performing, just present. Who were you with, and what made that possible?",
         storyBefore: "The Friend Who Stayed",
@@ -1018,34 +1080,20 @@ export const MISSIONS: Mission[] = [
           "What does belonging actually require, based on your experience? What makes it different from just being around people?",
         ],
         whyItMatters:
-          "Social identity theory identifies our sense of belonging within groups as one of the core pillars of a stable identity — but not all group membership provides genuine belonging. Research consistently finds that feeling authentically known by others (not just accepted) is one of the strongest predictors of adolescent wellbeing and resilience. This activity is about telling the difference between being around people and actually belonging with them.",
+          "Social identity theory sees the groups we belong to as part of who we are, but not every group gives you real belonging. Research on young people links feeling known and cared about by others with better wellbeing and coping. This step is about telling the difference between being around people and actually belonging with them.",
         timeEstimate: "About 10 minutes",
       },
       {
         id: "fitting-in-vs-belonging",
         wrapUp:
-          "Now you can tell when you're editing yourself to be accepted and when you're accepted as-is \u2014 and what the editing quietly costs you. Next: the surprising kind of belonging that crosses big differences.",
+          "You've decided what to do about the place that costs you most, and found someone who could belong more because of you. That's the part of belonging you can give, and it's on your Connection card now. Next: belonging that crosses a real difference.",
         scenarios: [
-          "With one particular group, you're completely yourself \u2014 your jokes land wrong sometimes and it doesn't matter, you say what you actually think, you never rehearse.",
-          "With another group, there's a version of you that gets deployed. You know the rules there: what to laugh at, what to wear, what not to mention.",
-          "Being that adjusted version works \u2014 you're accepted. But acceptance-with-conditions has a running cost that nobody talks about.",
+          "In Mission 1's Mask Check you noticed how you change between rooms. One of those rooms costs you more than the others: you know the rules there, what to laugh at, what not to mention.",
+          "Picture the next time you're with that group. There's a choice in there you don't usually notice you're making.",
           "There might be a group where you've quietly decided the entry fee is too high \u2014 or one where you can't tell yet if you belong.",
+          "Now look from the other side. In every group there's someone on the edge, checking the room before they speak, the way you sometimes do.",
         ],
         starterOptions: [
-          [
-            "My closest one or two friends",
-            "My main friend group, most of the time",
-            "One family member who gets me completely",
-            "My team or club, when we're actually doing the thing",
-            "A friend I only see online \u2014 weirdly, the realest one",
-          ],
-          [
-            "I get quieter and let others set the tone",
-            "I act more confident than I feel",
-            "I hide interests they'd think are weird",
-            "I laugh at stuff I don't actually find funny",
-            "I shrink my opinions down to fit",
-          ],
           [
             "It's exhausting \u2014 like a shift I don't get paid for",
             "I lose track of which version is actually me",
@@ -1054,36 +1102,57 @@ export const MISSIONS: Mission[] = [
             "Small \u2014 honestly, adapting doesn't cost me much",
           ],
           [
-            "Yes \u2014 I've stepped back from a group over this",
-            "I'm in one now, and I'm rethinking it",
-            "There's a group I want in with, at the price of editing myself",
-            "I can't tell yet \u2014 that's what bothers me",
+            "Keep adjusting \u2014 it's worth it there, for now",
+            "Change one thing: say what I actually think, once",
+            "Spend more time where I don't have to adjust",
+            "Step back from that group a bit",
+            "Not sure yet \u2014 I want to notice how it feels first",
+          ],
+          [
+            "There's a group I want in with, but not at any price",
+            "I'm still looking for my people",
+            "I'm in a group now and rethinking it",
+            "I can't tell yet if I belong somewhere",
             "No \u2014 where I am now is mostly real",
           ],
+          [
+            "Someone new \u2014 I could invite them along",
+            "A quiet one in my group \u2014 I could ask what they think",
+            "A friend who's been left out lately \u2014 I could check in",
+            "Someone younger \u2014 I could show them the ropes",
+            "I'm not sure \u2014 I want to start noticing",
+          ],
+        ],
+        // What they said about changing between rooms in Mission 1, so this
+        // step starts from there instead of asking it again.
+        recall: { activityId: "mask-check", missionId: 1, label: "How you change between rooms, from Mission 1", step: 0, answer: 0 },
+        // Before it built on the Mask Check, this step asked these questions instead.
+        retiredQuestions: [
+          "Think of a group or situation where you feel genuinely yourself — no performance, no editing. What's that like? What makes it possible?",
         ],
         type: "journal",
         title: "Fitting In vs. Belonging",
         subtitle: "Step 2 of 6 · Your social self",
         intro:
-          "There's a difference between fitting in and belonging — and it matters. Fitting in means changing yourself so that a group accepts you. Belonging means being accepted as yourself. They can look the same from the outside, but they feel very different from the inside. This step asks you to tell them apart in your own life.",
+          "Fitting in means changing yourself so a group accepts you. Belonging means being accepted as yourself. In Mission 1 you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it. Then it flips round to the people who need to belong around you.",
         warmUp:
-          "Think about a group you're part of — a friend group, a team, a class or workplace, a community. Do you feel like you belong there, or do you feel like you fit in? Is there a difference, in your experience, between the two?",
+          "Look at what you wrote in Mission 1 about how you change between rooms. Which room costs you the most?",
         prompt:
-          "Describe a situation where you feel you genuinely belong — and one where you're just fitting in. What's the difference between how those feel?",
+          "Think about the group where you adjust the most. What does it cost you, what do you want to do about it, and who around you needs to belong more?",
         scaffoldingSteps: [
-          "Think of a group or situation where you feel genuinely yourself — no performance, no editing. What's that like? What makes it possible?",
-          "Think of a group or situation where you feel more like you're adjusting yourself to be accepted. What do you do differently there? What do you hold back?",
-          "What does it cost you to fit in — not the obvious stuff, but the quieter cost of being a slightly different version of yourself?",
-          "Is there a group where you've decided the cost of fitting in is too high? Or one where you're not sure whether you belong yet? What would genuine belonging look like there?",
+          "Think of the group where you adjust yourself most to fit in. What does it cost you — not the obvious stuff, but the quieter cost of being a slightly different version of yourself?",
+          "What do you want to do about that group: keep adjusting, change one thing, spend more time elsewhere, or step back? Why?",
+          "Is there a group where you're still looking for your place, or not sure yet whether you belong? What would real belonging look like there?",
+          "Now flip it. Who's on the edge of a group you're in, or who could belong more because of you? What could you do so they don't have to adjust to fit?",
         ],
         whyItMatters:
-          "Research on belonging draws a sharp distinction between fitting in and genuinely belonging. Fitting in means reading a situation and adjusting yourself to be accepted. Belonging means being accepted as yourself. The two can look identical from the outside but feel completely different. Studies find that people who try hardest to fit in often report the lowest sense of belonging — because the adjustment itself signals that the real self isn't safe there. Telling the difference is the first step to choosing differently.",
+          "Researcher Brené Brown draws the line this way: fitting in is being accepted for being like everyone else; belonging is being accepted for being you. In her interviews, people who worked hardest to fit in often felt they belonged least. Belonging also works the other way: experiments by Greg Walton and colleagues find that helping people see that feeling out of place is common, and usually passes, can improve how they get on, where the place gives them a real chance to belong. You can be that signal for someone.",
         timeEstimate: "About 10 minutes",
       },
       {
         id: "across-the-gap",
         wrapUp:
-          "You've seen that real connection doesn't need sameness \u2014 bridging a genuine gap builds the strongest kind of belonging there is. Now for the milestone: the people whose fingerprints are on who you're becoming.",
+          "You've seen that real connection doesn't need sameness, and it's on your Connection card now. Now for the milestone: the people whose fingerprints are on who you're becoming.",
         scenarios: [
           "There's someone in your life from a genuinely different world \u2014 a grandparent, a neighbour, a teammate, a family friend. Different generation, background, beliefs, or just a completely different head.",
           "And yet \u2014 somewhere in there, a real moment of connection happened between you. Not agreement. Connection.",
@@ -1137,13 +1206,13 @@ export const MISSIONS: Mission[] = [
           "Is there a relationship in your life where the gap feels too wide right now — where you're not sure connection is possible? What would even a small step toward it look like?",
         ],
         whyItMatters:
-          "Research on social identity consistently finds that the most resilient sense of belonging isn't built only within homogeneous groups — it's built through what psychologists call 'bridging relationships': connections that cross real differences. These relationships are harder to form, but they tend to be more durable and to expand your sense of who you are in ways that same-group relationships can't. They also predict greater openness, flexibility, and empathy over time.",
+          "Political scientist Robert Putnam calls connections that cross real differences 'bridging' relationships, as opposed to the 'bonding' ones with people like you. Both matter, but bridging ones widen what you know and who you can work with. Research on contact between different groups finds that real connection across a difference tends to build understanding and reduce prejudice over time.",
         timeEstimate: "About 12 minutes",
       },
       {
         id: "people-who-shaped-you",
         wrapUp:
-          "You just took authorship of your own story \u2014 you can now see who built parts of you, and what you chose to keep. That's not sentimental; it's power. One more step: building connection on purpose this week.",
+          "You just took authorship of your own story \u2014 you can now see who built parts of you, and what you chose to keep. The people who shaped you are on your Connection card now. Next: building connection on purpose this week.",
         scenarios: [
           "Line up who you were three years ago next to who you are now. Some of the differences didn't come from you \u2014 they came through specific people.",
           "Catch yourself mid-week doing something \u2014 a saying, a habit, a way you handle pressure \u2014 and realise: that's not originally mine. I caught it from someone.",
@@ -1184,7 +1253,7 @@ export const MISSIONS: Mission[] = [
         title: "The People Who Shaped You",
         subtitle: "Step 4 of 6 · Milestone",
         intro:
-          "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly.",
+          "You're partly who you are because of other people: the ones who raised you, and the ones who saw something in you, pushed you, or showed you something you couldn't find alone. Some of that shaping happened without you noticing. This milestone is about seeing it clearly. One question asks about someone who shaped you through something hard. You can leave it out.",
         warmUp:
           "Think about who you were three or four years ago, and who you are now. The ways you've changed — some of them were shaped by specific people. Who were they? You don't have to include everyone. Just the ones who actually left something in you.",
         prompt:
@@ -1193,11 +1262,14 @@ export const MISSIONS: Mission[] = [
         scaffoldingSteps: [
           "Name two or three people who have left something lasting in you — not necessarily the most obvious choices, but the ones who actually changed something. What did each of them give you?",
           "Think about one of them more carefully: what specific thing — a moment, a habit, a way of seeing something — do you carry from them? Where do you notice it showing up in you?",
-          "Has any relationship shaped you in a way you didn't choose — or wouldn't have chosen? What did that leave in you?",
+          "Has any relationship shaped you in a way you didn't choose — or wouldn't have chosen? What did that leave in you? (You can leave this one out.)",
           "Looking at all of them together: what does it say about the kind of person you're becoming, that these are the people who shaped you?",
         ],
+        // The hard-shaping question can reach things a student isn't ready to
+        // write about; leaving it out is a real answer, and the step still counts.
+        skippableSteps: [2],
         whyItMatters:
-          "Psychologist Dan McAdams calls each of us an 'autobiographical author' — the person who makes meaning of our own story. His research shows that people who can clearly identify who has shaped them, and how, tend to have a more coherent, resilient sense of identity — not because their story is simpler, but because they understand how they came to be who they are. Seeing the people who shaped you isn't sentimental. It's how you take authorship of your own narrative.",
+          "Psychologist Dan McAdams calls each of us an 'autobiographical author' — the person who makes meaning of our own story. In narrative identity research, the people who shaped you are some of the main characters in your story. Understanding how they shaped you is part of authoring it, not because the story gets simpler, but because you can see how you came to be who you are. Seeing the people who shaped you isn't sentimental. It's how you take authorship of your own narrative.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -1211,7 +1283,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Belonging isn't passive. It's built — slowly, through small acts of reaching toward people. This challenge asks you to take one small step toward genuine connection: not a grand gesture, but something real. Notice what happens when you actually try.",
         prompt:
-          "This week, reach toward someone — genuinely. It could be a conversation you've been avoiding, checking in on someone you've been thinking about, or being a little more honest than you usually are with someone you trust. The goal is one real moment of connection that you actually initiated. Notice what it costs and what it gives.",
+          "Pick ONE for this week:\n\n• Take the small step you wrote in Step 3, toward someone across the gap.\n• Message one person you've been meaning to check in on.\n• Make room for someone on the edge: invite them, sit with them, or ask what they think.\n• Ask someone one real question, and actually listen to the answer.\n\nIf reaching out feels big right now, the message counts. Notice what it costs and what it gives.",
+        // The small step they wrote at the end of Across the Gap.
+        recall: { activityId: "across-the-gap", missionId: 3, label: "Your small step, from Step 3", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -1238,6 +1312,36 @@ export const MISSIONS: Mission[] = [
           "What was hard for the people in it, and how did they get through?",
           "What got handed down — a habit, a value, a recipe, a way of doing things — that you can still see in your family?",
           "Where do you see yourself in that story? What would you carry on, and what would you do differently?",
+        ],
+        starterOptions: [
+          [
+            "A grandparent — a story about moving or starting over",
+            "A parent — a story from when they were my age",
+            "An aunt, uncle or cousin — a family legend",
+            "An older family friend who knew my family back then",
+            "Nobody this time — I looked at old photos, documents or records",
+          ],
+          [
+            "Money was tight and they made it work",
+            "They moved somewhere new and started again",
+            "They lost someone and kept going",
+            "They were treated unfairly and stood their ground",
+            "They worked hard for years without much thanks",
+          ],
+          [
+            "Always feeding people who turn up",
+            "Working hard and not complaining",
+            "Sticking together no matter what",
+            "Faith, or a tradition we still keep",
+            "A sense of humour when things are hard",
+          ],
+          [
+            "I'd carry on the loyalty and do the talking-about-feelings bit better",
+            "I'd carry on the hard work and rest more",
+            "I'd carry on the traditions in my own way",
+            "I'd carry on the toughness and ask for help sooner",
+            "I'm still working out where I fit in it",
+          ],
         ],
         skippableSteps: [1],
         wrapUp:
@@ -1284,9 +1388,9 @@ export const MISSIONS: Mission[] = [
     phaseDescription:
       "Weaving what you know about yourself into how you actually live.",
     description:
-      "Three missions in, you know more about yourself than you did at the start — who you are, what you care about, where you belong. This mission asks the final question: given all of that, what kind of life do you actually want to build? It starts by looking back, because every life gets built from somewhere. Not the life that would impress people. Not the one you think you should want. The one that would feel worth waking up inside. This is where exploration becomes intention.",
-    colour: "#C2410C",
-    colourLight: "#EA580C",
+      "By the end of this mission you'll have the thread that runs through everything you've found, a picture of an ordinary day in your future, and a letter about the life you want to build. Every step adds a piece to your Direction card, and the finished card opens My Story. Seven short steps, about an hour and a half in all, spread over a week.",
+    colour: "var(--mission-4)",
+    colourLight: "var(--mission-4-light)",
     textColour: "#FFFFFF",
     activities: [
       {
@@ -1301,7 +1405,7 @@ export const MISSIONS: Mission[] = [
         prompt:
           "Where have you come from — and what are you carrying forward from it?",
         scenarios: [
-          "Someone's making a documentary about your life so far. It's split into episodes, and each one opens with a title card on screen.",
+          "Someone's writing a book about your life so far. Each chapter starts on a new page with a short title at the top.",
           "Somewhere in your story there's a before and an after — a move, a new school, a loss, a friendship, a win, something someone said that stuck. You're slightly different on the after side.",
           "Before you could choose anything, you were handed a lot: how your family does money, arguments and feelings, what counts as doing well, where you're from, who people expect you to be. Some of it fits. Some doesn't. Some fits once you adjust it.",
           "Reworking isn't rejecting. You might keep your family's work ethic but drop the never-resting part, or keep your culture's food and language while making up your own mind about one of its rules.",
@@ -1312,19 +1416,104 @@ export const MISSIONS: Mission[] = [
           "Everyone's handed things by their family and culture before they're old enough to choose. Sort what you were handed: keep it, rework it, or leave it.",
           "Pick one thing you're reworking. What are you keeping from it, and what are you changing so it fits who you are now?",
         ],
+        // Step 3 is the sort, answered by sorting rather than tapping, so its
+        // slot is empty.
+        starterOptions: [
+          [
+            "Mostly the same as before — the titles still fit",
+            "The same, plus a new chapter since Mission 1",
+            "I'd rename one — it means something different now",
+            "Different — I see the whole story differently now",
+            "Not sure yet — I'm still in the middle of it",
+          ],
+          [
+            "Moving somewhere new — it made me braver",
+            "A friendship ending — it taught me who to trust",
+            "Someone in my family getting sick or leaving — I grew up fast",
+            "Finding something I'm good at — it gave me confidence",
+            "A big failure — it showed me I can get back up",
+          ],
+          [],
+          [
+            "Keeping the work ethic, dropping the guilt about resting",
+            "Keeping the faith or traditions, making them my own",
+            "Keeping the loyalty to family, adding my own boundaries",
+            "Keeping the high standards, letting go of the pressure",
+            "Keeping the toughness, letting myself show feelings too",
+          ],
+        ],
         sortStep: 2,
         skippableSteps: [1, 2, 3],
         recall: { activityId: "chapters-so-far", missionId: 1, label: "Your chapters, from Mission 1", step: 0 },
         wrapUp:
-          "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: where it's heading, starting with an ordinary Tuesday at 21.",
+          "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: who you are right now, online.",
         whyItMatters:
           "Identity researchers agree that who you are isn't only about the present — it's a story connecting where you've come from to where you're going. Erik Erikson noticed that young people build an identity by sorting through what they absorbed as kids: keeping some of it, reworking some, letting some go. Narrative researchers call the related skill autobiographical reasoning — linking past experiences to who you are now — and it's one of the main ways a steady sense of self gets built during the teens and early twenties.",
         timeEstimate: "About 10 minutes",
       },
       {
+        id: "digital-self",
+        wrapUp:
+          "You've seen which version of you is online \u2014 and how much of what you see was chosen by you versus fed to you. Seeing it clearly is how you take the wheel back. Next: where it's heading, starting with an ordinary Tuesday at 21.",
+        scenarios: [
+          "Pick the place you spend most screen time \u2014 a group chat, a game, a video app, a platform. Now imagine someone who only knows you from there \u2014 that's the only you they've ever met.",
+          "Open whatever recommends things to you \u2014 videos, music, games, a feed \u2014 and pretend it's a mirror built from everything you've ever clicked. It's showing you who the algorithm thinks you are.",
+          "There's probably a message or comment you've sent online that in-person you would never have said out loud.",
+          "Across every chat, game, account and profile \u2014 line up all the versions of you that exist on screens.",
+        ],
+        starterOptions: [
+          [
+            "Pretty much me, just with better timing",
+            "Funnier and more confident than in-person me",
+            "Quieter \u2014 I watch and rarely post",
+            "A curated highlight reel \u2014 the good bits only",
+            "A different character \u2014 barely me at all",
+          ],
+          [
+            "Fairly accurate, honestly",
+            "It shows who I was, not who I'm becoming",
+            "It feeds my worst habits, not my real interests",
+            "It's who the internet wants me to be",
+            "It knows my guilty pleasures better than my friends do",
+          ],
+          [
+            "Braver \u2014 I say things I'd choke on face-to-face",
+            "Harsher \u2014 distance makes me sharper than I mean to be",
+            "More honest about how I actually feel",
+            "More fake-positive than I really am",
+            "Not really \u2014 I'm careful everywhere",
+          ],
+          [
+            "The group-chat me with close friends is realest",
+            "Anonymous me \u2014 no name means no performance",
+            "A profile or account is the most managed and least real",
+            "In-person me is realest; online is all performance",
+            "They're all a bit real, all a bit performed \u2014 a remix",
+          ],
+        ],
+        type: "journal",
+        title: "Digital Self",
+        subtitle: "Step 2 of 7 · Who you are now, online",
+        intro:
+          "Before picturing the future, a look at who you are right now online. Group chats, games, videos, accounts: there's a version of you there too. It isn't fake, but it is filtered. Algorithms pick what you see, and every app shapes how you show yourself. This step looks at how much of that was chosen by you.",
+        warmUp:
+          "Think about the last thing you posted, liked, or commented on publicly. Would the people who know you best be surprised by it — or is that completely them?",
+        prompt:
+          "How do you show up online compared to offline? What does the gap between those versions of you tell you about yourself?",
+        scaffoldingSteps: [
+          "Pick one place you spend time online — a platform, a group chat, a community. How do you show up there, and is that version of you different from who you are face-to-face?",
+          "What gets recommended to you — videos, music, games, a feed — is shaped by everything you've clicked, watched and searched. Look at it honestly: what does it reflect back at you about who you are, and is that accurate?",
+          "Have you ever said something online you wouldn't say in person, or been a version of yourself that you couldn't quite be offline? What made that possible?",
+          "Across everywhere you exist online, which version of you feels most real? Which one feels most like a performance — and for who?",
+        ],
+        whyItMatters:
+          "Researchers Alice Marwick and danah boyd describe 'context collapse': online, your friends, family, teachers and strangers can all end up as one audience, so people adjust how they show themselves. Recommendation algorithms add another layer, choosing what you see based on what you've already clicked. The version of you online is partly co-written by the app. Seeing that clearly isn't cause for alarm: it's how you take back the choices that are yours.",
+        timeEstimate: "About 10 minutes",
+      },
+      {
         id: "future-self",
         wrapUp:
-          "You now hold a specific picture of a future you \u2014 an ordinary Tuesday, not a fantasy. Specific futures pull way harder than vague ones. Next: checking how much of your identity the internet is quietly writing for you.",
+          "You now hold a specific picture of a future you \u2014 an ordinary Tuesday, not a fantasy. Specific futures pull way harder than vague ones. Next: finding the single thread through everything you've discovered.",
         scenarios: [
           "It's a random Tuesday and you're 21. Your alarm goes off. Walk through the day like a camera is following you \u2014 where you wake up, what you do, who you talk to, what fills the afternoon.",
           "That 21-year-old has figured some things out that current-you is still wrestling with. One of them would be a genuine relief to have sorted.",
@@ -1363,7 +1552,8 @@ export const MISSIONS: Mission[] = [
         ],
         type: "journal",
         title: "Future Self",
-        subtitle: "Step 2 of 7 · Your future",
+        subtitle: "Step 3 of 7 · Your future",
+        storyBefore: "The Slow Way There",
         intro:
           "Before deciding what life to build, it helps to picture it. Not a list of qualities or a career, but an ordinary week: where you are, what fills the afternoon, who's around. Vague futures don't pull. Specific ones do.",
         warmUp:
@@ -1377,66 +1567,7 @@ export const MISSIONS: Mission[] = [
           "What's one thing the version of you right now could start doing that would make the 21-year-old version grateful?",
         ],
         whyItMatters:
-          "Research on 'possible selves' — the versions of yourself you imagine in the future — shows that having a clear, concrete positive image of who you could become is one of the strongest predictors of motivated, directed behaviour in adolescence. But the detail matters: vague future selves ('I want to be successful') have almost no effect. Specific ones do. The more clearly you can see a Tuesday at 21, the more concretely you can begin moving toward it.",
-        timeEstimate: "About 10 minutes",
-      },
-      {
-        id: "digital-self",
-        wrapUp:
-          "You've seen which version of you the internet gets \u2014 and how much of your feed was chosen by you versus fed to you. Seeing it clearly is how you take the wheel back. Next: finding the single thread through everything you've discovered.",
-        scenarios: [
-          "Pick the place you spend most screen time. Now imagine someone who only knows you from there \u2014 that's the only you they've ever met.",
-          "Open your feed and pretend it's a mirror built from everything you've ever clicked. It's showing you who the algorithm thinks you are.",
-          "There's probably a message, comment, or post you made online that in-person you would never have said out loud.",
-          "Across every platform, chat, and profile \u2014 line up all the versions of you that exist on screens.",
-        ],
-        starterOptions: [
-          [
-            "Pretty much me, just with better timing",
-            "Funnier and more confident than in-person me",
-            "Quieter \u2014 I watch and rarely post",
-            "A curated highlight reel \u2014 the good bits only",
-            "A different character \u2014 barely me at all",
-          ],
-          [
-            "Fairly accurate, honestly",
-            "It shows who I was, not who I'm becoming",
-            "It feeds my worst habits, not my real interests",
-            "It's who the internet wants me to be",
-            "It knows my guilty pleasures better than my friends do",
-          ],
-          [
-            "Braver \u2014 I say things I'd choke on face-to-face",
-            "Harsher \u2014 distance makes me sharper than I mean to be",
-            "More honest about how I actually feel",
-            "More fake-positive than I really am",
-            "Not really \u2014 I'm careful everywhere",
-          ],
-          [
-            "The group-chat me with close friends is realest",
-            "Anonymous me \u2014 no name means no performance",
-            "My main profile is the most managed and least real",
-            "In-person me is realest; online is all performance",
-            "They're all a bit real, all a bit performed \u2014 a remix",
-          ],
-        ],
-        type: "journal",
-        title: "Digital Self",
-        subtitle: "Step 3 of 7 · Your digital life",
-        intro:
-          "There's a version of you online too. It isn't fake, but it is filtered: algorithms pick what you see, and platforms shape how you show yourself. This step looks honestly at how much of who you are online was chosen by you, and how much by the feed.",
-        warmUp:
-          "Think about the last thing you posted, liked, or commented on publicly. Would the people who know you best be surprised by it — or is that completely them?",
-        prompt:
-          "How do you show up online compared to offline? What does the gap between those versions of you tell you about yourself?",
-        scaffoldingSteps: [
-          "Pick one place you spend time online — a platform, a group chat, a community. How do you show up there, and is that version of you different from who you are face-to-face?",
-          "Your feed and recommendations are shaped by everything you've clicked, searched, and engaged with. Look at it honestly: what does it reflect back at you about who you are — and is that accurate?",
-          "Have you ever said something online you wouldn't say in person, or been a version of yourself that you couldn't quite be offline? What made that possible?",
-          "Across everywhere you exist online, which version of you feels most real? Which one feels most like a performance — and for who?",
-        ],
-        whyItMatters:
-          "Networked Social Identity Theory describes how digital platforms don't just reflect identity — they actively shape it, through algorithmic curation, social comparison, and the pressure to perform consistency across audiences. The version of you that exists online is co-authored by the platform, not just by you. Understanding that isn't cause for alarm — it's a way of reclaiming authorship. You can't make intentional choices about how you present yourself until you can see clearly how the context is already shaping you.",
+          "Psychologist Daphna Oyserman's research on 'possible selves' (the versions of yourself you imagine in the future) finds they help most when they're specific and come with a plan for getting there. A vague hope ('I want to be successful') does little; a clear picture with a first step does more. The more clearly you can see an ordinary Tuesday at 21, the easier it is to start moving toward it.",
         timeEstimate: "About 10 minutes",
       },
       {
@@ -1485,19 +1616,19 @@ export const MISSIONS: Mission[] = [
         title: "The Through-Line",
         subtitle: "Step 4 of 7 · The thread",
         intro:
-          "You've looked at who you are, what you care about, where you belong, and where you've come from. This step asks what sits underneath all of it: the thread running through.",
+          "You've looked at who you are, what you care about, where you belong, and where you've come from. Your three cards are below, so you don't have to remember them. This step asks what sits underneath all of it: the thread running through.",
         warmUp:
           "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
           "Look back across everything you've learned about yourself in this journey. What's the single thread that connects who you are, what you care about, and where you belong?",
         scaffoldingSteps: [
-          "What's the most important thing you learned about yourself in Mission 1 — something about your inner compass that still feels true?",
-          "What's the most honest thing you discovered about what you care about and want to contribute in Mission 2?",
-          "What did Mission 3 tell you about the relationships and communities that matter most to you?",
+          "Look at your Who I Am card from Mission 1 (shown above). What's the most important thing on it — something that still feels true?",
+          "Now your Purpose card from Mission 2. What's the most honest thing on it about what you care about and want to contribute?",
+          "And your Connection card from Mission 3. What does it say about the people and places that matter most to you?",
           "Now say the thread itself, in one sentence. Not where it leads — just the thing that stays true across all three.",
         ],
         whyItMatters:
-          "Integration — the third phase of identity development — isn't about having everything figured out. It's about finding the through-line: the thread that connects your values, your purpose, and your relationships into something coherent. Psychologists find that this coherence is what separates people who feel like they're drifting from people who feel like they're building something — even when their external circumstances look similar. The thread doesn't have to be obvious. But naming it tends to make it real.",
+          "Identity researchers like Dan McAdams find that people build a steadier sense of self by linking the parts of their life into one story: who they are, what they care about, and who they belong with. It isn't about having everything figured out. People whose story hangs together tend to report more meaning in life, even when their circumstances look much like everyone else's. The thread doesn't have to be obvious. Naming it tends to make it real.",
         timeEstimate: "About 12 minutes",
       },
       {
@@ -1544,6 +1675,7 @@ export const MISSIONS: Mission[] = [
         ],
         type: "milestone_letter",
         title: "A Life Worth Building",
+        storyBefore: "Enough",
         // The letter is where the thread goes, so the thread sits above its first question.
         recall: { activityId: "the-through-line", missionId: 4, label: "The thread you found", step: 0, answer: 3 },
         subtitle: "Step 5 of 7 · Milestone",
@@ -1561,7 +1693,7 @@ export const MISSIONS: Mission[] = [
           "Future-you will forget why this mattered. Put the reason on the record, plainly, for the week they need it.",
         ],
         whyItMatters:
-          "Research on expressive writing — particularly writing to your future self — shows it does something structurally different from ordinary reflection: it activates a sense of continuity between who you are now and who you're becoming, which psychologists call 'identity coherence.' People who score higher on identity coherence report higher life satisfaction, better decision-making under pressure, and more resilience when things go wrong. The cost question is here for a related reason: a direction you've never priced is a preference, and naming what you'd trade for something is most of what separates a decision from a daydream.",
+          "Psychologist Hal Hershfield's research finds that people who feel more connected to their future selves make more future-minded choices, and writing to your future self is one of the ways that connection gets built. The cost question is here for a related reason: a direction you've never priced is a preference, and naming what you'd trade for something is most of what separates a decision from a daydream.",
         timeEstimate: "About 15 minutes",
       },
       {
@@ -1575,7 +1707,9 @@ export const MISSIONS: Mission[] = [
         intro:
           "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
         prompt:
-          "This week, make one deliberate choice that aligns with the life you described in your letter — something you'd do if you were already the person you're becoming. It could be how you spend your time, what you say yes or no to, or how you show up for someone who matters to you. Notice what it feels like to do it on purpose rather than by accident.",
+          "Pick ONE for this week:\n\n• Start the one thing you wrote in Future Self.\n• Say no to one thing that pulls you off course, on purpose.\n• Spend an hour on the direction from your letter.\n• Tell one person what you're building toward.\n\nPick one. Keep it small. Notice what it feels like to do it on purpose rather than by accident.",
+        // The one thing Future Self asked them to start.
+        recall: { activityId: "future-self", missionId: 4, label: "The thing you said you'd start, from Future Self", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -1602,6 +1736,36 @@ export const MISSIONS: Mission[] = [
           "What did they nearly do instead, or have to give up?",
           "What would they tell themselves at your age?",
           "What does their path tell you about yours?",
+        ],
+        starterOptions: [
+          [
+            "A parent — they took a winding road",
+            "A relative who changed careers",
+            "A teacher, coach or boss whose job I'm curious about",
+            "Someone a few years older than me",
+            "Nobody this time — I read or watched someone's story",
+          ],
+          [
+            "A completely different job or course",
+            "Moving away, or staying when they wanted to go",
+            "Something creative they loved but couldn't make pay",
+            "Time with family or friends",
+            "Not much — they always knew",
+          ],
+          [
+            "Don't panic — it works out slower than you think",
+            "Try more things before you decide",
+            "Pick the people, not just the job",
+            "Look after your health and money early",
+            "Back yourself more",
+          ],
+          [
+            "It's fine not to have it figured out yet",
+            "Most paths change, so the first choice isn't forever",
+            "What I'm good at matters as much as what pays",
+            "I should talk to more people who do things I'm curious about",
+            "I might be closer to knowing than I thought",
+          ],
         ],
         wrapUp:
           "You've got a real path to set beside your own, wrong turns and all. Most paths have some.",
@@ -1666,6 +1830,20 @@ export function missionFinished(m: Mission, rows: ProgressRow[]): boolean {
       .map((r) => new Date(r.completed_at).getTime())
   );
   return finishedAt < new Date(CONVERSATIONS_REQUIRED_FROM).getTime();
+}
+
+/**
+ * The next mission step: the first unfinished step of the first unfinished
+ * mission. A mission finished before its conversation counted is skipped
+ * (see missionFinished). Home's "Up next" and the phase banner both use it.
+ */
+export function nextMissionStep(
+  rows: ProgressRow[]
+): { mission: Mission; activity: Activity } | null {
+  const done = new Set(rows.map((r) => r.activity_id));
+  const mission = MISSIONS.find((m) => !missionFinished(m, rows));
+  const activity = mission ? requiredSteps(mission).find((a) => !done.has(a.id)) : undefined;
+  return mission && activity ? { mission, activity } : null;
 }
 
 /**
@@ -1757,7 +1935,17 @@ const SPECIAL_LABELS: Record<string, string> = {
 
 const PROGRAM_WEEK_ID = /^program-week-(\d+)$/;
 
-export function getActivityLabel(activityId: string): string {
+export function getActivityLabel(activityId: string, stage?: LifeStage): string {
+  // A step can be titled differently for a stage (Year 7–9's "What I Want to
+  // Explore"); with a stage, label it the way that student saw it.
+  const title = (id: string): string | undefined => {
+    if (!stage) return BASE_ACTIVITY_LABELS[id];
+    for (const m of MISSIONS) {
+      const a = m.activities.find((x) => x.id === id);
+      if (a) return activityForStage(a, stage).title;
+    }
+    return undefined;
+  };
   if (SPECIAL_LABELS[activityId]) return SPECIAL_LABELS[activityId];
   const week = activityId.match(PROGRAM_WEEK_ID);
   if (week) {
@@ -1765,14 +1953,14 @@ export function getActivityLabel(activityId: string): string {
     return w ? `Week ${w.week} · ${w.title}` : `Week ${week[1]}`;
   }
   if (activityId.endsWith("-debrief")) {
-    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-debrief$/, "")];
+    const base = title(activityId.replace(/-debrief$/, ""));
     return base ? `${base} — Debrief` : "Challenge Debrief";
   }
   if (activityId.endsWith("-revisit")) {
-    const base = BASE_ACTIVITY_LABELS[activityId.replace(/-revisit$/, "")];
+    const base = title(activityId.replace(/-revisit$/, ""));
     return base ? `${base} — Revisit` : "Revisit";
   }
-  return BASE_ACTIVITY_LABELS[activityId] || activityId;
+  return title(activityId) || activityId;
 }
 
 /**

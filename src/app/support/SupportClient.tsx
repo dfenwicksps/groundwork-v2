@@ -1,5 +1,6 @@
 "use client";
 
+import { fluoroAt } from "@/lib/fluoro";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -7,6 +8,7 @@ import type { SupportContact } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
 import HelpLines from "@/components/help/HelpLines";
 import { PeopleIcon } from "@/components/icons";
+import ListenButton from "@/components/ListenButton";
 
 const CONVERSATION_STARTERS = [
   "\"I've been doing some thinking about who I want to become, and I'd love to hear your perspective on something.\"",
@@ -89,17 +91,22 @@ export default function SupportClient({
         <div className="split-col">
         {/* Help first: someone who opens this page may need it now. */}
         <section id="get-help" data-animate="2" className="mb-8 lg:mb-0 scroll-mt-6 order-1" aria-labelledby="get-help-heading">
-          <h2
-            id="get-help-heading"
-            className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-2"
-          >
-            Need to talk to someone now?
-          </h2>
-          <p className="text-sm text-ink-muted leading-relaxed mb-3">
-            Talking to someone you trust is always a good move: a friend, family, a counsellor at
-            school, uni or TAFE, or your GP. These services are free and confidential too.
-          </p>
-          <HelpLines />
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h2
+              id="get-help-heading"
+              className="text-xs font-semibold text-ink-muted uppercase tracking-wider"
+            >
+              Need to talk to someone now?
+            </h2>
+            <ListenButton targetId="get-help-body" label="Listen to the help lines" />
+          </div>
+          <div id="get-help-body">
+            <p className="text-sm text-ink-muted leading-relaxed mb-3">
+              Talking to someone you trust is always a good move: a friend, family, a counsellor at
+              school, uni or TAFE, or your GP. These services are free and confidential too.
+            </p>
+            <HelpLines />
+          </div>
         </section>
 
         {/* Conversation starters */}
@@ -137,8 +144,8 @@ export default function SupportClient({
           </h2>
           {contacts.length > 0 ? (
             <div className="space-y-2 mb-4">
-              {contacts.map((contact) => (
-                <div key={contact.id} className="card p-4 flex items-center gap-3">
+              {contacts.map((contact, i) => (
+                <div key={contact.id} data-fluoro={fluoroAt(i + 1)} className="card p-4 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-navy/10 flex items-center justify-center text-navy font-semibold flex-shrink-0">
                     {contact.name.charAt(0)}
                   </div>

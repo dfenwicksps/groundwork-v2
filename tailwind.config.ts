@@ -44,6 +44,9 @@ const config: Config = {
           muted: "rgb(var(--c-surface-muted) / <alpha-value>)",
           border: "rgb(var(--c-border) / <alpha-value>)",
         },
+        // Text and icons that sit on a teal or sage fill: white in light and
+        // dark, near-black in bold, where those fills are neon.
+        "on-accent": "rgb(var(--c-on-accent) / <alpha-value>)",
         ink: {
           DEFAULT: "rgb(var(--c-ink) / <alpha-value>)",
           muted: "rgb(var(--c-ink-muted) / <alpha-value>)",
@@ -51,9 +54,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-bricolage)", "system-ui", "sans-serif"],
-        story: ["var(--font-fraunces)", "Georgia", "serif"],
+        // The stacks live in globals.css (--font-*), loaded from Google Fonts.
+        sans: ["var(--font-sans)"],
+        display: ["var(--font-display)"],
+        story: ["var(--font-story)"],
         mono: ["ui-monospace", "monospace"],
       },
       spacing: {

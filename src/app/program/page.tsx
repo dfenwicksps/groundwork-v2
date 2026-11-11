@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import ProgramClient from "./ProgramClient";
@@ -20,6 +21,8 @@ const REQUIRED_SOURCE_IDS = [
 ];
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Weeks" };
 
 export default async function ProgramPage() {
   const supabase = createServerClient();

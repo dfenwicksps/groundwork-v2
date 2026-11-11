@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import MeClient from "./MeClient";
@@ -5,13 +6,18 @@ import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
 import { responseToCode, responseToStory, CHARACTER_CODE_ACTIVITY_ID } from "@/lib/program";
 import { getLifeStage } from "@/lib/lifeStageServer";
-import { resolvePhase } from "@/lib/phaseServer";
+import { resolvePhaseState } from "@/lib/phaseServer";
+import { nextMissionStep, type ProgressRow } from "@/lib/missions";
 import { BECOMING_ACTIVITY_ID, parseBecoming } from "@/lib/becoming";
 import { answersOnly, clarifierValues } from "@/lib/journal";
 import { truncate } from "@/lib/utils";
 import { NEXT_CHAPTER_ACTIVITY_ID, parseNextChapter } from "@/lib/nextChapter";
+import { checkinState, type CheckinRow } from "@/lib/checkin";
+import type { SmallStepRow } from "@/lib/smallSteps";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Me" };
 
 export default async function MePage() {
   const supabase = createServerClient();
@@ -45,6 +51,8 @@ export default async function MePage() {
     { data: standardRaw, error: standardError },
     { data: codeRow },
     { count: supportCount },
+    { data: checkinRows, error: checkinError },
+    { data: doneSteps, count: doneStepCount, error: stepsError },
   ] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id).single(),
     db
@@ -128,6 +136,17 @@ export default async function MePage() {
       .from("support_circle")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id),
+    db
+      .from("outcome_checkins")
+      .select("wave, item_set, scores, created_at")
+      .eq("user_id", user.id),
+    db
+      .from("small_steps")
+      .select("id, step, when_label, source_label, status, due_at, snoozes, done_at, created_at", { count: "exact" })
+      .eq("user_id", user.id)
+      .eq("status", "done")
+      .order("done_at", { ascending: false })
+      .limit(8),
   ]);
 
   const ranking: string[] | null = strengthRow?.ranking ?? null;
@@ -161,6 +180,20 @@ export default async function MePage() {
   }));
 
   const { data: planRow } = await planQuery;
+
+  const phaseState = await resolvePhaseState(supabase, user.id);
+
+  // In Phase 1 the banner's button goes straight to the next mission step,
+  // as Home's "Up next" does. Only fetched when it's needed.
+  let nextActivityHref: string | null = null;
+  if (phaseState.phase === 1) {
+    const { data: progressRows } = await db
+      .from("mission_progress")
+      .select("mission_id, activity_id, completed_at")
+      .eq("user_id", user.id);
+    const next = nextMissionStep((progressRows || []) as ProgressRow[]);
+    if (next) nextActivityHref = `/missions/${next.mission.id}/activities/${next.activity.id}`;
+  }
 
   return (
     <MeClient
@@ -200,8 +233,14 @@ export default async function MePage() {
         )
       }
       supportCount={supportCount ?? 0}
+      // Missing table (migration 020): the section hides itself.
+      stepsTaken={stepsError ? null : { steps: (doneSteps || []) as SmallStepRow[], total: doneStepCount ?? 0 }}
+      // A read error means migration 013 hasn't run: the section hides itself.
+      checkin={checkinState(checkinError ? null : ((checkinRows || []) as CheckinRow[]))}
       lifeStage={await getLifeStage(supabase, user.id)}
-      phase={await resolvePhase(supabase, user.id)}
+      phase={phaseState.phase}
+      reviewedAnchors={phaseState.reviewed}
+      nextActivityHref={nextActivityHref}
       // If the goals table errors, the 003 migration hasn't run — the moral
       // compass, practice loop and goals need it, so we hide those rather than
       // let students hit save-time errors that read as "the app is broken".

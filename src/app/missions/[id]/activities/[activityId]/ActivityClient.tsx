@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useId, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
-import { cn, parseReflection } from "@/lib/utils";
+import { cn, parseReflection, tint } from "@/lib/utils";
 import {
   TIERS,
   insertText,
@@ -19,14 +19,20 @@ import {
   LEFT_OUT_ANSWER as LEFT_OUT,
   smallStepOf,
   withSmallStep,
+  isRetiredEntry,
 } from "@/lib/journal";
 import { hardOnSelfRecently } from "@/lib/hardOnSelf";
 import GentleCheck from "@/components/help/GentleCheck";
 import SmallStep from "@/components/SmallStep";
+import ListenButton from "@/components/ListenButton";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
 import SupportCard from "@/components/help/SupportCard";
+import AskByLink from "@/components/AskByLink";
+import CardRecap from "@/components/CardRecap";
+import type { IdentityCard } from "@/lib/identityCard";
+import { canAskByLink } from "@/lib/askLink";
 import { mentionsCrisis } from "@/lib/help";
 import {
   INHERITANCE_GROUPS,
@@ -48,6 +54,7 @@ import {
   STRENGTH_BY_KEY,
 } from "@/lib/strengths";
 import type { JournalEntry, Challenge } from "@/types/database";
+import { useScrollToTop } from "@/lib/useScrollToTop";
 
 interface Props {
   mission: Mission;
@@ -70,6 +77,8 @@ interface Props {
   } | null;
   /** An earlier entry this step reads back (Activity.recall) */
   recalled?: { label: string; text: string } | null;
+  /** Earlier missions' cards (Mission 4's Through-Line) */
+  priorCards?: { colour: string; card: IdentityCard }[] | null;
   /** Where the student is, for the hints and sentence starters */
   lifeStage: LifeStage;
   /** The global journey phase — sets the default writing depth (lib/phase.ts). */
@@ -174,11 +183,11 @@ interface CompletedTurn {
 
 function RecallCard({ recalled, accent }: { recalled: { label: string; text: string }; accent: string }) {
   return (
-    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${accent}35` }}>
+    <div className="rounded-2xl p-4 mb-5 bg-white border-2" style={{ borderColor: `${tint(accent, "35")}` }}>
       <div className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: accent }}>
         {recalled.label}
       </div>
-      <blockquote className="text-sm text-[--ink] leading-relaxed border-l-2 pl-3 whitespace-pre-line" style={{ borderColor: `${accent}55` }}>
+      <blockquote className="text-sm text-[--ink] leading-relaxed border-l-2 pl-3 whitespace-pre-line" style={{ borderColor: `${tint(accent, "55")}` }}>
         {recalled.text}
       </blockquote>
     </div>
@@ -321,6 +330,7 @@ function ConversationalActivity({
   pairedStory,
   compass,
   recalled,
+  priorCards,
   lifeStage,
   phase,
   aiReflectionsEnabled,
@@ -330,6 +340,8 @@ function ConversationalActivity({
   activity: Activity;
   userId: string;
   recalled?: { label: string; text: string } | null;
+  /** Earlier missions' cards, for a step that builds on all of them */
+  priorCards?: { colour: string; card: IdentityCard }[] | null;
   lifeStage: LifeStage;
   phase: Phase;
   aiReflectionsEnabled: boolean;
@@ -369,13 +381,14 @@ function ConversationalActivity({
   const [editing, setEditing] = useState(false);
   const prevAnswersRef = useRef<string[]>([]);
 
-  // Quick tier uses multiple-choice when the current step has options.
-  const stepOptions = activity.starterOptions?.[qIdx];
-  const usingStarter = mode === "quick" && !!stepOptions;
-  // Extended offers half-written sentences; "stuck" hints show at every tier.
-  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions, lifeStage);
   // A sort step is answered by sorting, not writing (see lib/inheritance.ts).
   const isSortStep = activity.sortStep === qIdx;
+  // Quick tier uses multiple-choice when the current step has options. A sort
+  // step's slot in starterOptions is an empty placeholder, never a choice list.
+  const stepOptions = activity.starterOptions?.[qIdx];
+  const usingStarter = mode === "quick" && !isSortStep && !!stepOptions?.length;
+  // Extended offers half-written sentences; "stuck" hints show at every tier.
+  const stepScaffold = scaffoldForStep(activity.id, qIdx, activity.starterOptions, lifeStage);
   const [sortChoices, setSortChoices] = useState<SortChoices>({});
   const [customItems, setCustomItems] = useState<string[]>([]);
   const sortedCount = Object.keys(sortChoices).length;
@@ -481,6 +494,10 @@ function ConversationalActivity({
   const [supportNeeded, setSupportNeeded] = useState(false);
   const [restoredDraft, setRestoredDraft] = useState(false);
   const [existingResponse] = useState(existingEntry?.response || "");
+  // Written under questions this step has since replaced (Activity.retiredQuestions):
+  // kept as written, but reopening starts fresh and saves a new entry.
+  const retiredEntry = isRetiredEntry(existingResponse || previousResponse, activity.retiredQuestions);
+  const [freshStart, setFreshStart] = useState(false);
   // The entry as last saved, so the small step can be added to it in place.
   const [latestResponse, setLatestResponse] = useState(existingEntry?.response || "");
   // Set when several recent entries read as hard on the self (lib/hardOnSelf).
@@ -500,7 +517,7 @@ function ConversationalActivity({
 
   // Make previous answers visible for reference on fresh runs too (post-restart)
   useEffect(() => {
-    if (prevAnswersRef.current.length === 0 && previousResponse) {
+    if (prevAnswersRef.current.length === 0 && previousResponse && !retiredEntry) {
       prevAnswersRef.current = parsePrevAnswers(previousResponse);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -550,20 +567,10 @@ function ConversationalActivity({
   const questionTopRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Bring the TOP of the new question (its scenario) into view so the user
-  // reads from the start, rather than landing scrolled to the bottom.
-  useEffect(() => {
-    if (convPhase !== "q") return;
-    const t = setTimeout(() => {
-      // First question: reset the scroll area to the very top.
-      if (qIdx === 0 && scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTo({ top: 0, behavior: "auto" });
-      } else {
-        questionTopRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
-      }
-    }, 60);
-    return () => clearTimeout(t);
-  }, [qIdx, convPhase]);
+  // Every new screen (intro → each question → done) opens at the top, so
+  // the student reads it from the start. On a phone the page itself scrolls,
+  // so the window is reset as well as the inner scroll area.
+  useScrollToTop(`${convPhase}-${qIdx}`, scrollAreaRef);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -629,7 +636,8 @@ function ConversationalActivity({
     setSaveError(null);
 
     // Editing keeps the small step the student already added.
-    const finalResponse = withSmallStep(buildResponse(allTurns), smallStepOf(latestResponse));
+    // A fresh start (retired questions) doesn't inherit the old entry's small step.
+    const finalResponse = withSmallStep(buildResponse(allTurns), freshStart ? "" : smallStepOf(latestResponse));
 
     let entryId = entryIdRef.current;
     if (entryId) {
@@ -668,6 +676,8 @@ function ConversationalActivity({
     clearDraft();
 
     setLatestResponse(finalResponse);
+    // The replacement is saved; editing it from here keeps its own small step.
+    setFreshStart(false);
     if (mentionsCrisis(finalResponse)) {
       setSupportNeeded(true);
     } else {
@@ -746,7 +756,19 @@ function ConversationalActivity({
   // multi-step ones start fresh (the saved response can't be reliably split).
   function startEdit() {
     const saved = turns.length ? buildResponse(turns) : existingResponse;
-    prevAnswersRef.current = parsePrevAnswers(saved);
+    if (retiredEntry && !turns.length) {
+      // Old answers don't belong under the new questions. Start blank, and
+      // save as a new entry so the old one stays in the Journal as written.
+      prevAnswersRef.current = [];
+      entryIdRef.current = null;
+      setFreshStart(true);
+      // The old entry's follow-up questions were about the old answers.
+      setAiReflection(null);
+      setReflectionFailed(false);
+    } else {
+      prevAnswersRef.current = parsePrevAnswers(saved);
+      setFreshStart(false);
+    }
     clearDraft(); // edit sessions start from the saved entry, not a stale draft
     setEditing(true);
     setSaveError(null);
@@ -785,7 +807,7 @@ function ConversationalActivity({
               <div className="flex items-center gap-2 mb-3">
                 <span
                   className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                  style={{ background: `${mission.colour}18`, color: mission.colour }}
+                  style={{ background: `${tint(mission.colour, "18")}`, color: mission.colour }}
                 >
                   {mission.subtitle} — {mission.title}
                 </span>
@@ -839,7 +861,7 @@ function ConversationalActivity({
             {compass && (compass.strengths.length > 0 || compass.values.length > 0) && (
               <div
                 className="rounded-2xl p-4 mb-5 bg-white border-2"
-                style={{ borderColor: `${mission.colour}35` }}
+                style={{ borderColor: `${tint(mission.colour, "35")}` }}
               >
                 <div
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
@@ -875,7 +897,7 @@ function ConversationalActivity({
                         <span
                           key={v}
                           className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                          style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                          style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                         >
                           {v}
                         </span>
@@ -890,7 +912,7 @@ function ConversationalActivity({
                     </div>
                     <span
                       className="px-2.5 py-1 rounded-full text-xs font-semibold border inline-block capitalize"
-                      style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                      style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                     >
                       {compass.moralStyle}-led
                     </span>
@@ -917,11 +939,14 @@ function ConversationalActivity({
             {/* An earlier answer this step builds on, read back in the student's own words */}
             {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
 
+            {/* Earlier missions' cards, for the step that joins them up */}
+            {priorCards && <CardRecap cards={priorCards} />}
+
             {/* A conversation step: the questions to take with you, before the write-up */}
             {activity.interviewQuestions && activity.interviewQuestions.length > 0 && (
               <div
                 className="rounded-2xl p-4 mb-5 bg-white border-2"
-                style={{ borderColor: `${mission.colour}35` }}
+                style={{ borderColor: `${tint(mission.colour, "35")}` }}
               >
                 <div
                   className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-3"
@@ -945,6 +970,16 @@ function ConversationalActivity({
               </div>
             )}
 
+            {/* Or send the questions as a private link, and read the answers here */}
+            {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+              <AskByLink
+                missionId={mission.id}
+                activityId={activity.id}
+                questions={activity.interviewQuestions}
+                accent={mission.colour}
+              />
+            )}
+
             {/* Another way in, so having nobody to ask never means being stuck */}
             {activity.alternative && (
               <div className="rounded-2xl p-4 mb-5 bg-white border border-[--border]">
@@ -959,7 +994,7 @@ function ConversationalActivity({
             {pairedStory && (
               <div
                 className="rounded-2xl mb-5 overflow-hidden"
-                style={{ border: `2px solid ${mission.colour}45`, background: `${mission.colour}0E` }}
+                style={{ border: `2px solid ${tint(mission.colour, "45")}`, background: `${tint(mission.colour, "0E")}` }}
               >
                 <button
                   type="button"
@@ -1012,7 +1047,7 @@ function ConversationalActivity({
                     </p>
                     <div
                       className="rounded-xl px-4 py-3 bg-white border"
-                      style={{ borderColor: `${mission.colour}35` }}
+                      style={{ borderColor: `${tint(mission.colour, "35")}` }}
                     >
                       <div
                         className="text-xs font-bold uppercase tracking-widest mb-1"
@@ -1042,7 +1077,7 @@ function ConversationalActivity({
                     <li key={i} className="flex gap-2.5 text-xs text-[--ink-muted]">
                       <span
                         className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
-                        style={{ background: `${mission.colour}60` }}
+                        style={{ background: mission.colour }}
                       >
                         {i + 1}
                       </span>
@@ -1058,7 +1093,7 @@ function ConversationalActivity({
               <div
                 role="status"
                 className="mb-3 px-4 py-3 rounded-xl border text-sm text-[--ink] leading-relaxed"
-                style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+                style={{ background: `${tint(mission.colour, "0D")}`, borderColor: `${tint(mission.colour, "25")}` }}
               >
                 We saved where you got to last time — you can pick up from
                 question {Math.min(qIdx + 1, questions.length)}.
@@ -1109,13 +1144,14 @@ function ConversationalActivity({
                     setConvPhase("intro");
                   }
                 }}
+                aria-label="Back"
                 className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
               >
                 <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
-              <span className="flex-1 text-sm font-medium text-[--ink] truncate">
+              <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink] truncate">
                 {activity.title}
               </span>
               <span className="text-xs text-[--ink-muted] flex-shrink-0">
@@ -1166,7 +1202,7 @@ function ConversationalActivity({
                   className="w-full flex items-start gap-2.5 text-left"
                 >
                   <span
-                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white mt-0.5"
+                    className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-on-accent mt-0.5"
                     style={{ background: "var(--sage)" }}
                   >
                     ✓
@@ -1213,17 +1249,20 @@ function ConversationalActivity({
                 data-animate="1"
                 className="rounded-2xl p-4 border"
                 style={{
-                  background: `${mission.colour}0D`,
-                  borderColor: `${mission.colour}25`,
+                  background: `${tint(mission.colour, "0D")}`,
+                  borderColor: `${tint(mission.colour, "25")}`,
                 }}
               >
-                <div
-                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
-                  style={{ color: mission.colour }}
-                >
-                  <span aria-hidden>✦</span> Picture this
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest"
+                    style={{ color: mission.colour }}
+                  >
+                    <span aria-hidden>✦</span> Picture this
+                  </div>
+                  <ListenButton targetId={`scenario-${qIdx}`} label="Listen to the scene" />
                 </div>
-                <p className="text-[--ink] leading-relaxed text-[0.95rem] italic">
+                <p id={`scenario-${qIdx}`} className="text-[--ink] leading-relaxed text-[0.95rem] italic">
                   {activity.scenarios[qIdx]}
                 </p>
               </div>
@@ -1241,15 +1280,18 @@ function ConversationalActivity({
 
             {/* Current question */}
             <div data-animate="2" className="question-card">
-              <div
-                className="text-xs font-bold uppercase tracking-widest mb-3"
-                style={{ color: mission.colour }}
-              >
-                {activity.scenarios?.[qIdx]
-                  ? "Now — you"
-                  : `Question ${qIdx + 1}`}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div
+                  className="text-xs font-bold uppercase tracking-widest"
+                  style={{ color: mission.colour }}
+                >
+                  {activity.scenarios?.[qIdx]
+                    ? "Now — you"
+                    : `Question ${qIdx + 1}`}
+                </div>
+                <ListenButton targetId={`question-${qIdx}`} label="Listen to the question" />
               </div>
-              <h2 className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
+              <h2 id={`question-${qIdx}`} className="text-[--ink] leading-relaxed text-base" style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}>
                 {questions[qIdx]}
               </h2>
               {/* The user's own diagnosed data appears inline with the question */}
@@ -1262,6 +1304,13 @@ function ConversationalActivity({
                 </p>
               )}
             </div>
+
+            {freshStart && qIdx === 0 && (
+              <div className="rounded-xl px-4 py-3 bg-[--surface-muted] border border-[--border] text-sm text-[--ink] leading-relaxed">
+                This step&apos;s questions have changed since you last did it, so it
+                starts fresh. What you wrote before is still in your Journal.
+              </div>
+            )}
 
             {/* Previous answer — shown while editing AND on fresh re-runs, so
                 the user can always see what they said last time */}
@@ -1278,6 +1327,25 @@ function ConversationalActivity({
 
             {recalled && activity.recall?.step === qIdx && (
               <RecallCard recalled={recalled} accent={mission.colour} />
+            )}
+
+            {/* Through-Line: questions 1–3 are each about one mission's card;
+                the last one, the thread, has all three. */}
+            {priorCards && (
+              <CardRecap
+                cards={qIdx < 3 ? priorCards.filter(({ card }) => (card.missionId ?? 1) === qIdx + 1) : priorCards}
+              />
+            )}
+
+            {/* Answers that came back by link, to quote from while writing it up */}
+            {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+              <AskByLink
+                variant="answers"
+                missionId={mission.id}
+                activityId={activity.id}
+                questions={activity.interviewQuestions}
+                accent={mission.colour}
+              />
             )}
 
             {/* What you were handed — sorted rather than written */}
@@ -1318,7 +1386,7 @@ function ConversationalActivity({
                 <div
                   data-animate="3"
                   className="rounded-2xl p-4 bg-white border-2"
-                  style={{ borderColor: `${mission.colour}35` }}
+                  style={{ borderColor: `${tint(mission.colour, "35")}` }}
                 >
                   <div
                     className="text-xs font-bold uppercase tracking-widest mb-2"
@@ -1331,7 +1399,7 @@ function ConversationalActivity({
                       <span
                         key={item}
                         className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                        style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                        style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                       >
                         {item}
                       </span>
@@ -1382,7 +1450,7 @@ function ConversationalActivity({
                   )}
                   style={
                     selectedOption === OTHER_OPTION
-                      ? { borderColor: mission.colour, background: `${mission.colour}0D` }
+                      ? { borderColor: mission.colour, background: `${tint(mission.colour, "0D")}` }
                       : { borderColor: "var(--border)" }
                   }
                 >
@@ -1416,7 +1484,7 @@ function ConversationalActivity({
                   >
                     <span className="text-[--ink]">
                       {stem.trimEnd()}
-                      <span className="text-[--ink-muted] opacity-60"> …</span>
+                      <span className="text-[--ink-muted]"> …</span>
                     </span>
                   </button>
                 ))}
@@ -1526,7 +1594,7 @@ function ConversationalActivity({
       <div className="activity-header">
         <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
-          <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+          <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
           <GetHelpButton variant="inline" />
         </div>
       </div>
@@ -1547,6 +1615,17 @@ function ConversationalActivity({
             </p>
           </div>
 
+          {/* Links sent from this step. Answers can arrive after the write-up;
+              they show here, and Edit (below) adds them to it. */}
+          {canAskByLink(activity.id) && !!activity.interviewQuestions?.length && (
+            <AskByLink
+              missionId={mission.id}
+              activityId={activity.id}
+              questions={activity.interviewQuestions}
+              accent={mission.colour}
+            />
+          )}
+
           {/* Compass check results — the Mask Check tested the strengths and
               values from earlier steps; show them so the Identity Letter has
               a clear purpose. */}
@@ -1554,7 +1633,7 @@ function ConversationalActivity({
             (compass.strengths.length > 0 || compass.values.length > 0) && (
             <div
               className="rounded-2xl p-4 mb-5 bg-white border-2"
-              style={{ borderColor: `${mission.colour}35` }}
+              style={{ borderColor: `${tint(mission.colour, "35")}` }}
               data-animate="2"
             >
               <div
@@ -1577,7 +1656,7 @@ function ConversationalActivity({
                   <span
                     key={v}
                     className="px-2.5 py-1 rounded-full text-xs font-semibold border"
-                    style={{ color: mission.colour, borderColor: `${mission.colour}55` }}
+                    style={{ color: mission.colour, borderColor: `${tint(mission.colour, "55")}` }}
                   >
                     {v}
                   </span>
@@ -1627,7 +1706,17 @@ function ConversationalActivity({
           {turns.length === 0 && existingResponse && (
             <div className="card p-5 mb-5" data-animate="2">
               <p className="text-xs text-[--ink-muted] font-medium mb-2">Your reflection</p>
-              {questions.length > 1 ? (
+              {retiredEntry ? (
+                // Written under earlier questions: shown with its own questions,
+                // never matched up against the current ones.
+                <>
+                  <p className="text-xs text-[--ink-muted] italic mb-3 leading-relaxed">
+                    You wrote this before this step&apos;s questions changed. Tap Edit to
+                    answer the new ones; this stays in your Journal either way.
+                  </p>
+                  <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-wrap">{existingResponse}</p>
+                </>
+              ) : questions.length > 1 ? (
                 <div className="space-y-4">
                   {parsePrevAnswers(existingResponse).map((answer, i) => (
                     <div key={i}>
@@ -1656,6 +1745,8 @@ function ConversationalActivity({
               accent={mission.colour}
               saved={smallStepOf(latestResponse)}
               onSave={saveSmallStep}
+              source={{ kind: "activity", key: activity.id, label: activity.title }}
+              entryId={entryIdRef.current}
             />
           )}
 
@@ -1817,6 +1908,7 @@ function ValuesPickerActivity({
   const blockedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingEntry);
+  useScrollToTop(submitted);
   // Holds the saved response locally so the summary + edit work even right
   // after a fresh submit (when the existingEntry prop is still null).
   const [savedResponse, setSavedResponse] = useState(existingEntry?.response || "");
@@ -1944,7 +2036,7 @@ function ValuesPickerActivity({
         <div className="activity-header">
           <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
             <ActivityBackLink missionId={mission.id} />
-            <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+            <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
             <GetHelpButton variant="inline" />
           </div>
         </div>
@@ -2013,7 +2105,7 @@ function ValuesPickerActivity({
       <div className="activity-header">
         <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
           <ActivityBackLink missionId={mission.id} />
-          <span className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
+          <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink]">{activity.title}</span>
           <span className="text-xs text-[--ink-muted]">
             {selectedValues.length} of {activity.valuesCount || 5}
           </span>
@@ -2138,7 +2230,7 @@ function ValuesPickerActivity({
                   aria-expanded={expanded}
                   aria-label={`What ${val} means`}
                   className={cn(
-                    "absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full border",
+                    "absolute top-1 right-1 w-6 h-6 rounded-full border",
                     "text-xs font-semibold leading-none",
                     "flex items-center justify-center transition-colors",
                     sel
@@ -2217,6 +2309,7 @@ function ChallengeActivity({
   existingChallenge,
   isCompleted,
   compass,
+  recalled,
   onComplete,
 }: {
   mission: Mission;
@@ -2225,6 +2318,8 @@ function ChallengeActivity({
   existingChallenge: Challenge | null;
   isCompleted: boolean;
   compass?: { strengths: string[]; values: string[]; growthEdges: string[]; moralStyle?: string | null } | null;
+  /** An earlier answer the challenge starts from (Mission 2: the tiny step from Step 2) */
+  recalled?: { label: string; text: string } | null;
   onComplete: () => void;
 }) {
   const db = createClient() as any;
@@ -2244,6 +2339,7 @@ function ChallengeActivity({
   const [submitted, setSubmitted] = useState(!!existingChallenge);
   const [debrief, setDebrief] = useState(existingChallenge?.debrief_response || "");
   const [debriefDone, setDebriefDone] = useState(!!existingChallenge?.completed_at);
+  useScrollToTop(`${submitted}-${debriefDone}`);
   const [debriefSupportNeeded, setDebriefSupportNeeded] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -2298,7 +2394,7 @@ function ChallengeActivity({
     <div className="activity-header">
       <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
-        <span className="text-sm font-medium text-[--ink]">{activity.title}</span>
+        <span role="heading" aria-level={1} className="text-sm font-medium text-[--ink]">{activity.title}</span>
         <GetHelpButton variant="inline" />
       </div>
     </div>
@@ -2309,6 +2405,7 @@ function ChallengeActivity({
       <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
         {header}
         <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+          {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
           <div className="card p-5 mb-5 border-l-4" style={{ borderLeftColor: "var(--gold)" }}>
             <p className="text-xs font-semibold text-[--gold-text] mb-2 uppercase tracking-wide">Check in</p>
             <p className="text-[--ink] text-sm leading-relaxed">{existingChallenge?.challenge_text}</p>
@@ -2378,6 +2475,11 @@ function ChallengeActivity({
           <h2 className="text-xl text-[--navy] mb-4" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
             Challenge accepted.
           </h2>
+          {recalled && (
+            <div className="text-left">
+              <RecallCard recalled={recalled} accent={mission.colour} />
+            </div>
+          )}
           <div className="card p-5 mb-5 text-left">
             <p className="text-sm text-[--ink] leading-relaxed whitespace-pre-line">{activity.prompt}</p>
           </div>
@@ -2420,6 +2522,7 @@ function ChallengeActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
       <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+        {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
         <div
           className="rounded-2xl p-6 mb-6 text-center"
           style={{ background: "linear-gradient(135deg, #FBBF24, #F59E0B)", color: "#451A03" }}
@@ -2434,7 +2537,7 @@ function ChallengeActivity({
         {compass && compass.growthEdges.length > 0 && (
           <div
             className="rounded-2xl p-4 mb-5 bg-white border-2"
-            style={{ borderColor: `${mission.colour}35` }}
+            style={{ borderColor: `${tint(mission.colour, "35")}` }}
           >
             <div
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
@@ -2522,9 +2625,7 @@ function StrengthsAssessmentActivity({
   ); // ranking
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (phase === "q") scrollRef.current?.scrollTo({ top: 0 });
-  }, [idx, phase]);
+  useScrollToTop(`${phase}-${idx}`, scrollRef);
 
   const cur = scenarios[idx];
   const isLast = idx === scenarios.length - 1;
@@ -2534,9 +2635,13 @@ function StrengthsAssessmentActivity({
   // short beat (long enough to see the taps register). No Next button. The timer
   // is cleared on unmount and before each new schedule so taps can't stack up.
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True between a completing tap and the jump it schedules, so the "keep these"
+  // button (for a scenario arrived at already answered) doesn't flash up.
+  const [advancing, setAdvancing] = useState(false);
   useEffect(() => () => {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
   }, []);
+  useEffect(() => setAdvancing(false), [idx]);
 
   function scheduleAdvance(
     atIdx: number,
@@ -2545,6 +2650,7 @@ function StrengthsAssessmentActivity({
   ) {
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     const last = atIdx === scenarios.length - 1;
+    setAdvancing(true);
     advanceTimer.current = setTimeout(() => {
       // The final answer only lives in mostArr/leastArr yet (the setState from
       // this same tap may not have flushed), so hand them straight to finish.
@@ -2554,6 +2660,8 @@ function StrengthsAssessmentActivity({
   }
 
   function choose(kind: "most" | "least", strength: string) {
+    // The last answer is being saved; a stray tap mustn't save it twice.
+    if (submitting) return;
     // Work out the resulting pick for this scenario synchronously so we can
     // decide whether both slots are now filled.
     let nextMost = most[idx];
@@ -2570,6 +2678,7 @@ function StrengthsAssessmentActivity({
     setMost(nextMostArr);
     setLeast(nextLeastArr);
     if (advanceTimer.current) clearTimeout(advanceTimer.current); // changing a pick cancels a pending jump
+    setAdvancing(false);
     if (nextMost && nextLeast) scheduleAdvance(idx, nextMostArr, nextLeastArr);
   }
 
@@ -2632,11 +2741,17 @@ function StrengthsAssessmentActivity({
     onComplete(summary);
   }
 
-  const header = (label: string) => (
+  // The intro has its own <h1>; elsewhere the header's name is the page heading.
+  const header = (label: string, isHeading = false) => (
     <div className="activity-header">
       <div className="max-w-lg lg:max-w-2xl mx-auto flex items-center gap-3">
         <ActivityBackLink missionId={mission.id} />
-        <span className="text-sm font-medium text-[--ink] truncate">{label}</span>
+        <span
+          {...(isHeading ? { role: "heading", "aria-level": 1 } : {})}
+          className="text-sm font-medium text-[--ink] truncate"
+        >
+          {label}
+        </span>
         <GetHelpButton variant="inline" />
       </div>
     </div>
@@ -2652,7 +2767,7 @@ function StrengthsAssessmentActivity({
             <div className="mb-6">
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{ background: `${mission.colour}18`, color: mission.colour }}
+                style={{ background: `${tint(mission.colour, "18")}`, color: mission.colour }}
               >
                 {mission.subtitle} — {mission.title}
               </span>
@@ -2697,7 +2812,7 @@ function StrengthsAssessmentActivity({
     const top5 = ranking ? topStrengths(ranking, 5) : [];
     return (
       <div className="min-h-screen flex flex-col" style={{ background: "var(--surface-muted)" }}>
-        {header(activity.title)}
+        {header(activity.title, true)}
         <div className="flex-1 overflow-y-auto pb-nav">
           <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-8">
             <div className="text-center mb-6" data-animate="1">
@@ -2809,13 +2924,14 @@ function StrengthsAssessmentActivity({
           <div className="flex items-center gap-3 mb-2">
             <button
               onClick={() => (idx > 0 ? setIdx(idx - 1) : setPhase("intro"))}
+              aria-label="Back"
               className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] hover:text-[--ink] transition-colors"
             >
               <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M13 16L7 10l6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <span className="flex-1 text-sm font-medium text-[--ink] truncate">{activity.title}</span>
+            <span role="heading" aria-level={1} className="flex-1 text-sm font-medium text-[--ink] truncate">{activity.title}</span>
             <span className="text-xs text-[--ink-muted] flex-shrink-0">
               {idx + 1} of {scenarios.length}
             </span>
@@ -2841,22 +2957,29 @@ function StrengthsAssessmentActivity({
         <div className="max-w-lg lg:max-w-2xl mx-auto px-4 pt-6 space-y-4">
           <div
             className="rounded-2xl p-4 border"
-            style={{ background: `${mission.colour}0D`, borderColor: `${mission.colour}25` }}
+            style={{ background: `${tint(mission.colour, "0D")}`, borderColor: `${tint(mission.colour, "25")}` }}
             data-animate="1"
           >
-            <div
-              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest mb-2"
-              style={{ color: mission.colour }}
-            >
-              <span aria-hidden>✦</span> Picture this
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest"
+                style={{ color: mission.colour }}
+              >
+                <span aria-hidden>✦</span> Picture this
+              </div>
+              <ListenButton targetId={`strength-scene-${idx}`} label="Listen to the scene" />
             </div>
-            <p className="text-[--ink] leading-relaxed text-[0.95rem]">{cur.scenario}</p>
+            <p id={`strength-scene-${idx}`} className="text-[--ink] leading-relaxed text-[0.95rem]">{cur.scenario}</p>
           </div>
 
           <div data-animate="2">
-            <p className="text-xs font-semibold text-[--ink] mb-2 px-0.5">
-              Tap the one MOST like you:
-            </p>
+            <div className="flex items-center justify-between gap-2 mb-2 px-0.5">
+              <p className="text-xs font-semibold text-[--ink]">Tap the one MOST like you:</p>
+              <ListenButton
+                text={cur.options.map((o) => o.text).join(". ")}
+                label="Listen to the answers"
+              />
+            </div>
             <div className="space-y-2">
               {cur.options.map((o) => {
                 const isMost = most[idx] === o.strength;
@@ -2901,8 +3024,11 @@ function StrengthsAssessmentActivity({
       </div>
 
       {/* No Next button — picking both MOST and LEAST advances on its own. This
-          bar only appears for the last-question submit and for save errors. */}
-      {(submitting || saveError || (isLast && !!most[idx] && !!least[idx])) && (
+          bar appears while saving, for save errors, and on a scenario that was
+          already answered when the student arrived (a retake pre-fills every
+          answer, and Back returns to answered ones), where nothing would
+          otherwise move them on without changing an answer. */}
+      {(submitting || saveError || (!!most[idx] && !!least[idx] && !advancing)) && (
         <div className="conv-input-bar">
           <div className="max-w-lg lg:max-w-2xl mx-auto">
             {saveError && (
@@ -2917,10 +3043,18 @@ function StrengthsAssessmentActivity({
               >
                 {submitting ? "Working out your strengths…" : "Try again"}
               </button>
-            ) : (
+            ) : submitting ? (
               <p className="text-sm text-center text-[--ink-muted] py-1">
-                {submitting ? "Working out your strengths…" : "Last one — that's a wrap ✨"}
+                Working out your strengths…
               </p>
+            ) : (
+              <button
+                onClick={() => (isLast ? finish() : setIdx(idx + 1))}
+                className="btn w-full py-3 rounded-xl text-sm text-white transition-all"
+                style={{ background: mission.colour }}
+              >
+                {isLast ? "Keep these and see my strengths →" : "Keep these and continue →"}
+              </button>
             )}
           </div>
         </div>
@@ -2940,6 +3074,7 @@ export default function ActivityClient({
   compass,
   strengthProfile,
   recalled,
+  priorCards,
   lifeStage,
   phase,
   aiReflectionsEnabled,
@@ -3080,6 +3215,7 @@ export default function ActivityClient({
         existingChallenge={existingChallenge}
         isCompleted={completed}
         compass={compass}
+        recalled={recalled}
         onComplete={handleComplete}
       />
     );
@@ -3096,6 +3232,7 @@ export default function ActivityClient({
       pairedStory={pairedStory}
       compass={compass}
       recalled={recalled}
+      priorCards={priorCards}
       lifeStage={lifeStage}
       phase={phase}
       aiReflectionsEnabled={aiReflectionsEnabled}

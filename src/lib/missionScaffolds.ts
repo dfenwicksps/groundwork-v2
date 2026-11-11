@@ -88,31 +88,17 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["Pick someone who actually likes you.", "If it feels arrogant to write down, that's usually the point."],
     ],
   },
-  "conversation-who-i-was": {
-    stems: [
-      ["I asked", "Instead of asking someone, I looked through", "Talking to them felt"],
-      ["They told me that when I was little I", "The bit I want to remember is", "In their words:"],
-      ["I didn't know that", "I was surprised they'd noticed", "I'd completely forgotten"],
-      ["Even back then I", "Something that hasn't changed is", "Little me and me now both"],
-    ],
-    stuck: [
-      ["Just say who it was. A name or 'my nan' is enough.", "Photos, videos and old school reports count too."],
-      ["Pick one story, not the whole conversation.", "Things they say all the time are often the best ones."],
-      ["Did they remember something differently from how you do?", "'Nothing really surprised me' is a fair answer too."],
-      ["Think about what you liked, how you acted, or what you cared about.", "It can be small, like still hating socks."],
-    ],
-  },
 
   // ── Mission 2 · Purpose ────────────────────────────────────────────────────
   "what-matters": {
     stems: [
-      ["Something that genuinely bothers me is", "It bothers me because", "I notice I react whenever"],
+      ["Something that genuinely bothers me is", "I lose track of time when I'm", "I notice I react whenever"],
       ["Someone I admire is", "What pulls me towards them is", "What they do that I'd want to do is"],
       ["The impact I'd want to have is", "Even a small version would be", "It would feel meaningful because"],
       ["What these have in common is", "That suggests I'm oriented towards", "The thread running through them is"],
     ],
     stuck: [
-      ["What makes you angry when you see it? That's the clue.", "Local counts — it doesn't have to be a global cause."],
+      ["What makes you angry when you see it? Or what would you do for free? Either is a clue.", "Local counts, and so does a hobby. It doesn't have to be a global cause."],
       ["Could be a teacher, a relative, an athlete, someone historical.", "It's the quality you admire that matters, not how famous they are."],
       ["Small is fine — meaningful isn't the same as large.", "Who specifically would be better off?"],
       ["Look for the repeated word or feeling across your three answers.", "If they seem unrelated, what's the need underneath all of them?"],
@@ -121,7 +107,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   "contribution-map": {
     stems: [
       ["One of my strengths that could be useful here is", "Even in a small way, I could", "Where that strength already shows up is"],
-      ["The value that feels most alive here is", "It connects because", "When I think about this cause I feel"],
+      ["The value that feels most alive here is", "It connects because", "When I think about it I feel"],
       ["Something only I could bring is", "My particular combination means", "Most people wouldn't"],
       ["A tiny version would be", "I could start this week by", "It would take about"],
     ],
@@ -170,7 +156,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["Belonging seems to require", "It's different from just being around people because", "Based on my experience,"],
     ],
     stuck: [
-      ["Accepted, not just tolerated — what's the difference for you?", "Could be one person rather than a group."],
+      ["Accepted, not just tolerated — what's the difference for you?", "Nobody yet? That's common. Where might you look: a club, a team, an online community?"],
       ["Often it's what they don't do — no judgement, no repeating things.", "Think about how they react when you get something wrong."],
       ["Almost everyone has one — naming it isn't a weakness.", "Is it the place, or how you show up there?"],
       ["You've just described two situations — what separates them?", "Is it being known, being liked, or being useful?"],
@@ -178,16 +164,16 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   },
   "fitting-in-vs-belonging": {
     stems: [
-      ["Where I feel most myself is", "What makes it possible is", "There I don't have to"],
-      ["Where I adjust myself is", "What I do differently there is", "What I hold back is"],
-      ["What fitting in costs me is", "The quieter cost is", "Over time that means"],
-      ["A group where the cost is too high is", "Genuine belonging there would look like", "I'm not sure whether I belong in"],
+      ["Where I adjust most is", "What fitting in there costs me is", "The quieter cost is"],
+      ["What I want to do about it is", "One thing I could change is", "I'm going to keep adjusting there because"],
+      ["Somewhere I'm still finding my place is", "Real belonging there would look like", "I'm not sure whether I belong in"],
+      ["Someone on the edge of my group is", "I could make room for them by", "Someone who could belong more because of me is"],
     ],
     stuck: [
-      ["No performance, no editing — where's that?", "It might be one person rather than a group."],
-      ["What do you not say in that room?", "Do you change your humour, your opinions, or your volume?"],
-      ["Not the obvious cost — the slow one.", "What do you lose by being slightly edited all the time?"],
-      ["Deciding the cost is too high is a legitimate answer.", "What would have to change for it to be real?"],
+      ["Your Mission 1 answer is above. Start from the room that costs you most.", "What do you lose by being slightly edited all the time?"],
+      ["Keeping things as they are is a legitimate choice.", "What's the smallest change that would feel more like you?"],
+      ["Still looking is a real answer.", "What would have to change for it to be real?"],
+      ["Who checks the room before they speak?", "It can be small: an invite, a question, sitting with someone."],
     ],
   },
   "across-the-gap": {
@@ -253,12 +239,12 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   "digital-self": {
     stems: [
       ["Where I spend most time online is", "How I show up there is", "It's different from real life because"],
-      ["My feed mostly reflects", "It says I'm interested in", "That's accurate — or isn't — because"],
+      ["What gets recommended to me mostly reflects", "It says I'm interested in", "That's accurate — or isn't — because"],
       ["Something I've said online I wouldn't say in person is", "What made that possible was", "Looking back I feel"],
       ["The most real version of me online is", "The most performed one is", "I perform it for"],
     ],
     stuck: [
-      ["Pick one platform, not all of them.", "Are you louder or quieter online than off?"],
+      ["Pick one place: a group chat, a game, an app.", "Are you louder or quieter online than off?"],
       ["Actually open it and scroll. What's the first thing you see?", "Is it who you are, or who you were six months ago?"],
       ["Distance and anonymity make things easier to say. Which was it?", "It doesn't have to be something bad."],
       ["Who is the audience for the performed version?", "Which version would you be happiest for a parent to scroll through?"],
@@ -272,9 +258,9 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["The thread is", "What's true in all three is", "Underneath all of it, I'm someone who"],
     ],
     stuck: [
-      ["Check your strengths and values on the Me page.", "What surprised you most back then?"],
-      ["Honest, not impressive.", "What would you still do if nobody ever knew?"],
-      ["What kind of people, not which people.", "What does belonging require, for you?"],
+      ["Your Who I Am card is above.", "What surprised you most back then?"],
+      ["Your Purpose card is above. Honest, not impressive.", "What would you still do if nobody ever knew?"],
+      ["Your Connection card is above. What kind of people, not which people.", "What does belonging require, for you?"],
       ["One sentence. If it needs a paragraph, it isn't the thread yet.", "Where it leads is the next step's job \u2014 this one is just what's true."],
     ],
   },
@@ -298,13 +284,50 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
  * The scaffold for one step of an activity. `quick` comes from the activity's
  * own starterOptions, which are authored alongside the questions in missions.ts.
  */
+/** Year 7–9's "What I Want to Explore" (stageContentMission2.ts): starters for exploring, not committing. */
+const JUNIOR_EXPLORE: ActivityScaffold = {
+  stems: [
+    ["I want to find out more about", "The part I'm most curious about is", "I'd like to try"],
+    ["I'm curious about it because I'm", "My value of ___ is part of it because", "It fits me because"],
+    ["This year I could", "Someone I could ask is", "One thing I could try is"],
+    ["It matters to me right now because", "I'm into it because", "I keep thinking about it because"],
+  ],
+  stuck: [
+    ["It can be small: a skill, a hobby, a question you keep wondering about.", "You can change it later. That's what exploring means."],
+    ["Check your Me page for your strengths and values.", "Curious, creative and kind all count."],
+    ["A club, a video, a question to a teacher or family member.", "Something you could do before the end of term."],
+    ["'It's fun' is a real reason.", "Has it been on your mind for a while?"],
+  ],
+};
+
+/** Year 7–9's version of the Mission 4 letter (stageContentMission4.ts). */
+const JUNIOR_LETTER: ActivityScaffold = {
+  stems: [
+    ["I want more", "Over the next few years I'd like to", "The direction I want to head in is"],
+    ["I might need to do less", "To head that way I'd skip", "Something that gets in the way is"],
+    ["I want to keep close", "The people I want around are", "Someone I don't want to drift from is"],
+    ["It matters because", "When I forget, remember", "I'm into it because"],
+  ],
+  stuck: [
+    ["Think 'more of', not 'a job'.", "It can change later. That's fine."],
+    ["Less, not none.", "What eats your time without giving much back?"],
+    ["Name one person if you can.", "Friends, family, a coach, a team."],
+    ["'It makes me happy' is a real reason.", "Write it for a day you feel stuck."],
+  ],
+};
+
 export function scaffoldForStep(
   activityId: string,
   stepIndex: number,
   starterOptions?: string[][],
   stage?: LifeStage
 ): Scaffold {
-  const s = MISSION_SCAFFOLDS[activityId];
+  const s =
+    stage === "junior" && activityId === "commitment-statement"
+      ? JUNIOR_EXPLORE
+      : stage === "junior" && activityId === "meaning-letter"
+        ? JUNIOR_LETTER
+        : MISSION_SCAFFOLDS[activityId];
   // The Future Self's age moves with the student; its hints name that age.
   const line = (t: string) =>
     stage && activityId === "future-self" ? futureSelfLine(t, stage) : t;

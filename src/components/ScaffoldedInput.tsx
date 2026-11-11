@@ -1,5 +1,6 @@
 "use client";
 
+import ListenButton from "@/components/ListenButton";
 import { useRef, useState, useEffect, useCallback } from "react";
 import {
   TIERS,
@@ -137,6 +138,13 @@ export default function ScaffoldedInput({
       {/* Quick — complete answers, tapped then editable */}
       {showQuick && (
         <div className="flex flex-wrap gap-1.5 mb-2.5">
+          {/* Read the tap-answers aloud, for anyone who finds reading them slow. */}
+          <ListenButton
+            compact
+            text={scaffold!.quick!.join(". ")}
+            label="Listen to the answers"
+            className="self-center"
+          />
           {scaffold!.quick!.map((q) => (
             <button
               key={q}
@@ -162,7 +170,7 @@ export default function ScaffoldedInput({
             >
               <span>
                 {s.trimEnd()}
-                <span className="text-[--ink-muted] opacity-60"> …</span>
+                <span className="text-[--ink-muted]"> …</span>
               </span>
             </button>
           ))}

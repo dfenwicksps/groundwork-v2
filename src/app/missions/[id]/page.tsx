@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
 import { getMission } from "@/lib/missions";
+import { getLifeStage } from "@/lib/lifeStageServer";
+import { missionForStage } from "@/lib/stageContent";
+import { loadMissionCard } from "@/lib/missionCardsServer";
+import type { IdentityCard } from "@/lib/identityCard";
 import MissionDetailClient from "./MissionDetailClient";
 
 export const dynamic = 'force-dynamic';
+
+export function generateMetadata({ params }: { params: { id: string } }): Metadata {
+  const m = getMission(parseInt(params.id));
+  return { title: m ? `Mission ${m.id}: ${m.title}` : "Mission" };
+}
 
 export default async function MissionPage({
   params,
@@ -16,8 +26,11 @@ export default async function MissionPage({
   if (!user) redirect("/auth");
 
   const missionId = parseInt(params.id);
-  const mission = getMission(missionId);
-  if (!mission) notFound();
+  const baseMission = getMission(missionId);
+  if (!baseMission) notFound();
+  // Description and steps worded for where the student is; see lib/stageContent.ts.
+  const lifeStage = await getLifeStage(supabase, user.id);
+  const mission = missionForStage(baseMission, lifeStage);
 
   // Get progress for this mission
   const { data: progress } = await supabase
@@ -35,12 +48,17 @@ export default async function MissionPage({
 
   const completedActivities = new Set((progress as Array<{ activity_id: string }> | null)?.map((p) => p.activity_id) || []);
 
+  // Every mission builds a card as it goes (lib/identityCard.ts): Who I Am,
+  // Purpose, Connection, then Direction.
+  const identityCard: IdentityCard | null = await loadMissionCard(supabase, user.id, missionId, lifeStage);
+
   return (
     <MissionDetailClient
       mission={mission}
       userId={user.id}
       completedActivities={completedActivities}
       stories={stories || []}
+      identityCard={identityCard}
     />
   );
 }

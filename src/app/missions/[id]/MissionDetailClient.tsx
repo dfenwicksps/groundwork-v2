@@ -4,10 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { cn } from "@/lib/utils";
+import { cn, tint } from "@/lib/utils";
 import { requiredSteps, requiredDone, type Mission } from "@/lib/missions";
 import AppShell from "@/components/layout/AppShell";
 import { WEEKLY_BY_KEY } from "@/lib/program";
+import IdentityCard from "@/components/IdentityCard";
+import type { IdentityCard as IdentityCardData } from "@/lib/identityCard";
 
 interface StoryPreview {
   id: string;
@@ -21,6 +23,8 @@ interface Props {
   userId: string;
   completedActivities: Set<string>;
   stories: StoryPreview[];
+  /** Mission 1 only: the Who I Am card, filled as far as the student has got */
+  identityCard?: IdentityCardData | null;
 }
 
 export default function MissionDetailClient({
@@ -28,6 +32,7 @@ export default function MissionDetailClient({
   userId,
   completedActivities,
   stories,
+  identityCard,
 }: Props) {
   const router = useRouter();
   const [confirmingRestart, setConfirmingRestart] = useState(false);
@@ -67,6 +72,7 @@ export default function MissionDetailClient({
         <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10"
           style={{ background: "white", transform: "translate(40%, -40%)" }}
+          aria-hidden
         />
         <div className="max-w-2xl mx-auto relative">
           <Link
@@ -118,7 +124,7 @@ export default function MissionDetailClient({
             {mission.strands.map((k) => (
               <span
                 key={k}
-                className="font-semibold px-1.5 py-0.5 rounded bg-white/15 text-white"
+                className="font-semibold px-1.5 py-0.5 rounded bg-black/20 text-white"
               >
                 {WEEKLY_BY_KEY[k].emoji} {WEEKLY_BY_KEY[k].name}
               </span>
@@ -145,215 +151,226 @@ export default function MissionDetailClient({
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-8 lg:max-w-none lg:mx-0 lg:p-0">
-        {/* Journey — activities with stories woven in */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-              The steps
-            </h2>
-            {stories.length > 0 && (
-              <Link href="/stories" className="text-xs text-teal hover:underline">
-                All stories
-              </Link>
-            )}
-          </div>
+        {identityCard && <IdentityCard card={identityCard} colour={mission.colour} />}
 
-          {/* Build a map: which story appears before which activity index */}
-          {(() => {
-            const storySlots = new Map<number, StoryPreview>();
-            mission.activities.forEach((a, idx) => {
-              const s = stories.find((st) => st.title === a.storyBefore);
-              if (s) storySlots.set(idx, s);
-            });
-
-            const firstIncompleteIdx = mission.activities.findIndex(
-              (a) => !a.locked && !a.optional && !completedActivities.has(a.id)
-            );
-            const firstOptionalIdx = mission.activities.findIndex((a) => a.optional);
-
-            return (
-              <div className="space-y-2">
-                {mission.activities.map((activity, idx) => {
-                  const completed = completedActivities.has(activity.id);
-                  const isLocked = activity.locked;
-                  const isCurrent = idx === firstIncompleteIdx;
-                  const story = storySlots.get(idx) ?? null;
-
-                  return (
-                    <div key={activity.id}>
-                      {idx === firstOptionalIdx && (
-                        <div className="pt-3 pb-1 px-0.5">
-                          <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-                            {mission.activities.filter((a) => a.optional).length > 1
-                              ? "Optional extras"
-                              : "Optional extra"}
-                          </div>
-                          <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
-                            These don&apos;t count towards the mission. Do them when
-                            you&apos;re ready, or not at all.
-                          </p>
-                        </div>
-                      )}
-                      {/* Story card woven in before this activity */}
-                      {story && (
-                        <Link
-                          href={`/stories/${story.id}`}
-                          className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl border border-dashed transition-all hover:border-solid hover:shadow-soft group"
-                          style={{ borderColor: `${mission.colour}40`, background: `${mission.colour}06` }}
-                        >
-                          <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
-                            style={{ background: mission.colour }}
-                            aria-hidden
-                          >
-                            📖
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
-                              Based on a real student · goes with the next step
-                            </div>
-                            <div className="text-sm font-medium text-ink truncate">
-                              {story.title}
-                            </div>
-                            <div className="text-xs text-ink-muted mt-0.5 truncate">
-                              {story.teaser}
-                            </div>
-                          </div>
-                          <svg aria-hidden="true"
-                            width="14" height="14" viewBox="0 0 14 14" fill="none"
-                            className="text-ink-muted flex-shrink-0"
-                          >
-                            <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </Link>
-                      )}
-
-                      {isLocked ? (
-                        <div className="card p-4 opacity-50">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full border-2 border-dashed border-surface-border flex items-center justify-center text-xs text-ink-muted">
-                              🔒
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-ink-muted">
-                                Coming soon
-                              </div>
-                              <div className="text-xs text-ink-muted mt-0.5">
-                                More activities being added
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <Link
-                          href={`/missions/${mission.id}/activities/${activity.id}`}
-                          className={cn(
-                            "card p-4 flex items-center gap-3 transition-all",
-                            completed
-                              ? "hover:shadow-soft"
-                              : isCurrent
-                              ? "ring-2 ring-teal hover:shadow-card"
-                              : activity.optional
-                              ? "hover:shadow-soft"
-                              : "hover:shadow-soft opacity-70"
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm",
-                              completed
-                                ? "bg-sage text-white"
-                                : isCurrent
-                                ? "bg-teal text-white"
-                                : "bg-surface-muted text-ink-muted border border-surface-border"
-                            )}
-                          >
-                            {completed ? (
-                              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                <path d="M2.5 7L5.5 10L11.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            ) : activity.optional ? (
-                              <span aria-hidden>{activity.interviewQuestions ? "💬" : "✦"}</span>
-                            ) : (
-                              <span>{idx + 1}</span>
-                            )}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className={cn("text-sm font-medium", completed ? "text-ink-muted" : "text-ink")}>
-                                {activity.title}
-                              </span>
-                              {activity.isMilestone && (
-                                <span className="text-xs text-coral bg-coral/10 px-1.5 py-0.5 rounded font-medium">
-                                  ★ Milestone
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-xs text-ink-muted">{activity.subtitle}</span>
-                              {activity.timeEstimate && !completed && !activity.optional && (
-                                <span className="text-xs text-ink-muted">· {activity.timeEstimate}</span>
-                              )}
-                            </div>
-                          </div>
-
-                          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
-                            <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </Link>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })()}
-        </div>
-
-        {/* Remaining stories not woven into activities */}
-        {(() => {
-          const usedStoryTitles = new Set(
-            mission.activities.map((a) => a.storyBefore).filter((t): t is string => t !== undefined)
-          );
-          const remainingStories = stories.filter((s) => !usedStoryTitles.has(s.title));
-          if (remainingStories.length === 0) return null;
-          return (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
-                  More stories
-                </h2>
+        {identityCard ? (
+          // The card is the mission's navigation; what isn't on it (optional
+          // steps, stories) sits just below it.
+          <MissionExtras mission={mission} stories={stories} completedActivities={completedActivities} />
+        ) : (
+          // No card (its answers couldn't be loaded): the full list of steps.
+          <>
+          {/* Journey — activities with stories woven in */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                The steps
+              </h2>
+              {stories.length > 0 && (
                 <Link href="/stories" className="text-xs text-teal hover:underline">
                   All stories
                 </Link>
-              </div>
-              <div className="space-y-2">
-                {remainingStories.map((story) => (
-                  <Link
-                    key={story.id}
-                    href={`/stories/${story.id}`}
-                    className="card p-4 flex items-center gap-3 hover:shadow-card transition-all"
-                  >
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-white text-sm"
-                      style={{ background: mission.colour }}
-                    >
-                      📖
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-ink truncate">{story.title}</div>
-                      <div className="text-xs text-ink-muted mt-0.5 truncate">{story.teaser}</div>
-                    </div>
-                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
-                      <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </Link>
-                ))}
-              </div>
+              )}
             </div>
-          );
-        })()}
+
+            {/* Build a map: which story appears before which activity index */}
+            {(() => {
+              const storySlots = new Map<number, StoryPreview>();
+              mission.activities.forEach((a, idx) => {
+                const s = stories.find((st) => st.title === a.storyBefore);
+                if (s) storySlots.set(idx, s);
+              });
+
+              const firstIncompleteIdx = mission.activities.findIndex(
+                (a) => !a.locked && !a.optional && !completedActivities.has(a.id)
+              );
+              const firstOptionalIdx = mission.activities.findIndex((a) => a.optional);
+
+              return (
+                <div className="space-y-2">
+                  {mission.activities.map((activity, idx) => {
+                    const completed = completedActivities.has(activity.id);
+                    const isLocked = activity.locked;
+                    const isCurrent = idx === firstIncompleteIdx;
+                    const story = storySlots.get(idx) ?? null;
+
+                    return (
+                      <div key={activity.id}>
+                        {idx === firstOptionalIdx && (
+                          <div className="pt-3 pb-1 px-0.5">
+                            <div className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                              {mission.activities.filter((a) => a.optional).length > 1
+                                ? "Optional extras"
+                                : "Optional extra"}
+                            </div>
+                            <p className="text-xs text-ink-muted leading-relaxed mt-0.5">
+                              These don&apos;t count towards the mission. Do them when
+                              you&apos;re ready, or not at all.
+                            </p>
+                          </div>
+                        )}
+                        {/* Story card woven in before this activity */}
+                        {story && (
+                          <Link
+                            href={`/stories/${story.id}`}
+                            className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl border border-dashed transition-all hover:border-solid hover:shadow-soft group"
+                            style={{ borderColor: `${tint(mission.colour, "40")}`, background: `${tint(mission.colour, "06")}` }}
+                          >
+                            <div
+                              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                              style={{ background: mission.colour }}
+                              aria-hidden
+                            >
+                              📖
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                                Based on a real student · goes with the next step
+                              </div>
+                              <div className="text-sm font-medium text-ink truncate">
+                                {story.title}
+                              </div>
+                              <div className="text-xs text-ink-muted mt-0.5 truncate">
+                                {story.teaser}
+                              </div>
+                            </div>
+                            <svg aria-hidden="true"
+                              width="14" height="14" viewBox="0 0 14 14" fill="none"
+                              className="text-ink-muted flex-shrink-0"
+                            >
+                              <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </Link>
+                        )}
+
+                        {isLocked ? (
+                          <div className="card p-4 opacity-50">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full border-2 border-dashed border-surface-border flex items-center justify-center text-xs text-ink-muted">
+                                🔒
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-ink-muted">
+                                  Coming soon
+                                </div>
+                                <div className="text-xs text-ink-muted mt-0.5">
+                                  More activities being added
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <Link
+                            href={`/missions/${mission.id}/activities/${activity.id}`}
+                            className={cn(
+                              "card p-4 flex items-center gap-3 transition-all",
+                              completed
+                                ? "hover:shadow-soft"
+                                : isCurrent
+                                ? "ring-2 ring-teal hover:shadow-card"
+                                : activity.optional
+                                ? "hover:shadow-soft"
+                                : "hover:shadow-soft"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm",
+                                completed
+                                  ? "bg-sage text-on-accent"
+                                  : isCurrent
+                                  ? "bg-teal text-on-accent"
+                                  : "bg-surface-muted text-ink-muted border border-surface-border"
+                              )}
+                            >
+                              {completed ? (
+                                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                  <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              ) : activity.optional ? (
+                                <span aria-hidden>{activity.interviewQuestions ? "💬" : "✦"}</span>
+                              ) : (
+                                <span>{idx + 1}</span>
+                              )}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className={cn("text-sm font-medium", completed ? "text-ink-muted" : "text-ink")}>
+                                  {activity.title}
+                                </span>
+                                {activity.isMilestone && (
+                                  <span className="text-xs text-coral bg-coral/10 px-1.5 py-0.5 rounded font-medium">
+                                    ★ Milestone
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-xs text-ink-muted">{activity.subtitle}</span>
+                                {activity.timeEstimate && !completed && !activity.optional && (
+                                  <span className="text-xs text-ink-muted">· {activity.timeEstimate}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
+                              <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Remaining stories not woven into activities */}
+          {(() => {
+            const usedStoryTitles = new Set(
+              mission.activities.map((a) => a.storyBefore).filter((t): t is string => t !== undefined)
+            );
+            const remainingStories = stories.filter((s) => !usedStoryTitles.has(s.title));
+            if (remainingStories.length === 0) return null;
+            return (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+                    More stories
+                  </h2>
+                  <Link href="/stories" className="text-xs text-teal hover:underline">
+                    All stories
+                  </Link>
+                </div>
+                <div className="space-y-2">
+                  {remainingStories.map((story) => (
+                    <Link
+                      key={story.id}
+                      href={`/stories/${story.id}`}
+                      className="card p-4 flex items-center gap-3 hover:shadow-card transition-all"
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-white text-sm"
+                        style={{ background: mission.colour }}
+                      >
+                        📖
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-ink truncate">{story.title}</div>
+                        <div className="text-xs text-ink-muted mt-0.5 truncate">{story.teaser}</div>
+                      </div>
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
+                        <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          </>
+        )}
 
         {/* Restart mission — only shown once there's progress to reset */}
         {totalCompleted > 0 && (
@@ -402,5 +419,116 @@ export default function MissionDetailClient({
       </div>
       </div>
     </AppShell>
+  );
+}
+
+/**
+ * Below the mission's card: the optional steps (not on the card, and not
+ * counted towards the mission) and the mission's stories, each story saying
+ * which step it goes with.
+ */
+function MissionExtras({
+  mission,
+  stories,
+  completedActivities,
+}: {
+  mission: Mission;
+  stories: StoryPreview[];
+  completedActivities: Set<string>;
+}) {
+  const optional = mission.activities.filter((a) => a.optional);
+  const required = mission.activities.filter((a) => !a.optional);
+  const goesWith = (title: string) => {
+    const i = required.findIndex((a) => a.storyBefore === title);
+    return i === -1 ? null : { step: i + 1, title: required[i].title };
+  };
+  // Stories in step order, the unplaced ones after.
+  const ordered = [...stories].sort((x, y) => (goesWith(x.title)?.step ?? 99) - (goesWith(y.title)?.step ?? 99));
+  if (optional.length === 0 && ordered.length === 0) return null;
+
+  const arrow = (
+    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-ink-muted flex-shrink-0">
+      <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  return (
+    <section aria-labelledby="mission-extras">
+      <div className="flex items-baseline justify-between mb-1">
+        <h2 id="mission-extras" className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+          Extras
+        </h2>
+        {ordered.length > 0 && (
+          <Link href="/stories" className="text-xs text-teal hover:underline">
+            All stories
+          </Link>
+        )}
+      </div>
+      <p className="text-xs text-ink-muted leading-relaxed mb-3">
+        Optional, and they don&apos;t count towards the mission. Do them when you&apos;re ready, or not at all.
+      </p>
+      <div className="space-y-2">
+        {optional.map((a) => {
+          const done = completedActivities.has(a.id);
+          return (
+            <Link
+              key={a.id}
+              href={`/missions/${mission.id}/activities/${a.id}`}
+              className="card p-4 flex items-center gap-3 hover:shadow-soft transition-all"
+            >
+              <div
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm",
+                  done ? "bg-sage text-on-accent" : "bg-surface-muted text-ink-muted border border-surface-border"
+                )}
+              >
+                {done ? (
+                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M2.5 7L5.5 10L11.5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : (
+                  <span aria-hidden>{a.interviewQuestions ? "💬" : "✦"}</span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-ink">{a.title}</div>
+                <div className="text-xs text-ink-muted mt-0.5">
+                  {a.subtitle}
+                  {done && " · done"}
+                </div>
+              </div>
+              {arrow}
+            </Link>
+          );
+        })}
+        {ordered.map((story) => {
+          const w = goesWith(story.title);
+          return (
+            <Link
+              key={story.id}
+              href={`/stories/${story.id}`}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed transition-all hover:border-solid hover:shadow-soft"
+              style={{ borderColor: tint(mission.colour, "40"), background: tint(mission.colour, "06") }}
+            >
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
+                style={{ background: mission.colour }}
+                aria-hidden
+              >
+                📖
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: mission.colour }}>
+                  {w ? `A real story · goes with Step ${w.step}` : "A real story"}
+                </div>
+                <div className="text-sm font-medium text-ink truncate">{story.title}</div>
+                <div className="text-xs text-ink-muted mt-0.5 truncate">{story.teaser}</div>
+              </div>
+              {arrow}
+            </Link>
+          );
+        })}
+      </div>
+    </section>
   );
 }
