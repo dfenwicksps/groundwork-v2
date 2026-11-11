@@ -1,0 +1,41 @@
+# Checks for the v3 branch. Runs on pushes to v3 and on pull requests into it.
+# Nothing here deploys, and nothing here has a secret: the access tests run
+# against an in-memory Postgres inside the job (tests/v3/access/db.ts).
+name: v3 checks
+
+on:
+  push:
+    branches: [v3]
+  pull_request:
+    branches: [v3]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v3-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Safety phrase lists
+        run: npm run check:phrases
+      - name: Unit and access tests
+        run: npm test
+      - name: Schema draft loads and keeps its rules
+        run: npm run check:schema
+      - name: Selves master validates
+        run: npx --yes tsx scripts/v3/validate-selves.ts
+      - name: Build
+        run: npm run build
