@@ -142,7 +142,7 @@ export interface Self {
   key: string;
   name: string;
   level: LevelId;
-  /** An icon name from the master's icon set. */
+  /** An emoji, as v2's selves have (D39). The master's line-icon names aren't used. */
   icon: string;
   /** One line, in a teenager's words. */
   short: string;

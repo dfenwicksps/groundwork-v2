@@ -201,3 +201,16 @@ Phase 1 is the shell: schools, roles, sign-in, class codes, content import, v2 c
 - **Two sources of truth for content** while v2's files and the database both hold it. Controlled by keeping the files as the source and the database as a build output until Phase 2.
 - **`v3` drifting from `main`.** If v2 keeps changing on `main`, `v3` needs regular merges. A v2 freeze, or a rule that v2 fixes land on `main` first and are merged across weekly, would help.
 - **The Phase 0 gate isn't passed yet.** It needs the wellbeing lead's sign-off on `visibility.md`. Part 1a is safe to start before that, since it only tests the rules as written; 1c and 1d build on them.
+
+## 7. After David's review (12 Nov 2026)
+
+David answered the questions in section 5. His answers are D27–D39 in [DECISIONS.md](DECISIONS.md), and sections 1–6 above are left as they were written. What changed in the repo as a result:
+
+- `school_id` removed from the 18 student-owned tables in the schema draft (D29). The schema check still passes, 93 checks.
+- PGlite is a dev dependency, run with `npm run check:schema` (D37).
+- The duplicate brief is deleted and the master is `docs/v3/source/who-am-i-becoming.html` (D38).
+- `navigation.md`: the outcome check-in moves to Home (D33), the three-phase journey becomes a setting (D34), the self-check has one statement per self (D30), and Grow is proposed ungated (D35).
+- Commit `11abf85` is PR #76 against `main` (D27).
+
+Still open: D31's reading (25 selves), D35 (no gates in Grow), who chooses the journey setting (D34), first or second person for `short`, and who the wellbeing lead is.
+

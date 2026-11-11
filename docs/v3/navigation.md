@@ -40,7 +40,7 @@ A redirect from `/dashboard` to `/home` keeps old links and the installed home-s
 | --- | --- | --- |
 | `/me` | The Selves map: seven levels, 26 selves, any order, an "explored" mark and nothing else (no locks, percentages or progress bars). The self-check's suggested selves are highlighted. Entry points to the self-check, strengths and the Who I Am card. | **Replaces** `me/MeClient.tsx` (a four-tab page today: profile, reflect, grow, future). The map itself is **new**; its visual language comes from the HTML master's home view. |
 | `/me/selves/[key]` | One self: `short`, the story (`hook`, figure, beats, `turn`), `what` and `notThis`, the reflective prompt, the living-it challenge with an "accept" button, `builtBy` links into Grow, the school's `localLink`, at most one featured clip and two extras, and the sources, collapsed. A confused-pair prompt where one exists ("these two get mixed up"). Never the teacher notes. | **Replaces** `me/SelvesSection.tsx` (nine selves in a list). **Reuses** `CONFUSED_PAIRS` from `selves.ts`. |
-| `/me/self-check` | 21 statements, three per level, on a five-point scale from "Not like me" to "Very like me". | **New.** Layout can follow `CheckinForm`. |
+| `/me/self-check` | One statement per self (D30; 26 as the master stands, 25 if D31 is confirmed), grouped by level, on a five-point scale from "Not like me" to "Very like me". | **New.** Layout can follow `CheckinForm`. |
 | `/me/self-check/result` | Words only: one or two levels where the student is already steady, two or three selves that might be worth exploring. No numbers anywhere. Earlier results side by side, using the revisit pattern. A retake is offered once a term. | **New.** Comparison follows `revisit.ts`. |
 | `/me/strengths` | The VIA-24 profile, Strengths Mapping (take or retake), and strength-in-action practice. | **Reuses** the strengths activity (`strengths.ts`, today at `/missions/1/activities/strengths-mapping`), `PracticeSection`, `BecomingQualities`, `becoming.ts`. |
 | `/me/card` | The Who I Am card: top strengths, values, Character Code, the life-story sentence. | **Reuses** the profile tab of `MeClient.tsx` and `/story` (`StoryClient`, `myStory.ts`). |
@@ -104,7 +104,7 @@ From spec section 4. Every step can be left and resumed.
 
 **A student with no class code** taps "I'm using Groundwork on my own" at step 2 and picks a year group the way v2's onboarding asks for a life stage. They get the whole student app and no teacher layer. They can enter a code later from Settings.
 
-**Two things in v2's onboarding have no place in this flow yet.** The start-of-program check-in (`/check-in`, the evaluation measure) is asked during v2 onboarding, and v2's onboarding also asks why the student is here and has them pick strengths and values. Putting the check-in and the self-check back to back gives a new student two questionnaires before they've seen anything. A proposal is in the Phase 0 report; it needs David's decision before Phase 1.
+**The start-of-program check-in is not part of this flow (D33).** v2 asks it during onboarding. In v3 the self-check is the only questionnaire a new student meets; Home offers the check-in (`/check-in`, the evaluation measure) as a card a few days after the first session. How many days, and what happens to the "start" measure for a student who puts it off for weeks, are open and affect the evaluation plan in `docs/evidence/evidence-plan.md`. v2's onboarding also asks why the student is here and has them pick strengths and values; those have no step here (see "Screens with no home").
 
 ## 4. The teacher area: four areas, no individual student data
 
@@ -167,7 +167,7 @@ All of it is **new**. v2's `scripts/completion-report.ts` is the precedent for t
 | `/revisit/[entryId]` | `/journal/revisit/[entryId]` | Moved under Journal. |
 | `/stories`, `/stories/[id]` | inside Grow activities | See section 8. |
 | `/support` | `/support`, and every screen | Adds the school's card. |
-| `/check-in` | `/check-in` | Unchanged; where it's asked in the new flow is open. |
+| `/check-in` | `/check-in` | The screen is unchanged. It is no longer asked during onboarding: Home offers it a few days after the student's first session (D33). |
 | `/settings` | `/settings` | Adds "leave a class". |
 | `/ask/[token]` | `/ask/[token]` | Unchanged. |
 | `/privacy`, `/terms` | same | Rewritten for the teacher layer. |
@@ -177,7 +177,7 @@ All of it is **new**. v2's `scripts/completion-report.ts` is the precedent for t
 | v2 screen | Why it has no home | What happens to its content |
 | --- | --- | --- |
 | `/stories` (the stories index) | Spec section 4 and the multimedia review: stories work at the step they model, not as a library to browse. | Each story is offered inside its activity. `/stories/[id]` stays reachable by direct link so a "before you start" card has somewhere to open. |
-| `me/JourneyStrip.tsx`, `PhaseBanner`, and `journey_phase` on `users` (the three-phase journey: first pass, review, deepen) | The spec doesn't mention the three phases. They aren't a level lock, so D3 doesn't rule them out, but a phase banner next to a level map gives the student two "where am I up to" signals. | **Undecided.** Kept in the schema draft so nothing is lost. Question for David in the Phase 0 report. |
+| `me/JourneyStrip.tsx`, `PhaseBanner`, and `journey_phase` on `users` (the three-phase journey: first pass, review, deepen) | The spec doesn't mention the three phases. They aren't a level lock, so D3 doesn't rule them out, but a phase banner next to a level map gives the student two "where am I up to" signals. | **Kept as a setting (D34).** Off unless chosen. Whether the school or the student chooses is still to be confirmed; `journey_phase` stays in the schema draft either way. |
 | The Missions tab and the This Week tab, as tabs | Merged into Grow (spec section 4). | All content is kept. |
 | `/onboarding` steps "why are you here" and the strengths-and-values picker | The new-student flow goes from welcome to self-check. | Values still get chosen in Mission 1's Values Clarifier, and strengths in Strengths Mapping. `onboarding_results` is kept in the schema draft. |
 
@@ -185,5 +185,5 @@ All of it is **new**. v2's `scripts/completion-report.ts` is the precedent for t
 
 These aren't in the spec and would be easy to break.
 
-1. **v2 already gates some content, on purpose.** `spine.ts` holds the 10-week program until Mission 1 is done, and holds weeks 3, 6 and 9 until the mission they're built on is done, because those weeks reuse what the mission produced. D3 says *levels* have no locks. It doesn't say Grow has none. This map keeps v2's gating inside Grow and applies no gating at all to the Selves map. If David wants Grow ungated too, weeks 1, 2, 3, 6 and 9 need a fallback for a student who arrives with no strengths or values.
+1. **v2 gates some content in Grow; v3 will not (D35, proposed).** `spine.ts` holds the 10-week program until Mission 1 is done, and holds weeks 3, 6 and 9 until the mission they're built on is done, because those weeks reuse what the mission produced. David asked for the evidence to decide. It supports a recommended order and against a block: see D35. The proposal is that every week opens; a week that needs something from a mission (values, strengths) says so and lets the student choose it there and then, or go and do the mission. Home's "Up next" card keeps suggesting v2's order.
 2. **Class focus points at a self; most of Grow is still mission-shaped.** A teacher sets "self-compassion" as the focus, and the student's Home shows its living-it challenge. For the 17 new selves there is no Grow activity yet that builds them, so `builtBy` will be empty for most of the map until content is written in Phase 2. The self page has to read sensibly with no `builtBy` links.
