@@ -180,34 +180,6 @@ as $$
   select school_id from staff where user_id = auth.uid()
 $$;
 
--- The school a student's rows are filed under: the school of the class they
--- joined first. Null for a student with no class (V-S10). Always worked out
--- here, never taken from the client (D16, V-S8).
-create function public.school_of(p_user uuid)
-returns uuid language sql stable security definer set search_path = public
-as $$
-  select c.school_id
-    from class_members m join classes c on c.id = m.class_id
-   where m.student_id = p_user
-   order by m.joined_at
-   limit 1
-$$;
-
--- Sets school_id on a student's row when it's written, and stops it being
--- changed afterwards (V-S8).
-create function public.set_row_school()
-returns trigger language plpgsql security definer set search_path = public
-as $$
-begin
-  if tg_op = 'INSERT' then
-    new.school_id := public.school_of(auth.uid());
-  else
-    new.school_id := old.school_id;
-  end if;
-  return new;
-end;
-$$;
-
 create function public.set_updated_at()
 returns trigger language plpgsql
 as $$
@@ -288,16 +260,17 @@ create trigger on_auth_user_created
 -- ============================================================================
 -- 3. STUDENT-OWNED TABLES CARRIED OVER FROM v2
 -- ============================================================================
--- Columns are v2's (schema.sql plus migrations 002-021), unchanged, with one
--- addition on each: school_id, null for a student with no class.
+-- Columns are v2's (schema.sql plus migrations 002-021), unchanged.
 --
--- school_id is a filing label for totals and for deleting a school's data. No
--- policy trusts it, because no staff role can read these tables at all.
+-- There is no school_id on any of these (D29, replacing D16). The spec asks
+-- for one, but no staff role can read these tables, so no policy would use
+-- it, and a copy goes stale when a student changes class. A student's school
+-- is always worked out from class_members -> classes.school_id. Removing a
+-- school's students' data therefore goes through its class lists.
 
 create table public.onboarding_results (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   why_here text,
   strengths text[],
   values text[],
@@ -307,7 +280,6 @@ create table public.onboarding_results (
 create table public.journal_entries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   mission_id int not null,
   activity_id text not null,
   -- NEW. The content item and version the student answered, so a revisit
@@ -333,7 +305,6 @@ create trigger journal_entries_updated_at
 create table public.challenges (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   mission_id int not null,
   challenge_text text not null,
   issued_at timestamptz not null default now(),
@@ -344,7 +315,6 @@ create table public.challenges (
 create table public.support_circle (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   name text not null,
   relationship text not null,
   added_at timestamptz not null default now()
@@ -353,7 +323,6 @@ create table public.support_circle (
 create table public.mission_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   mission_id int not null,
   activity_id text not null,
   completed_at timestamptz not null default now(),
@@ -377,7 +346,6 @@ create table public.stories (
 create table public.story_reads (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   story_id uuid not null references public.stories(id) on delete cascade,
   opened_at timestamptz,
   read_at timestamptz,
@@ -388,7 +356,6 @@ create table public.story_reads (
 create table public.goals (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   domain text not null check (domain in ('school', 'life', 'future')),
   wish text not null,
   outcome text,
@@ -405,7 +372,6 @@ create table public.goals (
 create table public.practice_log (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   strength_key text not null,
   action text not null,
   started_at timestamptz not null default now(),
@@ -415,7 +381,6 @@ create table public.practice_log (
 
 create table public.moral_profiles (
   user_id uuid primary key references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   style_scores jsonb not null,
   primary_style text not null,
   secondary_style text,
@@ -426,7 +391,6 @@ create table public.moral_profiles (
 create table public.standard_checkins (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   answers jsonb not null default '{}'::jsonb,
   set text not null default 'standard',
   created_at timestamptz not null default now(),
@@ -439,7 +403,6 @@ create index standard_checkins_user_set_created_idx
 create table public.program_progress (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   week int not null check (week between 1 and 10),
   days jsonb not null default '[]'::jsonb,
   commitment text,
@@ -451,7 +414,6 @@ create table public.program_progress (
 
 create table public.strength_profiles (
   user_id uuid primary key references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   scores jsonb not null,
   ranking text[] not null,
   answers jsonb,
@@ -463,7 +425,6 @@ create table public.strength_profiles (
 create table public.outcome_checkins (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   wave text not null check (wave in ('start', 'end')),
   item_set text not null,
   answers jsonb not null default '{}'::jsonb,
@@ -480,7 +441,6 @@ create index outcome_checkins_user_created_idx
 create table public.small_steps (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   entry_id uuid references public.journal_entries(id) on delete cascade,
   source_kind text not null check (source_kind in ('activity', 'week', 'weekly', 'next')),
   source_key text not null,
@@ -503,7 +463,6 @@ create table public.conversation_requests (
   token text not null unique
     default replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', ''),
   user_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   mission_id int not null,
   activity_id text not null,
   from_name text not null check (char_length(from_name) between 1 and 40),
@@ -529,7 +488,6 @@ create index conversation_requests_user_activity_idx
 create table public.self_checks (
   id uuid primary key default gen_random_uuid(),
   student_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   taken_at timestamptz not null default now(),
   -- Which wording was answered, so a revised item set is never compared
   -- item-for-item with an old one.
@@ -552,7 +510,6 @@ create index self_checks_student_taken_idx on public.self_checks (student_id, ta
 -- the "explored" mark and the class-focus counts both need somewhere to live.
 create table public.self_progress (
   student_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   self_key text not null,
   opened_at timestamptz not null default now(),
   challenge_accepted_at timestamptz,
@@ -565,7 +522,6 @@ create table public.self_progress (
 create table public.shared_items (
   id uuid primary key default gen_random_uuid(),
   student_id uuid not null references public.users(id) on delete cascade,
-  school_id uuid references public.schools(id) on delete set null,
   teacher_id uuid not null references public.users(id) on delete cascade,
   class_id uuid not null references public.classes(id) on delete cascade,
   -- If the student deletes the entry, the copy goes with it.
@@ -587,7 +543,8 @@ create index shared_items_teacher_idx on public.shared_items (teacher_id, shared
 -- V-T1, V-T3, V-T4, V-A1, V-P1: there is deliberately no policy for any staff
 --   or admin role on any of these tables. Row security with no matching
 --   policy returns no rows, so a teacher's select on journal_entries is empty.
--- V-S8: the trigger sets school_id; the client can't.
+-- V-S8: these tables have no school_id column (D29). A student's school is
+--   always worked out from class_members.
 do $$
 declare
   t text;
@@ -602,9 +559,6 @@ begin
     execute format(
       'create policy "student: own rows only" on public.%I for all to authenticated '
       || 'using (auth.uid() = user_id) with check (auth.uid() = user_id)', t);
-    execute format(
-      'create trigger set_row_school before insert or update on public.%I '
-      || 'for each row execute function public.set_row_school()', t);
   end loop;
 end;
 $$;
@@ -614,8 +568,6 @@ alter table public.self_checks enable row level security;
 create policy "student: own self-checks only" on public.self_checks
   for all to authenticated
   using (auth.uid() = student_id) with check (auth.uid() = student_id);
-create trigger set_row_school before insert or update on public.self_checks
-  for each row execute function public.set_row_school();
 
 -- V-S1, V-S2, V-T3: explored marks and accepted challenges. The student only.
 -- Staff see these only as counts, through class_patterns().
@@ -623,8 +575,6 @@ alter table public.self_progress enable row level security;
 create policy "student: own self progress only" on public.self_progress
   for all to authenticated
   using (auth.uid() = student_id) with check (auth.uid() = student_id);
-create trigger set_row_school before insert or update on public.self_progress
-  for each row execute function public.set_row_school();
 
 -- V-SH1: no insert policy. A share is created only by share_entry().
 -- V-SH5: the student can read what they've shared and take it back.
@@ -635,8 +585,6 @@ create policy "student: read own shared items" on public.shared_items
   for select to authenticated using (auth.uid() = student_id);
 create policy "student: unshare" on public.shared_items
   for delete to authenticated using (auth.uid() = student_id);
-create trigger set_row_school before insert or update on public.shared_items
-  for each row execute function public.set_row_school();
 
 -- V-S1, V-T3, V-A1, V-P1: everyone, in any role, reads and updates their own
 -- profile row and no other. A teacher learns a student's name from

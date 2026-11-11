@@ -3,11 +3,9 @@
 // and "Share with my teacher". Nothing is installed in the app and nothing
 // outside this process is touched.
 //
-//   npm install --no-save @electric-sql/pglite     # once; not an app dependency
-//   node scripts/v3/check-schema.mjs
+//   npm run check:schema
 //
-// PGlite isn't one of the app's dependencies, the same way Playwright isn't
-// (scripts/audit/README.md): install it only where you run this.
+// PGlite is a dev dependency (D37), so this can run in CI once there is one.
 //
 // What this does NOT prove: Supabase's auth schema, roles and default grants
 // are stubbed below, so a pass here says the schema parses and the rules hold
@@ -86,13 +84,15 @@ ok("V-C3 a student in a class can't change their year level", r.rows[0]?.year_le
 // ── Students write ──────────────────────────────────────────────────────────
 const entries = {};
 for (let i = 1; i <= 12; i++) {
-  r = await as(S(i), `insert into journal_entries (user_id, school_id, mission_id, activity_id, prompt, response) values ($1, $2, 1, 'x', 'Prompt', $3) returning id, school_id`, [S(i), B, `private words of student ${i}`]);
+  r = await as(S(i), `insert into journal_entries (user_id, mission_id, activity_id, prompt, response) values ($1, 1, 'x', 'Prompt', $2) returning id`, [S(i), `private words of student ${i}`]);
   entries[i] = r.rows[0];
 }
-ok("V-S8 school_id is set by the database, not the client", entries[1]?.school_id === A, JSON.stringify(entries[1]));
-ok("V-S8 a School B student is filed under B", entries[12]?.school_id === B);
-r = await as(S(1), `update journal_entries set school_id = $1 where id = $2 returning school_id`, [B, entries[1].id]);
-ok("V-S8 school_id can't be changed afterwards", r.rows[0]?.school_id === A, JSON.stringify(r));
+ok("V-S1 a student can write their own journal entry", !!entries[1]?.id && !!entries[12]?.id, JSON.stringify(entries[1]));
+r = await su(`select table_name from information_schema.columns where table_schema = 'public' and column_name = 'school_id' order by 1`);
+ok("V-S8 no student-owned table has a school_id column (D29)",
+  r.rows.map((x) => x.table_name).join(",") === "classes,content_overrides,media_hidden,media_items,staff", JSON.stringify(r.rows));
+r = await as(S(1), `insert into journal_entries (user_id, school_id, mission_id, activity_id, prompt) values ($1, $2, 1, 'x', 'p')`, [S(1), B]);
+ok("V-S8 a student can't file a row under a school", !!r.error, JSON.stringify(r));
 r = await as(S(1), `insert into journal_entries (user_id, mission_id, activity_id, prompt) values ($1, 1, 'x', 'p')`, [S(2)]);
 ok("V-S2 a student can't write a row as someone else", !!r.error);
 r = await as(S(1), `select * from journal_entries`);

@@ -10,7 +10,8 @@
     "report:completion": "npx --yes tsx scripts/completion-report.ts",
     "check:phrases": "npx --yes tsx scripts/check-phrases.ts",
     "test": "vitest run",
-    "audit": "node scripts/audit/run.js"
+    "audit": "node scripts/audit/run.js",
+    "check:schema": "node scripts/v3/check-schema.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
@@ -23,6 +24,7 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

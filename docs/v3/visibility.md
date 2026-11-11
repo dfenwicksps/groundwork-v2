@@ -40,9 +40,9 @@ New in v3: `self_checks`, `self_progress`, `shared_items`.
 | V-S5 | A student can select a `classes` row only for a class they belong to, and only the columns `id`, `name`, `year_level` and the teacher's display name. A student can't select `join_code` for any class. |
 | V-S6 | A student can join a class only through `join_class(code)`. A direct insert into `class_members` fails. |
 | V-S7 | A student can leave a class (delete their own `class_members` row). Their own rows in every student-owned table are untouched by leaving. |
-| V-S8 | A student can't set `school_id` on any row. Whatever the client sends, the stored value is the one the database works out from their class. |
+| V-S8 | No student-owned table has a `school_id` column (D29). A student's school is always worked out from their class membership, so a student has nothing to set and can't file a row under a school. |
 | V-S9 | A student can select `content_items` whose `status` is `published`, and can never select the `teacherNotes` of any self. Teacher notes are stored apart from the student-readable body (section 6). |
-| V-S10 | A student with no class has every right in V-S1 and none of the class or school features. Their rows carry `school_id = null`. |
+| V-S10 | A student with no class has every right in V-S1 and none of the class or school features. Their rows look the same as any other student's: no student-owned row names a school (D29). |
 | V-S11 | A student can delete their account. Doing so removes every row they own in every student-owned table, their class memberships, and every `shared_items` row they created. |
 
 ### 3.2 Teacher
