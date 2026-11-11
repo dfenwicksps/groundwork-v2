@@ -53,7 +53,7 @@ New in v3: `self_checks`, `self_progress`, `shared_items`.
 | V-T2 | A user with role `teacher` can't select any row from `self_checks`. |
 | V-T3 | A user with role `teacher` can't select any row from any other student-owned table, with one exception: their own `users` row. |
 | V-T4 | A teacher can't insert, update or delete a row in any student-owned table other than their own `users` row. |
-| V-T5 | A teacher can call `class_roster(class_id)` for a class they teach. It returns each member's display name and the date they joined, and no other column. |
+| V-T5 | A teacher can call `class_roster(class_id)` for a class they teach. It returns each member's ID, display name and the date they joined, and no other column. (The ID is what lets a teacher remove a student, and can't be used to read anything.) |
 | V-T6 | A teacher calling `class_roster()`, `class_patterns()` or `set_class_focus()` for a class they don't teach gets no rows or an error, including for another class in their own school. |
 | V-T7 | A teacher can call `class_patterns(class_id)` for a class they teach. Every figure it returns obeys section 4. |
 | V-T8 | `class_patterns()` returns counts and nothing else: no user IDs, no names, no timestamps of an individual's activity, no free text. |
@@ -82,7 +82,7 @@ New in v3: `self_checks`, `self_progress`, `shared_items`.
 | --- | --- |
 | V-P1 | A platform admin can't select any row from any student-owned table, except their own `users` row. |
 | V-P2 | A platform admin can't call `class_roster()`, and can't select `class_members`. They never see a student's name. |
-| V-P3 | A platform admin can call `platform_totals()`. It returns counts across the whole platform with no `school_id`, `class_id` or user ID, and suppresses any count below the minimum group. |
+| V-P3 | A platform admin can call `platform_totals()`. It returns counts across the whole platform with no `school_id`, `class_id` or user ID, and suppresses any count of students below the minimum group. |
 | V-P4 | A platform admin can select and write `schools`, `staff` and central `content_items` and `media_items` (those with `school_id` null). |
 | V-P5 | The platform admin's rights don't come from the service-role key. The service-role key is never sent to a browser and is used only by server scripts (the import script, the link checker, account deletion). |
 
@@ -117,7 +117,7 @@ These apply to every figure returned by `class_patterns()` and `platform_totals(
 | V-K8 | The suppression is done inside the database function. The browser never receives the true figure. |
 | V-K9 | A suppressed figure is shown as a dash, with one fixed explanation on the page: "A dash means the group is too small to show without pointing at someone." It is never shown as "fewer than 5". |
 | V-K10 | `class_patterns()` takes a class and nothing finer. There is no filter by gender, house, subgroup, date of joining or any other attribute, and none is to be added. |
-| V-K11 | The self-check pattern counts each student's most recent self-check only, and is recomputed no more than once a day, so a teacher can't work out one student's result by comparing the figure before and after that student joins or retakes. |
+| V-K11 | Every figure counts only what happened before today, and only students who joined before today, so the figures move once a day and not as each student acts. The self-check pattern counts each student's most recent self-check only. A teacher can't read one student's result off the change when that student joins or retakes. |
 
 V-K5, V-K6 and V-K11 go further than the spec. The reasoning is in section 8.
 
