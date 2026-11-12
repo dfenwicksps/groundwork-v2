@@ -38,6 +38,8 @@ jobs:
         run: npm run check:schema
       - name: Selves master validates
         run: npx --yes tsx scripts/v3/validate-selves.ts
+      - name: Content import builds
+        run: npx --yes tsx scripts/v3/content-import.ts --out /tmp/content-gaps.md
       - name: Build
         run: npm run build
 
@@ -72,10 +74,10 @@ jobs:
           test "$tables" -eq 31
           test "$open" -eq 0
           test "$anon" -eq 0
-      - name: Access tests against this database, nothing stubbed
+      - name: Access and content tests against this database, nothing stubbed
         env:
           GW_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-        run: npx vitest run tests/v3/access --no-file-parallelism
+        run: npx vitest run tests/v3 --no-file-parallelism
       - name: Confirm those tests really used this database
         env:
           PGPASSWORD: postgres

@@ -286,6 +286,8 @@ export interface ActivityBody {
   /** Set for a program week. */
   week: number | null;
   title: string;
+  /** Position within its mission, or the week number: v2's order, kept. */
+  order: number;
   /** The selves and strengths this builds: what links Grow back to Me. */
   selves: string[];
   strengths: string[];
