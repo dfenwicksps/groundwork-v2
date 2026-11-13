@@ -363,7 +363,7 @@ export const MISSIONS: Mission[] = [
         title: "Your Story So Far",
         subtitle: "Step 1 of 7 · Where you've come from",
         intro:
-          "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this in Mission 4, and either question can be left out.",
+          "Before mapping who you are now, a quick look at how you got here. Everyone's life falls into chapters: a move, a new school, someone arriving or leaving. Naming them takes two minutes. Keep it light. You'll come back to this later, in Where You've Come From, and either question can be left out.",
         prompt: "If your life so far were a book, what would the chapters be called?",
         scenarios: [
           "Someone's writing a book about your life so far. Each chapter starts on a new page with a short title at the top.",
@@ -391,7 +391,7 @@ export const MISSIONS: Mission[] = [
         ],
         skippableSteps: [0, 1],
         wrapUp:
-          "That's your story so far, in chapter titles. You'll see them again in Mission 4, with more to add by then. Next: the strengths you've been building through all of it.",
+          "That's your story so far, in chapter titles. You'll see them again in Where You've Come From, with more to add by then. Next: the strengths you've been building through all of it.",
         whyItMatters:
           "Identity researchers describe who you are as a life story: where you've come from, who you are now, and where you're going. A few chapter titles are enough to start it. Seeing your life in chapters also makes it easier to notice that the one you're in isn't the whole book.",
         timeEstimate: "About 2 minutes",
@@ -404,7 +404,7 @@ export const MISSIONS: Mission[] = [
         title: "Strengths Mapping",
         subtitle: "Step 2 of 7 · Inner compass",
         intro:
-          "This mission builds your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you. This step maps your strengths. Ranking yourself cold is hard, so you'll react to 18 quick everyday situations instead, and your reactions do the ranking.",
+          "This is the start of your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you. This step maps your strengths. Ranking yourself cold is hard, so you'll react to 18 quick everyday situations instead, and your reactions do the ranking.",
         warmUp:
           "For each situation, tap the option that’s MOST like you, then the one that’s LEAST like you. Go with your gut — there are no wrong answers, and no one else sees this. It takes about 8 minutes.",
         prompt:
@@ -573,7 +573,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Accepting is the whole step \u2014 you've just turned self-knowledge into an experiment. Whatever happens this week is data, not a grade. Come back in a few days and tell yourself the truth about how it went.",
         type: "challenge",
-        title: "Mission Challenge",
+        title: "Live It Once",
         subtitle: "Step 6 of 7",
         intro:
           "Everything so far has been noticing. This step is one small experiment in the real world — taking one thing you discovered about yourself and actually living it once, just to see what it feels like. You don't need to be certain and it doesn't need to go well. Noticing what happens is the whole point.",
@@ -727,7 +727,7 @@ export const MISSIONS: Mission[] = [
         title: "What Matters",
         subtitle: "Step 1 of 6 · Your motivated self",
         intro:
-          "Mission 1 looked inward. This one looks outward. Purpose usually starts in one of two places: something in the world that bothers you, or something you love doing so much you lose track of time. Either is a way in. Most people your age don't have a cause yet, and that's normal.",
+          "A lot of Groundwork looks inward. This one looks outward. Purpose usually starts in one of two places: something in the world that bothers you, or something you love doing so much you lose track of time. Either is a way in. Most people your age don't have a cause yet, and that's normal.",
         warmUp:
           "Think about the last time you felt genuinely bothered by something in the world — not just inconvenienced, but actually troubled. Hold that feeling in mind before you write. That's usually where purpose begins.",
         storyBefore: "The Thing She Couldn't Ignore",
@@ -748,10 +748,10 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "You just connected your inner compass from Mission 1 to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer', and it's on your Purpose card now. Next: discovering you're not the only one who cares.",
+          "You just connected your inner compass, your strengths and values, to the thing you care about. That's the difference between 'someone should do something' and 'I've actually got something to offer', and it's on your Purpose card now. Next: discovering you're not the only one who cares.",
         scenarios: [
           "Your school is running a big fundraiser for a cause. At the first meeting, jobs get handed out \u2014 posters, speeches, budgets, the group chat, the actual event. You look at the list, and one job quietly has your name on it.",
-          "Think about what you named in Step 1, the cause or the thing you love. Now imagine you're right in the middle of it \u2014 the clean-up, the training session, the studio, the campaign, whatever it is. A moment happens where something in you switches on.",
+          "Think about what you named in What Matters, the cause or the thing you love. Now imagine you're right in the middle of it \u2014 the clean-up, the training session, the studio, the campaign, whatever it is. A moment happens where something in you switches on.",
           "The organisers pull you aside: 'We've got heaps of helpers. What we don't have is someone who can do the thing YOU do.' What's the thing?",
           "It's this Saturday morning. You've got two free hours and zero excuses. The smallest real version of your contribution is sitting right there.",
         ],
@@ -791,12 +791,12 @@ export const MISSIONS: Mission[] = [
         intro:
           "Knowing what matters to you is one thing. This step asks what you, in particular, could bring to it. Purpose built on your real strengths lasts longer than purpose picked at random. Not sure yet? That's a real answer. Write about where you're unsure, not just where you're confident.",
         warmUp:
-          "Look back at the strengths you mapped and the values you chose in Mission 1. If those things had a direction — if your inner compass was pointing somewhere — what would that direction be? Does it point toward what you wrote about in Step 1?",
+          "Look back at the strengths you mapped and the values you chose. If those things had a direction — if your inner compass was pointing somewhere — what would that direction be? Does it point toward what you wrote about in What Matters?",
         prompt:
           "What's the connection between who you are and what you care about? How do your particular strengths and values fit the thing that matters to you?",
         scaffoldingSteps: [
-          "Look at the strengths you identified in Mission 1. How might they be genuinely useful in relation to what you care about — even in a small way?",
-          "Look at the values you chose. Which ones feel most alive when you think about what you named in Step 1, the cause or the thing you love?",
+          "Look at the strengths you identified in Strengths Mapping. How might they be genuinely useful in relation to what you care about — even in a small way?",
+          "Look at the values you chose. Which ones feel most alive when you think about what you named in What Matters, the cause or the thing you love?",
           "Is there a kind of contribution — however small — that only you, with your particular inner compass, could make to this?",
           "What would even a tiny version of that contribution look like in practice?",
         ],
@@ -921,7 +921,7 @@ export const MISSIONS: Mission[] = [
         isMilestone: true,
         scaffoldingSteps: [
           "Name what you care about as clearly and specifically as you can. Not 'I care about the environment' — something more particular to you.",
-          "Link it explicitly to who you are: how do your strengths or values from Mission 1 connect to this?",
+          "Link it explicitly to who you are: how do your strengths or values connect to this?",
           "What kind of person do you want to be in relation to this — not what you'll do, but who you'll be?",
           "What would you want someone reading this to understand about why it genuinely matters to you?",
         ],
@@ -935,14 +935,14 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Challenge accepted. Purpose only becomes real when it costs you a little effort \u2014 this week you'll find out what one small act in its direction feels like.",
         type: "challenge",
-        title: "Mission Challenge",
+        title: "One Real Step",
         subtitle: "Step 5 of 6",
         intro:
           "Commitment isn't proven by what you say — it's tested by what you actually do. This challenge asks you to take one real step toward what you care about. Not a grand gesture. Just the smallest version of genuine engagement that feels real to you.",
         prompt:
-          "Pick ONE for this week:\n\n• Do the tiny first step you planned in Step 2.\n• Learn one thing properly \u2014 spend 30 minutes reading, watching or asking about what you care about.\n• Talk to one person about it \u2014 tell them why it matters to you.\n• Show up once \u2014 go to one thing connected to it, or help with one task.\n\nPick one. Keep it small. Doing it matters more than doing it well.",
+          "Pick ONE for this week:\n\n• Do the tiny first step you planned in The Contribution Map.\n• Learn one thing properly \u2014 spend 30 minutes reading, watching or asking about what you care about.\n• Talk to one person about it \u2014 tell them why it matters to you.\n• Show up once \u2014 go to one thing connected to it, or help with one task.\n\nPick one. Keep it small. Doing it matters more than doing it well.",
         // The tiny version they wrote in Step 2, shown above the choices.
-        recall: { activityId: "contribution-map", missionId: 2, label: "Your tiny first step, from Step 2", step: 0, answer: 3 },
+        recall: { activityId: "contribution-map", missionId: 2, label: "Your tiny first step, from The Contribution Map", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -1067,7 +1067,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You Belong",
         subtitle: "Step 1 of 6 · Your social self",
         intro:
-          "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself. If nowhere comes to mind yet, that's an honest answer, and a common one.",
+          "A lot of Groundwork is about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships. This step looks for the places you feel most real: not most comfortable or most accepted, but most yourself. If nowhere comes to mind yet, that's an honest answer, and a common one.",
         warmUp:
           "Think about the last time you were with someone and felt completely at ease — no managing yourself, no performing, just present. Who were you with, and what made that possible?",
         storyBefore: "The Friend Who Stayed",
@@ -1088,7 +1088,7 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "You've decided what to do about the place that costs you most, and found someone who could belong more because of you. That's the part of belonging you can give, and it's on your Connection card now. Next: belonging that crosses a real difference.",
         scenarios: [
-          "In Mission 1's Mask Check you noticed how you change between rooms. One of those rooms costs you more than the others: you know the rules there, what to laugh at, what not to mention.",
+          "In The Mask Check you noticed how you change between rooms. One of those rooms costs you more than the others: you know the rules there, what to laugh at, what not to mention.",
           "Picture the next time you're with that group. There's a choice in there you don't usually notice you're making.",
           "There might be a group where you've quietly decided the entry fee is too high \u2014 or one where you can't tell yet if you belong.",
           "Now look from the other side. In every group there's someone on the edge, checking the room before they speak, the way you sometimes do.",
@@ -1125,7 +1125,7 @@ export const MISSIONS: Mission[] = [
         ],
         // What they said about changing between rooms in Mission 1, so this
         // step starts from there instead of asking it again.
-        recall: { activityId: "mask-check", missionId: 1, label: "How you change between rooms, from Mission 1", step: 0, answer: 0 },
+        recall: { activityId: "mask-check", missionId: 1, label: "How you change between rooms, from The Mask Check", step: 0, answer: 0 },
         // Before it built on the Mask Check, this step asked these questions instead.
         retiredQuestions: [
           "Think of a group or situation where you feel genuinely yourself — no performance, no editing. What's that like? What makes it possible?",
@@ -1134,9 +1134,9 @@ export const MISSIONS: Mission[] = [
         title: "Fitting In vs. Belonging",
         subtitle: "Step 2 of 6 · Your social self",
         intro:
-          "Fitting in means changing yourself so a group accepts you. Belonging means being accepted as yourself. In Mission 1 you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it. Then it flips round to the people who need to belong around you.",
+          "Fitting in means changing yourself so a group accepts you. Belonging means being accepted as yourself. In The Mask Check you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it. Then it flips round to the people who need to belong around you.",
         warmUp:
-          "Look at what you wrote in Mission 1 about how you change between rooms. Which room costs you the most?",
+          "Look at what you wrote in The Mask Check about how you change between rooms. Which room costs you the most?",
         prompt:
           "Think about the group where you adjust the most. What does it cost you, what do you want to do about it, and who around you needs to belong more?",
         scaffoldingSteps: [
@@ -1278,14 +1278,14 @@ export const MISSIONS: Mission[] = [
         wrapUp:
           "Reaching toward someone first is how belonging actually gets built \u2014 nobody drifts into it. Whatever happens this week, you'll learn something about connection you can't learn by waiting.",
         type: "challenge",
-        title: "Mission Challenge",
+        title: "Reach Out Once",
         subtitle: "Step 5 of 6",
         intro:
           "Belonging isn't passive. It's built — slowly, through small acts of reaching toward people. This challenge asks you to take one small step toward genuine connection: not a grand gesture, but something real. Notice what happens when you actually try.",
         prompt:
-          "Pick ONE for this week:\n\n• Take the small step you wrote in Step 3, toward someone across the gap.\n• Message one person you've been meaning to check in on.\n• Make room for someone on the edge: invite them, sit with them, or ask what they think.\n• Ask someone one real question, and actually listen to the answer.\n\nIf reaching out feels big right now, the message counts. Notice what it costs and what it gives.",
+          "Pick ONE for this week:\n\n• Take the small step you wrote in Across the Gap, toward someone across the gap.\n• Message one person you've been meaning to check in on.\n• Make room for someone on the edge: invite them, sit with them, or ask what they think.\n• Ask someone one real question, and actually listen to the answer.\n\nIf reaching out feels big right now, the message counts. Notice what it costs and what it gives.",
         // The small step they wrote at the end of Across the Gap.
-        recall: { activityId: "across-the-gap", missionId: 3, label: "Your small step, from Step 3", step: 0, answer: 3 },
+        recall: { activityId: "across-the-gap", missionId: 3, label: "Your small step, from Across the Gap", step: 0, answer: 3 },
         isChallenge: true,
         challengeDebriefDays: 7,
         timeEstimate: "5 minutes to start",
@@ -1345,7 +1345,7 @@ export const MISSIONS: Mission[] = [
         ],
         skippableSteps: [1],
         wrapUp:
-          "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in this mission.",
+          "You've heard a chapter from before you were born. That's part of where you've come from too. If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in Know myself.",
         whyItMatters:
           "Researchers at Emory University, Marshall Duke and Robyn Fivush, found that teenagers who know more of their family's stories — where their grandparents grew up, what went wrong and how the family got through it — tend to have higher self-esteem, a stronger sense of control over their lives, and cope better with hard times. It isn't about having an impressive history. It's knowing you belong to something that has come through things before.",
         timeEstimate: "A conversation, then 5 minutes",
@@ -1399,7 +1399,7 @@ export const MISSIONS: Mission[] = [
         title: "Where You've Come From",
         subtitle: "Step 1 of 7 · Looking back",
         intro:
-          "In Mission 1 you named some chapters. This step goes further back: the chapters you've lived, a moment that changed you, and what your family and culture handed you before you could choose. You decide how deep to go. If part of it is painful, write around it or leave that question out. Get help is at the top of every screen.",
+          "In Your Story So Far you named some chapters. This step goes further back: the chapters you've lived, a moment that changed you, and what your family and culture handed you before you could choose. You decide how deep to go. If part of it is painful, write around it or leave that question out. Get help is at the top of every screen.",
         warmUp:
           "Picture a photo of you at about seven. What would that kid be surprised by about you now — and what would they recognise straight away?",
         prompt:
@@ -1411,7 +1411,7 @@ export const MISSIONS: Mission[] = [
           "Reworking isn't rejecting. You might keep your family's work ethic but drop the never-resting part, or keep your culture's food and language while making up your own mind about one of its rules.",
         ],
         scaffoldingSteps: [
-          "If your life so far were a book, what would the chapters be called? If you named them in Mission 1, they're shown below: would you still call them that, or has a chapter been added since?",
+          "If your life so far were a book, what would the chapters be called? If you named them in Your Story So Far, they're shown below: would you still call them that, or has a chapter been added since?",
           "Pick one turning point — a moment when something shifted. What happened, and what did it leave in you that's still there now?",
           "Everyone's handed things by their family and culture before they're old enough to choose. Sort what you were handed: keep it, rework it, or leave it.",
           "Pick one thing you're reworking. What are you keeping from it, and what are you changing so it fits who you are now?",
@@ -1421,7 +1421,7 @@ export const MISSIONS: Mission[] = [
         starterOptions: [
           [
             "Mostly the same as before — the titles still fit",
-            "The same, plus a new chapter since Mission 1",
+            "The same, plus a new chapter since then",
             "I'd rename one — it means something different now",
             "Different — I see the whole story differently now",
             "Not sure yet — I'm still in the middle of it",
@@ -1444,7 +1444,7 @@ export const MISSIONS: Mission[] = [
         ],
         sortStep: 2,
         skippableSteps: [1, 2, 3],
-        recall: { activityId: "chapters-so-far", missionId: 1, label: "Your chapters, from Mission 1", step: 0 },
+        recall: { activityId: "chapters-so-far", missionId: 1, label: "Your chapters, from Your Story So Far", step: 0 },
         wrapUp:
           "You've just joined what happened to you to who you are now — psychologists call it autobiographical reasoning, and it's how a life starts to read as one story. Sorting what you were handed is how a borrowed identity becomes your own. Next: who you are right now, online.",
         whyItMatters:
@@ -1575,11 +1575,11 @@ export const MISSIONS: Mission[] = [
         referencesStrengths: true,
         referencesValues: true,
         wrapUp:
-          "That thread is the closest thing to a compass heading anyone gets \u2014 and it's the last thing this mission asks you to find. Everything so far has been looking back. The letter next is the only step that looks forward: where the thread goes, and what following it would cost.",
+          "That thread is the closest thing to a compass heading anyone gets \u2014 and it's what this step asks you to find. Everything so far has been looking back. The letter next is the only step that looks forward: where the thread goes, and what following it would cost.",
         scenarios: [
-          "Rewind to Mission 1 \u2014 strengths, values, masks, your letter. One discovery from that mission still rings true weeks later.",
-          "Mission 2 asked what pulls at you and what you could contribute. Underneath everything you wrote, there was one honest sentence.",
-          "Mission 3 was about your people \u2014 where you're known, who shaped you. It told you something about what you need from other humans.",
+          "Rewind to Identity \u2014 strengths, values, masks, your letter. One discovery from there still rings true weeks later.",
+          "Purpose asked what pulls at you and what you could contribute. Underneath everything you wrote, there was one honest sentence.",
+          "Connection was about your people \u2014 where you're known, who shaped you. It told you something about what you need from other humans.",
           "Now lay all three answers side by side. One thing is true in all of them. That's the thread \u2014 and it's usually shorter than you'd expect.",
         ],
         starterOptions: [
@@ -1618,13 +1618,13 @@ export const MISSIONS: Mission[] = [
         intro:
           "You've looked at who you are, what you care about, where you belong, and where you've come from. Your three cards are below, so you don't have to remember them. This step asks what sits underneath all of it: the thread running through.",
         warmUp:
-          "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
+          "Think back to the thing that surprised you most across everything so far — something you wrote or realised that you didn't expect. What was it? What does it tell you about yourself?",
         prompt:
           "Look back across everything you've learned about yourself in this journey. What's the single thread that connects who you are, what you care about, and where you belong?",
         scaffoldingSteps: [
-          "Look at your Who I Am card from Mission 1 (shown above). What's the most important thing on it — something that still feels true?",
-          "Now your Purpose card from Mission 2. What's the most honest thing on it about what you care about and want to contribute?",
-          "And your Connection card from Mission 3. What does it say about the people and places that matter most to you?",
+          "Look at your Who I Am card (shown above). What's the most important thing on it — something that still feels true?",
+          "Now your Purpose card. What's the most honest thing on it about what you care about and want to contribute?",
+          "And your Connection card. What does it say about the people and places that matter most to you?",
           "Now say the thread itself, in one sentence. Not where it leads — just the thing that stays true across all three.",
         ],
         whyItMatters:
@@ -1700,12 +1700,12 @@ export const MISSIONS: Mission[] = [
         id: "meaning-challenge",
         referencesStrengths: true,
         wrapUp:
-          "One deliberate choice, made on purpose, is what all four missions look like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
+          "One deliberate choice, made on purpose, is what all of this looks like in real life. Notice how different it feels from drifting \u2014 that feeling is the whole point.",
         type: "challenge",
-        title: "Mission Challenge",
+        title: "One Deliberate Choice",
         subtitle: "Step 6 of 7",
         intro:
-          "Four missions of understanding. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
+          "You've done a lot of working out who you are. This final challenge asks you to actually live it — even briefly. One week, one deliberate choice that reflects the version of yourself you've been working to understand. Not a performance. Not proof. Just what it feels like when you act on purpose.",
         prompt:
           "Pick ONE for this week:\n\n• Start the one thing you wrote in Future Self.\n• Say no to one thing that pulls you off course, on purpose.\n• Spend an hour on the direction from your letter.\n• Tell one person what you're building toward.\n\nPick one. Keep it small. Notice what it feels like to do it on purpose rather than by accident.",
         // The one thing Future Self asked them to start.

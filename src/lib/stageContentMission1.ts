@@ -125,7 +125,7 @@ export const JUNIOR_M1: Record<string, StageLines> = {
 export const SENIOR_M1: Record<string, StageLines> = {
   "chapters-so-far": {
     intro:
-      "Before mapping who you are now, a quick look at how you got here. You're near the end of a big chapter, so it's a good moment to name the ones before it: a move, a new school, someone arriving or leaving. Two minutes. You'll come back to this in Mission 4, and either question can be left out.",
+      "Before mapping who you are now, a quick look at how you got here. You're near the end of a big chapter, so it's a good moment to name the ones before it: a move, a new school, someone arriving or leaving. Two minutes. You'll come back to this later, in Where You've Come From, and either question can be left out.",
     starterOptions: {
       1: [
         "The Final Stretch — exams, deadlines and decisions",
@@ -199,7 +199,7 @@ export const LEFT_SCHOOL_M1: Record<string, StageLines> = {
 export const LEAVER_M1: Record<string, StageLines> = {
   "chapters-so-far": {
     intro:
-      "Before mapping who you are now, a quick look at how you got here. Leaving school is a chapter break, and so is a move, a new course or job, or someone arriving or leaving. Naming them takes two minutes. You'll come back to this in Mission 4, and either question can be left out.",
+      "Before mapping who you are now, a quick look at how you got here. Leaving school is a chapter break, and so is a move, a new course or job, or someone arriving or leaving. Naming them takes two minutes. You'll come back to this later, in Where You've Come From, and either question can be left out.",
     starterOptions: {
       0: [
         "Childhood → High School → Leaving Home",
@@ -228,7 +228,7 @@ export const LEAVER_M1: Record<string, StageLines> = {
 export const ADULT_M1: Record<string, StageLines> = {
   "chapters-so-far": {
     intro:
-      "Before mapping who you are now, a quick look at how you got here. A few years out of school there are more chapters than you might think: moves, courses, jobs, relationships, people arriving or leaving. Naming them takes two minutes. You'll come back to this in Mission 4, and either question can be left out.",
+      "Before mapping who you are now, a quick look at how you got here. A few years out of school there are more chapters than you might think: moves, courses, jobs, relationships, people arriving or leaving. Naming them takes two minutes. You'll come back to this later, in Where You've Come From, and either question can be left out.",
     starterOptions: {
       0: [
         "School → Study → The First Real Job",

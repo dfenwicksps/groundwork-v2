@@ -1,6 +1,6 @@
 # Groundwork v3: replacing the wording that talks about missions and step numbers
 
-**Status: drafts for David's review, 14 Nov 2026 (D60). Nothing in the app has changed. The drafts are also held in `old-mission-wording.changes.json`, so that once you approve them they can be applied exactly as written.**
+**Status: approved by David and applied on 14 Nov 2026 (D61), exactly as drafted below. "Now" in the tables means the wording before that date.**
 
 The step and week screens now show the part of the map they live in, but the content still says things like "Look back at the strengths you mapped in Mission 1". This page proposes a replacement for every such line a student can still see.
 

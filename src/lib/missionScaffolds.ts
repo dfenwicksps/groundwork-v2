@@ -170,7 +170,7 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
       ["Someone on the edge of my group is", "I could make room for them by", "Someone who could belong more because of me is"],
     ],
     stuck: [
-      ["Your Mission 1 answer is above. Start from the room that costs you most.", "What do you lose by being slightly edited all the time?"],
+      ["Your earlier answer is above. Start from the room that costs you most.", "What do you lose by being slightly edited all the time?"],
       ["Keeping things as they are is a legitimate choice.", "What's the smallest change that would feel more like you?"],
       ["Still looking is a real answer.", "What would have to change for it to be real?"],
       ["Who checks the room before they speak?", "It can be small: an invite, a question, sitting with someone."],
@@ -252,9 +252,9 @@ export const MISSION_SCAFFOLDS: Record<string, ActivityScaffold> = {
   },
   "the-through-line": {
     stems: [
-      ["From Mission 1 I learned", "It still feels true because", "My inner compass points towards"],
+      ["From Identity I learned", "It still feels true because", "My inner compass points towards"],
       ["What I actually care about is", "The honest version is", "What I want to contribute is"],
-      ["Mission 3 told me that", "The relationships that matter most are", "Where I belong is"],
+      ["Connection told me that", "The relationships that matter most are", "Where I belong is"],
       ["The thread is", "What's true in all three is", "Underneath all of it, I'm someone who"],
     ],
     stuck: [

@@ -23,7 +23,7 @@ const NOTE = "\n\nIf reaching out feels big right now, the message counts. Notic
 export const JUNIOR_M3: Record<string, StageLines> = {
   belonging: {
     intro:
-      "Missions 1 and 2 were mostly about you. This one is about the people around you. This step looks for the places where you can just be yourself. If nowhere comes to mind yet, that's an honest answer. Lots of people are still finding their people, especially after starting high school.",
+      "A lot of Groundwork is about you. This one is about the people around you. This step looks for the places where you can just be yourself. If nowhere comes to mind yet, that's an honest answer. Lots of people are still finding their people, especially after starting high school.",
     steps: {
       2: "Is there somewhere you feel like you don't quite fit, or are you still finding your people? What's that like?",
       3: "What's the difference between just hanging out with people and really belonging?",
@@ -63,7 +63,7 @@ export const JUNIOR_M3: Record<string, StageLines> = {
   },
   "connection-challenge": {
     prompt:
-      "Pick ONE for this week:\n\n• Try the small thing you wrote in Step 3.\n• Message a friend you haven't talked to in a while.\n• Include someone who's on their own: sit with them, or ask them to join in.\n• Ask someone a real question about themselves, and listen." +
+      "Pick ONE for this week:\n\n• Try the small thing you wrote in Across the Gap.\n• Message a friend you haven't talked to in a while.\n• Include someone who's on their own: sit with them, or ask them to join in.\n• Ask someone a real question about themselves, and listen." +
       NOTE,
   },
 };
@@ -117,7 +117,7 @@ export const LEFT_SCHOOL_M3: Record<string, StageLines> = {
   },
   "connection-challenge": {
     prompt:
-      "Pick ONE for this week:\n\n• Take the small step you wrote in Step 3, toward someone across the gap.\n• Message one person you've drifted from since school.\n• Make room for someone on the edge: a new starter, a quiet one in your course, a flatmate.\n• Say yes to one invitation, or make one yourself." +
+      "Pick ONE for this week:\n\n• Take the small step you wrote in Across the Gap, toward someone across the gap.\n• Message one person you've drifted from since school.\n• Make room for someone on the edge: a new starter, a quiet one in your course, a flatmate.\n• Say yes to one invitation, or make one yourself." +
       NOTE,
   },
 };
@@ -125,7 +125,7 @@ export const LEFT_SCHOOL_M3: Record<string, StageLines> = {
 export const LEAVER_M3: Record<string, StageLines> = {
   belonging: {
     intro:
-      "Missions 1 and 2 were mostly about you. This one turns to the people around you. The first years after school are when a lot of people feel loneliest: school friends drift, and new ones take time. If you're still finding your people, you're far from the only one. This step looks for where you feel most yourself now.",
+      "A lot of Groundwork is about you. This one turns to the people around you. The first years after school are when a lot of people feel loneliest: school friends drift, and new ones take time. If you're still finding your people, you're far from the only one. This step looks for where you feel most yourself now.",
     steps: {
       2: "Since leaving school, where have you found your people, and where are you still looking? What's that been like?",
     },
@@ -144,7 +144,7 @@ export const LEAVER_M3: Record<string, StageLines> = {
 export const ADULT_M3: Record<string, StageLines> = {
   belonging: {
     intro:
-      "Missions 1 and 2 were mostly about you. This one turns to the people around you. A few years out of school, belonging takes more effort: friends move, work takes over, and new friendships don't just happen. This step looks for where you feel most yourself now.",
+      "A lot of Groundwork is about you. This one turns to the people around you. A few years out of school, belonging takes more effort: friends move, work takes over, and new friendships don't just happen. This step looks for where you feel most yourself now.",
     steps: {
       2: "Where are you still looking for your people, or where has belonging changed since you were younger? What's that like?",
     },

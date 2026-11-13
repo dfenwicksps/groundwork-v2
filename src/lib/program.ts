@@ -158,7 +158,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     challenge: {
       title: "Five qualities at 25",
       description:
-        "Choose five character qualities you'd want people to use when describing you at 25. Not achievements, not a job — qualities. Then look at the gap between those five and the five you actually lead with today, and pick one or two to actually work on. That gap is the whole point of the next nine weeks.",
+        "Choose five character qualities you'd want people to use when describing you at 25. Not achievements, not a job — qualities. Then look at the gap between those five and the five you actually lead with today, and pick one or two to actually work on. That gap is what the other weeks work on.",
       kind: "single",
     },
     sources: [
@@ -167,7 +167,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/1/activities/strengths-mapping",
         label: "Strengths Mapping",
         whyNeeded:
-          "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Mission 1.",
+          "This week compares who you're becoming with who you already are — so it needs the second half first. Eight minutes, in Know myself.",
         soWhat:
           "This is who you already are. This week asks a different question — who you want to be at 25 — and the difference between the two lists is the work.",
       }
@@ -213,16 +213,16 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         // other gated weeks, which were the only ones the overview flagged.
         required: true,
         whyNeeded:
-          "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Mission 1.",
+          "This week attaches a behaviour to each of your values, so you need the five values first. About eight minutes, in Know myself.",
         soWhat:
-          "You named these in Mission 1. This week is the harder half: proving each one with a behaviour someone could watch you do.",
+          "You named these in the Values Clarifier. This week is the harder half: proving each one with a behaviour someone could watch you do.",
       }
     ],
     artefact: {
       kind: "value-behaviours",
       heading: "Five values, five behaviours",
       blurb:
-        "These are the five you chose in Mission 1. For each one, write the behaviour that proves it — observable, specific, this week.",
+        "These are the five you chose in the Values Clarifier. For each one, write the behaviour that proves it — observable, specific, this week.",
     },
   },
   {
@@ -256,7 +256,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         label: "What Matters",
         required: true,
         whyNeeded:
-          "Contributing is hollow if you've never named what you actually care about. Mission 2 starts there — about ten minutes.",
+          "Contributing is hollow if you've never named what you actually care about. What Matters starts there — about ten minutes.",
         soWhat:
           "Contribution isn't only tidying up. Some of what you put in this week should point at that — the thing you'd want to be different.",
       }
@@ -299,7 +299,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/1/activities/mask-check",
         label: "The Mask Check",
         whyNeeded:
-          "Being the same person privately and publicly is one of this week's three questions. Mission 1 already had you look at where you aren't.",
+          "Being the same person privately and publicly is one of this week's three questions. The Mask Check already had you look at where you aren't.",
         soWhat:
           "That's the adjusting you already do. Trust is what's left when the adjusting stops — and the promise you keep this week is the smallest possible test of it.",
       },
@@ -311,7 +311,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/3/activities/fitting-in-vs-belonging",
         label: "Fitting In vs. Belonging",
         whyNeeded:
-          "One of this week's questions is whether you're the same person privately and publicly. Mission 3 has you decide what to do about the room where you adjust most — about ten minutes.",
+          "One of this week's questions is whether you're the same person privately and publicly. Fitting In vs. Belonging has you decide what to do about the room where you adjust most — about ten minutes.",
         soWhat:
           "Being trusted means being the same person in both of those rooms. Your promise this week will be easier to keep in one than the other — notice which, and why.",
       }
@@ -355,7 +355,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/1/activities/values-clarifier",
         label: "Values Clarifier",
         whyNeeded:
-          "Your hill counts for most in an area that matters to you. Mission 1's values are the quickest way to find one — about eight minutes.",
+          "Your hill counts for most in an area that matters to you. Your values are the quickest way to find one — about eight minutes.",
         soWhat:
           "Pick your hill in one of these. Getting better at something you value does more for how you see yourself than getting better at something you don't care about.",
       },
@@ -367,7 +367,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/2/activities/the-other-side",
         label: "Who Else Cares",
         whyNeeded:
-          "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
+          "This week asks what you'd attempt if you weren't worried about being bad at it in front of people. Who Else Cares had you find someone who's already further up that hill — worth having them in mind.",
         soWhat:
           "They didn't get there comfortably either. Watching someone you recognise do a hard thing is one of the few reliable ways of coming to believe you could — so pick your hill with them in view.",
       }
@@ -409,7 +409,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         label: "Across the Gap",
         required: true,
         whyNeeded:
-          "The hardest dilemmas are the ones where the other person isn't like you. Mission 3 has you sit with exactly that — about ten minutes, and this week leans on it.",
+          "The hardest dilemmas are the ones where the other person isn't like you. Across the Gap has you sit with exactly that — about ten minutes, and this week leans on it.",
         soWhat:
           "Holding someone else's view without needing to agree is the skill underneath every dilemma this week. You've already practised it once.",
       }
@@ -494,7 +494,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/3/activities/belonging",
         label: "Where You Belong",
         whyNeeded:
-          "Half this week is naming three peers who lift you. Mission 3 already had you work out who that is — about ten minutes.",
+          "Half this week is naming three peers who lift you. Where You Belong already had you work out who that is — about ten minutes.",
         soWhat:
           "Those are your three, or most of them. This week is the part that costs something: spending deliberate time with them rather than accidental time.",
       },
@@ -506,7 +506,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         href: "/missions/3/activities/people-who-shaped-you",
         label: "The People Who Shaped You",
         whyNeeded:
-          "You've already written about who made you who you are — this week builds on that rather than starting the list again. It's the Mission 3 milestone.",
+          "You've already written about who made you who you are — this week builds on that rather than starting the list again. It's a milestone letter in Value myself.",
         soWhat:
           "Those are the people who already shaped you. This week is the forward-looking version: who you're choosing to be shaped by from here.",
       }
@@ -548,7 +548,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
         label: "The Digital Self",
         required: true,
         whyNeeded:
-          "This week takes the input away for three half-hours. Mission 4 already asked what the input is doing to you — worth having that answer first.",
+          "This week takes the input away for three half-hours. Digital Self already asked what the input is doing to you — worth having that answer first.",
         soWhat:
           "That's what you noticed with the screens on. This week is the same question with them off — and the two answers are worth comparing.",
       }
@@ -562,7 +562,7 @@ export const PROGRAM_WEEKS: ProgramWeek[] = [
     focus:
       "Joining where you've come from, who you are and where you're heading into one story, then integrating values, contribution, courage, self-control and purpose into commitments.",
     intro:
-      "Nine weeks of evidence about who you are and who you're becoming, and four missions about where it all comes from. This week you write it down: first the story in one sentence, then the commitments. Not aspirations, not vibes. The kind of thing you could be held to.",
+      "You've gathered a lot of evidence about who you are, who you're becoming and where it all comes from. This week you write it down: first the story in one sentence, then the commitments. Not aspirations, not vibes. The kind of thing you could be held to.",
     questions: [
       "Where have I come from, and what did it give me?",
       "Who am I?",
@@ -600,14 +600,14 @@ export const CAPSTONE_SOURCES: {
     activityId: "where-ive-come-from",
     missionId: 4,
     label: "Where you've come from",
-    note: "Mission 4 · Where You've Come From",
+    note: "Direct myself · Where You've Come From",
     href: "/missions/4/activities/where-ive-come-from",
   },
   {
     activityId: "the-through-line",
     missionId: 4,
     label: "The thread you found",
-    note: "Mission 4 · The Through-Line",
+    note: "Authentic self · The Through-Line",
     href: "/missions/4/activities/the-through-line",
   },
   {
@@ -616,14 +616,14 @@ export const CAPSTONE_SOURCES: {
     // Year 7–9 wrote what they want to explore rather than a commitment
     // (stageContentMission2.ts), so this names the step by what both versions share.
     label: "What you said matters most to you",
-    note: "Mission 2 · milestone",
+    note: "Direct myself · milestone",
     href: "/missions/2/activities/commitment-statement",
   },
   {
     activityId: "meaning-letter",
     missionId: 4,
     label: "The direction you named",
-    note: "Mission 4 · A Life Worth Building",
+    note: "Imagine myself · A Life Worth Building",
     href: "/missions/4/activities/meaning-letter",
   },
 ];
@@ -689,7 +689,7 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     placeholder: "Which way did this week move you? Towards or away?",
     foundation: {
       href: "/missions/1/activities/strengths-mapping",
-      label: "Mission 1 · Strengths Mapping",
+      label: "Know myself · Strengths Mapping",
       note: "Where you mapped who you already are.",
     },
   },
@@ -703,7 +703,7 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     placeholder: "What did you hold to this week — and what did holding it cost?",
     foundation: {
       href: "/missions/1/activities/values-clarifier",
-      label: "Mission 1 · Values Clarifier",
+      label: "Know myself · Values Clarifier",
       note: "The five you chose to steer by.",
     },
   },
@@ -716,7 +716,7 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
       "Not the hard thing you should do. The one you actually did, on a day you didn't want to.",
     placeholder: "What did you do this week that comfort was arguing against?",
     foundation: {
-      label: "No mission builds this one",
+      label: "No single step builds this one",
       note: "It's made of reps rather than insight, so weeks 5 and 7 are where it gets built.",
     },
   },
@@ -730,7 +730,7 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     placeholder: "What did you put in this week that nobody asked you for?",
     foundation: {
       href: "/missions/2/activities/contribution-map",
-      label: "Mission 2 · The Contribution Map",
+      label: "Believe in myself · The Contribution Map",
       note: "Where your strengths met the thing you care about.",
     },
   },
@@ -745,7 +745,7 @@ export const WEEKLY_FIVE: WeeklyQuestion[] = [
     placeholder: "Name one person. Were they better off for you being there this week?",
     foundation: {
       href: "/missions/3/activities/people-who-shaped-you",
-      label: "Mission 3 · The People Who Shaped You",
+      label: "Value myself · The People Who Shaped You",
       note: "You wrote about who shaped you. This is the same question pointed outward.",
     },
   },
@@ -917,7 +917,7 @@ export const STORY_PARTS: {
     scaffold: {
       stems: ["I grew up", "of the time when", "I was handed"],
       stuck: [
-        "Your chapters and turning point from Mission 4 are above. One of them usually fits here.",
+        "Your chapters and turning point from Where You've Come From are above. One of them usually fits here.",
         "It can be something you were handed and kept, or one you're reworking.",
       ],
     },
@@ -943,7 +943,7 @@ export const STORY_PARTS: {
     scaffold: {
       stems: ["a life where", "being someone who", "work that"],
       stuck: [
-        "A direction, not a job title. The letter you wrote in Mission 4 named one.",
+        "A direction, not a job title. The letter you wrote in A Life Worth Building named one.",
         "If the details all changed, what would you still be heading towards?",
       ],
     },
@@ -961,7 +961,7 @@ const JUNIOR_STORY_SCAFFOLDS: Record<StoryPart, Scaffold> = {
     stems: ["I've been through", "of the time", "my family"],
     stuck: [
       "Pick one thing that happened, not your whole life: a move, a win, a loss, a person.",
-      "Your chapters from Mission 1 are a good place to look.",
+      "Your chapters from Your Story So Far are a good place to look.",
     ],
   },
   am: {

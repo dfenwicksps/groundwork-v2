@@ -23,7 +23,7 @@ const PATHWAY_NOTE = "\n\nPick one. Keep it small. Doing it matters more than do
 export const JUNIOR_M2: Record<string, StageLines> = {
   "what-matters": {
     intro:
-      "Mission 1 was about you. This one is about the world around you: what you care about. It could be a problem that bugs you, or something you love doing so much you forget the time. Lots of people your age don't have a 'cause' yet. That's fine. Start with what you love.",
+      "A lot of Groundwork is about you. This one is about the world around you: what you care about. It could be a problem that bugs you, or something you love doing so much you forget the time. Lots of people your age don't have a 'cause' yet. That's fine. Start with what you love.",
     warmUp:
       "Think of the last time something really bugged you, or the last time you were so into something you forgot the time. Either one is a good place to start.",
     scenarios: {
@@ -54,7 +54,7 @@ export const JUNIOR_M2: Record<string, StageLines> = {
   },
   "contribution-map": {
     intro:
-      "Now: what could you bring to it? Look at your strengths and values from Mission 1. Not sure? That's a real answer too.",
+      "Now: what could you bring to it? Look at your strengths and values. Not sure? That's a real answer too.",
     scenarios: {
       0: "Your class is running a fundraiser. Jobs get handed out: posters, a speech, counting the money, the group chat, running the stall. One job has your name on it.",
     },
@@ -88,7 +88,7 @@ export const JUNIOR_M2: Record<string, StageLines> = {
     },
     steps: {
       0: "What's the thing you want to explore? Say it as clearly as you can.",
-      1: "Which of your strengths or values from Mission 1 make you curious about it?",
+      1: "Which of your strengths or values make you curious about it?",
       2: "What's one thing you'd like to try, find out, or ask someone about it this year?",
       3: "Why does it matter to you right now?",
     },
@@ -129,7 +129,7 @@ export const JUNIOR_M2: Record<string, StageLines> = {
   },
   "purpose-challenge": {
     prompt:
-      "Pick ONE for this week:\n\n• Do the tiny thing you planned in Step 2.\n• Find out one thing — watch, read or ask about what you care about.\n• Tell one person why you're into it.\n• Have a go once — try it, join in, or help with one small job." +
+      "Pick ONE for this week:\n\n• Do the tiny thing you planned in The Contribution Map.\n• Find out one thing — watch, read or ask about what you care about.\n• Tell one person why you're into it.\n• Have a go once — try it, join in, or help with one small job." +
       PATHWAY_NOTE,
   },
 };
@@ -157,7 +157,7 @@ export const SENIOR_M2: Record<string, StageLines> = {
   },
   "purpose-challenge": {
     prompt:
-      "Pick ONE for this week:\n\n• Do the tiny first step you planned in Step 2.\n• Look up one course, job or volunteer role connected to what you care about.\n• Talk to one person about it — tell them why it matters to you.\n• Show up once — go to one thing connected to it, or help with one task." +
+      "Pick ONE for this week:\n\n• Do the tiny first step you planned in The Contribution Map.\n• Look up one course, job or volunteer role connected to what you care about.\n• Talk to one person about it — tell them why it matters to you.\n• Show up once — go to one thing connected to it, or help with one task." +
       PATHWAY_NOTE,
   },
 };
@@ -171,7 +171,7 @@ export const LEFT_SCHOOL_M2: Record<string, StageLines> = {
   },
   "purpose-challenge": {
     prompt:
-      "Pick ONE for this week:\n\n• Do the tiny first step you planned in Step 2.\n• Look up one volunteer role, course or job connected to what you care about.\n• Talk to one person about it — tell them why it matters to you.\n• Show up once — go to one thing connected to it, or give it one hour of a skill you already have." +
+      "Pick ONE for this week:\n\n• Do the tiny first step you planned in The Contribution Map.\n• Look up one volunteer role, course or job connected to what you care about.\n• Talk to one person about it — tell them why it matters to you.\n• Show up once — go to one thing connected to it, or give it one hour of a skill you already have." +
       PATHWAY_NOTE,
   },
   "conversation-what-matters": {
