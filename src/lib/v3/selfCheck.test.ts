@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { allLevels } from "./levelMap";
 import { ITEM_SET, SCALE, STATEMENTS, allAnswered, canRetake, parseSuggested, resultWords, suggest, type Answers } from "./selfCheck";
 
+const APPROVED_LENGTH = 1502;
+
 const selves = allLevels().flatMap((l) => l.level.selves.map((s) => ({ key: s.key, level: l.level.level })));
 const all = (v: number): Answers => {
   const a: Answers = {};
@@ -36,8 +38,11 @@ describe("the self-check statements", () => {
     for (const s of selves.filter((x) => x.level === 2)) expect(STATEMENTS[s.key], s.key).not.toMatch(negation);
   });
 
-  it("is marked as a draft set until David approves the wording", () => {
-    expect(ITEM_SET).toMatch(/^draft-/);
+  it("names its wording, so a changed set is never compared with this one", () => {
+    // v1 is the wording David approved on 13 Nov 2026 (D58). If a statement
+    // changes, this snapshot fails: change ITEM_SET with it.
+    expect(ITEM_SET).toBe("v1");
+    expect(Object.values(STATEMENTS).join("|").length).toBe(APPROVED_LENGTH);
   });
 });
 

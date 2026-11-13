@@ -1,6 +1,6 @@
-# Groundwork v3: the self-check statements (draft)
+# Groundwork v3: the self-check statements
 
-**Status: draft wording for David's review, 13 Nov 2026 (D57). The self-check is built and uses these statements, marked in the database as item set `draft-1`. They must not be put in front of students until the three steps under "Before any student answers" are done.**
+**Status: David approved this wording on 13 Nov 2026 (D58). It is item set `v1`. Two steps remain before a class uses it: a counsellor's review of the Value myself statements, and a pilot. See "Before any student answers".**
 
 ## What the self-check is
 
@@ -105,9 +105,9 @@ A student can take it again after ten weeks, which stands in for "once a term".
 
 ## Before any student answers
 
-From spec section 6, "Before release". None of these has happened.
+From spec section 6, "Before release".
 
-1. **David approves the wording** of all 25.
+1. **David approves the wording** of all 25. *Done, 13 Nov 2026.*
 2. **A school psychologist or counsellor reviews the five Value myself statements.**
 3. **A pilot with about 30 students**, to find statements everyone agrees with and statements students misread.
 

@@ -4,12 +4,12 @@
 // test: it gives no score, label or ranking, and only the student sees it
 // (spec section 6; docs/v3/visibility.md V-T2, V-SH7).
 //
-// THE STATEMENTS BELOW ARE DRAFTS. Seven are the spec's examples; the rest were
-// drafted with them for David to approve. Before any student answers them:
-// David approves the wording, a counsellor reviews the "Value myself" items,
-// and they are piloted with about 30 students (spec section 6, "Before
-// release"). ITEM_SET names the wording so a later set is never compared with
-// this one item for item.
+// David approved this wording on 13 Nov 2026 (D58). Seven statements are the
+// spec's examples; the rest were drafted to match. STILL TO DO before a class
+// uses it (spec section 6, "Before release"): a counsellor reviews the "Value
+// myself" statements, and the set is piloted with about 30 students. ITEM_SET
+// names the wording so a later set is never compared with this one item for
+// item; change it whenever a statement changes.
 //
 // Rules the wording keeps (tested in selfCheck.test.ts):
 //   - written fresh for Groundwork: no item from a published scale;
@@ -19,7 +19,7 @@
 
 import { allLevels, type MapLevel, type MapSelf } from "./levelMap";
 
-export const ITEM_SET = "draft-1";
+export const ITEM_SET = "v1";
 
 export const SCALE = ["Not like me", "A little like me", "Somewhat like me", "Mostly like me", "Very like me"] as const;
 
