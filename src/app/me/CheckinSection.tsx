@@ -18,10 +18,10 @@ export default function CheckinSection({ state }: { state: CheckinState }) {
 
   return (
     <div data-animate="4" id="checkin">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Check-in
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         A few quick questions at the start and again ten weeks later, about how you see
         yourself. Only you ever see your answers.
       </p>

@@ -33,10 +33,10 @@ export default function SelvesSection() {
 
   return (
     <div data-animate="5" id="selves">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         The words for it
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         {COUNT_WORDS[SELVES.length] ?? SELVES.length} words that get used as if they mean the same thing.
         They don&apos;t, and the differences are worth having, because most of
         the time you&apos;re feeling one of them and blaming another.

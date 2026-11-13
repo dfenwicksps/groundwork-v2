@@ -133,7 +133,7 @@ export default function StandardSection({
   if (!ready) {
     return (
       <div data-animate="5" id="standard">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        <h2 className="me-heading mb-3">
           The Standard
         </h2>
         <div data-fluoro="yellow" className="card p-5 flex items-center gap-4">
@@ -157,7 +157,7 @@ export default function StandardSection({
   if (writing) {
     return (
       <div data-animate="5" id="standard">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        <h2 className="me-heading mb-3">
           {editing ? "Editing your last check-in" : "The Standard"}
         </h2>
         <div data-fluoro="orange" className="card p-5">
@@ -261,10 +261,10 @@ export default function StandardSection({
   if (!latest) {
     return (
       <div data-animate="5" id="standard">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+        <h2 className="me-heading mb-1">
           The Standard
         </h2>
-        <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+        <p className="text-sm text-ink-muted mb-3 leading-relaxed">
           Everything else here asks who you are. These three ask what you&apos;re
           putting into the rooms you&apos;re in — and you answer them again and
           again, for as long as you use this app.
@@ -300,10 +300,10 @@ export default function StandardSection({
   // ── Latest check-in + history ──
   return (
     <div data-animate="5" id="standard">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         The Standard
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         The three questions you hold yourself to · {checkins.length} check-in
         {checkins.length === 1 ? "" : "s"}
       </p>

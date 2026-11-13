@@ -8,6 +8,10 @@ import { GROUP_MISSION, LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf,
 import { findSelf } from "@/lib/v3/selves";
 import { MISSIONS, getMission } from "@/lib/missions";
 import MeCards from "@/components/v3/MeCards";
+import MeClient from "@/app/me/MeClient";
+import { STRENGTH_BY_KEY } from "@/lib/strengths";
+import { parseBecoming } from "@/lib/becoming";
+import { checkinState } from "@/lib/checkin";
 import { PROGRAM_WEEKS } from "@/lib/program";
 import { shownStep } from "@/lib/v3/shownStep";
 import ActivityClient from "@/app/missions/[id]/activities/[activityId]/ActivityClient";
@@ -86,6 +90,44 @@ export default function DevPreview({ params, searchParams }: { params: { screen:
       sourceEntries: {}, capstone: [], storyEarlier: [], suggestedQualities: [], earlier: [], lifeStage: "junior", ready: true,
     };
     return <WeekClient {...sample} />;
+  }
+  if (params.screen === "me") {
+    // The whole Me screen; ?tab= picks a tab, k=none is a student with no strengths yet.
+    const keys = Object.keys(STRENGTH_BY_KEY);
+    const scores: Record<string, number> = {};
+    keys.forEach((key, i) => { scores[key] = keys.length - i; });
+    const has = k !== "none";
+    return (
+      <MeClient
+        userId="00000000-0000-4000-8000-000000000000"
+        displayName="Sam Lee"
+        ranking={has ? keys : null}
+        scores={has ? scores : {}}
+        values={has ? ["Honesty", "Loyalty", "Fairness"] : []}
+        moralProfile={null}
+        goals={[]}
+        activePractice={null}
+        recentPractices={[]}
+        commitmentExcerpt={has ? "I want to be someone people can count on." : null}
+        futureSelf={has ? "I wake up early and ride to the workshop. Afternoons I coach the under 12s." : null}
+        habitSaved={null}
+        becoming={parseBecoming(undefined)}
+        standardCheckins={[]}
+        standardReady
+        characterCode={has ? ["I tell the truth, even when it costs me.", "I turn up for my people."] : []}
+        characterStory={null}
+        nextChapter={null}
+        supportCount={0}
+        checkin={checkinState([])}
+        stepsTaken={{ steps: [], total: 0 }}
+        featuresReady
+        lifeStage="junior"
+        phase={1}
+        reviewedAnchors={[]}
+        nextActivityHref={null}
+        cards={<p className="card p-5 text-sm">The four cards (see me-cards).</p>}
+      />
+    );
   }
   if (params.screen === "me-cards") {
     const piece = (key: string, label: string, activityId: string, stepTitle: string, text: string, chips: string[] = []) =>

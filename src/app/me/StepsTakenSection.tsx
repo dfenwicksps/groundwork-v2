@@ -20,16 +20,16 @@ export default function StepsTakenSection({
 }) {
   return (
     <div data-animate="4" id="steps">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Steps you&apos;ve taken
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         The small things you said you&apos;d do after a reflection, and did.
         {total > 0 ? ` ${total} so far.` : ""}
       </p>
       {steps.length === 0 ? (
         <div className="card p-5 text-sm text-ink-muted leading-relaxed">
-          None yet. At the end of a mission step or a week, pick one small thing to do and
+          None yet. At the end of a step or a week, pick one small thing to do and
           when. Home will ask how it went, and the ones you do will collect here.
         </div>
       ) : (

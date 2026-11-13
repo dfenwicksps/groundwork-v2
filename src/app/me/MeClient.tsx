@@ -90,6 +90,7 @@ export default function MeClient({
   reviewedAnchors,
   nextActivityHref,
   cards,
+  journeyOn = false,
 }: {
   userId: string;
   displayName: string;
@@ -134,6 +135,11 @@ export default function MeClient({
   nextActivityHref: string | null;
   /** v3: the self-check and the four cards, rendered on the server. */
   cards: React.ReactNode;
+  /**
+   * v3: the three-phase banner is a school setting, off by default (D42).
+   * No screen sets it yet, so nobody sees the banner for now.
+   */
+  journeyOn?: boolean;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -167,7 +173,7 @@ export default function MeClient({
   // needed and both live in one effect.
   useEffect(() => {
     const TABS_BY_KEY: Record<string, MeTab> = {
-      profile: "profile", reflect: "reflect", grow: "grow", future: "future",
+      cards: "cards", profile: "profile", reflect: "reflect", grow: "grow", future: "future",
     };
     const HASH_TAB: Record<string, MeTab> = {
       habits: "reflect", moral: "reflect", standard: "reflect", checkin: "reflect",
@@ -219,6 +225,23 @@ export default function MeClient({
     { key: "future", label: "Future", emoji: "🚀" },
   ];
 
+  // What each tab is for, and where on the map it belongs when it has a place.
+  const INTRO: Record<Exclude<MeTab, "cards">, { title: string; line: string; map?: { href: string; name: string; colour: string } }> = {
+    profile: {
+      title: "Your strengths",
+      line: "What you lead with, and what you stand for.",
+      map: { href: "/grow/know-myself", name: "Know myself", colour: "#0B7A6E" },
+    },
+    reflect: { title: "Reflect", line: "Slower looks at how you're living and how you decide." },
+    grow: { title: "Practise", line: "Pick what you want to get better at, then try it in real life." },
+    future: {
+      title: "Your future",
+      line: "Where you're heading, and the next real steps towards it.",
+      map: { href: "/grow/imagine-myself", name: "Imagine myself", colour: "#1B1640" },
+    },
+  };
+  const intro = tab === "cards" ? null : INTRO[tab];
+
   const soonNote = (
     <div data-fluoro="blue" className="card p-5 flex items-center gap-4">
       <span className="text-3xl flex-shrink-0" aria-hidden>🧰</span>
@@ -248,7 +271,7 @@ export default function MeClient({
         {/* Phase banner — how deep the whole journey currently goes. In
             Phase 1 the CTA goes to the next mission step; later it points to
             the first identity anchor, where a review and a deepen begin. */}
-        {hasProfile && (
+        {journeyOn && hasProfile && (
           <PhaseBanner
             phase={phase}
             reviewed={reviewedAnchors}
@@ -260,13 +283,13 @@ export default function MeClient({
           />
         )}
 
-        {/* Tab bar — journey-aligned, only when there's a profile */}
-        {hasProfile && (
+        {/* Tab bar. v3: always there; nothing on Me waits on anything else (D41). */}
+        {(
           <div
             className="sticky top-0 z-20 -mx-4 px-4 py-2"
             style={{ background: "rgb(var(--c-surface-muted) / 0.95)", backdropFilter: "blur(6px)" }}
           >
-            <div className="flex gap-1.5 lg:max-w-xl" role="tablist" aria-label="Your profile" onKeyDown={onTabKey}>
+            <div className="flex gap-1.5 lg:max-w-2xl" role="tablist" aria-label="Your profile" onKeyDown={onTabKey}>
               {TABS.map((t) => (
                 <button
                   key={t.key}
@@ -277,7 +300,7 @@ export default function MeClient({
                   tabIndex={tab === t.key ? 0 : -1}
                   onClick={() => setTab(t.key)}
                   className={cn(
-                    "flex-1 flex flex-col lg:flex-row lg:justify-center items-center gap-0.5 lg:gap-2 py-2 lg:py-2.5 rounded-xl text-xs lg:text-sm font-semibold transition-all",
+                    "flex-1 flex flex-col lg:flex-row lg:justify-center items-center gap-0.5 lg:gap-2 py-2 lg:py-2.5 rounded-2xl text-xs lg:text-sm font-extrabold transition-all min-h-[44px]",
                     tab === t.key
                       ? "bg-navy text-white"
                       : "bg-white text-ink-muted border border-surface-border"
@@ -297,11 +320,31 @@ export default function MeClient({
         {/* The tabs' content. One panel whose contents follow the chosen tab. */}
         <div
           className="space-y-8"
-          {...(hasProfile ? { id: "me-tabpanel", role: "tabpanel", "aria-labelledby": `me-tab-${tab}` } : {})}
+          id="me-tabpanel"
+          role="tabpanel"
+          aria-labelledby={`me-tab-${tab}`}
         >
-        {(tab === "cards" || !hasProfile) && cards}
+        {tab === "cards" && cards}
 
-        {(tab === "profile" || !hasProfile) && (
+        {intro && (
+          <div>
+            <h2 className="text-2xl font-extrabold text-[--navy]" style={{ fontFamily: "var(--font-display)" }}>
+              {intro.title}
+            </h2>
+            <p className="mt-1 text-sm font-semibold text-[--ink-muted]">{intro.line}</p>
+            {intro.map && (
+              <Link
+                href={intro.map.href}
+                className="mt-3 inline-flex min-h-[36px] items-center rounded-full px-4 text-[13px] font-extrabold text-white"
+                style={{ background: intro.map.colour, border: "1.5px solid rgba(255,255,255,.25)" }}
+              >
+                On the map: {intro.map.name} →
+              </Link>
+            )}
+          </div>
+        )}
+
+        {tab === "profile" && (
           <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
           <div className="split-col">
         {/* Purpose profile — the one-line "who I am" artefact */}
@@ -351,10 +394,10 @@ export default function MeClient({
           <>
             {/* Signature strengths */}
             <div data-animate="2" className="order-5">
-              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+              <h2 className="me-heading mb-1">
                 Your signature strengths
               </h2>
-              <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+              <p className="text-sm text-ink-muted mb-3 leading-relaxed">
                 A snapshot from Strengths Mapping, not a fixed verdict. Strengths grow
                 with use, so retake it whenever it stops sounding like you.
               </p>
@@ -395,10 +438,10 @@ export default function MeClient({
 
             {/* Growth edges */}
             <div data-animate="3" className="order-5">
-              <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+              <h2 className="me-heading mb-1">
                 Growth edges
               </h2>
-              <p className="text-xs text-ink-muted mb-3">
+              <p className="text-sm text-ink-muted mb-3">
                 Your lower-ranked strengths — not weaknesses, just the ones that don&apos;t
                 come as naturally yet.{" "}
                 <a href="#practice" className="font-medium text-teal hover:underline">
@@ -515,7 +558,7 @@ export default function MeClient({
             single statement of identity the student has made */}
         {hasProfile && tab === "profile" && characterCode.length > 0 && (
           <div data-animate="2" className="order-3">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+            <h2 className="me-heading mb-3">
               My Character Code
             </h2>
             <div data-fluoro="violet" className="card p-5">
@@ -547,8 +590,8 @@ export default function MeClient({
           </div>
         )}
 
-        {/* The staged student journey: Discover → … → Launch */}
-        {hasProfile && tab === "profile" && (
+        {/* v2's Discover → Launch strip: off with the journey setting (D42). */}
+        {journeyOn && hasProfile && tab === "profile" && (
           <div className="order-4">
           <JourneyStrip
             hasProfile={hasProfile}
@@ -567,7 +610,7 @@ export default function MeClient({
         {/* Values */}
         {values.length > 0 && tab === "profile" && (
           <div data-animate="5" className="order-6">
-            <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+            <h2 className="me-heading mb-3">
               Your chosen values
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -587,7 +630,7 @@ export default function MeClient({
         )}
 
         {/* Reflect — how I decide + my current patterns */}
-        {hasProfile && tab === "reflect" && (
+        {tab === "reflect" && (
           <div className="space-y-8 lg:max-w-3xl">
             {/* The recurring loop leads — the two below it are done once. */}
             <StandardSection
@@ -613,7 +656,7 @@ export default function MeClient({
         )}
 
         {/* Grow — choose qualities + practise them */}
-        {hasProfile && tab === "grow" && (
+        {tab === "grow" && (
           <div className="space-y-8 lg:max-w-3xl">
             {/* The same artefact program week 1 builds — one record, two
                 doors. See src/lib/becoming.ts. */}
@@ -657,7 +700,7 @@ export default function MeClient({
         )}
 
         {/* Future — pathways + goals */}
-        {hasProfile && tab === "future" && (
+        {tab === "future" && (
           <div className="space-y-8 lg:max-w-3xl">
             {/* The guided part of the tab: decide, and go and find out. */}
             <NextChapterSection plan={nextChapter} />

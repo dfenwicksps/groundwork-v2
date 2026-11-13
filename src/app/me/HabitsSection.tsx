@@ -64,7 +64,7 @@ export default function HabitsSection({
   if (taking) {
     return (
       <div data-animate="4" id="habits">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        <h2 className="me-heading mb-3">
           Habit check
         </h2>
         <div data-fluoro="yellow" className="card p-5">
@@ -123,7 +123,7 @@ export default function HabitsSection({
   if (!local) {
     return (
       <div data-animate="4" id="habits">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        <h2 className="me-heading mb-3">
           Habit check
         </h2>
         <div data-fluoro="orange" className="card p-5 flex items-center gap-4">
@@ -151,7 +151,7 @@ export default function HabitsSection({
   // ── Result ──
   return (
     <div data-animate="4" id="habits">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+      <h2 className="me-heading mb-3">
         Habit check — your current patterns
       </h2>
       <div data-fluoro="violet" className="card p-5 space-y-4">

@@ -24,12 +24,12 @@ export default function FutureSelfSection({
 }) {
   return (
     <div data-animate="2" id="future-self">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Your ordinary Tuesday, a few years on
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         {excerpt
-          ? "The picture you wrote in Mission 4. Everything below is about getting there — so it's worth checking it's still the one you want."
+          ? "The picture you wrote in Future Self. Everything below is about getting there — so it's worth checking it's still the one you want."
           : "Before pathways and goals mean much, it helps to have a picture of the life they're for."}
       </p>
 
@@ -49,7 +49,7 @@ export default function FutureSelfSection({
         ) : (
           <>
             <p className="text-sm text-ink leading-relaxed mb-3">
-              Mission 4 asks you to walk through a random Tuesday a few years from now — where
+              Future Self asks you to walk through a random Tuesday a few years from now — where
               you wake up, what fills the afternoon, who&apos;s around. Vague
               futures don&apos;t pull at anything. Specific ones do.
             </p>
@@ -60,7 +60,7 @@ export default function FutureSelfSection({
               Future Self →
             </Link>
             <p className="text-xs text-ink-muted text-center mt-2">
-              About ten minutes, in Mission 4.
+              About ten minutes.
             </p>
           </>
         )}

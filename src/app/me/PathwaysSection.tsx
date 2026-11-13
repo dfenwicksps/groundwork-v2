@@ -25,10 +25,10 @@ export default function PathwaysSection({
 
   return (
     <div data-animate="4">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Where your strengths could take you
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         {lifeStage === "junior"
           ? "No rush at all — this is just a peek at where your strengths could lead one day. These are open doors, never “you should become this.”"
           : lifeStage === "senior"

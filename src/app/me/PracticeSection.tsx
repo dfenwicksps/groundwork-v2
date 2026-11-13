@@ -125,10 +125,10 @@ export default function PracticeSection({
 
   return (
     <div data-animate="4" id="practice">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Strength in action
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         Knowing your strengths is step one. Using one on purpose each week is how
         character becomes habit. No streaks — just practice.
       </p>

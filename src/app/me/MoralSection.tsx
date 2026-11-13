@@ -110,7 +110,7 @@ export default function MoralSection({
     return (
       <div data-animate="4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider">
+          <h2 className="me-heading">
             Your moral compass
           </h2>
           <span className="text-xs text-ink-muted">
@@ -164,7 +164,7 @@ export default function MoralSection({
   if (!local || !info) {
     return (
       <div data-animate="4">
-        <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+        <h2 className="me-heading mb-3">
           Your moral compass
         </h2>
         <div data-fluoro="blue" className="card p-5 flex items-center gap-4">
@@ -194,7 +194,7 @@ export default function MoralSection({
   // ── Result ──
   return (
     <div data-animate="4">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-3">
+      <h2 className="me-heading mb-3">
         Your moral compass
       </h2>
       <div data-fluoro="green" className="card p-5">

@@ -149,7 +149,7 @@ export default function BecomingQualities({
           {currentTop.length > 0 ? (
             <div className="rounded-xl bg-surface-muted border border-surface-border p-4 mb-4">
               <div className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-2">
-                What you lead with today · from Mission 1
+                What you lead with today · from Strengths Mapping
               </div>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {currentTop.map((k) => (
@@ -375,7 +375,7 @@ export default function BecomingQualities({
             })}
           </div>
 
-          <p className="text-xs text-ink-muted mb-3">
+          <p className="text-sm text-ink-muted mb-3">
             {focus.length} of {FOCUS_MAX} chosen
             {blocked &&
               ` · you've chosen ${FOCUS_MAX} — tap one to swap it out first`}
@@ -582,14 +582,14 @@ function Frame({
 
   return (
     <div data-animate="4" id="focus">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Who I&apos;m becoming
       </h2>
       {blurb && (
-        <p className="text-xs text-ink-muted mb-3 leading-relaxed">{blurb}</p>
+        <p className="text-sm text-ink-muted mb-3 leading-relaxed">{blurb}</p>
       )}
       {!blurb && variant === "program" && (
-        <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+        <p className="text-sm text-ink-muted mb-3 leading-relaxed">
           This is the same plan as on your profile — change it in either place.
         </p>
       )}

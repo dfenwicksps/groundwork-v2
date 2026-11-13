@@ -11,10 +11,10 @@ import { shortDate, talkDue, whoToYou, type NextChapter } from "@/lib/nextChapte
 export default function NextChapterSection({ plan }: { plan: NextChapter | null }) {
   return (
     <div data-animate="2" id="next-chapter">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Your next chapter
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         {plan
           ? "The plan you made for what's next."
           : "The options in front of you, the version of next year you're hoping for and the one you'd rather avoid, and someone to ask. About ten minutes."}

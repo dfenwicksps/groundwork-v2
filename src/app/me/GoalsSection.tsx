@@ -168,10 +168,10 @@ export default function GoalsSection({
 
   return (
     <div data-animate="5">
-      <h2 className="text-xs font-semibold text-ink-muted uppercase tracking-wider mb-1">
+      <h2 className="me-heading mb-1">
         Your goals
       </h2>
-      <p className="text-xs text-ink-muted mb-3 leading-relaxed">
+      <p className="text-sm text-ink-muted mb-3 leading-relaxed">
         Self-knowledge becomes real when it has a target. Small and specific beats
         big and vague.{doneCount > 0 ? ` ${doneCount} finished so far ✓` : ""}
       </p>

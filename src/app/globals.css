@@ -384,6 +384,15 @@ body {
     line-height: 1.15;
   }
 
+  /* v3: a section heading on Me, in the map's display type. */
+  .me-heading {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    line-height: 1.25;
+    color: var(--navy);
+  }
+
   /* Card styles */
   .card {
     background: var(--surface);
