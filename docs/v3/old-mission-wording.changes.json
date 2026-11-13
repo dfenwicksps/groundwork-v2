@@ -1,0 +1,866 @@
+{
+ "not_shown": [
+  1,
+  6,
+  17,
+  27,
+  73,
+  74,
+  75,
+  76,
+  83,
+  84,
+  85,
+  86,
+  92,
+  93,
+  94,
+  95,
+  96,
+  97,
+  98,
+  99
+ ],
+ "changes": [
+  {
+   "n": 2,
+   "file": "src/lib/missions.ts",
+   "line": 366,
+   "where": "chapters-so-far",
+   "old": "in Mission 4, and",
+   "new": "later, in Where You've Come From, and",
+   "before": "You'll come back to this in Mission 4, and either question can be left out.",
+   "after": "You'll come back to this later, in Where You've Come From, and either question can be left out."
+  },
+  {
+   "n": 3,
+   "file": "src/lib/missions.ts",
+   "line": 394,
+   "where": "chapters-so-far",
+   "old": "again in Mission 4,",
+   "new": "again in Where You've Come From,",
+   "before": "You'll see them again in Mission 4, with more to add by then.",
+   "after": "You'll see them again in Where You've Come From, with more to add by then."
+  },
+  {
+   "n": 4,
+   "file": "src/lib/missions.ts",
+   "line": 407,
+   "where": "strengths-mapping",
+   "old": "This mission builds your inner compass.",
+   "new": "This is the start of your inner compass.",
+   "before": "This mission builds your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you.",
+   "after": "This is the start of your inner compass. It has two halves: strengths, what you're naturally good at, and values, what matters to you."
+  },
+  {
+   "n": 5,
+   "file": "src/lib/missions.ts",
+   "line": 576,
+   "where": "weekly-challenge",
+   "old": "Mission Challenge",
+   "new": "Live It Once",
+   "before": "Mission Challenge",
+   "after": "Live It Once"
+  },
+  {
+   "n": 7,
+   "file": "src/lib/missions.ts",
+   "line": 730,
+   "where": "what-matters",
+   "old": "Mission 1 looked inward.",
+   "new": "A lot of Groundwork looks inward.",
+   "before": "Mission 1 looked inward. This one looks outward.",
+   "after": "A lot of Groundwork looks inward. This one looks outward."
+  },
+  {
+   "n": 8,
+   "file": "src/lib/missions.ts",
+   "line": 751,
+   "where": "contribution-map",
+   "old": "your inner compass from Mission 1 to",
+   "new": "your inner compass, your strengths and values, to",
+   "before": "You just connected your inner compass from Mission 1 to the thing you care about.",
+   "after": "You just connected your inner compass, your strengths and values, to the thing you care about."
+  },
+  {
+   "n": 9,
+   "file": "src/lib/missions.ts",
+   "line": 754,
+   "where": "contribution-map",
+   "old": "named in Step 1,",
+   "new": "named in What Matters,",
+   "before": "Think about what you named in Step 1, the cause or the thing you love.",
+   "after": "Think about what you named in What Matters, the cause or the thing you love."
+  },
+  {
+   "n": 10,
+   "file": "src/lib/missions.ts",
+   "line": 794,
+   "where": "contribution-map",
+   "old": "you chose in Mission 1.",
+   "new": "you chose.",
+   "before": "Look back at the strengths you mapped and the values you chose in Mission 1. If those things had a direction — if your inner compass was pointing somewhere — what would that direction be?",
+   "after": "Look back at the strengths you mapped and the values you chose. If those things had a direction — if your inner compass was pointing somewhere — what would that direction be?"
+  },
+  {
+   "n": 10,
+   "file": "src/lib/missions.ts",
+   "line": 794,
+   "where": "contribution-map",
+   "old": "wrote about in Step 1?",
+   "new": "wrote about in What Matters?",
+   "before": "Does it point toward what you wrote about in Step 1?",
+   "after": "Does it point toward what you wrote about in What Matters?"
+  },
+  {
+   "n": 11,
+   "file": "src/lib/missions.ts",
+   "line": 798,
+   "where": "contribution-map",
+   "old": "identified in Mission 1.",
+   "new": "identified in Strengths Mapping.",
+   "before": "Look at the strengths you identified in Mission 1. How might they be genuinely useful in relation to what you care about — even in a small way?",
+   "after": "Look at the strengths you identified in Strengths Mapping. How might they be genuinely useful in relation to what you care about — even in a small way?"
+  },
+  {
+   "n": 12,
+   "file": "src/lib/missions.ts",
+   "line": 799,
+   "where": "contribution-map",
+   "old": "named in Step 1,",
+   "new": "named in What Matters,",
+   "before": "Which ones feel most alive when you think about what you named in Step 1, the cause or the thing you love?",
+   "after": "Which ones feel most alive when you think about what you named in What Matters, the cause or the thing you love?"
+  },
+  {
+   "n": 13,
+   "file": "src/lib/missions.ts",
+   "line": 924,
+   "where": "commitment-statement",
+   "old": "values from Mission 1 connect",
+   "new": "values connect",
+   "before": "how do your strengths or values from Mission 1 connect to this?",
+   "after": "how do your strengths or values connect to this?"
+  },
+  {
+   "n": 14,
+   "file": "src/lib/missions.ts",
+   "line": 938,
+   "where": "purpose-challenge",
+   "old": "Mission Challenge",
+   "new": "One Real Step",
+   "before": "Mission Challenge",
+   "after": "One Real Step"
+  },
+  {
+   "n": 15,
+   "file": "src/lib/missions.ts",
+   "line": 943,
+   "where": "purpose-challenge",
+   "old": "planned in Step 2.",
+   "new": "planned in The Contribution Map.",
+   "before": " /  / • Do the tiny first step you planned in Step 2. / • Learn one thing properly — spend 30 minutes reading, watching or asking about what you care about.",
+   "after": " /  / • Do the tiny first step you planned in The Contribution Map. / • Learn one thing properly — spend 30 minutes reading, watching or asking about what you care about."
+  },
+  {
+   "n": 16,
+   "file": "src/lib/missions.ts",
+   "line": 945,
+   "where": "purpose-challenge",
+   "old": "from Step 2",
+   "new": "from The Contribution Map",
+   "before": "Your tiny first step, from Step 2",
+   "after": "Your tiny first step, from The Contribution Map"
+  },
+  {
+   "n": 18,
+   "file": "src/lib/missions.ts",
+   "line": 1070,
+   "where": "belonging",
+   "old": "Missions 1 and 2 were mostly about you.",
+   "new": "A lot of Groundwork is about you.",
+   "before": "Missions 1 and 2 were mostly about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships.",
+   "after": "A lot of Groundwork is about you. This one turns to the people around you, because who you are gets built, and reflected back, in relationships."
+  },
+  {
+   "n": 19,
+   "file": "src/lib/missions.ts",
+   "line": 1091,
+   "where": "fitting-in-vs-belonging",
+   "old": "In Mission 1's Mask Check you",
+   "new": "In The Mask Check you",
+   "before": "In Mission 1's Mask Check you noticed how you change between rooms.",
+   "after": "In The Mask Check you noticed how you change between rooms."
+  },
+  {
+   "n": 20,
+   "file": "src/lib/missions.ts",
+   "line": 1128,
+   "where": "fitting-in-vs-belonging",
+   "old": "from Mission 1",
+   "new": "from The Mask Check",
+   "before": "How you change between rooms, from Mission 1",
+   "after": "How you change between rooms, from The Mask Check"
+  },
+  {
+   "n": 21,
+   "file": "src/lib/missions.ts",
+   "line": 1137,
+   "where": "fitting-in-vs-belonging",
+   "old": "In Mission 1 you already",
+   "new": "In The Mask Check you already",
+   "before": "In Mission 1 you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it.",
+   "after": "In The Mask Check you already found where you adjust, so this step doesn't ask again: it asks what you want to do about it."
+  },
+  {
+   "n": 22,
+   "file": "src/lib/missions.ts",
+   "line": 1139,
+   "where": "fitting-in-vs-belonging",
+   "old": "wrote in Mission 1 about",
+   "new": "wrote in The Mask Check about",
+   "before": "Look at what you wrote in Mission 1 about how you change between rooms.",
+   "after": "Look at what you wrote in The Mask Check about how you change between rooms."
+  },
+  {
+   "n": 23,
+   "file": "src/lib/missions.ts",
+   "line": 1281,
+   "where": "connection-challenge",
+   "old": "Mission Challenge",
+   "new": "Reach Out Once",
+   "before": "Mission Challenge",
+   "after": "Reach Out Once"
+  },
+  {
+   "n": 24,
+   "file": "src/lib/missions.ts",
+   "line": 1286,
+   "where": "connection-challenge",
+   "old": "wrote in Step 3,",
+   "new": "wrote in Across the Gap,",
+   "before": " /  / • Take the small step you wrote in Step 3, toward someone across the gap.",
+   "after": " /  / • Take the small step you wrote in Across the Gap, toward someone across the gap."
+  },
+  {
+   "n": 25,
+   "file": "src/lib/missions.ts",
+   "line": 1288,
+   "where": "connection-challenge",
+   "old": "from Step 3",
+   "new": "from Across the Gap",
+   "before": "Your small step, from Step 3",
+   "after": "Your small step, from Across the Gap"
+  },
+  {
+   "n": 26,
+   "file": "src/lib/missions.ts",
+   "line": 1348,
+   "where": "conversation-family-story",
+   "old": "an optional extra in this mission.",
+   "new": "an optional extra in Know myself.",
+   "before": "If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in this mission.",
+   "after": "If you'd like to think about what your culture or background means to you now, Culture and Heritage is an optional extra in Know myself."
+  },
+  {
+   "n": 28,
+   "file": "src/lib/missions.ts",
+   "line": 1402,
+   "where": "where-ive-come-from",
+   "old": "In Mission 1 you named",
+   "new": "In Your Story So Far you named",
+   "before": "In Mission 1 you named some chapters.",
+   "after": "In Your Story So Far you named some chapters."
+  },
+  {
+   "n": 29,
+   "file": "src/lib/missions.ts",
+   "line": 1414,
+   "where": "where-ive-come-from",
+   "old": "named them in Mission 1,",
+   "new": "named them in Your Story So Far,",
+   "before": "If you named them in Mission 1, they're shown below: would you still call them that, or has a chapter been added since?",
+   "after": "If you named them in Your Story So Far, they're shown below: would you still call them that, or has a chapter been added since?"
+  },
+  {
+   "n": 30,
+   "file": "src/lib/missions.ts",
+   "line": 1424,
+   "where": "where-ive-come-from",
+   "old": "since Mission 1",
+   "new": "since then",
+   "before": "The same, plus a new chapter since Mission 1",
+   "after": "The same, plus a new chapter since then"
+  },
+  {
+   "n": 31,
+   "file": "src/lib/missions.ts",
+   "line": 1447,
+   "where": "where-ive-come-from",
+   "old": "from Mission 1",
+   "new": "from Your Story So Far",
+   "before": "Your chapters, from Mission 1",
+   "after": "Your chapters, from Your Story So Far"
+  },
+  {
+   "n": 32,
+   "file": "src/lib/missions.ts",
+   "line": 1578,
+   "where": "the-through-line",
+   "old": "it's the last thing this mission asks you to find.",
+   "new": "it's what this step asks you to find.",
+   "before": "That thread is the closest thing to a compass heading anyone gets — and it's the last thing this mission asks you to find. Everything so far has been looking back.",
+   "after": "That thread is the closest thing to a compass heading anyone gets — and it's what this step asks you to find. Everything so far has been looking back."
+  },
+  {
+   "n": 33,
+   "file": "src/lib/missions.ts",
+   "line": 1580,
+   "where": "the-through-line",
+   "old": "Rewind to Mission 1",
+   "new": "Rewind to Identity",
+   "before": "Rewind to Mission 1 — strengths, values, masks, your letter.",
+   "after": "Rewind to Identity — strengths, values, masks, your letter."
+  },
+  {
+   "n": 33,
+   "file": "src/lib/missions.ts",
+   "line": 1580,
+   "where": "the-through-line",
+   "old": "from that mission still",
+   "new": "from there still",
+   "before": "One discovery from that mission still rings true weeks later.",
+   "after": "One discovery from there still rings true weeks later."
+  },
+  {
+   "n": 34,
+   "file": "src/lib/missions.ts",
+   "line": 1581,
+   "where": "the-through-line",
+   "old": "Mission 2 asked",
+   "new": "Purpose asked",
+   "before": "Mission 2 asked what pulls at you and what you could contribute.",
+   "after": "Purpose asked what pulls at you and what you could contribute."
+  },
+  {
+   "n": 35,
+   "file": "src/lib/missions.ts",
+   "line": 1582,
+   "where": "the-through-line",
+   "old": "Mission 3 was about",
+   "new": "Connection was about",
+   "before": "Mission 3 was about your people — where you're known, who shaped you.",
+   "after": "Connection was about your people — where you're known, who shaped you."
+  },
+  {
+   "n": 36,
+   "file": "src/lib/missions.ts",
+   "line": 1621,
+   "where": "the-through-line",
+   "old": "across all three missions",
+   "new": "across everything so far",
+   "before": "Think back to the thing that surprised you most across all three missions — something you wrote or realised that you didn't expect.",
+   "after": "Think back to the thing that surprised you most across everything so far — something you wrote or realised that you didn't expect."
+  },
+  {
+   "n": 37,
+   "file": "src/lib/missions.ts",
+   "line": 1625,
+   "where": "the-through-line",
+   "old": "card from Mission 1 (shown above)",
+   "new": "card (shown above)",
+   "before": "Look at your Who I Am card from Mission 1 (shown above).",
+   "after": "Look at your Who I Am card (shown above)."
+  },
+  {
+   "n": 38,
+   "file": "src/lib/missions.ts",
+   "line": 1626,
+   "where": "the-through-line",
+   "old": "Purpose card from Mission 2.",
+   "new": "Purpose card.",
+   "before": "Now your Purpose card from Mission 2. What's the most honest thing on it about what you care about and want to contribute?",
+   "after": "Now your Purpose card. What's the most honest thing on it about what you care about and want to contribute?"
+  },
+  {
+   "n": 39,
+   "file": "src/lib/missions.ts",
+   "line": 1627,
+   "where": "the-through-line",
+   "old": "Connection card from Mission 3.",
+   "new": "Connection card.",
+   "before": "And your Connection card from Mission 3. What does it say about the people and places that matter most to you?",
+   "after": "And your Connection card. What does it say about the people and places that matter most to you?"
+  },
+  {
+   "n": 40,
+   "file": "src/lib/missions.ts",
+   "line": 1703,
+   "where": "meaning-challenge",
+   "old": "what all four missions look like",
+   "new": "what all of this looks like",
+   "before": "One deliberate choice, made on purpose, is what all four missions look like in real life.",
+   "after": "One deliberate choice, made on purpose, is what all of this looks like in real life."
+  },
+  {
+   "n": 41,
+   "file": "src/lib/missions.ts",
+   "line": 1705,
+   "where": "meaning-challenge",
+   "old": "Mission Challenge",
+   "new": "One Deliberate Choice",
+   "before": "Mission Challenge",
+   "after": "One Deliberate Choice"
+  },
+  {
+   "n": 42,
+   "file": "src/lib/missions.ts",
+   "line": 1708,
+   "where": "meaning-challenge",
+   "old": "Four missions of understanding.",
+   "new": "You've done a lot of working out who you are.",
+   "before": "Four missions of understanding. This final challenge asks you to actually live it — even briefly.",
+   "after": "You've done a lot of working out who you are. This final challenge asks you to actually live it — even briefly."
+  },
+  {
+   "n": 43,
+   "file": "src/lib/program.ts",
+   "line": 161,
+   "where": "week-1",
+   "old": "the whole point of the next nine weeks.",
+   "new": "what the other weeks work on.",
+   "before": "That gap is the whole point of the next nine weeks.",
+   "after": "That gap is what the other weeks work on."
+  },
+  {
+   "n": 44,
+   "file": "src/lib/program.ts",
+   "line": 170,
+   "where": "week-1",
+   "old": "in Mission 1.",
+   "new": "in Know myself.",
+   "before": "Eight minutes, in Mission 1.",
+   "after": "Eight minutes, in Know myself."
+  },
+  {
+   "n": 45,
+   "file": "src/lib/program.ts",
+   "line": 216,
+   "where": "week-2",
+   "old": "in Mission 1.",
+   "new": "in Know myself.",
+   "before": "About eight minutes, in Mission 1.",
+   "after": "About eight minutes, in Know myself."
+  },
+  {
+   "n": 46,
+   "file": "src/lib/program.ts",
+   "line": 218,
+   "where": "week-2",
+   "old": "in Mission 1.",
+   "new": "in the Values Clarifier.",
+   "before": "You named these in Mission 1. This week is the harder half: proving each one with a behaviour someone could watch you do.",
+   "after": "You named these in the Values Clarifier. This week is the harder half: proving each one with a behaviour someone could watch you do."
+  },
+  {
+   "n": 47,
+   "file": "src/lib/program.ts",
+   "line": 225,
+   "where": "week-2",
+   "old": "in Mission 1.",
+   "new": "in the Values Clarifier.",
+   "before": "These are the five you chose in Mission 1. For each one, write the behaviour that proves it — observable, specific, this week.",
+   "after": "These are the five you chose in the Values Clarifier. For each one, write the behaviour that proves it — observable, specific, this week."
+  },
+  {
+   "n": 48,
+   "file": "src/lib/program.ts",
+   "line": 259,
+   "where": "week-3",
+   "old": "Mission 2 starts there",
+   "new": "What Matters starts there",
+   "before": "Mission 2 starts there — about ten minutes.",
+   "after": "What Matters starts there — about ten minutes."
+  },
+  {
+   "n": 49,
+   "file": "src/lib/program.ts",
+   "line": 302,
+   "where": "week-4",
+   "old": "Mission 1 already had you",
+   "new": "The Mask Check already had you",
+   "before": "Mission 1 already had you look at where you aren't.",
+   "after": "The Mask Check already had you look at where you aren't."
+  },
+  {
+   "n": 50,
+   "file": "src/lib/program.ts",
+   "line": 314,
+   "where": "week-4",
+   "old": "Mission 3 has you decide",
+   "new": "Fitting In vs. Belonging has you decide",
+   "before": "Mission 3 has you decide what to do about the room where you adjust most — about ten minutes.",
+   "after": "Fitting In vs. Belonging has you decide what to do about the room where you adjust most — about ten minutes."
+  },
+  {
+   "n": 51,
+   "file": "src/lib/program.ts",
+   "line": 358,
+   "where": "week-5",
+   "old": "Mission 1's values are",
+   "new": "Your values are",
+   "before": "Mission 1's values are the quickest way to find one — about eight minutes.",
+   "after": "Your values are the quickest way to find one — about eight minutes."
+  },
+  {
+   "n": 52,
+   "file": "src/lib/program.ts",
+   "line": 370,
+   "where": "week-5",
+   "old": "Mission 2 had you find",
+   "new": "Who Else Cares had you find",
+   "before": "Mission 2 had you find someone who's already further up that hill — worth having them in mind.",
+   "after": "Who Else Cares had you find someone who's already further up that hill — worth having them in mind."
+  },
+  {
+   "n": 53,
+   "file": "src/lib/program.ts",
+   "line": 412,
+   "where": "week-6",
+   "old": "Mission 3 has you sit",
+   "new": "Across the Gap has you sit",
+   "before": "Mission 3 has you sit with exactly that — about ten minutes, and this week leans on it.",
+   "after": "Across the Gap has you sit with exactly that — about ten minutes, and this week leans on it."
+  },
+  {
+   "n": 54,
+   "file": "src/lib/program.ts",
+   "line": 497,
+   "where": "week-8",
+   "old": "Mission 3 already had you",
+   "new": "Where You Belong already had you",
+   "before": "Mission 3 already had you work out who that is — about ten minutes.",
+   "after": "Where You Belong already had you work out who that is — about ten minutes."
+  },
+  {
+   "n": 55,
+   "file": "src/lib/program.ts",
+   "line": 509,
+   "where": "week-8",
+   "old": "It's the Mission 3 milestone.",
+   "new": "It's a milestone letter in Value myself.",
+   "before": "It's the Mission 3 milestone.",
+   "after": "It's a milestone letter in Value myself."
+  },
+  {
+   "n": 56,
+   "file": "src/lib/program.ts",
+   "line": 551,
+   "where": "week-9",
+   "old": "Mission 4 already asked",
+   "new": "Digital Self already asked",
+   "before": "Mission 4 already asked what the input is doing to you — worth having that answer first.",
+   "after": "Digital Self already asked what the input is doing to you — worth having that answer first."
+  },
+  {
+   "n": 57,
+   "file": "src/lib/program.ts",
+   "line": 565,
+   "where": "week-10",
+   "old": "Nine weeks of evidence about who you are and who you're becoming, and four missions about where it all comes from.",
+   "new": "You've gathered a lot of evidence about who you are, who you're becoming and where it all comes from.",
+   "before": "Nine weeks of evidence about who you are and who you're becoming, and four missions about where it all comes from. This week you write it down: first the story in one sentence, then the commitments.",
+   "after": "You've gathered a lot of evidence about who you are, who you're becoming and where it all comes from. This week you write it down: first the story in one sentence, then the commitments."
+  },
+  {
+   "n": 58,
+   "file": "src/lib/program.ts",
+   "line": 603,
+   "where": "week-10",
+   "old": "Mission 4 ·",
+   "new": "Direct myself ·",
+   "before": "Mission 4 · Where You've Come From",
+   "after": "Direct myself · Where You've Come From"
+  },
+  {
+   "n": 59,
+   "file": "src/lib/program.ts",
+   "line": 610,
+   "where": "week-10",
+   "old": "Mission 4 ·",
+   "new": "Authentic self ·",
+   "before": "Mission 4 · The Through-Line",
+   "after": "Authentic self · The Through-Line"
+  },
+  {
+   "n": 60,
+   "file": "src/lib/program.ts",
+   "line": 619,
+   "where": "week-10",
+   "old": "Mission 2 ·",
+   "new": "Direct myself ·",
+   "before": "Mission 2 · milestone",
+   "after": "Direct myself · milestone"
+  },
+  {
+   "n": 61,
+   "file": "src/lib/program.ts",
+   "line": 626,
+   "where": "week-10",
+   "old": "Mission 4 ·",
+   "new": "Imagine myself ·",
+   "before": "Mission 4 · A Life Worth Building",
+   "after": "Imagine myself · A Life Worth Building"
+  },
+  {
+   "n": 62,
+   "file": "src/lib/program.ts",
+   "line": 692,
+   "where": "week-10",
+   "old": "Mission 1 ·",
+   "new": "Know myself ·",
+   "before": "Mission 1 · Strengths Mapping",
+   "after": "Know myself · Strengths Mapping"
+  },
+  {
+   "n": 63,
+   "file": "src/lib/program.ts",
+   "line": 706,
+   "where": "week-10",
+   "old": "Mission 1 ·",
+   "new": "Know myself ·",
+   "before": "Mission 1 · Values Clarifier",
+   "after": "Know myself · Values Clarifier"
+  },
+  {
+   "n": 64,
+   "file": "src/lib/program.ts",
+   "line": 719,
+   "where": "week-10",
+   "old": "No mission builds this one",
+   "new": "No single step builds this one",
+   "before": "No mission builds this one",
+   "after": "No single step builds this one"
+  },
+  {
+   "n": 65,
+   "file": "src/lib/program.ts",
+   "line": 733,
+   "where": "week-10",
+   "old": "Mission 2 ·",
+   "new": "Believe in myself ·",
+   "before": "Mission 2 · The Contribution Map",
+   "after": "Believe in myself · The Contribution Map"
+  },
+  {
+   "n": 66,
+   "file": "src/lib/program.ts",
+   "line": 748,
+   "where": "week-10",
+   "old": "Mission 3 ·",
+   "new": "Value myself ·",
+   "before": "Mission 3 · The People Who Shaped You",
+   "after": "Value myself · The People Who Shaped You"
+  },
+  {
+   "n": 67,
+   "file": "src/lib/program.ts",
+   "line": 920,
+   "where": "week-10",
+   "old": "from Mission 4 are",
+   "new": "from Where You've Come From are",
+   "before": "Your chapters and turning point from Mission 4 are above.",
+   "after": "Your chapters and turning point from Where You've Come From are above."
+  },
+  {
+   "n": 68,
+   "file": "src/lib/program.ts",
+   "line": 946,
+   "where": "week-10",
+   "old": "wrote in Mission 4 named",
+   "new": "wrote in A Life Worth Building named",
+   "before": "The letter you wrote in Mission 4 named one.",
+   "after": "The letter you wrote in A Life Worth Building named one."
+  },
+  {
+   "n": 69,
+   "file": "src/lib/program.ts",
+   "line": 964,
+   "where": "week-10",
+   "old": "from Mission 1 are",
+   "new": "from Your Story So Far are",
+   "before": "Your chapters from Mission 1 are a good place to look.",
+   "after": "Your chapters from Your Story So Far are a good place to look."
+  },
+  {
+   "n": 70,
+   "file": "src/lib/stageContentMission1.ts",
+   "line": 128,
+   "where": "",
+   "old": "in Mission 4, and",
+   "new": "later, in Where You've Come From, and",
+   "before": "You'll come back to this in Mission 4, and either question can be left out.",
+   "after": "You'll come back to this later, in Where You've Come From, and either question can be left out."
+  },
+  {
+   "n": 71,
+   "file": "src/lib/stageContentMission1.ts",
+   "line": 202,
+   "where": "",
+   "old": "in Mission 4, and",
+   "new": "later, in Where You've Come From, and",
+   "before": "You'll come back to this in Mission 4, and either question can be left out.",
+   "after": "You'll come back to this later, in Where You've Come From, and either question can be left out."
+  },
+  {
+   "n": 72,
+   "file": "src/lib/stageContentMission1.ts",
+   "line": 231,
+   "where": "",
+   "old": "in Mission 4, and",
+   "new": "later, in Where You've Come From, and",
+   "before": "You'll come back to this in Mission 4, and either question can be left out.",
+   "after": "You'll come back to this later, in Where You've Come From, and either question can be left out."
+  },
+  {
+   "n": 77,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 26,
+   "where": "",
+   "old": "Mission 1 was about you.",
+   "new": "A lot of Groundwork is about you.",
+   "before": "Mission 1 was about you. This one is about the world around you: what you care about.",
+   "after": "A lot of Groundwork is about you. This one is about the world around you: what you care about."
+  },
+  {
+   "n": 78,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 57,
+   "where": "",
+   "old": "values from Mission 1.",
+   "new": "values.",
+   "before": "Look at your strengths and values from Mission 1. Not sure?",
+   "after": "Look at your strengths and values. Not sure?"
+  },
+  {
+   "n": 79,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 91,
+   "where": "",
+   "old": "values from Mission 1 make",
+   "new": "values make",
+   "before": "Which of your strengths or values from Mission 1 make you curious about it?",
+   "after": "Which of your strengths or values make you curious about it?"
+  },
+  {
+   "n": 80,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 132,
+   "where": "",
+   "old": "planned in Step 2.",
+   "new": "planned in The Contribution Map.",
+   "before": " /  / • Do the tiny thing you planned in Step 2. / • Find out one thing — watch, read or ask about what you care about.",
+   "after": " /  / • Do the tiny thing you planned in The Contribution Map. / • Find out one thing — watch, read or ask about what you care about."
+  },
+  {
+   "n": 81,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 160,
+   "where": "",
+   "old": "planned in Step 2.",
+   "new": "planned in The Contribution Map.",
+   "before": " /  / • Do the tiny first step you planned in Step 2. / • Look up one course, job or volunteer role connected to what you care about.",
+   "after": " /  / • Do the tiny first step you planned in The Contribution Map. / • Look up one course, job or volunteer role connected to what you care about."
+  },
+  {
+   "n": 82,
+   "file": "src/lib/stageContentMission2.ts",
+   "line": 174,
+   "where": "",
+   "old": "planned in Step 2.",
+   "new": "planned in The Contribution Map.",
+   "before": " /  / • Do the tiny first step you planned in Step 2. / • Look up one volunteer role, course or job connected to what you care about.",
+   "after": " /  / • Do the tiny first step you planned in The Contribution Map. / • Look up one volunteer role, course or job connected to what you care about."
+  },
+  {
+   "n": 87,
+   "file": "src/lib/stageContentMission3.ts",
+   "line": 26,
+   "where": "",
+   "old": "Missions 1 and 2 were mostly about you.",
+   "new": "A lot of Groundwork is about you.",
+   "before": "Missions 1 and 2 were mostly about you. This one is about the people around you.",
+   "after": "A lot of Groundwork is about you. This one is about the people around you."
+  },
+  {
+   "n": 88,
+   "file": "src/lib/stageContentMission3.ts",
+   "line": 66,
+   "where": "",
+   "old": "wrote in Step 3.",
+   "new": "wrote in Across the Gap.",
+   "before": " /  / • Try the small thing you wrote in Step 3. / • Message a friend you haven't talked to in a while.",
+   "after": " /  / • Try the small thing you wrote in Across the Gap. / • Message a friend you haven't talked to in a while."
+  },
+  {
+   "n": 89,
+   "file": "src/lib/stageContentMission3.ts",
+   "line": 120,
+   "where": "",
+   "old": "wrote in Step 3,",
+   "new": "wrote in Across the Gap,",
+   "before": " /  / • Take the small step you wrote in Step 3, toward someone across the gap.",
+   "after": " /  / • Take the small step you wrote in Across the Gap, toward someone across the gap."
+  },
+  {
+   "n": 90,
+   "file": "src/lib/stageContentMission3.ts",
+   "line": 128,
+   "where": "",
+   "old": "Missions 1 and 2 were mostly about you.",
+   "new": "A lot of Groundwork is about you.",
+   "before": "Missions 1 and 2 were mostly about you. This one turns to the people around you.",
+   "after": "A lot of Groundwork is about you. This one turns to the people around you."
+  },
+  {
+   "n": 91,
+   "file": "src/lib/stageContentMission3.ts",
+   "line": 147,
+   "where": "",
+   "old": "Missions 1 and 2 were mostly about you.",
+   "new": "A lot of Groundwork is about you.",
+   "before": "Missions 1 and 2 were mostly about you. This one turns to the people around you.",
+   "after": "A lot of Groundwork is about you. This one turns to the people around you."
+  },
+  {
+   "n": 100,
+   "file": "src/lib/missionScaffolds.ts",
+   "line": 173,
+   "where": "",
+   "old": "Your Mission 1 answer is above.",
+   "new": "Your earlier answer is above.",
+   "before": "Your Mission 1 answer is above. Start from the room that costs you most.",
+   "after": "Your earlier answer is above. Start from the room that costs you most."
+  },
+  {
+   "n": 101,
+   "file": "src/lib/missionScaffolds.ts",
+   "line": 255,
+   "where": "",
+   "old": "From Mission 1 I learned",
+   "new": "From Identity I learned",
+   "before": "From Mission 1 I learned",
+   "after": "From Identity I learned"
+  },
+  {
+   "n": 102,
+   "file": "src/lib/missionScaffolds.ts",
+   "line": 257,
+   "where": "",
+   "old": "Mission 3 told me that",
+   "new": "Connection told me that",
+   "before": "Mission 3 told me that",
+   "after": "Connection told me that"
+  }
+ ]
+}
