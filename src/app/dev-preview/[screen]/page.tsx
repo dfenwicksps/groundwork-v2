@@ -6,6 +6,11 @@ import LevelView from "@/components/v3/LevelView";
 import SelfView from "@/components/v3/SelfView";
 import { LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf, suggestNext } from "@/lib/v3/levelMap";
 import { findSelf } from "@/lib/v3/selves";
+import { MISSIONS } from "@/lib/missions";
+import { PROGRAM_WEEKS } from "@/lib/program";
+import { shownStep } from "@/lib/v3/shownStep";
+import ActivityClient from "@/app/missions/[id]/activities/[activityId]/ActivityClient";
+import WeekClient from "@/app/program/[week]/WeekClient";
 import SelfCheckForm from "@/components/v3/SelfCheckForm";
 import SelfCheckResult from "@/components/v3/SelfCheckResult";
 import { resultWords, type Suggested } from "@/lib/v3/selfCheck";
@@ -49,6 +54,37 @@ export default function DevPreview({ params, searchParams }: { params: { screen:
         />
       </AppShell>
     );
+  }
+  if (params.screen === "step") {
+    const m = MISSIONS.filter((x) => x.activities.some((a) => a.id === (k || "contribution-map")))[0];
+    const a = m?.activities.filter((x) => x.id === (k || "contribution-map"))[0];
+    if (!m || !a) notFound();
+    const shown = shownStep(m, a);
+    return (
+      <main id="main-content">
+        <ActivityClient
+          mission={shown.mission}
+          activity={shown.activity}
+          userId="00000000-0000-4000-8000-000000000000"
+          isCompleted={false}
+          existingEntry={null}
+          existingChallenge={null}
+          lifeStage="junior"
+          phase={1}
+          aiReflectionsEnabled={false}
+        />
+      </main>
+    );
+  }
+  if (params.screen === "week") {
+    const week = PROGRAM_WEEKS.filter((w) => String(w.week) === (k || "4"))[0];
+    if (!week) notFound();
+    const sample: any = {
+      userId: "00000000-0000-4000-8000-000000000000", week, progress: null, savedCode: [], savedStory: null,
+      compass: { strengths: [], strengthKeys: [], values: [] }, becoming: { qualities: [], working: [] },
+      sourceEntries: {}, capstone: [], storyEarlier: [], suggestedQualities: [], earlier: [], lifeStage: "junior", ready: true,
+    };
+    return <WeekClient {...sample} />;
   }
   if (params.screen === "grow") {
     return (

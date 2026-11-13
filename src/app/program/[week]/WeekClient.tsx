@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
+import { tint } from "@/lib/utils";
+import { getMission } from "@/lib/missions";
+import { NextPieceButton, PieceBackLinks } from "@/components/v3/PieceNav";
+import { GROUP_MISSION, levelOfPiece } from "@/lib/v3/levelMap";
 import CharacterCodeBuilder from "./CharacterCodeBuilder";
 import BecomingQualities from "@/components/BecomingQualities";
 import { ValueBehaviours, LinesBuilder } from "./ArtefactBuilders";
@@ -163,6 +167,8 @@ export default function WeekClient({
   // finished until the mission work behind it exists.
   const blockingSources = missing.filter((src) => src.required);
   const blockedOnSource = blockingSources.length > 0;
+  const place = levelOfPiece(`week-${week.week}`);
+  const shade = place ? getMission(GROUP_MISSION[place.group.key])?.colour : undefined;
   const prev = PROGRAM_WEEKS.find((w) => w.week === week.week - 1);
   const next = PROGRAM_WEEKS.find((w) => w.week === week.week + 1);
 
@@ -277,15 +283,26 @@ export default function WeekClient({
       <div className="page-read space-y-7">
         {/* Header */}
         <div data-animate="1">
+          {/* v3: a week lives in a level of the map; back means back to it. */}
           <Link
-            href="/program"
+            href={place ? `/grow/${place.level.key}` : "/grow"}
             className="text-xs text-ink-muted hover:text-ink transition-colors inline-flex items-center gap-1 mb-3"
           >
-            ← All ten weeks
+            ← {place ? place.level.name : "The map"}
           </Link>
-          <p className="text-sm text-ink-muted mb-1">
-            Week {week.week} of {PROGRAM_WEEKS.length}
-            {done && <span className="text-sage font-semibold"> · complete</span>}
+          <p className="mb-2 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
+            {place && shade && (
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ background: tint(shade, "18"), color: shade }}
+              >
+                {place.group.name} — {place.level.name}
+              </span>
+            )}
+            <span>
+              Week challenge · week {week.week} of {PROGRAM_WEEKS.length}
+              {done && <span className="text-sage font-semibold"> · complete</span>}
+            </span>
           </p>
           <h1
             className="text-3xl lg:text-4xl text-navy mb-3"
@@ -811,8 +828,19 @@ export default function WeekClient({
           </p>
         )}
 
-        {/* Week to week */}
-        <div className="flex gap-2 pt-2 border-t border-surface-border">
+        {/* What next: on through this part of the map, or back to it. */}
+        <div className="space-y-2 pt-2 border-t border-surface-border">
+          <NextPieceButton pieceId={`week-${week.week}`} accent={shade} />
+          <div className="flex flex-wrap gap-2">
+            <PieceBackLinks pieceId={`week-${week.week}`} />
+            <Link href="/program" className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm">
+              All ten weeks
+            </Link>
+          </div>
+        </div>
+
+        {/* Week to week, for a class working through the ten in order */}
+        <div className="flex gap-2">
           {prev ? (
             <Link
               href={`/program/${prev.week}`}

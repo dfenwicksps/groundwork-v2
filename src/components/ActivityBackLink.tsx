@@ -2,7 +2,8 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { levelOfPiece } from "@/lib/v3/levelMap";
 import { RETURN_PARAM, parseReturnTo } from "@/lib/returnTo";
 
 /**
@@ -31,10 +32,13 @@ function Arrow() {
 }
 
 function MissionBack({ missionId }: { missionId: number }) {
+  // v3: a step lives in a level of the map, so back means back to that level.
+  const stepId = (usePathname() ?? "").split("/activities/")[1]?.split("/")[0] ?? "";
+  const found = levelOfPiece(stepId);
   return (
     <Link
-      href={`/missions/${missionId}`}
-      aria-label="Back to mission"
+      href={found ? `/grow/${found.level.key}` : `/missions/${missionId}`}
+      aria-label={found ? `Back to ${found.level.name}` : "Back to mission"}
       className="p-1.5 -ml-1.5 rounded-lg text-[--ink-muted] flex-shrink-0"
     >
       <Arrow />

@@ -33,6 +33,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // v3: the four mission pages gave way to the map (D50). Old links, and the
+  // few "back to mission" links still in v2's screens, land on the part of
+  // the map that carries the mission's name. Steps keep their addresses.
+  const oldMission = pathname.match(/^\/missions(?:\/([1-4]))?\/?$/);
+  if (oldMission) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/grow";
+    url.search = "";
+    url.hash = oldMission[1] ? ["identity", "purpose", "connection", "meaning"][Number(oldMission[1]) - 1] : "";
+    return NextResponse.redirect(url);
+  }
+
   let response = NextResponse.next({
     request: { headers: request.headers },
   });

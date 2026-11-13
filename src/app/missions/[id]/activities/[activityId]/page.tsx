@@ -9,6 +9,7 @@ import { resolvePhase } from "@/lib/phaseServer";
 import { activityForStage, hiddenForStage } from "@/lib/stageContent";
 import { loadMissionCard } from "@/lib/missionCardsServer";
 import type { IdentityCard } from "@/lib/identityCard";
+import { shownStep } from "@/lib/v3/shownStep";
 import ActivityClient from "./ActivityClient";
 
 export const dynamic = 'force-dynamic';
@@ -225,12 +226,15 @@ export default async function ActivityPage({
     priorCards = loaded.filter((c): c is { colour: string; card: IdentityCard } => !!c);
   }
 
+  // v3: show the part of the map the step lives in, where v2 showed the mission.
+  const shown = shownStep(mission, activity);
+
   return (
     // Steps have no AppShell, so the page gives them their main landmark.
     <main id="main-content">
     <ActivityClient
-      mission={mission}
-      activity={activity}
+      mission={shown.mission}
+      activity={shown.activity}
       userId={user.id}
       isCompleted={!!existing}
       existingEntry={existingEntry || null}

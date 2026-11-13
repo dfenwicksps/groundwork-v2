@@ -26,6 +26,8 @@ import GentleCheck from "@/components/help/GentleCheck";
 import SmallStep from "@/components/SmallStep";
 import ListenButton from "@/components/ListenButton";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
+import { NextPieceButton, PieceBackLinks } from "@/components/v3/PieceNav";
+import { levelOfPiece } from "@/lib/v3/levelMap";
 import StoryFilm from "@/components/stories/StoryFilm";
 import GetHelpButton from "@/components/help/GetHelpButton";
 import SupportCard from "@/components/help/SupportCard";
@@ -361,10 +363,6 @@ function ConversationalActivity({
       ? activity.scaffoldingSteps
       : [activity.prompt];
 
-  // Next unlocked activity in this mission, for a "continue" action.
-  const currentIdx = mission.activities.findIndex((a) => a.id === activity.id);
-  const nextActivity =
-    mission.activities.slice(currentIdx + 1).find((a) => !a.locked && !a.optional) || null;
 
   const [convPhase, setConvPhase] = useState<ConvPhase>(
     existingEntry ? "done" : "intro"
@@ -1754,50 +1752,9 @@ function ConversationalActivity({
               the reflection loading below. */}
           <div className="space-y-3 mb-5" data-animate="3">
             <ReturnToWeekButton />
-            {nextActivity ? (
-              <Link
-                href={`/missions/${mission.id}/activities/${nextActivity.id}`}
-                className="btn btn-primary w-full py-3.5 rounded-xl flex items-center justify-center gap-2"
-                style={{ background: mission.colour }}
-              >
-                Next: {nextActivity.title}
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </Link>
-            ) : (() => {
-              const nm = MISSIONS.find((m) => m.id === mission.id + 1) || null;
-              return nm ? (
-                <Link
-                  href={`/missions/${nm.id}`}
-                  className="btn btn-primary w-full py-3.5 rounded-xl"
-                  style={{ background: nm.colour }}
-                >
-                  Next: Mission {nm.id} — {nm.title} →
-                </Link>
-              ) : (
-                <Link
-                  href="/me"
-                  className="btn btn-primary w-full py-3.5 rounded-xl"
-                  style={{ background: mission.colour }}
-                >
-                  See everything you&apos;ve discovered →
-                </Link>
-              );
-            })()}
+            <NextPieceButton pieceId={activity.id} accent={mission.colour} />
             <div className="flex gap-3">
-              <Link
-                href={`/missions/${mission.id}`}
-                className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm"
-              >
-                Mission
-              </Link>
-              <Link
-                href="/dashboard"
-                className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm"
-              >
-                Dashboard
-              </Link>
+              <PieceBackLinks pieceId={activity.id} />
               <button
                 onClick={startEdit}
                 className="btn btn-secondary flex-1 py-2.5 rounded-xl text-sm flex items-center justify-center gap-1.5"
@@ -2078,22 +2035,11 @@ function ValuesPickerActivity({
             Edit my values
           </button>
           <ReturnToWeekButton />
-          {(() => {
-            const idx = mission.activities.findIndex((a) => a.id === activity.id);
-            const next = mission.activities.slice(idx + 1).find((a) => !a.locked && !a.optional) || null;
-            return next ? (
-              <Link
-                href={`/missions/${mission.id}/activities/${next.id}`}
-                className="btn btn-primary w-full py-3.5 rounded-xl mb-3 flex items-center justify-center gap-2"
-                style={{ background: mission.colour }}
-              >
-                Next: {next.title} →
-              </Link>
-            ) : null;
-          })()}
+          <div className="mb-3">
+            <NextPieceButton pieceId={activity.id} accent={mission.colour} />
+          </div>
           <div className="flex gap-3">
-            <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">Back to mission</Link>
-            <Link href="/dashboard" className="btn btn-secondary flex-1 py-3 rounded-xl">Dashboard</Link>
+            <PieceBackLinks pieceId={activity.id} className="btn btn-secondary flex-1 py-3 rounded-xl" />
           </div>
         </div>
       </div>
@@ -2333,7 +2279,6 @@ function ChallengeActivity({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const nextMission = MISSIONS.find((m) => m.id === mission.id + 1) || null;
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existingChallenge);
@@ -2420,21 +2365,9 @@ function ChallengeActivity({
                 </div>
               )}
               <div className="space-y-3 max-w-xs mx-auto">
-                {nextMission ? (
-                  <Link
-                    href={`/missions/${nextMission.id}`}
-                    className="btn btn-primary w-full py-3 rounded-xl"
-                    style={{ background: nextMission.colour }}
-                  >
-                    Next: Mission {nextMission.id} — {nextMission.title} →
-                  </Link>
-                ) : (
-                  <Link href="/me" className="btn btn-primary w-full py-3 rounded-xl">
-                    See everything you&apos;ve discovered →
-                  </Link>
-                )}
-                <Link href="/dashboard" className="btn btn-secondary w-full py-3 rounded-xl">
-                  Dashboard
+                <NextPieceButton pieceId={activity.id} accent={mission.colour} />
+                <Link href="/home" className="btn btn-secondary w-full py-3 rounded-xl">
+                  Home
                 </Link>
               </div>
             </div>
@@ -2496,22 +2429,10 @@ function ChallengeActivity({
           )}
           <p className="text-sm text-[--ink-muted] mb-6">Come back in a week to reflect.</p>
           <div className="space-y-3">
-            {nextMission ? (
-              <Link
-                href={`/missions/${nextMission.id}`}
-                className="btn btn-primary w-full py-3.5 rounded-xl"
-                style={{ background: nextMission.colour }}
-              >
-                Next: Mission {nextMission.id} — {nextMission.title} →
-              </Link>
-            ) : (
-              <Link href="/me" className="btn btn-primary w-full py-3.5 rounded-xl">
-                See everything you&apos;ve discovered →
-              </Link>
-            )}
-            <Link href="/dashboard" className="btn btn-secondary w-full py-3 rounded-xl">
-              Dashboard
-            </Link>
+            <NextPieceButton pieceId={activity.id} accent={mission.colour} />
+            <Link href="/home" className="btn btn-secondary w-full py-3 rounded-xl">
+                  Home
+                </Link>
           </div>
         </div>
       </div>
@@ -2899,16 +2820,10 @@ function StrengthsAssessmentActivity({
 
             <ReturnToWeekButton />
             <div className="flex gap-3 pb-8">
-              <Link href={`/missions/${mission.id}`} className="btn btn-secondary flex-1 py-3 rounded-xl">
-                Back to mission
+              <Link href={`/grow/${levelOfPiece(activity.id)?.level.key ?? ""}`} className="btn btn-secondary flex-1 py-3 rounded-xl">
+                {levelOfPiece(activity.id)?.level.name ?? "The map"}
               </Link>
-              <Link
-                href={`/missions/${mission.id}/activities/values-clarifier`}
-                className="btn btn-primary flex-1 py-3 rounded-xl"
-                style={{ background: "var(--navy)" }}
-              >
-                Next step →
-              </Link>
+              <NextPieceButton pieceId={activity.id} className="btn btn-primary flex-1 py-3 rounded-xl" accent="var(--navy)" />
             </div>
           </div>
         </div>
@@ -3166,8 +3081,8 @@ export default function ActivityClient({
         <div className="text-center px-6">
           <div className="text-4xl mb-4">🔒</div>
           <p className="text-[--ink-muted]">This activity is coming soon.</p>
-          <Link href={`/missions/${mission.id}`} className="btn btn-secondary mt-4">
-            Back to mission
+          <Link href="/grow" className="btn btn-secondary mt-4">
+            Back to the map
           </Link>
         </div>
       </div>

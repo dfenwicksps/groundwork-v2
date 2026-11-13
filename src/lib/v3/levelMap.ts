@@ -303,3 +303,34 @@ export function suggestNext(doneIds: string[], preferLevels: number[] = []): Map
   }
   return null;
 }
+
+/** The level a mission step or week sits in. */
+export function levelOfPiece(pieceId: string): { group: MapGroup; level: MapLevel } | undefined {
+  return allLevels().filter((l) => l.level.pieces.indexOf(pieceId) !== -1)[0];
+}
+
+/** The next thing in the same level, skipping optional ones. Null at the end: the level page is next. */
+export function nextInLevel(pieceId: string): MapPiece | null {
+  const found = levelOfPiece(pieceId);
+  if (!found) return null;
+  const pieces = allPieces();
+  const ids = found.level.pieces;
+  for (let i = ids.indexOf(pieceId) + 1; i < ids.length; i++) {
+    const p = pieces[ids[i]];
+    if (p && !p.optional) return p;
+  }
+  return null;
+}
+
+/**
+ * Which of v2's four theme-aware colours a group uses on the step and week
+ * screens. Those screens are recoloured by every look the app has (light,
+ * dark, bold, neon) through rules keyed to these four variables, so they take
+ * their group's colour there; the map itself uses each level's own colour.
+ */
+export const GROUP_MISSION: Record<GroupKey, number> = { identity: 1, purpose: 2, connection: 3, meaning: 4 };
+
+/** "Step 2 of 7 · Inner compass" → "Inner compass". The count belonged to the missions. */
+export function withoutStepCount(subtitle: string | undefined): string {
+  return (subtitle ?? "").replace(/^Step \d+ of \d+\s*(·\s*)?/, "").trim();
+}
