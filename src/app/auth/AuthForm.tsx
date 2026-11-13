@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { isSignInProblem, signInProblemMessage } from "@/lib/v3/signInProblem";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { describeAuthError, formatWait } from "@/lib/authErrors";
@@ -22,7 +23,12 @@ export default function AuthForm() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // v3: a Google or Microsoft sign-in that didn't finish comes back here with
+  // a short reference (see lib/v3/signInProblem).
+  const problem = searchParams.get("problem");
+  const [error, setError] = useState<string | null>(
+    isSignInProblem(problem) ? signInProblemMessage(problem) : null
+  );
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent">("idle");
 
   // Set once we've sent something to the inbox and are waiting on the student.
