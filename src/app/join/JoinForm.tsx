@@ -33,7 +33,7 @@ export default function JoinForm() {
 
   if (joined) {
     return (
-      <div className="card space-y-3" role="status">
+      <div className="card p-5 space-y-3" role="status">
         <p className="font-semibold text-[--ink]">
           You&apos;ve joined {joined.class_name}
           {joined.teacher_name ? ` with ${joined.teacher_name}` : ""}.
@@ -50,7 +50,7 @@ export default function JoinForm() {
   }
 
   return (
-    <form onSubmit={submit} className="card space-y-4">
+    <form onSubmit={submit} className="card p-5 space-y-4">
       <div>
         <label htmlFor="class-code" className="block text-sm font-medium text-[--ink] mb-1.5">
           Class code

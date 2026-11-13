@@ -12,6 +12,15 @@
         "3003"
       ],
       "port": 3003
+    },
+    {
+      "name": "groundwork-v3-preview",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=local-preview-not-a-real-key npx next dev --port 3210"
+      ],
+      "port": 3210
     }
   ]
 }

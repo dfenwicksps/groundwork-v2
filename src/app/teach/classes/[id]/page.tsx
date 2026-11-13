@@ -27,7 +27,7 @@ export default async function ClassPage({ params }: { params: { id: string } }) 
 
   return (
     <StaffShell roles={roles} title={cls.name}>
-      <section className="card space-y-3" aria-labelledby="code-heading">
+      <section className="card p-5 space-y-3" aria-labelledby="code-heading">
         <h2 id="code-heading" className="font-semibold text-[--ink]">Class code</h2>
         <p className="text-3xl font-semibold tracking-[0.3em] text-navy" aria-label={`Class code ${cls.join_code.split("").join(" ")}`}>
           {cls.join_code}
@@ -38,7 +38,7 @@ export default async function ClassPage({ params }: { params: { id: string } }) 
         <NewCodeButton classId={cls.id} />
       </section>
 
-      <section className="card space-y-3" aria-labelledby="roster-heading">
+      <section className="card p-5 space-y-3" aria-labelledby="roster-heading">
         <h2 id="roster-heading" className="font-semibold text-[--ink]">
           Students who have joined ({students.length})
         </h2>

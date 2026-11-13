@@ -1,0 +1,252 @@
+[
+  {
+    "key": "self-awareness",
+    "name": "Self-awareness",
+    "level": 1,
+    "short": "Noticing what's going on inside me, as it happens.",
+    "what": "Noticing what's going on inside you (thoughts, feelings, body signals) while it's happening, and being able to name it: \"I'm not angry, I'm embarrassed.\"",
+    "notThis": "Not being self-conscious. Self-conscious is worrying how you look to everyone else. Self-aware is noticing what's actually happening in you.",
+    "ask": "If you had to name the emotion at your control panel right now, what would it be? Is it the one showing on your face?",
+    "livingIt": "Three times this week, stop and name the feeling under the feeling. What's above the waterline, and what's below?"
+  },
+  {
+    "key": "self-reflection",
+    "name": "Self-reflection",
+    "level": 1,
+    "short": "Looking at yourself with curiosity, and coming out with something.",
+    "what": "Reflection is thinking back over what happened and what was going on for you, the way you'd look at a friend's situation: interested, not prosecuting. What happened? What was I feeling? What would I try next time? It's most of what this app asks you to do, and done this way it leaves you knowing yourself a bit better and with something to try.",
+    "notThis": "Not going over it. Replaying the same bad moment, or the same harsh verdict on yourself, feels like reflecting but works the opposite way: it tends to leave people more anxious and flat, not clearer. The tell is where it lands. Reflection asks \"what happened\" and \"what next\" and gets somewhere. Going over it asks \"why am I like this\" on a loop and never does.",
+    "ask": "After you've thought something through, do you usually come out with something to try, or just feeling worse? If it's the second, stop, do something with your hands or your feet for ten minutes, or talk it through with someone instead.",
+    "livingIt": "After one thing this week that doesn't go to plan, run the 3-question debrief: What happened? What was going on for me? What will I try next time? Then stop."
+  },
+  {
+    "key": "self-concept",
+    "name": "Self-concept",
+    "level": 1,
+    "short": "The description of you — no scores attached.",
+    "what": "Your self-concept is the whole picture you hold of yourself: what you're like, what you're good at, what you care about, how you behave in different rooms. It's a description, not a judgement. \"I'm quiet in groups, I'm good with my hands, I get stubborn about fairness\" — none of that is praise or criticism, it's just the map.",
+    "notThis": "Not self-esteem. Self-concept is the description; self-esteem is how you feel about the description. Two people with almost identical self-concepts can feel completely differently about themselves.",
+    "ask": "Could you describe yourself to a stranger in five sentences without any of them being good or bad?",
+    "livingIt": "Write five 'I am…' statements from five different rooms: home, class, sport or hobby, friends, online."
+  },
+  {
+    "key": "self-image",
+    "name": "Self-image",
+    "level": 1,
+    "short": "The picture in your head of how you come across.",
+    "what": "Self-image is the narrower, more visual part: how you think you look, sound, and land on other people. It's built partly from real feedback and partly from guesswork, and the guesswork is usually harsher than reality. It can also get pulled around by what you scroll past.",
+    "notThis": "Not self-concept. Self-concept is everything you know about yourself; self-image is specifically how you imagine you appear. Yours can be badly out of date — most people's is.",
+    "ask": "If you recorded yourself talking to a friend and watched it back, would it match the version in your head?",
+    "livingIt": "Ask one person you trust for three words they'd use to describe you. Compare them with the three you'd have guessed."
+  },
+  {
+    "key": "social-self",
+    "name": "Social self",
+    "level": 1,
+    "short": "Who I am with others, and how I think they see me.",
+    "what": "Who you are with other people, and how you think they see you (Cooley called it the 'looking-glass self'). Adjusting between rooms is normal and healthy.",
+    "notThis": "Not fake. A Mask of Discovery tries on new ways to be you. A Mask of Hiding locks the real you away. The problem is when you can't take it off.",
+    "ask": "Which of the six masks do you reach for most: Funny, Chill, People Pleaser, Perfect, Tough or Social Media? In which room?",
+    "livingIt": "Notice one room this week where you can take the mask off. What makes that room feel safe?"
+  },
+  {
+    "key": "self-esteem",
+    "name": "Self-esteem",
+    "level": 2,
+    "short": "How much you rate yourself — and it moves.",
+    "what": "Self-esteem is your running evaluation of yourself. It goes up after a good week and down after a bad one, and that's normal — it's supposed to move. The trouble starts when it's the only measure you've got, because then every setback feels like evidence about who you are rather than what happened.",
+    "notThis": "Not self-worth. Self-esteem is a rating and it fluctuates. Self-worth shouldn't. If yours drops to zero after one bad result, what's actually wobbling is the floor underneath it.",
+    "ask": "Think of the last time you felt bad about yourself. Was it about something you did, or about who you are?",
+    "livingIt": "Each night this week, write one thing you did that you'd be proud of if a friend had done it."
+  },
+  {
+    "key": "self-worth",
+    "name": "Self-worth",
+    "level": 2,
+    "short": "That you count — regardless of how the week went.",
+    "what": "Self-worth is the floor: the belief that you matter independently of your results, your looks, your usefulness or your popularity. It's the one that isn't supposed to move. People who have it can fail badly and still be okay; people who don't have to keep earning their place, permanently.",
+    "notThis": "Not self-esteem, and not achievement. If it goes up when you win and down when you lose, that's self-esteem doing the work — and a floor made of results isn't a floor.",
+    "ask": "If you achieved nothing at all this year, would you still be worth the same to the people who love you? Do you actually believe that about yourself?",
+    "livingIt": "Write three things that make you you that have nothing to do with results. Keep them somewhere you'll see them."
+  },
+  {
+    "key": "mattering",
+    "name": "Mattering",
+    "level": 2,
+    "short": "That people notice you, and count on you for something.",
+    "what": "Mattering is the sense that you make a difference to people: someone notices how you're going, you're important to them, and they count on you for something. It has two halves. One is feeling valued, which mostly comes from other people. The other is adding value, the things you do that leave people better off, and that half you can do something about today.",
+    "notThis": "Not belonging, and not self-worth. Belonging is being included; mattering is being important to someone in particular. And self-worth is the floor that holds even when nobody's noticing. Mattering helps build that floor, but it shouldn't be the only thing holding it up.",
+    "ask": "Name one person who'd notice if you were having a rough week, and one thing someone counts on you for. If either is hard to answer right now, that's common, it can change, and the support circle is a good place to start.",
+    "livingIt": "Be someone's Ted this week. Notice someone who usually goes unnoticed, use their name, and ask their opinion."
+  },
+  {
+    "key": "self-respect",
+    "name": "Self-respect",
+    "level": 2,
+    "short": "Standing by my values and boundaries.",
+    "what": "Treating your own values, identity and boundaries as worth defending. Acting in a way you can look back on and respect.",
+    "notThis": "Not arrogance, and not winning every argument. It's also different from self-esteem: you can have a low day and still refuse to act against your values.",
+    "ask": "What's one value you'd stand by even if your group laughed at it?",
+    "livingIt": "Notice one moment this week when you say no, or speak up, because something doesn't fit who you are."
+  },
+  {
+    "key": "self-compassion",
+    "name": "Self-compassion",
+    "level": 2,
+    "short": "Being kind to myself when I mess up.",
+    "what": "Treating yourself the way you'd treat a friend when you mess up: noticing it hurts, remembering everyone fails, and talking to yourself kindly.",
+    "notThis": "Not letting yourself off the hook, and not self-pity. People who are kind to themselves actually take more responsibility for mistakes, because owning them doesn't feel like the end of the world.",
+    "ask": "What do you say in your head after you stuff up? Would you say that to your best friend?",
+    "livingIt": "Next time you mess up, say to yourself what you'd say to a friend. Out loud if you can."
+  },
+  {
+    "key": "self-regulation",
+    "name": "Self-regulation",
+    "level": 3,
+    "short": "The gap you can hold between feeling it and doing it.",
+    "what": "Self-control isn't not feeling things. It's the space between the feeling and the action — the second and a half where you notice the urge and get to choose. That gap can be widened with practice, and it's narrower when you're tired, stressed or humiliated, which is worth knowing before you judge yourself by your worst moment.",
+    "notThis": "Not willpower. Gritting your teeth against a rule is a fight you often lose. \"I'm trying not to react\" is a rule; \"I'm the kind of person who stops first\" is a description of who you are, and it gives you something to live up to.",
+    "ask": "What reliably shrinks your gap — tiredness, a particular person, being embarrassed? Knowing your own conditions is most of the skill.",
+    "livingIt": "Pick your 'gap move' (three slow breaths, walk away, count to five) and use it once this week."
+  },
+  {
+    "key": "self-discipline",
+    "name": "Self-discipline",
+    "level": 3,
+    "short": "Doing what matters, even when it's hard or boring.",
+    "what": "Doing what matters to you even when it's hard, boring or nobody's watching. Best built from routines, so you don't have to win the argument with yourself every day.",
+    "notThis": "Not punishing yourself or never resting. Phelps had a coach planning his recovery too. And it's not motivation: discipline is what carries you on the days motivation doesn't turn up.",
+    "ask": "What's one thing you'd be great at if you did 15 minutes of it every day?",
+    "livingIt": "Pick one 10-minute habit and do it five days in a row. Tick it off somewhere you can see."
+  },
+  {
+    "key": "self-motivation",
+    "name": "Self-motivation",
+    "level": 3,
+    "short": "Finding my own reasons to start and keep going.",
+    "what": "Finding your own reasons to start and keep going. It's strongest when it comes from inside: you value it, you enjoy it, or it's part of who you are.",
+    "notThis": "Not just 'proving them wrong'. Spite can get you started but it runs out. Reasons you actually care about last longer. And it's not waiting to feel motivated: often, starting comes first.",
+    "ask": "What's something you do even when nobody's making you? What's the reason underneath it?",
+    "livingIt": "Write your 'why' for one goal in one sentence. Put it where you'll see it before you start."
+  },
+  {
+    "key": "self-efficacy",
+    "name": "Self-efficacy",
+    "level": 4,
+    "short": "Believing you can do the specific thing in front of you.",
+    "what": "Self-efficacy is your belief that you can do a particular thing, like give this talk, pass this test or have this conversation. It's specific: you can have plenty for one thing and very little for another. Psychologists find it's built mostly one way: small, real wins at things that used to be hard. Watching someone like you do it helps, so does someone you trust telling you that you can, and so does reading your nerves as getting ready rather than as proof you can't.",
+    "notThis": "Not the same as believing effort pays off. Efficacy says \"I can do this\"; the other belief says \"doing it will make a difference\". You need both. \"I'm bad at this because I haven't done the reps yet\" is the second one, and it's what keeps you going long enough to build the first.",
+    "ask": "When something goes badly, is your first thought about what you'd do differently, or about what you're like?",
+    "livingIt": "Pick one thing you think you 'can't' do. Find someone like you who does it, and ask how they started."
+  },
+  {
+    "key": "self-confidence",
+    "name": "Self-confidence",
+    "level": 4,
+    "short": "Feeling sure enough of yourself to have a go.",
+    "what": "Confidence is the everyday word for feeling sure of yourself. Psychologists mostly study the specific kind, self-efficacy: confidence about one particular thing. The general feeling is usually built out of lots of specific ones. You can be confident on a football field and nervous about speaking up in class, and both are true at once. That's not a contradiction; it's how confidence works.",
+    "notThis": "Not self-esteem. Esteem is how you rate yourself overall (\"I'm alright\"); confidence is about whether you'll have a go. And not something you wait for. Waiting to feel confident before you start is backwards: the doing is what produces it.",
+    "ask": "Name one thing you're genuinely confident at. What did you do to get there? That's the method for everything else.",
+    "livingIt": "Do one small thing this week that you'd usually wait to 'feel ready' for."
+  },
+  {
+    "key": "self-trust",
+    "name": "Self-trust",
+    "level": 4,
+    "short": "Backing my judgement and keeping promises to myself.",
+    "what": "Relying on your own judgement and keeping the promises you make to yourself. Every promise you keep is a deposit.",
+    "notThis": "Not ignoring advice or never asking for help. Kurt crawled with family, friends and guides. Self-trust is knowing when to back yourself and when to lean on others.",
+    "ask": "When did you last make a promise to yourself and keep it? When did you last break one?",
+    "livingIt": "Make one small promise to yourself this week, and keep it."
+  },
+  {
+    "key": "autonomy",
+    "name": "Autonomy",
+    "level": 5,
+    "short": "Making choices that are truly my own.",
+    "what": "Making choices that are truly your own. Research says we thrive with three things: choice (autonomy), getting better (competence) and connection (relatedness).",
+    "notThis": "Not doing whatever you want or ignoring everyone. Barty had a tight team around her. It's about owning the choice, not making it alone.",
+    "ask": "How many things you do each week did you actually choose? Which one would you choose again?",
+    "livingIt": "Pick one 'have to' this week and find the part of it you can choose: how, when or why."
+  },
+  {
+    "key": "self-advocacy",
+    "name": "Self-advocacy",
+    "level": 5,
+    "short": "Speaking up for what I need and believe.",
+    "what": "Speaking up for what you need and what you believe, to the right person, in a way they can hear.",
+    "notThis": "Not complaining or demanding. Osaka herself said her timing and her message could have been clearer, and that's part of the skill too.",
+    "ask": "Is there something you need at school, at home or with friends that you haven't asked for? Who's the right person to ask?",
+    "livingIt": "Use this script once this week: 'I've noticed ___. I need ___. Could we ___?'"
+  },
+  {
+    "key": "self-authorship",
+    "name": "Self-authorship",
+    "level": 5,
+    "short": "Writing my own story, not borrowing someone else's.",
+    "what": "Building your own beliefs, values and identity, rather than just borrowing them from parents, friends or your feed. Moving from 'what do they want?' to 'what do I think?'",
+    "notThis": "Not rejecting everything you were taught. You can keep plenty of it, as long as you've checked it and chosen it.",
+    "ask": "Name one belief you hold. Did you choose it, or did you absorb it?",
+    "livingIt": "Write one belief in your own words: where it came from, and whether you'd keep it."
+  },
+  {
+    "key": "actual-self",
+    "name": "Actual self",
+    "level": 6,
+    "short": "Who I am right now.",
+    "what": "Who you are right now: your real strengths, habits, values and struggles. Not who you wish you were, and not who others want you to be.",
+    "notThis": "Not the final version. Your actual self in Year 9 is a starting point, not a verdict.",
+    "ask": "If you had to stand up and say 'I am…' like Moana, what three things would you say?",
+    "livingIt": "Write your 'you are here' pin: three things that are true about you now, and one you're working on."
+  },
+  {
+    "key": "ideal-self",
+    "name": "Ideal self",
+    "level": 6,
+    "short": "Who I hope to become.",
+    "what": "Who you hope to become: the person you'd be if things went your way. It shows you which direction to move in.",
+    "notThis": "Not perfection, and not someone else's dream for you (that's the ought self). If the ideal is too far away it can make you feel worse. The gap should pull, not crush.",
+    "ask": "Picture you at 25. What five qualities would you want people to use to describe you?",
+    "livingIt": "Do one thing this week that 25-year-old you would thank you for."
+  },
+  {
+    "key": "ought-self",
+    "name": "Ought self",
+    "level": 6,
+    "short": "Who others expect me to be.",
+    "what": "Who you think you should be, based on what parents, coaches, friends or culture expect. The gap between actual and ought tends to feel like pressure and anxiety.",
+    "notThis": "Not always bad. Some expectations are good ones you'll choose to keep. The question is whether you've checked them and made them yours.",
+    "ask": "Whose voice is loudest when you think 'I should…'? Do you agree with it?",
+    "livingIt": "Write three 'I should…' sentences. Cross out 'should' and write either 'I choose to' or 'I don't actually want to'."
+  },
+  {
+    "key": "feared-self",
+    "name": "Feared self",
+    "level": 6,
+    "short": "Who I don't want to become.",
+    "what": "The version of you that you're afraid of becoming. It can push you away from paths you don't want.",
+    "notThis": "Not a prediction. And fear works best when it's paired with a hoped-for self: running away from something is weaker than running towards something.",
+    "ask": "What's one version of you you don't want to become? What's the opposite version you do want?",
+    "livingIt": "Write your feared self in one line, and your hoped-for self opposite it. Do one thing this week that moves you towards the second."
+  },
+  {
+    "key": "possible-selves",
+    "name": "Possible selves",
+    "level": 6,
+    "short": "All the futures I can imagine.",
+    "what": "The whole range of future versions of you that you can imagine: hoped-for, feared and likely. Having a few lets you explore before you commit.",
+    "notThis": "Not having to decide now. Year 9 is meant to be the exploring phase. Shutting options down too early (foreclosure) is the bigger risk.",
+    "ask": "Name three different futures you can see yourself in. What's one small step towards each?",
+    "livingIt": "Try one new thing this week that's linked to a possible self you've never tested."
+  },
+  {
+    "key": "authentic-self",
+    "name": "Authentic self",
+    "level": 7,
+    "short": "When who I am, what I value and how I act line up.",
+    "what": "When your inside and outside match: you act in line with your values and identity across different rooms. Research links feeling authentic with wellbeing.",
+    "notThis": "Not 'being exactly the same everywhere', and not saying every thought out loud. You'll still adjust between rooms. Authentic means the core stays you.",
+    "ask": "Where do you feel most like the real you? What's different about that place?",
+    "livingIt": "This week, do one thing as the real you in a room where you'd usually wear a mask."
+  }
+]

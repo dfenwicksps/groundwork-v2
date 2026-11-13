@@ -49,6 +49,13 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
+  // v3: Home is /home (docs/v3/navigation.md). Everything that sends a
+  // signed-in student to /dashboard still works and lands there. The v2
+  // dashboard below is kept in the file until its cards (the check-in, small
+  // steps, the notice about counts) have a place on the new Home.
+  // (Set NEXT_PUBLIC_V2_DASHBOARD=1 to see the old one while that happens.)
+  if (process.env.NEXT_PUBLIC_V2_DASHBOARD !== "1") redirect("/home");
+
   // Fetch mission progress
   const { data: progress } = await supabase
     .from("mission_progress")

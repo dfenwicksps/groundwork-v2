@@ -36,7 +36,7 @@ export default async function PlatformPage() {
 
   return (
     <StaffShell roles={roles} title="Platform">
-      <section className="card" aria-labelledby="totals-heading">
+      <section className="card p-5" aria-labelledby="totals-heading">
         <h2 id="totals-heading" className="font-semibold text-[--ink] mb-2">Totals</h2>
         <dl className="divide-y divide-[--border] text-sm">
           {((totals ?? []) as { key: string; total: number | null }[]).map((t) => (
@@ -49,7 +49,7 @@ export default async function PlatformPage() {
         <p className="mt-3 text-sm text-[--ink-muted]">A dash means a count of students too small to show.</p>
       </section>
 
-      <section className="card space-y-4" aria-labelledby="schools-heading">
+      <section className="card p-5 space-y-4" aria-labelledby="schools-heading">
         <h2 id="schools-heading" className="font-semibold text-[--ink]">Schools</h2>
         {schoolRows.length === 0 && <p className="text-sm text-[--ink-muted]">No schools yet.</p>}
         {schoolRows.map((s) => (

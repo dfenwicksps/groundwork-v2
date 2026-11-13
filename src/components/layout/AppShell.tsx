@@ -10,12 +10,11 @@ import ThemeSync from "@/components/ThemeSync";
 
 const NAV_ITEMS = [
   {
-    href: "/dashboard",
+    href: "/home",
     label: "Home",
-    // /support has no tab of its own; the dashboard is where the support
-    // circle lives, so Home is the honest anchor rather than nothing lit.
+    // /support and /check-in have no tab of their own; Home links to both.
     match: (p: string) =>
-      p === "/dashboard" || p === "/" || p.startsWith("/support") || p.startsWith("/check-in"),
+      p === "/home" || p === "/dashboard" || p === "/" || p.startsWith("/support") || p.startsWith("/check-in"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <path
@@ -41,7 +40,10 @@ const NAV_ITEMS = [
     href: "/grow",
     label: "Grow",
     // Mission pages and stories are reached from here, so they light this tab.
-    match: (p: string) => p.startsWith("/grow") || p.startsWith("/join") || p.startsWith("/missions") || p.startsWith("/stories"),
+    // The weeks live inside the map now (D50), so they light this tab too.
+    match: (p: string) =>
+      p.startsWith("/grow") || p.startsWith("/me/selves") || p.startsWith("/join") ||
+      p.startsWith("/missions") || p.startsWith("/program") || p.startsWith("/stories"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
@@ -63,37 +65,6 @@ const NAV_ITEMS = [
           stroke="currentColor"
           strokeWidth={active ? "2" : "1.6"}
           strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: "/program",
-    label: "This Week",
-    match: (p: string) => p.startsWith("/program"),
-    icon: (active: boolean) => (
-      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
-        <rect
-          x="3.5"
-          y="4.5"
-          width="15"
-          height="14"
-          rx="2"
-          stroke="currentColor"
-          strokeWidth={active ? "2" : "1.6"}
-        />
-        <path
-          d="M3.5 8.5h15M7 3.5v2M15 3.5v2"
-          stroke="currentColor"
-          strokeWidth={active ? "2" : "1.6"}
-          strokeLinecap="round"
-        />
-        <path
-          d="M7.5 12.5l1.5 1.5 3-3"
-          stroke="currentColor"
-          strokeWidth={active ? "2" : "1.6"}
-          strokeLinecap="round"
-          strokeLinejoin="round"
         />
       </svg>
     ),
@@ -125,7 +96,7 @@ const NAV_ITEMS = [
   {
     href: "/me",
     label: "Me",
-    match: (p: string) => p.startsWith("/me") || p.startsWith("/settings") || p.startsWith("/next") || p.startsWith("/story"),
+    match: (p: string) => (p.startsWith("/me") && !p.startsWith("/me/selves")) || p.startsWith("/settings") || p.startsWith("/next") || p.startsWith("/story"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
@@ -173,7 +144,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         className="hidden lg:flex fixed inset-y-0 left-0 z-40 flex-col bg-white border-r border-[--border] px-4 py-6"
         style={{ width: "var(--rail-width)" }}
       >
-        <Link href="/dashboard" className="flex items-center gap-2 px-3 mb-8">
+        <Link href="/home" className="flex items-center gap-2 px-3 mb-8">
           <span className="w-7 h-7 bg-navy rounded-md flex items-center justify-center">
             <span className="text-white text-xs font-semibold">G</span>
           </span>

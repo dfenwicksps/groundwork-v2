@@ -29,11 +29,11 @@ export default async function PatternsPage({ params }: { params: { classId: stri
   return (
     <StaffShell roles={roles} title={`${cls.name}: class patterns`}>
       {tooSmall ? (
-        <div className="card text-sm text-[--ink]">
+        <div className="card p-5 text-sm text-[--ink]">
           This class is too small to show patterns for. Patterns appear once enough students have joined.
         </div>
       ) : (
-        <div className="card">
+        <div className="card p-5">
           <table className="w-full text-sm">
             <caption className="sr-only">Whole-class patterns</caption>
             <thead>

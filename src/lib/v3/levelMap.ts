@@ -28,6 +28,11 @@ export interface MapLevel {
   level: number;
   key: string;
   name: string;
+  /** The level's own question, from the master file. */
+  question: string;
+  /** Accent colour and band colour, from the master file. */
+  colour: string;
+  band: string;
   selves: MapSelf[];
   /** Mission step ids and "week-N", in the order they're offered. */
   pieces: string[];
@@ -50,6 +55,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 1,
         key: "know-myself",
         name: "Know myself",
+        question: "Who am I, really?",
+        colour: "#0B7A6E",
+        band: "#D5F5EF",
         selves: [
           { key: "self-awareness", name: "Self-awareness", short: "Noticing what's going on inside me, as it happens." },
           { key: "self-reflection", name: "Self-reflection", short: "Looking at yourself with curiosity, and coming out with something." },
@@ -74,6 +82,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 2,
         key: "value-myself",
         name: "Value myself",
+        question: "Do I rate who I am?",
+        colour: "#C2185B",
+        band: "#FDE1EC",
         selves: [
           { key: "self-esteem", name: "Self-esteem", short: "How much you rate yourself — and it moves." },
           { key: "self-worth", name: "Self-worth", short: "That you count — regardless of how the week went." },
@@ -97,6 +108,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 3,
         key: "manage-myself",
         name: "Manage myself",
+        question: "Can I steer myself?",
+        colour: "#C2410C",
+        band: "#FFE8D6",
         selves: [
           { key: "self-regulation", name: "Self-regulation", short: "The gap you can hold between feeling it and doing it." },
           { key: "self-discipline", name: "Self-discipline", short: "Doing what matters, even when it's hard or boring." },
@@ -108,6 +122,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 4,
         key: "believe-in-myself",
         name: "Believe in myself",
+        question: "Can I actually do this?",
+        colour: "#6D28D9",
+        band: "#EDE4FF",
         selves: [
           { key: "self-efficacy", name: "Self-efficacy", short: "Believing you can do the specific thing in front of you." },
           { key: "self-confidence", name: "Self-confidence", short: "Feeling sure enough of yourself to have a go." },
@@ -119,6 +136,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 5,
         key: "direct-myself",
         name: "Direct myself",
+        question: "Where am I heading?",
+        colour: "#1D4ED8",
+        band: "#DCE8FF",
         selves: [
           { key: "autonomy", name: "Autonomy", short: "Making choices that are truly my own." },
           { key: "self-advocacy", name: "Self-advocacy", short: "Speaking up for what I need and believe." },
@@ -137,6 +157,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 6,
         key: "imagine-myself",
         name: "Imagine myself",
+        question: "Who could I be?",
+        colour: "#1B1640",
+        band: "#E6E3F7",
         selves: [
           { key: "actual-self", name: "Actual self", short: "Who I am right now." },
           { key: "ideal-self", name: "Ideal self", short: "Who I hope to become." },
@@ -150,6 +173,9 @@ export const LEVEL_MAP: MapGroup[] = [
         level: 7,
         key: "authentic-self",
         name: "Authentic self",
+        question: "Am I being the real me?",
+        colour: "#1B1640",
+        band: "#FFD23F",
         selves: [
           { key: "authentic-self", name: "Authentic self", short: "When who I am, what I value and how I act line up." },
         ],
@@ -167,6 +193,26 @@ export interface MapPiece {
   href: string;
   /** An optional step the student can skip. */
   optional: boolean;
+  /** What kind of thing it is, in a word or two. */
+  kind: string;
+  /** How long it takes, where the content says. */
+  time: string | null;
+  /** One line about it. */
+  blurb: string;
+}
+
+const KIND: Record<string, string> = {
+  journal: "Write",
+  values_picker: "Choose",
+  challenge: "Try it",
+  milestone_letter: "Letter",
+  strengths_assessment: "Quick taps",
+};
+
+function firstSentence(text: string | undefined): string {
+  if (!text) return "";
+  const m = text.match(/^.*?[.?!](\s|$)/);
+  return (m ? m[0] : text).trim();
 }
 
 /** Every mission step and program week the app has, by the id the map uses. */
@@ -180,6 +226,9 @@ export function allPieces(): Record<string, MapPiece> {
         from: m.title,
         href: `/missions/${m.id}/activities/${a.id}`,
         optional: /^Optional/.test(a.subtitle),
+        kind: /^conversation-/.test(a.id) ? "Talk to someone" : KIND[a.type] ?? "Write",
+        time: a.timeEstimate ?? null,
+        blurb: firstSentence(a.intro),
       };
     }
   }
@@ -190,6 +239,9 @@ export function allPieces(): Record<string, MapPiece> {
       from: `Week ${w.week}`,
       href: `/program/${w.week}`,
       optional: false,
+      kind: "Week challenge",
+      time: null,
+      blurb: w.challenge.title,
     };
   }
   return out;
@@ -200,4 +252,35 @@ export function allLevels(): { group: MapGroup; level: MapLevel }[] {
   const out: { group: MapGroup; level: MapLevel }[] = [];
   for (const group of LEVEL_MAP) for (const level of group.levels) out.push({ group, level });
   return out;
+}
+
+/** One level by its address key ("know-myself"), with its group. */
+export function findLevel(key: string): { group: MapGroup; level: MapLevel } | undefined {
+  return allLevels().filter((l) => l.level.key === key)[0];
+}
+
+/** The level a self sits in. */
+export function levelOfSelf(selfKey: string): { group: MapGroup; level: MapLevel } | undefined {
+  return allLevels().filter((l) => l.level.selves.some((s) => s.key === selfKey))[0];
+}
+
+/** Every piece id in map order. */
+export function piecesInOrder(): string[] {
+  const out: string[] = [];
+  for (const { level } of allLevels()) for (const id of level.pieces) out.push(id);
+  return out;
+}
+
+/**
+ * A suggestion for Home, never a requirement: the first piece in map order the
+ * student hasn't done, skipping optional ones. Null when there's nothing left.
+ * Everything else stays open (D3).
+ */
+export function suggestNext(doneIds: string[]): MapPiece | null {
+  const pieces = allPieces();
+  for (const id of piecesInOrder()) {
+    const p = pieces[id];
+    if (p && !p.optional && doneIds.indexOf(id) === -1) return p;
+  }
+  return null;
 }

@@ -25,14 +25,14 @@ export default async function TeachPage() {
   return (
     <StaffShell roles={roles} title="My classes">
       {classes.length === 0 ? (
-        <div className="card text-sm text-[--ink-muted]">
+        <div className="card p-5 text-sm text-[--ink-muted]">
           You don&apos;t have a class yet. Your school&apos;s Groundwork admin creates classes and assigns a
           teacher to each.
         </div>
       ) : (
         <ul className="space-y-3">
           {classes.map((c) => (
-            <li key={c.id} className="card flex flex-wrap items-center justify-between gap-3">
+            <li key={c.id} className="card p-5 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="font-semibold text-[--ink]">{c.name}</p>
                 <p className="text-sm text-[--ink-muted]">Year {c.year_level}</p>

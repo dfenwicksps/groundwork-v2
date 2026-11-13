@@ -12,6 +12,7 @@ const PROTECTED_PATHS = [
   "/revisit",
   "/me",
   // v3
+  "/home",
   "/grow",
   "/join",
   "/teach",

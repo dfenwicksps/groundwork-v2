@@ -50,7 +50,7 @@ export default async function SchoolPage() {
           <div key={s.id} className="space-y-6">
             {schools.length > 1 && <h2 className="text-lg font-semibold text-navy">{s.name}</h2>}
 
-            <section className="card space-y-4" aria-labelledby={`staff-${s.id}`}>
+            <section className="card p-5 space-y-4" aria-labelledby={`staff-${s.id}`}>
               <h2 id={`staff-${s.id}`} className="font-semibold text-[--ink]">Staff at {s.name}</h2>
               <ul className="divide-y divide-[--border] text-sm">
                 {s.staff.map((p) => (
@@ -76,7 +76,7 @@ export default async function SchoolPage() {
               </p>
             </section>
 
-            <section className="card space-y-4" aria-labelledby={`classes-${s.id}`}>
+            <section className="card p-5 space-y-4" aria-labelledby={`classes-${s.id}`}>
               <h2 id={`classes-${s.id}`} className="font-semibold text-[--ink]">Classes</h2>
               {s.classes.length === 0 ? (
                 <p className="text-sm text-[--ink-muted]">No classes yet.</p>
