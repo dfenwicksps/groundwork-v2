@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
+import { getMission } from "@/lib/missions";
+import MeCards from "@/components/v3/MeCards";
+import { loadMissionCard } from "@/lib/missionCardsServer";
+import { GROUP_MISSION, LEVEL_MAP } from "@/lib/v3/levelMap";
+import { parseSuggested, resultWords } from "@/lib/v3/selfCheck";
 import MeClient from "./MeClient";
 import { responseToHabits } from "@/lib/habits";
 import { parseAnswers } from "@/lib/standard";
@@ -195,6 +200,26 @@ export default async function MePage() {
     if (next) nextActivityHref = `/missions/${next.mission.id}/activities/${next.activity.id}`;
   }
 
+  // v3: the four cards (one per big question) and the student's own self-check.
+  const stage = await getLifeStage(supabase, user.id);
+  const cards = await Promise.all(
+    LEVEL_MAP.map(async (group) => {
+      const missionId = GROUP_MISSION[group.key];
+      return {
+        group,
+        colour: getMission(missionId)?.colour ?? "var(--navy)",
+        card: await loadMissionCard(supabase, user.id, missionId, stage),
+      };
+    })
+  );
+  const { data: checkRows } = await (supabase as any)
+    .from("self_checks")
+    .select("suggested")
+    .eq("student_id", user.id)
+    .order("taken_at", { ascending: false })
+    .limit(1);
+  const check = (checkRows ?? [])[0] ? resultWords(parseSuggested((checkRows ?? [])[0].suggested)) : null;
+
   return (
     <MeClient
       userId={user.id}
@@ -241,6 +266,7 @@ export default async function MePage() {
       phase={phaseState.phase}
       reviewedAnchors={phaseState.reviewed}
       nextActivityHref={nextActivityHref}
+      cards={<MeCards cards={cards} check={check} />}
       // If the goals table errors, the 003 migration hasn't run — the moral
       // compass, practice loop and goals need it, so we hide those rather than
       // let students hit save-time errors that read as "the app is broken".

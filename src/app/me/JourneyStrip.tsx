@@ -38,7 +38,7 @@ export default function JourneyStrip({
   hasGoals: boolean;
 }) {
   const stages: Stage[] = [
-    { key: "discover", label: "Discover", emoji: "🔍", done: hasProfile && hasValues, href: "/missions/1", outcome: "I know my strengths and values" },
+    { key: "discover", label: "Discover", emoji: "🔍", done: hasProfile && hasValues, href: "/grow/know-myself", outcome: "I know my strengths and values" },
     { key: "reflect", label: "Reflect", emoji: "🪞", done: hasHabits || hasMoral || hasStandard, href: "#standard", outcome: "I see how my choices shape my character" },
     { key: "grow", label: "Grow", emoji: "🌱", done: hasFocus, href: "#focus", outcome: "I've chosen qualities to develop" },
     { key: "practise", label: "Practise", emoji: "💪", done: hasPractice, href: "#practice", outcome: "I'm turning qualities into actions" },

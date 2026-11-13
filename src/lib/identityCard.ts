@@ -247,8 +247,8 @@ export function buildPurposeCard({
     missionId: 2,
     title: "My purpose",
     doneText: explore
-      ? "Mission 2 done. This is what you care about and what you want to explore next. It's meant to change as you try things."
-      : "Mission 2 done. This is what you care about and what you can bring to it, for now. It can grow and change with you.",
+      ? "All filled in. This is what you care about and what you want to explore next. It's meant to change as you try things."
+      : "All filled in. This is what you care about and what you can bring to it, for now. It can grow and change with you.",
   };
 }
 
@@ -308,7 +308,7 @@ export function buildConnectionCard({
     missionId: 3,
     title: "My people",
     doneText:
-      "Mission 3 done. This is where you belong and who's part of your story, for now. It will change as people come and go, and that's normal.",
+      "All filled in. This is where you belong and who's part of your story, for now. It will change as people come and go, and that's normal.",
   };
 }
 
@@ -371,7 +371,7 @@ export function buildDirectionCard({
     missionId: 4,
     title: "My direction",
     doneText:
-      "All four missions done. Your story so far, from where you've come from to where you're heading, is joined up in one place.",
+      "All filled in. Your story so far, from where you've come from to where you're heading, is joined up in one place.",
     doneLink: { href: "/story", text: "Open My Story →" },
   };
 }

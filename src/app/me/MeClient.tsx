@@ -89,6 +89,7 @@ export default function MeClient({
   phase,
   reviewedAnchors,
   nextActivityHref,
+  cards,
 }: {
   userId: string;
   displayName: string;
@@ -131,6 +132,8 @@ export default function MeClient({
   reviewedAnchors: string[];
   /** Phase 1: the next mission step's page, or null when there isn't one. */
   nextActivityHref: string | null;
+  /** v3: the self-check and the four cards, rendered on the server. */
+  cards: React.ReactNode;
 }) {
   const [showAll, setShowAll] = useState(false);
   const firstName = displayName?.split(" ")[0] || "you";
@@ -149,9 +152,10 @@ export default function MeClient({
   // #4: the Me page was a 13-section scroll — split into journey-aligned tabs.
   // Default tab follows life stage (Year 12 and anyone past school → Future,
   // juniors → Grow).
-  type MeTab = "profile" | "reflect" | "grow" | "future";
-  const defaultTab: MeTab =
-    futureFirst(lifeStage) ? "future" : lifeStage === "junior" ? "grow" : "profile";
+  // v3: the four cards lead. They are what a student builds on the map, so
+  // they are what Me opens on, whatever the year level.
+  type MeTab = "cards" | "profile" | "reflect" | "grow" | "future";
+  const defaultTab: MeTab = "cards";
   const [tab, setTab] = useState<MeTab>(defaultTab);
 
   // Cross-links reach this page two ways, and both have to work.
@@ -207,9 +211,11 @@ export default function MeClient({
   }
 
   const TABS: { key: MeTab; label: string; emoji: string }[] = [
-    { key: "profile", label: "Profile", emoji: "🧭" },
+    { key: "cards", label: "My cards", emoji: "🗂️" },
+    { key: "profile", label: "Strengths", emoji: "🧭" },
     { key: "reflect", label: "Reflect", emoji: "🪞" },
-    { key: "grow", label: "Grow", emoji: "🌱" },
+    // "Grow" is the map's tab now; this one is about practising.
+    { key: "grow", label: "Practise", emoji: "🌱" },
     { key: "future", label: "Future", emoji: "🚀" },
   ];
 
@@ -230,7 +236,7 @@ export default function MeClient({
       <div className="page space-y-8">
         {/* Header */}
         <div data-animate="1">
-          <p className="text-sm text-ink-muted mb-1">Your profile</p>
+          <p className="text-sm text-ink-muted mb-1">Me</p>
           <h1
             className="text-3xl lg:text-4xl text-navy"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
@@ -248,7 +254,7 @@ export default function MeClient({
             reviewed={reviewedAnchors}
             href={
               phase === 1
-                ? nextActivityHref ?? "/missions"
+                ? nextActivityHref ?? "/grow"
                 : "/missions/1/activities/strengths-mapping"
             }
           />
@@ -293,6 +299,8 @@ export default function MeClient({
           className="space-y-8"
           {...(hasProfile ? { id: "me-tabpanel", role: "tabpanel", "aria-labelledby": `me-tab-${tab}` } : {})}
         >
+        {(tab === "cards" || !hasProfile) && cards}
+
         {(tab === "profile" || !hasProfile) && (
           <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-10 lg:items-start">
           <div className="split-col">
@@ -329,7 +337,7 @@ export default function MeClient({
               Discover your character strengths
             </h2>
             <p className="text-sm text-ink-muted mb-6 leading-relaxed max-w-sm mx-auto">
-              Do <span className="font-medium">Strengths Mapping</span> in Mission 1 to
+              Do <span className="font-medium">Strengths Mapping</span> to
               rank all 24 VIA character strengths and reveal your signature five.
             </p>
             <Link
@@ -635,7 +643,14 @@ export default function MeClient({
             )}
             {stepsTaken && <StepsTakenSection steps={stepsTaken.steps} total={stepsTaken.total} />}
             {/* Understand the words, then build the qualities. */}
-            <SelvesSection />
+            {/* v3: the selves have their own pages on the map. */}
+            <Link href="/grow" className="card block p-5 hover:-translate-y-0.5 transition-transform">
+              <span className="block text-base font-semibold text-navy">The 25 selves</span>
+              <span className="block text-sm text-ink-muted mt-1">
+                Self-worth, self-trust, self-compassion and the rest each have a page on the map: what it is, what
+                it isn&apos;t, and something to try.
+              </span>
+            </Link>
             <BoostsSection />
             {!featuresReady && soonNote}
           </div>

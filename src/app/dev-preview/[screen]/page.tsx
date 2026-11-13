@@ -4,9 +4,10 @@ import GrowMap from "@/components/v3/GrowMap";
 import HomeView from "@/components/v3/HomeView";
 import LevelView from "@/components/v3/LevelView";
 import SelfView from "@/components/v3/SelfView";
-import { LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf, suggestNext } from "@/lib/v3/levelMap";
+import { GROUP_MISSION, LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf, suggestNext } from "@/lib/v3/levelMap";
 import { findSelf } from "@/lib/v3/selves";
-import { MISSIONS } from "@/lib/missions";
+import { MISSIONS, getMission } from "@/lib/missions";
+import MeCards from "@/components/v3/MeCards";
 import { PROGRAM_WEEKS } from "@/lib/program";
 import { shownStep } from "@/lib/v3/shownStep";
 import ActivityClient from "@/app/missions/[id]/activities/[activityId]/ActivityClient";
@@ -85,6 +86,39 @@ export default function DevPreview({ params, searchParams }: { params: { screen:
       sourceEntries: {}, capstone: [], storyEarlier: [], suggestedQualities: [], earlier: [], lifeStage: "junior", ready: true,
     };
     return <WeekClient {...sample} />;
+  }
+  if (params.screen === "me-cards") {
+    const piece = (key: string, label: string, activityId: string, stepTitle: string, text: string, chips: string[] = []) =>
+      ({ key, label, activityId, stepTitle, text, chips, done: !!text || chips.length > 0 }) as any;
+    const sample: Record<string, any> = {
+      identity: { title: "Who I am", missionId: 1, filled: 2, pieces: [
+        piece("strengths", "My top strengths", "strengths-mapping", "Strengths Mapping", "", ["Kindness", "Curiosity", "Humour"]),
+        piece("values", "What I stand for", "values-clarifier", "Values Clarifier", "", ["Honesty", "Loyalty"]),
+        piece("mask", "Where I'm most myself", "mask-check", "The Mask Check", ""),
+        piece("experiment", "My experiment", "weekly-challenge", "Live It Once", ""),
+      ] },
+      purpose: { title: "My purpose", missionId: 2, filled: 0, pieces: [
+        piece("matters", "What matters to me", "what-matters", "What Matters", ""),
+        piece("bring", "What I can bring", "contribution-map", "The Contribution Map", ""),
+        piece("step", "My real step", "purpose-challenge", "One Real Step", ""),
+      ] },
+      connection: { title: "My people", missionId: 3, filled: 3, doneText: "All filled in. This is where you belong and who's part of your story, for now.", pieces: [
+        piece("belong", "Where I belong", "belonging", "Where You Belong", "With my cousins, and at training."),
+        piece("gap", "Across the gap", "across-the-gap", "Across the Gap", "My grandad."),
+        piece("reach", "Reaching out", "connection-challenge", "Reach Out Once", "Messaged Jo."),
+      ] },
+      meaning: null,
+    };
+    return (
+      <AppShell>
+        <div className="page">
+          <MeCards
+            check={k === "none" ? null : resultWords(SAMPLE)}
+            cards={LEVEL_MAP.map((group) => ({ group, colour: getMission(GROUP_MISSION[group.key])?.colour ?? "var(--navy)", card: sample[group.key] }))}
+          />
+        </div>
+      </AppShell>
+    );
   }
   if (params.screen === "grow") {
     return (

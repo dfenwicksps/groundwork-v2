@@ -3,10 +3,11 @@ import { tint } from "@/lib/utils";
 import { pieceDone, type IdentityCard as Card } from "@/lib/identityCard";
 
 /**
- * A mission's card, built one piece per step (see lib/identityCard.ts). It's
- * also the mission's navigation: every piece links to the step that fills
- * it ("Open" once it's done, so a step can be reopened or redone), and the
- * next step to do is the one button on the card.
+ * One of the four cards, built one piece per step (see lib/identityCard.ts).
+ * Every piece links to the step that fills it ("Open" once it's done, so a
+ * step can be reopened or redone), and the next piece to add is the one
+ * button on the card. v3: the pieces can be added in any order, so nothing
+ * here is numbered or described as unlocking (D3).
  */
 export default function IdentityCard({
   card,
@@ -55,10 +56,10 @@ export default function IdentityCard({
         <p className="text-xs leading-relaxed mt-3 opacity-90">
           {complete
             ? card.doneText ??
-              "Mission 1 done. This is your answer to “Who am I?” for now. It will change, and that's the point: you'll come back to it."
+              "All filled in. This is your answer to “Who am I?” for now. It will change, and that's the point: you'll come back to it."
             : card.filled === 0
-              ? "Each step you finish adds a piece here. Start with Step 1."
-              : "Each step you finish adds a piece. Keep going to fill the card."}
+              ? "Each thing you do adds a piece here. Start with any of them."
+              : "Each thing you do adds a piece. Add the rest whenever you like."}
         </p>
         {complete && card.doneLink && (
           <Link
@@ -104,7 +105,7 @@ export default function IdentityCard({
                   className="inline-flex items-center gap-1.5 mt-0.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-white"
                   style={{ background: colour }}
                 >
-                  {p.stale ? `Redo Step ${i + 1} · ${p.stepTitle}` : `Start Step ${i + 1} · ${p.stepTitle}`}
+                  {p.stale ? `Redo ${p.stepTitle}` : `Start ${p.stepTitle}`}
                   <span aria-hidden>→</span>
                 </Link>
               ) : (
@@ -113,8 +114,8 @@ export default function IdentityCard({
                   className="text-sm text-[--ink-muted] hover:text-[--ink] transition-colors"
                 >
                   {p.stale
-                    ? `This step's questions changed. Redo Step ${i + 1} to add this →`
-                    : `Unlocks at Step ${i + 1} · ${p.stepTitle} →`}
+                    ? `This step's questions changed. Redo it to add this →`
+                    : `Add this in ${p.stepTitle} →`}
                 </Link>
               )}
               {filled && (
@@ -122,7 +123,7 @@ export default function IdentityCard({
                   href={stepHref(p)}
                   className="inline-block mt-1.5 text-xs text-[--ink-muted] hover:text-[--ink] hover:underline transition-colors"
                 >
-                  Open Step {i + 1} · {p.stepTitle} →
+                  Open {p.stepTitle} →
                 </Link>
               )}
             </li>
