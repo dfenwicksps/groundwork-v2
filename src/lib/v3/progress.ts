@@ -2,6 +2,7 @@
 // through row security, so it is only ever their own (V-S1).
 
 import { createServerClient } from "@/lib/supabase-server";
+import { parseSuggested, type Suggested } from "./selfCheck";
 
 export interface StudentContext {
   userId: string;
@@ -9,6 +10,8 @@ export interface StudentContext {
   doneIds: string[];
   /** "9B with Ms Nguyen", joined with " · " when in more than one class. */
   classLine: string | null;
+  /** The student's self-checks, newest first (at most two). Their own rows only. */
+  checks: { takenAt: string; suggested: Suggested }[];
 }
 
 export async function getStudentContext(): Promise<StudentContext | null> {
@@ -17,11 +20,12 @@ export async function getStudentContext(): Promise<StudentContext | null> {
   if (!user) return null;
 
   const db = supabase as any;
-  const [{ data: profile }, { data: steps }, { data: weeks }, { data: classes }] = await Promise.all([
+  const [{ data: profile }, { data: steps }, { data: weeks }, { data: classes }, { data: checks }] = await Promise.all([
     db.from("users").select("display_name").eq("id", user.id),
     db.from("mission_progress").select("activity_id").eq("user_id", user.id),
     db.from("program_progress").select("week, completed_at").eq("user_id", user.id),
     db.rpc("my_classes"),
+    db.from("self_checks").select("taken_at, suggested").eq("student_id", user.id).order("taken_at", { ascending: false }).limit(2),
   ]);
 
   const doneIds: string[] = [];
@@ -38,5 +42,9 @@ export async function getStudentContext(): Promise<StudentContext | null> {
     classLine: mine.length
       ? mine.map((c) => `${c.class_name}${c.teacher_name ? ` with ${c.teacher_name}` : ""}`).join(" · ")
       : null,
+    checks: ((checks ?? []) as { taken_at: string; suggested: unknown }[]).map((c) => ({
+      takenAt: c.taken_at,
+      suggested: parseSuggested(c.suggested),
+    })),
   };
 }

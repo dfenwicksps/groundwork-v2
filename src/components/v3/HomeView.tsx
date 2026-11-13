@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { MapGroup, MapLevel, MapPiece } from "@/lib/v3/levelMap";
+import type { MapGroup, MapLevel, MapPiece, MapSelf } from "@/lib/v3/levelMap";
+import SelfTile from "./SelfTile";
 import { NAVY, YELLOW, display, onBand } from "./mapStyle";
 
 // Home answers one question first: what should I do now? One suggestion, then
@@ -11,7 +12,13 @@ export default function HomeView({
   started,
   groups,
   classLine,
+  checked,
+  explore = [],
 }: {
+  /** Has the student taken the self-check? */
+  checked: boolean;
+  /** What their self-check suggested. Only they see this. */
+  explore?: { level: MapLevel; self: MapSelf }[];
   name: string | null;
   next: MapPiece | null;
   nextLevel: MapLevel | null;
@@ -26,6 +33,28 @@ export default function HomeView({
         {name ? `Hi ${name}` : "Hi"}
       </h1>
 
+      {!checked && !started ? (
+        <section aria-labelledby="first" className="mt-5 rounded-3xl p-6 md:p-8" style={{ background: NAVY, color: "#fff" }}>
+          <p id="first" className="text-[13px] font-extrabold uppercase tracking-[0.14em]" style={{ color: YELLOW }}>
+            Start here
+          </p>
+          <h2 className="mt-2 text-[clamp(28px,5vw,44px)] font-extrabold leading-[1.02] tracking-[-0.02em]" style={{ ...onBand, color: "#fff" }}>
+            The self-check
+          </h2>
+          <p className="mt-3 max-w-2xl text-[17px] font-medium leading-snug text-[#E9E6FF]">
+            25 short statements that point you to a good place to begin. No score, no label, and only you see it.
+          </p>
+          <p className="mt-3 text-sm font-bold text-[#C9C3EE]">About 5 minutes</p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Link href="/me/self-check" className="inline-flex min-h-[48px] items-center rounded-full px-6 text-base font-extrabold" style={{ background: YELLOW, color: NAVY }}>
+              Start
+            </Link>
+            <Link href="/grow" className="text-sm font-bold text-white underline underline-offset-4">
+              or skip it and choose from the map
+            </Link>
+          </div>
+        </section>
+      ) : (
       <section aria-labelledby="next" className="mt-5 rounded-3xl p-6 md:p-8" style={{ background: NAVY, color: "#fff" }}>
         <p id="next" className="text-[13px] font-extrabold uppercase tracking-[0.14em]" style={{ color: YELLOW }}>
           {next ? (started ? "Next up" : "A good place to start") : "You've done everything here"}
@@ -67,6 +96,27 @@ export default function HomeView({
           </>
         )}
       </section>
+      )}
+
+      {explore.length > 0 && (
+        <section aria-labelledby="from-check" className="mt-8">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 id="from-check" className="text-2xl font-extrabold text-[--navy]" style={display}>
+              From your self-check
+            </h2>
+            <Link href="/me/self-check/result" className="text-sm font-bold text-[--teal] hover:underline">
+              See it again
+            </Link>
+          </div>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+            {explore.map(({ level, self }) => (
+              <li key={self.key} className="rounded-3xl p-2.5" style={{ background: level.level >= 6 ? "#E6E3F7" : level.band }}>
+                <SelfTile level={{ ...level, level: 1 }} self={self} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section aria-labelledby="map" className="mt-8">
         <h2 id="map" className="text-2xl font-extrabold text-[--navy]" style={display}>
@@ -104,6 +154,11 @@ export default function HomeView({
         <Link href="/support" className="card p-4 text-sm font-bold text-[--ink] hover:underline">
           Your support circle
         </Link>
+        {!checked && started && (
+          <Link href="/me/self-check" className="card p-4 text-sm font-bold text-[--ink] hover:underline">
+            Take the self-check
+          </Link>
+        )}
         {classLine ? (
           <div className="card p-4 text-sm font-bold text-[--ink]">
             Your class: <span className="font-semibold text-[--ink-muted]">{classLine}</span>

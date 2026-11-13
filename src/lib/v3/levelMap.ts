@@ -201,6 +201,13 @@ export interface MapPiece {
   blurb: string;
 }
 
+/** A list of options isn't a description; fall back to the introduction for those. */
+function blurbFor(prompt: string | undefined, intro: string | undefined): string {
+  const fromPrompt = firstSentence(prompt);
+  if (fromPrompt && !/[•\n]|:$/.test(fromPrompt)) return fromPrompt;
+  return firstSentence(intro);
+}
+
 const KIND: Record<string, string> = {
   journal: "Write",
   values_picker: "Choose",
@@ -209,10 +216,14 @@ const KIND: Record<string, string> = {
   strengths_assessment: "Quick taps",
 };
 
+/** The first sentence that stands on its own: v2's intros often open by pointing back at a mission. */
 function firstSentence(text: string | undefined): string {
   if (!text) return "";
-  const m = text.match(/^.*?[.?!](\s|$)/);
-  return (m ? m[0] : text).trim();
+  const parts = text.match(/[^.?!]+[.?!]+/g) || [text];
+  for (const part of parts) {
+    if (!/\bMissions? \d|\bmissions?\b|\bstep\b/i.test(part)) return part.trim();
+  }
+  return "";
 }
 
 /** Every mission step and program week the app has, by the id the map uses. */
@@ -228,7 +239,9 @@ export function allPieces(): Record<string, MapPiece> {
         optional: /^Optional/.test(a.subtitle),
         kind: /^conversation-/.test(a.id) ? "Talk to someone" : KIND[a.type] ?? "Write",
         time: a.timeEstimate ?? null,
-        blurb: firstSentence(a.intro),
+        // The prompt says what the step asks, and stands alone; v2's intros lean
+        // on the order the missions used to run in.
+        blurb: blurbFor(a.prompt, a.intro),
       };
     }
   }
@@ -272,13 +285,19 @@ export function piecesInOrder(): string[] {
 }
 
 /**
- * A suggestion for Home, never a requirement: the first piece in map order the
- * student hasn't done, skipping optional ones. Null when there's nothing left.
+ * A suggestion for Home, never a requirement: the first piece the student
+ * hasn't done, skipping optional ones, starting with the levels their
+ * self-check suggested. Null when there's nothing left.
  * Everything else stays open (D3).
  */
-export function suggestNext(doneIds: string[]): MapPiece | null {
+export function suggestNext(doneIds: string[], preferLevels: number[] = []): MapPiece | null {
   const pieces = allPieces();
-  for (const id of piecesInOrder()) {
+  // The levels the self-check pointed at come first, then the rest of the map.
+  const preferred: string[] = [];
+  for (const { level } of allLevels()) {
+    if (preferLevels.indexOf(level.level) !== -1) for (const id of level.pieces) preferred.push(id);
+  }
+  for (const id of preferred.concat(piecesInOrder())) {
     const p = pieces[id];
     if (p && !p.optional && doneIds.indexOf(id) === -1) return p;
   }

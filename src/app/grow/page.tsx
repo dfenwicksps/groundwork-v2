@@ -14,7 +14,7 @@ export default async function GrowPage() {
   if (!me) redirect("/auth");
   return (
     <AppShell>
-      <GrowMap groups={LEVEL_MAP} classLine={me.classLine} />
+      <GrowMap groups={LEVEL_MAP} classLine={me.classLine} checked={me.checks.length > 0} suggested={me.checks[0]?.suggested.selves ?? []} />
     </AppShell>
   );
 }

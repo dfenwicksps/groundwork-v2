@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { MapLevel, MapSelf } from "@/lib/v3/levelMap";
 import { INK, accentOn, display, onBand, toneOf } from "./mapStyle";
 
-export default function SelfTile({ level, self }: { level: MapLevel; self: MapSelf }) {
+export default function SelfTile({ level, self, suggested }: { level: MapLevel; self: MapSelf; suggested?: boolean }) {
   const tone = toneOf(level);
   return (
     <Link
@@ -14,6 +14,14 @@ export default function SelfTile({ level, self }: { level: MapLevel; self: MapSe
           : { background: "#fff", color: INK, border: tone === "bright" ? "2px solid #1B1640" : "2px solid transparent", outlineColor: level.colour }
       }
     >
+      {suggested && (
+        <span
+          className="w-fit rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.08em]"
+          style={{ background: "#FFD23F", color: "#1B1640" }}
+        >
+          From your self-check
+        </span>
+      )}
       <span className="text-[17px] sm:text-[19px] font-extrabold leading-[1.1] break-words" style={{ ...onBand, color: tone === "dark" ? "#fff" : accentOn(level) }}>
         {self.name}
       </span>

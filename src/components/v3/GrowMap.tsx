@@ -8,8 +8,14 @@ import { NAVY, YELLOW, accentOn, bandStyle, display, onBand, toneOf } from "./ma
 export default function GrowMap({
   groups,
   classLine,
+  suggested = [],
+  checked,
 }: {
   groups: MapGroup[];
+  /** Selves the student's own self-check suggested. Only they see this. */
+  suggested?: string[];
+  /** Has the student taken the self-check? */
+  checked: boolean;
   /** "9B with Ms Nguyen", or null when the student isn't in a class. */
   classLine: string | null;
 }) {
@@ -42,6 +48,11 @@ export default function GrowMap({
               Got a class code? Join your class
             </Link>
           )}
+        </p>
+        <p className="mt-2 text-sm font-semibold">
+          <Link href={checked ? "/me/self-check/result" : "/me/self-check"} className="text-[--teal] underline-offset-2 hover:underline">
+            {checked ? "See your self-check" : "Not sure where to start? Take the self-check"}
+          </Link>
         </p>
       </header>
 
@@ -85,7 +96,7 @@ export default function GrowMap({
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2.5">
                       {level.selves.map((s) => (
-                        <SelfTile key={s.key} level={level} self={s} />
+                        <SelfTile key={s.key} level={level} self={s} suggested={suggested.indexOf(s.key) !== -1} />
                       ))}
                     </div>
                   </div>
