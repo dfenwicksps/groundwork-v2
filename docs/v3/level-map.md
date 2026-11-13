@@ -1,6 +1,6 @@
 # Groundwork v3: where the missions and weeks would go in seven levels
 
-**Status: draft for David's review, 12 Nov 2026. Nothing has been built or changed. This is a proposal (D50), not a decision.**
+**Status: David answered the questions on 13 Nov 2026 (section 9, D52). Section 10 is a new proposal waiting on him. Nothing has been built or changed.**
 
 David's idea is that the seven levels become the one structure of the program, and the four missions and the 10-week character program are folded into them. This page places every existing piece in a level so the idea can be judged against the real content.
 
@@ -166,17 +166,59 @@ This is the main cost in existing content. All of it needs your approval line by
 | Database | Each activity gets a level (or is linked to the selves it builds, which gives the level). | Small. The v3 database isn't live yet, so the schema can still change. |
 | Content import | Reads this map and tags the 38 activities. Mission wrapper details (title, question, colours) are no longer needed, which settles that earlier question. | Small |
 | Navigation map | The Grow tab becomes seven levels instead of "four missions and a program". | A rewrite of one section of [navigation.md](navigation.md) |
-| Three-phase journey (D42) | Tied to the four missions. Re-map to levels, or drop. | Your call |
+| Three-phase journey (D42) | **Kept (D52).** It sets how much help a student gets with prompts (tap, sentence starters, blank box), which has nothing to do with missions. I was wrong to call it tied to them. Only its unlock rule names the four missions, and that needs a new basis. | Small |
 | Screens | None built yet. Phase 1d would build to the new shape. | No rework |
 
 Phase 1c (sign-in, roles, class codes) isn't affected.
 
-## 9. Questions for David
+## 9. David's answers, 13 Nov 2026 (D52)
 
-1. **Is the map right?** Especially the 15 marked "could move", and Who Else Cares.
-2. **Thin levels:** write new activities for Levels 3, 4 and 5 before launch, or open with what exists?
-3. **Purpose:** let Mission 2 scatter, or keep "What do I care about?" as a named thread across levels?
-4. **The 10 weeks for classes:** should a teacher still be able to run them as a 10-week sequence (each week simply living in a level), or does a class now work level by level?
-5. **Level names and the ladder:** keep "Level 1 to 7", or drop the numbers for students so nothing reads as higher or finished?
-6. **The three-phase journey:** re-map or drop?
-7. **Mission names:** do Identity, Purpose, Connection and Meaning survive anywhere?
+| Question | Answer | What it means |
+| --- | --- | --- |
+| Is the map right? | "Who Else Cares" belongs in Value myself, or Believe in myself. No other placement changed. | The other placements stand until David changes them. Section 10 proposes four moves. |
+| Thin levels | Write new activities first (D51). | Eight drafts in [new-activities-draft.md](new-activities-draft.md). |
+| Purpose | Keep "What do I care about?" | It stays as a named part of the program. Section 10 says how. |
+| The 10 weeks for classes | Either. | A teacher can run the ten weeks in order, or work level by level. Each week lives in a level and also keeps its week number. |
+| Level numbers | Drop them. | Students see names only: Know myself, Value myself and so on. No "Level 3", no "level up", no "final level". The database can still store a number for sorting. The master file's poster wording needs changing by David. |
+| Three-phase journey | Keep it. It's about how much help the prompts give. | Stays as decided in D42. Its unlock rule ("first pass of all four missions done") needs rewording, since it names missions. |
+| Mission names | They should survive. Can the levels be grouped into Identity, Purpose, Connection and Meaning? | See section 10. |
+
+## 10. Grouping the levels under the four names (proposed)
+
+Yes, with one weak spot. The four names become four groups on the map, each keeping its question:
+
+| Group | Its question | Levels in it |
+| --- | --- | --- |
+| Identity | Who am I? | Know myself |
+| Connection | Where do I belong? | Value myself |
+| Purpose | What do I care about? | Manage myself, Believe in myself, Direct myself |
+| Meaning | What kind of life do I want? | Imagine myself, Authentic self |
+
+**How well it fits.** As the map stands, 21 of the 28 mission steps already sit in the group that carries their old mission's name. Four moves, all of them placements already marked "could move", lift that to 25:
+
+| Piece | From | To | Why |
+| --- | --- | --- | --- |
+| Who Else Cares | Value myself | Believe in myself | David named this as one of its two homes. It keeps Purpose together. |
+| The Contribution Map | Value myself | Believe in myself | "What could I bring?" is about what you can do. Keeps Purpose together. |
+| Across the Gap | Know myself | Value myself | A Connection step, back with the others. |
+| Digital Self | Know myself | Imagine myself | Becomes the one activity for the actual self, which had none. |
+
+The three that still sit outside their old name are Where We Come From and Culture and Heritage (Connection steps in Know myself) and Where You've Come From (a Meaning step in Direct myself). Each fits its level better than its old mission, so I'd leave them.
+
+**The count after those moves and the eight new activities:**
+
+| Group | Level | Pieces |
+| --- | --- | --- |
+| Identity | Know myself | 12 |
+| Connection | Value myself | 7 |
+| Purpose | Manage myself | 6 |
+| | Believe in myself | 7 |
+| | Direct myself | 6 |
+| Meaning | Imagine myself | 5 |
+| | Authentic self | 3 |
+
+**The weak spot.** Value myself under "Where do I belong?" fits mattering and the belonging steps. It doesn't fit self-esteem, self-worth and self-compassion nearly as well: those are about how you regard yourself, not about other people. This is my reading, not a research finding.
+
+**The other way to do it.** Leave the levels ungrouped and tag each piece with the name of the mission it came from, as a thread that runs across levels. That's exact, but it gives students two ways of sorting the same things. I'd recommend the grouping above, because it's one picture.
+
+**Purpose is the largest group** (19 of 46 pieces, three of seven levels). That follows from where the levels put motivation, belief and choice, and it suits the name.
