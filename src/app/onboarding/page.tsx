@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase-server";
+import { getRoles, staffHome } from "@/lib/v3/roles";
 import OnboardingClient from "./OnboardingClient";
 
 export const dynamic = "force-dynamic";
@@ -20,12 +21,20 @@ export const metadata: Metadata = { title: "Welcome" };
  * flash of step 1 before being moved on — the same shape as the dashboard's
  * check in the opposite direction.
  */
-export default async function OnboardingPage() {
+export default async function OnboardingPage({ searchParams }: { searchParams?: { student?: string } }) {
   const supabase = createServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
+
+  // v3: staff go to their own area, not through the student welcome, however
+  // they signed in. (?student=1 lets a teacher try the student app.)
+  if (searchParams?.student !== "1") {
+    const roles = await getRoles();
+    const home = roles ? staffHome(roles) : null;
+    if (home) redirect(home);
+  }
 
   const { data } = await (supabase as any)
     .from("users")

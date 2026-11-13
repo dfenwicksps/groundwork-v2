@@ -11,6 +11,12 @@ const PROTECTED_PATHS = [
   "/onboarding",
   "/revisit",
   "/me",
+  // v3
+  "/grow",
+  "/join",
+  "/teach",
+  "/school",
+  "/platform",
 ];
 
 export async function middleware(request: NextRequest) {

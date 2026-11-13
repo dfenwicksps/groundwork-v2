@@ -71,7 +71,7 @@ jobs:
           open=$(q "select count(*) from pg_tables where schemaname = 'public' and not rowsecurity")
           anon=$(q "select count(*) from information_schema.role_table_grants where table_schema = 'public' and grantee = 'anon'")
           echo "tables: $tables, without row security: $open, table grants to anon: $anon"
-          test "$tables" -eq 31
+          test "$tables" -eq 33
           test "$open" -eq 0
           test "$anon" -eq 0
       - name: Access and content tests against this database, nothing stubbed

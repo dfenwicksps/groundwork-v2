@@ -9,11 +9,11 @@ import { describe, expect, it } from "vitest";
 const CHECKED_ELSEWHERE: Record<string, string> = {
   "V-A7": "src/lib/v3/ageBands.test.ts: a stored ceiling above the band's maximum is ignored.",
   "V-P5": "Phase 1c: no service-role key in any client bundle (a build check), and the scripts that use it.",
-  "V-K9": "Phase 1d: the teacher screens show a dash, never 'fewer than 5' (unit test on shownClassCount()).",
+  "V-K9": "src/lib/v3/patterns.test.ts: the teacher screens show a dash, never 'fewer than 5'.",
   "V-SH4": "Phase 2, with the share screen: the student sees the exact text and the teacher's name first.",
   "V-SH8": "Phase 2, with the share screen: sharing doesn't re-run or report the on-device risk check.",
-  "V-C4": "Phase 1c: /api/reflect refuses private steps server-side (route test).",
-  "V-C5": "Phase 1c: /api/reflect makes no API call when the school has AI switched off (route test).",
+  "V-C4": "src/lib/v3/aiGate.test.ts: /api/reflect refuses private steps and non-mission entries server-side, from the entry as stored.",
+  "V-C5": "src/lib/v3/aiGate.test.ts: /api/reflect makes no API call while one of the student's schools has AI switched off.",
   "V-C6": "Review at each phase: no free text in a staff-readable table other than shared_items.",
   "V-C7": "Review at each phase: no free text in logs, error reports or analytics.",
   "V-G1": "Phase 1d: the results of mentionsCrisis() and soundsHardOnSelf() never leave the device (code check).",
@@ -55,8 +55,8 @@ describe("the rules in visibility.md", () => {
   const rules = ruleIds();
   const tested = testedIds();
 
-  it("are the 72 the document lists, each once", () => {
-    expect(rules).toHaveLength(72);
+  it("are the 75 the document lists, each once", () => {
+    expect(rules).toHaveLength(75);
     expect(rules.filter((id, i) => rules.indexOf(id) !== i)).toEqual([]);
   });
 
@@ -71,8 +71,8 @@ describe("the rules in visibility.md", () => {
     expect(tested.filter((id) => rules.indexOf(id) === -1)).toEqual([]);
   });
 
-  it("60 are tested against the database and 12 are checked elsewhere", () => {
-    expect(rules.filter((id) => tested.indexOf(id) !== -1)).toHaveLength(60);
+  it("63 are tested against the database and 12 are checked elsewhere", () => {
+    expect(rules.filter((id) => tested.indexOf(id) !== -1)).toHaveLength(63);
     expect(Object.keys(CHECKED_ELSEWHERE)).toHaveLength(12);
   });
 });

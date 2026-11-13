@@ -1,6 +1,6 @@
 # Groundwork v3: where the missions and weeks would go in seven levels
 
-**Status: David answered the questions on 13 Nov 2026 (section 9, D52). Section 10 is a new proposal waiting on him. Nothing has been built or changed.**
+**Status: agreed. David answered the questions on 13 Nov 2026 (section 9, D52) and approved the grouping and four moves in section 10 (D53). The app's map is `src/lib/v3/levelMap.ts`, which has the four moves applied; the tables in section 3 show the placements before them.**
 
 David's idea is that the seven levels become the one structure of the program, and the four missions and the 10-week character program are folded into them. This page places every existing piece in a level so the idea can be judged against the real content.
 
@@ -183,7 +183,7 @@ Phase 1c (sign-in, roles, class codes) isn't affected.
 | Three-phase journey | Keep it. It's about how much help the prompts give. | Stays as decided in D42. Its unlock rule ("first pass of all four missions done") needs rewording, since it names missions. |
 | Mission names | They should survive. Can the levels be grouped into Identity, Purpose, Connection and Meaning? | See section 10. |
 
-## 10. Grouping the levels under the four names (proposed)
+## 10. Grouping the levels under the four names (approved, D53)
 
 Yes, with one weak spot. The four names become four groups on the map, each keeping its question:
 

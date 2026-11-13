@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { mayReflect } from "@/lib/v3/aiGate";
 import { createServerClient } from "@/lib/supabase-server";
 
 const anthropic = new Anthropic({
@@ -27,6 +28,27 @@ export async function POST(request: NextRequest) {
     }
 
     const { text, entryId } = await request.json();
+
+    // v3 (V-C4, V-C5): the server decides, from the entry as stored, whether
+    // it may be sent at all. Private steps, entries from outside the missions
+    // and entries the server can't find never are; nor is anything while one
+    // of the student's schools has AI follow-ups switched off.
+    const { data: entryRows } = typeof entryId === "string"
+      ? await (supabase as any)
+          .from("journal_entries")
+          .select("activity_id, mission_id")
+          .eq("id", entryId)
+          .eq("user_id", user.id)
+      : { data: [] };
+    const { data: schoolRows } = await (supabase as any).from("schools").select("settings");
+    const allowed = mayReflect({
+      userEnabled: prefs ? prefs.ai_reflections_enabled : null,
+      entry: (entryRows ?? [])[0] ?? null,
+      schoolSettings: ((schoolRows ?? []) as { settings: { ai_enabled?: unknown } | null }[]).map((r) => r.settings),
+    });
+    if (!allowed) {
+      return NextResponse.json({ reflection: null });
+    }
 
     if (!text || text.trim().length < 10) {
       return NextResponse.json({ reflection: null });

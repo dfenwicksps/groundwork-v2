@@ -29,7 +29,7 @@ async function schoolTables(): Promise<string[]> {
 describe("across schools", () => {
   it("V-X1 nobody at School A, in any role, selects a row belonging to School B", async () => {
     const tables = await schoolTables();
-    expect(tables).toEqual(["classes", "content_overrides", "media_hidden", "media_items", "staff"]);
+    expect(tables).toEqual(["classes", "content_overrides", "media_hidden", "media_items", "staff", "staff_invites"]);
     for (const who of [w.student(1), w.teacher1, w.teacher2, w.adminA]) {
       for (const table of tables) {
         const r = await w.db.as(who, `select school_id from ${table}`);

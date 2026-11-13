@@ -13,7 +13,7 @@
 
 import { PGlite } from "@electric-sql/pglite";
 import { Client } from "pg";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +35,7 @@ export interface Db {
 const STUB = `
   create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
   create schema auth;
-  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}'::jsonb);
+  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}'::jsonb, email_confirmed_at timestamptz);
   create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
   grant usage on schema auth to anon, authenticated, service_role;
   grant execute on function auth.uid() to anon, authenticated, service_role;
@@ -47,7 +47,7 @@ const STUB = `
 
 const UUID = /^[0-9a-f-]{36}$/;
 
-const MIGRATION = "supabase/v3/supabase/migrations/20261112000000_v3_initial.sql";
+const MIGRATIONS = "supabase/v3/supabase/migrations";
 
 /**
  * Set GW_TEST_DATABASE_URL to run the same tests on a real Supabase database
@@ -64,7 +64,11 @@ export async function openDb(): Promise<Db> {
 async function openMemoryDb(): Promise<Db> {
   const pg = new PGlite();
   await pg.exec(STUB);
-  await pg.exec(readFileSync(resolve(process.cwd(), MIGRATION), "utf8"));
+  // Every migration, in the order Supabase applies them.
+  const dir = resolve(process.cwd(), MIGRATIONS);
+  for (const file of readdirSync(dir).filter((f) => /\.sql$/.test(f)).sort()) {
+    await pg.exec(readFileSync(resolve(dir, file), "utf8"));
+  }
 
   return {
     async su(sql, params) {

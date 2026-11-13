@@ -44,6 +44,7 @@ New in v3: `self_checks`, `self_progress`, `shared_items`.
 | V-S9 | A student can select `content_items` whose `status` is `published`, and can never select the `teacherNotes` of any self. Teacher notes are stored apart from the student-readable body (section 6). |
 | V-S10 | A student with no class has every right in V-S1 and none of the class or school features. Their rows look the same as any other student's: no student-owned row names a school (D29). |
 | V-S11 | A student can delete their account. Doing so removes every row they own in every student-owned table, their class memberships, and every `shared_items` row they created. |
+| V-S12 | A student who enters a wrong class code 8 times in ten minutes can't join any class until the ten minutes pass, even with a right code, so codes can't be found by guessing. Only the time of each wrong try is kept, never the code typed, and nobody can read those rows. |
 
 ### 3.2 Teacher
 
@@ -75,6 +76,8 @@ New in v3: `self_checks`, `self_progress`, `shared_items`.
 | V-A6 | A school admin can't write a `content_overrides` row that patches a protected field of central content. The protected fields are `what`, `notThis`, `sources` and `story` on a self. They can hide an item, set `localLink`, and add their own items. |
 | V-A7 | A school admin can't set a rating ceiling above the maximum for that age band (`src/lib/v3/ageBands.ts`). A stored setting above the maximum is ignored. |
 | V-A8 | A school admin can't grant the `platform_admin` role, and can't create a `staff` row for another school. |
+| V-A9 | A school admin invites a teacher or another school admin by email, and sees or withdraws invites for their own school only. The platform admin can invite to any school; that is how a school gets its first admin. Teachers and students see no invites. Staff email addresses are the only email addresses the schema holds. |
+| V-A10 | An invite is taken up only by a signed-in person whose own email address matches it and has been confirmed. The invite is deleted when it is taken up. |
 
 ### 3.4 Platform admin
 

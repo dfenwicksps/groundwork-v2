@@ -170,6 +170,17 @@ export default function AuthForm() {
     if (error) { handleError(error.message, mode); setLoading(false); }
   }
 
+  // v3: Microsoft school accounts. Shown only when the deployment says the
+  // provider has been set up in Supabase (NEXT_PUBLIC_MICROSOFT_SIGN_IN=1).
+  async function handleMicrosoftSignIn() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "azure",
+      options: { redirectTo: `${window.location.origin}/auth/callback`, scopes: "email" },
+    });
+    if (error) { handleError(error.message, mode); setLoading(false); }
+  }
+
   function switchMode(next: Mode) {
     setMode(next);
     setError(null);
@@ -350,6 +361,11 @@ export default function AuthForm() {
                 </svg>
                 Continue with Google
               </button>
+              {process.env.NEXT_PUBLIC_MICROSOFT_SIGN_IN === "1" && (
+                <button onClick={handleMicrosoftSignIn} disabled={loading} className="btn btn-secondary w-full gap-3 mt-3">
+                  Continue with Microsoft
+                </button>
+              )}
             </>
           )}
         </div>

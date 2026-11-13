@@ -36,16 +36,12 @@ const NAV_ITEMS = [
     ),
   },
   {
-    // Not /missions/1: a student on Mission 4 who taps Missions should not
-    // land on one they finished in July. The index offers whichever mission
-    // is actually next, the way /program offers the next week.
-    href: "/missions",
-    label: "Missions",
-    // Stories are mission companions, reached from Home and the mission pages,
-    // so they belong under Missions rather than leaving the nav unlit. (They
-    // had a tab briefly; the weekly program, which students return to daily,
-    // needs it more.)
-    match: (p: string) => p.startsWith("/missions") || p.startsWith("/stories"),
+    // v3: the map of four names and seven levels. It takes over from the
+    // missions index; each step still opens at its /missions/... address.
+    href: "/grow",
+    label: "Grow",
+    // Mission pages and stories are reached from here, so they light this tab.
+    match: (p: string) => p.startsWith("/grow") || p.startsWith("/join") || p.startsWith("/missions") || p.startsWith("/stories"),
     icon: (active: boolean) => (
       <svg aria-hidden="true" width="22" height="22" viewBox="0 0 22 22" fill="none">
         <circle
