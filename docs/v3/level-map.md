@@ -125,7 +125,7 @@ The program spreads evenly: every level gets at least one week.
 
 ## 5. What this shows
 
-1. **The levels are uneven.** Level 1 has 14 pieces; Level 4 has 2. Either Levels 3, 4 and 5 get new activities, or they open thin. Each self still has its own page from the master file (what it is, a story, something to try), so no level is empty, but those pages are drafts with gaps (see [content-gaps.md](content-gaps.md)).
+1. **The levels are uneven.** (David has since decided to write new activities first, D51; drafts are in [new-activities-draft.md](new-activities-draft.md).) Level 1 has 14 pieces; Level 4 has 2. Either Levels 3, 4 and 5 get new activities, or they open thin. Each self still has its own page from the master file (what it is, a story, something to try), so no level is empty, but those pages are drafts with gaps (see [content-gaps.md](content-gaps.md)).
 2. **Six selves have no existing activity of their own:** self-esteem, self-compassion, self-confidence, self-advocacy, actual self and ought self. New activities would be new content, written by a person. Self-check rules still apply: no scores, no risk-language questions.
 3. **Purpose loses its home.** If "What do I care about?" matters as a thread, it could stay as a theme that runs across Levels 2 to 5 instead of disappearing.
 4. **The four milestone letters land in Levels 1, 2, 5 and 6.** Levels 3, 4 and 7 have none. The four "talk to someone" conversations land in Levels 1 (two), 3 and 6.
