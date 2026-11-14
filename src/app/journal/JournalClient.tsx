@@ -3,14 +3,9 @@
 import type { LifeStage } from "@/lib/lifeStage";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  MISSIONS,
-  getActivityLabel,
-  entryGroup,
-  ENTRY_GROUP_LABELS,
-  isSensitiveActivity,
-  type EntryGroup,
-} from "@/lib/missions";
+import { getActivityLabel, isSensitiveActivity } from "@/lib/missions";
+import { GROUP_MISSION } from "@/lib/v3/levelMap";
+import { JOURNAL_GROUPS, journalPlace, type JournalGroup, type JournalPlace } from "@/lib/v3/journalPlace";
 import { formatDate, isWithin24Hours, truncate, parseReflection } from "@/lib/utils";
 import type { JournalEntry } from "@/types/database";
 import AppShell from "@/components/layout/AppShell";
@@ -22,9 +17,14 @@ import {
   type RevisitEntry,
 } from "@/lib/revisit";
 
-/** Bold look: entries outside the four missions get their own fluoro colour
- *  (missions use theirs, via data-mission). */
-const GROUP_FLUORO = { weeks: "orange", me: "violet" } as const;
+// v3: an entry is filed where it sits on the map (Identity, Connection,
+// Purpose, Meaning), or under "Me" when it was written outside the map.
+// A group takes v2's theme-aware colour, as the step and week screens do.
+const colourOf = (place: JournalPlace) =>
+  place.group === "me" ? "var(--navy)" : `var(--mission-${GROUP_MISSION[place.group]})`;
+
+/** "Identity · Know myself", or just the group when there's no one level. */
+const placeLabel = (place: JournalPlace) => (place.level ? `${place.groupName} · ${place.level.name}` : place.groupName);
 
 export default function JournalClient({
   entries,
@@ -34,7 +34,7 @@ export default function JournalClient({
   /** Labels steps the way this student saw them (lib/stageContent.ts) */
   lifeStage?: LifeStage;
 }) {
-  const [filter, setFilter] = useState<EntryGroup | null>(null);
+  const [filter, setFilter] = useState<JournalGroup | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   // Sensitive entries open in two taps: one to expand, one to show the words.
@@ -48,7 +48,8 @@ export default function JournalClient({
     }
   }, [entries]);
 
-  const groupOf = (e: JournalEntry) => entryGroup(e.activity_id, e.mission_id);
+  const placeFor = (e: JournalEntry) => journalPlace(e.activity_id, e.mission_id);
+  const groupOf = (e: JournalEntry) => placeFor(e).group;
   const byMission = filter
     ? entries.filter((e) => groupOf(e) === filter)
     : entries;
@@ -186,6 +187,15 @@ export default function JournalClient({
             );
           })()}
 
+          {placeFor(entry).level && (
+            <Link
+              href={`/grow/${placeFor(entry).level!.key}`}
+              className="block text-xs font-semibold text-teal hover:underline mt-3"
+            >
+              On the map: {placeFor(entry).level!.name} →
+            </Link>
+          )}
+
           {!canEdit && (
             <p className="text-xs text-ink-muted mt-3">
               Entries are read-only after 24 hours.
@@ -198,19 +208,18 @@ export default function JournalClient({
   };
 
   const selected = filtered.find((e) => e.id === expanded) ?? null;
-  const selectedGroup = selected ? groupOf(selected) : null;
 
   return (
     <AppShell>
       <div className="page">
         <div data-animate="1" className="mb-6">
           <h1
-            className="text-3xl lg:text-4xl text-navy mb-1"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+            className="text-3xl lg:text-4xl font-extrabold text-navy mb-1"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             Your journal
           </h1>
-          <p className="text-ink-muted text-sm">
+          <p className="text-ink-muted text-sm font-semibold">
             {entries.length} entr{entries.length === 1 ? "y" : "ies"} — private
             to you
           </p>
@@ -238,8 +247,9 @@ export default function JournalClient({
         <div data-animate="2" className="flex gap-2 flex-wrap mb-6">
           <button
             onClick={() => setFilter(null)}
+            aria-pressed={filter === null}
             className={cn(
-              "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
+              "px-3.5 min-h-[36px] rounded-full text-sm font-bold border transition-all",
               filter === null
                 ? "bg-navy text-white border-navy"
                 : "bg-white text-ink-muted border-surface-border hover:border-navy/30"
@@ -247,42 +257,23 @@ export default function JournalClient({
           >
             All
           </button>
-          {MISSIONS.map((m) => {
-            const count = entries.filter((e) => groupOf(e) === m.id).length;
+          {JOURNAL_GROUPS.map((g) => {
+            const count = entries.filter((e) => groupOf(e) === g.key).length;
             if (count === 0) return null;
             return (
               <button
-                key={m.id}
-                onClick={() => setFilter(m.id)}
+                key={g.key}
+                onClick={() => setFilter(g.key)}
+                aria-pressed={filter === g.key}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex items-center gap-1.5",
-                  filter === m.id
-                    ? "text-white border-transparent"
-                    : "bg-white text-ink-muted border-surface-border hover:border-navy/30"
-                )}
-                style={filter === m.id ? { background: m.colour } : {}}
-              >
-                {m.title}
-                <span className="text-xs">{count}</span>
-              </button>
-            );
-          })}
-          {(["weeks", "me"] as const).map((g) => {
-            const count = entries.filter((e) => groupOf(e) === g).length;
-            if (count === 0) return null;
-            return (
-              <button
-                key={g}
-                onClick={() => setFilter(g)}
-                className={cn(
-                  "px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex items-center gap-1.5",
-                  filter === g
+                  "px-3.5 min-h-[36px] rounded-full text-sm font-bold border transition-all flex items-center gap-1.5",
+                  filter === g.key
                     ? "bg-navy text-white border-navy"
                     : "bg-white text-ink-muted border-surface-border hover:border-navy/30"
                 )}
               >
-                {ENTRY_GROUP_LABELS[g]}
-                <span className="text-xs">{count}</span>
+                {g.name}
+                <span className="text-xs font-semibold">{count}</span>
               </button>
             );
           })}
@@ -294,17 +285,23 @@ export default function JournalClient({
             data-animate="3"
             className="card p-10 text-center"
           >
-            <div className="text-3xl mb-3">📝</div>
+            <div className="text-3xl mb-3" aria-hidden>📝</div>
             <p className="text-ink-muted">
               {q ? `Nothing matches “${search.trim()}”.` : "No entries yet."}
             </p>
+            {!q && entries.length === 0 && (
+              <>
+                <p className="text-sm text-ink-muted mt-2">What you write on the map is kept here.</p>
+                <Link href="/grow" className="btn btn-primary mt-5 px-6">
+                  Open the map
+                </Link>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-3" data-animate="3">
             {filtered.map((entry) => {
-              const group = groupOf(entry);
-              const mission =
-                typeof group === "number" ? MISSIONS.find((m) => m.id === group) : undefined;
+              const place = placeFor(entry);
               const isOpen = expanded === entry.id;
               const label =
                 getActivityLabel(entry.activity_id, lifeStage);
@@ -313,9 +310,9 @@ export default function JournalClient({
               return (
                 <div
                   key={entry.id}
-                  {...(typeof group === "number"
-                    ? { "data-mission": group }
-                    : { "data-fluoro": GROUP_FLUORO[group] })}
+                  {...(place.group === "me"
+                    ? { "data-fluoro": "violet" }
+                    : { "data-mission": GROUP_MISSION[place.group] })}
                   className={cn("card overflow-hidden", isOpen && "lg:ring-2 lg:ring-teal")}
                 >
                   <button
@@ -330,11 +327,11 @@ export default function JournalClient({
                       <div className="flex items-start gap-3 min-w-0">
                         <div
                           className="entry-dot w-2 h-2 rounded-full mt-2 flex-shrink-0"
-                          style={{ background: mission?.colour || "var(--mission-1)" }}
+                          style={{ background: colourOf(place) }}
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-sm font-medium text-ink">
+                            <span className="text-sm font-bold text-ink">
                               {label}
                             </span>
                             {entry.is_milestone && (
@@ -351,9 +348,7 @@ export default function JournalClient({
                           </div>
                           <div className="text-xs text-ink-muted mt-0.5">
                             {formatDate(entry.created_at)} ·{" "}
-                            {typeof group === "number"
-                              ? mission?.title || "Unknown mission"
-                              : ENTRY_GROUP_LABELS[group]}
+                            {placeLabel(place)}
                           </div>
                           {!isOpen && (
                             <p className="text-xs text-ink-muted mt-1.5 line-clamp-2">
@@ -403,16 +398,14 @@ export default function JournalClient({
             <>
               <div className="mb-5 pb-5 border-b border-surface-border">
                 <h2
-                  className="text-2xl text-navy mb-1"
-                  style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+                  className="text-2xl font-extrabold text-navy mb-1"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {getActivityLabel(selected.activity_id, lifeStage)}
                 </h2>
                 <p className="text-xs text-ink-muted">
                   {formatDate(selected.created_at)} ·{" "}
-                  {typeof selectedGroup === "number"
-                    ? MISSIONS.find((m) => m.id === selectedGroup)?.title || "Unknown mission"
-                    : ENTRY_GROUP_LABELS[selectedGroup!]}
+                  {placeLabel(placeFor(selected))}
                 </p>
               </div>
               {entryBody(selected)}

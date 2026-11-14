@@ -9,6 +9,7 @@ import { findSelf } from "@/lib/v3/selves";
 import { MISSIONS, getMission } from "@/lib/missions";
 import MeCards from "@/components/v3/MeCards";
 import MeClient from "@/app/me/MeClient";
+import JournalClient from "@/app/journal/JournalClient";
 import { STRENGTH_BY_KEY } from "@/lib/strengths";
 import { parseBecoming } from "@/lib/becoming";
 import { checkinState } from "@/lib/checkin";
@@ -90,6 +91,20 @@ export default function DevPreview({ params, searchParams }: { params: { screen:
       sourceEntries: {}, capstone: [], storyEarlier: [], suggestedQualities: [], earlier: [], lifeStage: "junior", ready: true,
     };
     return <WeekClient {...sample} />;
+  }
+  if (params.screen === "journal") {
+    const entry = (id: string, activity_id: string, mission_id: number, days: number, response: string) =>
+      ({ id, user_id: "u", activity_id, mission_id, prompt: "What did you notice?", response, ai_reflection: null, is_milestone: false, created_at: new Date(Date.now() - days * 86400000).toISOString() }) as any;
+    const sample = k === "none" ? [] : [
+      entry("1", "the-standard", 1, 0, "I backed Jo up when the group chat turned on her."),
+      entry("2", "program-week-4", 1, 2, "I asked the question in maths even though I thought it was a dumb one."),
+      entry("3", "belonging", 3, 5, "With my cousins, and at training. I don't have to perform there."),
+      entry("4", "strengths-mapping", 1, 9, "Kindness, curiosity and humour came out on top."),
+      entry("5", "mask-check", 1, 12, "I'm most myself at training."),
+      entry("6", "future-self", 4, 20, "I wake up early and ride to the workshop."),
+      entry("7", "contribution-map", 2, 31, "I'm good with the younger kids at the club."),
+    ];
+    return <JournalClient entries={sample} lifeStage="junior" />;
   }
   if (params.screen === "me") {
     // The whole Me screen; ?tab= picks a tab, k=none is a student with no strengths yet.
