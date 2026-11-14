@@ -125,7 +125,7 @@ export const JUNIOR_M2: Record<string, StageLines> = {
     wrapUp:
       "That's what you want to explore, in your own words. It's on your Purpose card now, and it's allowed to change: trying things is how you find out. Next: one small step this week.",
     whyItMatters:
-      "Researchers who study how young people work out who they are find that exploring comes before committing, and that's healthy. Trying things, asking questions and changing your mind are how people your age find what really fits them.",
+      "Researchers who study how young people work out who they are find that trying things, asking questions and changing your mind are a normal part of it. Some people your age already have a fair idea of what they care about, and some are still looking. Either way, having a go is how you find out what really fits.",
   },
   "purpose-challenge": {
     prompt:

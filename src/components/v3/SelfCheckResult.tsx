@@ -104,6 +104,10 @@ export default function SelfCheckResult({
               </div>
             </dl>
           )}
+          <p className="mt-2 text-sm text-[--ink-muted]">
+            If this looks much the same as last time, that&apos;s normal. Most people&apos;s picture of themselves
+            changes slowly.
+          </p>
           <p className="mt-2 text-sm text-[--ink-muted]">People change. Different isn&apos;t better or worse.</p>
         </section>
       )}

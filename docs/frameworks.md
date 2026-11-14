@@ -24,14 +24,15 @@ in the data model.
 - **Where:** the `phase` field comment in [`src/lib/missions.ts`](../src/lib/missions.ts)
   (`"Identity development phase from Erikson's framework"`).
 
-### Marcia — identity statuses (exploration → commitment) _(implied)_
-Marcia operationalised Erikson's stage into statuses defined by two axes —
-**exploration** and **commitment**. The statuses are not a fixed ladder: current models
-(Crocetti's three-factor model, Luyckx's five dimensions) describe repeated cycles of
-exploring, committing and reconsidering. Groundwork's missions *lean* from exploration
-towards commitment and end in **integration**; students cycle back, and the revisit chain
-is built for that. Years 7–9 are kept on the exploring side throughout
-(`stageContentMission2.ts`).
+### Marcia — identity statuses
+Marcia described identity by two things: how much a young person has explored, and how
+much they have committed. The statuses are not a sequence. Longitudinal work (Meeus,
+Crocetti, Luyckx) finds most adolescents stay in one status for years, many start with
+commitments taken from home, and change runs in cycles of committing, exploring in depth
+and reconsidering. v3 follows this with a map that has no order and no gates, and with the
+revisit chain. The seven levels are a vocabulary for parts of the self, not developmental
+stages. The `phase` field in `missions.ts` is a v2 label and does not describe an order
+students move through.
 
 | Mission | Theme | Question | Phase |
 | --- | --- | --- | --- |
@@ -371,8 +372,9 @@ of the app's content is [`evidence/evidence-review-2026-11.md`](evidence/evidenc
 
 ## 3. How the frameworks shape the product
 
-- **Sequencing** — missions follow the Erikson/Marcia arc: explore the self before
-  committing to purpose and connection, then integrate it into a life direction.
+- **No fixed sequence** — the map can be entered at any level. The four groups keep v2's
+  questions (who am I, what do I care about, where do I belong, what kind of life do I
+  want), but nothing in identity research orders them, and the app doesn't.
 - **Scaffolding** — Quick / Extended / Open (§2c), chosen by the student, lowers the
   barrier for young people who lack the vocabulary for open-ended reflection. (It replaced
   both the old Starter/Advanced modes and Berzonsky-style adaptivity.)

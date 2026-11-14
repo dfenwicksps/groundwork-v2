@@ -134,7 +134,7 @@ For the selves v2's `src/lib/selves.ts` already has. `self-control` in v2 is com
 | --- | --- | --- |
 | short | The description of you — no scores attached. | The whole picture I hold of who I am. |
 | what (HTML is_) | Your self-concept is the whole picture you hold of yourself: what you're like, what you're good at, what you care about, how you behave in different rooms. It's a description, not a judgement. "I'm quiet in groups, I'm good with my hands, I get stubborn about fairness" — none of that is praise or criticism, it's just the map. | The whole picture you hold of yourself: what you're like, what you're good at, what you care about, how you act in different rooms. A description, not a judgement. |
-| notThis (HTML isnt) | Not self-esteem. Self-concept is the description; self-esteem is how you feel about the description. Two people with almost identical self-concepts can feel completely differently about themselves. | Not self-esteem. Self-concept is the description; self-esteem is how you feel about it. And it isn't fixed. Year 9 maps get redrawn a lot. |
+| notThis (HTML isnt) | Not self-esteem. Self-concept is the description; self-esteem is how you feel about the description. Two people with almost identical self-concepts can feel completely differently about themselves. | Not self-esteem. Self-concept is the description; self-esteem is how you feel about it. And it isn't fixed. Maps can be redrawn. |
 | builtBy label (HTML gw) | Mission 1 — Strengths Mapping | Mission 1, Strengths Mapping. |
 
 #### `self-image`
