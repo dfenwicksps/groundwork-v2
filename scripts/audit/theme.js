@@ -3,7 +3,7 @@
 //   - every visible piece of text against the colour behind it (WCAG AA:
 //     4.5:1, or 3:1 for large text);
 //   - no large light panels (a light card left over from another look), other
-//     than the map's own fixed colours;
+//     than the map's own fixed colours and Bold's fluoro cards;
 //   - no JavaScript errors.
 // Saves a full-page screenshot of each page and report.json to
 // audit-output/theme-<look>/.
@@ -67,6 +67,8 @@ function auditPage() {
   for (const el of document.body.querySelectorAll("*")) {
     // Buttons, links and chips are meant to be bright in Neon; only flag panels.
     if (skip(el) || el.matches("button, a, [role=button], label, .btn, .btn *")) continue;
+    // Bold colours these cards in on purpose (globals.css, "data-fluoro"; DECISIONS.md, D69).
+    if (document.documentElement.dataset.theme === "bold" && el.matches("[data-mission], [data-fluoro], [style*='var(--mission-']")) continue;
     const cs = getComputedStyle(el); const c = parse(cs.backgroundColor);
     if (!c || c.a < 0.6) continue;
     const r = el.getBoundingClientRect(); if (r.width * r.height < 3000) continue;
