@@ -109,7 +109,7 @@ export const LEVEL_MAP: MapGroup[] = [
         key: "manage-myself",
         name: "Manage myself",
         question: "Can I steer myself?",
-        colour: "#C2410C",
+        colour: "#B83D0B",
         band: "#FFE8D6",
         selves: [
           { key: "self-regulation", name: "Self-regulation", short: "The gap you can hold between feeling it and doing it." },

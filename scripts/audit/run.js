@@ -82,9 +82,9 @@ async function main() {
       // A new student's screens need a student with nothing done yet.
       if (mock) {
         stop(mock);
-        mock = await startMock({ ONBOARDED: "0", CHECKINS: "none" });
-        console.log("  …and as a new student (onboarding, first check-in):");
-        findings += await run(path.join(__dirname, "theme.js"), [look || "default", "--only=/onboarding,/check-in", "--out=new-student"]);
+        mock = await startMock({ ONBOARDED: "0", CHECKINS: "none", SELFCHECK: "none" });
+        console.log("  …and as a new student (onboarding, first check-in, the self-check):");
+        findings += await run(path.join(__dirname, "theme.js"), [look || "default", "--only=/onboarding,/check-in,/me/self-check", "--out=new-student"]);
         stop(mock);
         mock = await startMock();
       }

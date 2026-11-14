@@ -2,20 +2,26 @@
 //   - the page is actually in that look (html[data-theme]);
 //   - every visible piece of text against the colour behind it (WCAG AA:
 //     4.5:1, or 3:1 for large text);
-//   - no large light panels (a light card left over from another look);
+//   - no large light panels (a light card left over from another look), other
+//     than the map's own fixed colours;
 //   - no JavaScript errors.
 // Saves a full-page screenshot of each page and report.json to
 // audit-output/theme-<look>/.
 //
 //   node scripts/audit/theme.js [look] [--only=<text>]
 // look: default (Neon, with nothing chosen), neon, bold, light or dark.
-const { BASE, UID, loadPlaywright, authCookie, signedInRoutes, PUBLIC_ROUTES, only, outDir } = require("./lib");
+const { BASE, UID, loadPlaywright, authCookie, signedInRoutes, theMap, PUBLIC_ROUTES, only, outDir } = require("./lib");
 const fs = require("fs");
 
 const look = process.argv.slice(2).find((a) => !a.startsWith("--")) || "default";
 const expected = look === "default" ? "neon" : look;
 // Pages with a deliberately light area of their own (a film's artwork).
 const LIGHT_OK = /^\/stories\/[0-9a-f-]{36}$/;
+// The map's own colours are the same in every look (DECISIONS.md, D56), so a
+// panel in one of them isn't a leftover. Text on it is still checked.
+const MAP_COLOURS = theMap().colours;
+// The map's own pages also use white cards on those colours.
+const MAP_PAGES = /^\/(grow|me\/selves|me\/self-check)(\/|$|[?#])/;
 
 // Runs in the page: every visible text run, its colour and the colour behind it.
 function auditPage() {
@@ -94,6 +100,8 @@ async function main() {
           const res = await p.evaluate(auditPage);
           // Light panels are only a leftover in the dark looks.
           if (LIGHT_OK.test(r) || expected === "light") res.light = [];
+          const onMap = MAP_PAGES.test(p.url().replace(BASE, ""));
+          res.light = res.light.filter((l) => !MAP_COLOURS.has(l.bg) && !(onMap && l.bg === "rgb(255, 255, 255)"));
           report[key] = { status: resp && resp.status(), finalUrl: p.url().replace(BASE, ""), ...res, errs };
           await p.screenshot({ path: `${out}/${vp.name}_${r.replace(/[^a-z0-9]+/gi, "_")}.png`, fullPage: true });
         } catch (e) { report[key] = { error: String(e).slice(0, 200) }; }

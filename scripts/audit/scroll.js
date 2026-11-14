@@ -22,11 +22,11 @@ async function main() {
   await begin.click(); await p.waitForTimeout(800);
   check("Mission step, after Begin", await y());
 
-  await p.goto(BASE + "/missions", { waitUntil: "networkidle" });
-  const link = p.locator("a[href^='/missions/2']").first();
+  await p.goto(BASE + "/grow", { waitUntil: "networkidle" });
+  const link = p.locator("a[href='/grow/imagine-myself']").first();
   await link.scrollIntoViewIfNeeded(); await link.click();
-  await p.waitForURL(/missions\/2/); await p.waitForTimeout(800);
-  check("Missions list → Mission 2", await y());
+  await p.waitForURL(/grow\/imagine-myself/); await p.waitForTimeout(800);
+  check("The map → a level", await y());
 
   await p.goto(BASE + "/program/4", { waitUntil: "networkidle" });
   const next = p.locator("a[href='/program/5']").last();

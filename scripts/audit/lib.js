@@ -46,16 +46,36 @@ function missionSteps() {
   return out;
 }
 
+/** The map's levels, selves and fixed colours, read from the map file. */
+function theMap() {
+  const read = (f) => fs.readFileSync(path.resolve(__dirname, "../../src", f), "utf8");
+  const src = read("lib/v3/levelMap.ts");
+  const levels = [...src.matchAll(/level: \d+,\s*key: "([a-z-]+)"/g)].map((m) => m[1]);
+  const selves = [...src.matchAll(/\{ key: "([a-z-]+)", name:/g)].map((m) => m[1]);
+  const colours = new Set();
+  for (const m of (src + read("components/v3/mapStyle.ts")).matchAll(/#([0-9a-f]{6})\b/gi)) {
+    const n = parseInt(m[1], 16);
+    colours.add(`rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`);
+  }
+  return { levels, selves, colours };
+}
+
 const FILM_STORY = "/stories/10000000-0000-4000-8000-000000000026"; // see mock-supabase.js
 const TEXT_STORY = "/stories/10000000-0000-4000-8000-000000000027";
 
 function signedInRoutes() {
   const steps = missionSteps();
+  const map = theMap();
   return [
-    "/dashboard", "/missions", "/missions/1", "/missions/2", "/missions/3", "/missions/4",
+    "/home", "/grow",
+    ...map.levels.map((k) => `/grow/${k}`),
+    ...map.selves.map((k) => `/me/selves/${k}`),
+    "/me/self-check", "/me/self-check/result",
+    // v2's addresses, which now lead to Home and the map.
+    "/dashboard", "/missions", "/missions/2",
     ...Object.entries(steps).flatMap(([m, a]) => a.map((x) => `/missions/${m}/activities/${x}`)),
     "/program", ...Array.from({ length: 10 }, (_, i) => `/program/${i + 1}`),
-    "/journal", "/me", "/me?tab=reflect", "/me?tab=grow", "/me?tab=future",
+    "/journal", "/me", "/me?tab=profile", "/me?tab=reflect", "/me?tab=grow", "/me?tab=future",
     "/stories", FILM_STORY, TEXT_STORY, "/support", "/settings", "/check-in", "/next", "/story",
     "/revisit/10000000-0000-4000-8000-000000000020", "/onboarding",
     "/not-a-page",
@@ -78,4 +98,4 @@ function outDir(name) {
   return dir;
 }
 
-module.exports = { BASE, UID, loadPlaywright, authCookie, signedInRoutes, PUBLIC_ROUTES, FILM_STORY, only, outDir };
+module.exports = { BASE, UID, loadPlaywright, authCookie, signedInRoutes, theMap, PUBLIC_ROUTES, FILM_STORY, only, outDir };

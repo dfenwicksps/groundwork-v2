@@ -1,6 +1,6 @@
 // Stand-in Supabase for the audits: GoTrue's /auth/v1/user and a small
 // PostgREST over in-memory seed rows for one student, "Sam", part-way through
-// Mission 3. Writes are accepted and echoed but never kept. Not for anything
+// Mission 3, with a self-check taken. Writes are accepted and echoed but never kept. Not for anything
 // but the audits in this folder.
 //
 // Settings (environment variables):
@@ -8,6 +8,7 @@
 //   ONBOARDED=0       Sam hasn't finished onboarding (to audit /onboarding)
 //   THEME=bold        the look saved on Sam's account (default: none, so Neon)
 //   CHECKINS=none     no check-ins yet (to audit the check-in form)
+//   SELFCHECK=none    no self-check yet (to audit the self-check form)
 const http = require("http");
 const UID = "00000000-0000-4000-8000-000000000001";
 const now = Date.now();
@@ -72,6 +73,10 @@ const T = {
     { id: id(), user_id: UID, entry_id: null, source_kind: "activity", source_key: "mask-check", source_label: "The Mask Check", step: "Be a little more myself once in the room where I hold back", when_label: "This week", due_at: iso(1), status: "open", snoozes: 0, done_at: null, created_at: iso(7) },
     { id: id(), user_id: UID, entry_id: null, source_kind: "week", source_key: "3", source_label: "Week 3 · Am I a contributor?", step: "Notice someone else's unnoticed contribution and thank them", when_label: "Tomorrow", due_at: iso(10), status: "done", snoozes: 0, done_at: iso(9), created_at: iso(12) },
     { id: id(), user_id: UID, entry_id: null, source_kind: "activity", source_key: "values-clarifier", source_label: "Values Clarifier", step: "Make one choice this week because of my top value", when_label: "This week", due_at: iso(30), status: "done", snoozes: 0, done_at: iso(28), created_at: iso(36) },
+  ],
+  // Only names are stored as a result: two steady levels, two to look at, a self from each.
+  self_checks: process.env.SELFCHECK === "none" ? [] : [
+    { id: id(), student_id: UID, item_set: "v1", taken_at: iso(6), suggested: { steady: [1, 2], levels: [3, 4], selves: ["self-regulation", "self-efficacy"] } },
   ],
   moral_profiles: [], challenges: [], conversation_requests: [], onboarding_results: [],
 };
