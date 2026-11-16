@@ -53,7 +53,7 @@ describe("v2's content survives the round trip", () => {
 
   it("the counts are v2's: 24 strengths, 28 steps, 10 weeks, 11 clusters", () => {
     expect(of("strength")).toHaveLength(24);
-    expect(of("activity").filter((r) => (r.body as ActivityBody).source === "mission")).toHaveLength(28);
+    expect(of("activity").filter((r) => (r.body as ActivityBody).source === "mission")).toHaveLength(46);
     expect(of("activity").filter((r) => (r.body as ActivityBody).source === "program")).toHaveLength(10);
     expect(of("cluster")).toHaveLength(11);
   });
@@ -178,18 +178,18 @@ describe("in the database", () => {
     expect(programWeeksFromRows(back)).toEqual(PROGRAM_WEEKS);
   });
 
-  it("a student reads the 73 published rows and none of the 56 drafts", async () => {
+  it("a student reads the 91 published rows and none of the 56 drafts", async () => {
     const r = await w.db.as(w.student(1), `select kind, key, status from content_items`);
-    expect(r.rows).toHaveLength(73);
+    expect(r.rows).toHaveLength(91);
     expect(r.rows.filter((x) => x.status !== "published")).toEqual([]);
     expect(r.rows.filter((x) => x.kind === "self" || x.kind === "story")).toEqual([]);
   });
 
   it("a teacher and a school admin don't read drafts either; the platform admin does", async () => {
     for (const who of [w.teacher1, w.adminA]) {
-      expect((await w.db.as(who, `select key from content_items`)).rows, who).toHaveLength(73);
+      expect((await w.db.as(who, `select key from content_items`)).rows, who).toHaveLength(91);
     }
-    expect((await w.db.as(w.platform, `select key from content_items`)).rows).toHaveLength(129);
+    expect((await w.db.as(w.platform, `select key from content_items`)).rows).toHaveLength(147);
   });
 
   it("no signed-in role can read the teacher notes column", async () => {

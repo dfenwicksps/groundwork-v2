@@ -34,11 +34,11 @@ describe("the level map", () => {
     }
   });
 
-  it("places every mission step and every week exactly once", () => {
+  it("places every mission step, self activity and week exactly once", () => {
     const placed: string[] = [];
     for (const { level } of levels) for (const id of level.pieces) placed.push(id);
     const known = Object.keys(allPieces());
-    expect(known).toHaveLength(38);
+    expect(known).toHaveLength(56);
     expect(placed.filter((id, i) => placed.indexOf(id) !== i)).toEqual([]);
     expect(placed.filter((id) => known.indexOf(id) === -1)).toEqual([]);
     expect(known.filter((id) => placed.indexOf(id) === -1)).toEqual([]);
@@ -68,14 +68,10 @@ describe("which self each piece builds (D75)", () => {
     expect(piecesOfSelf("sense-of-purpose")).toEqual([
       "what-matters", "conversation-what-matters", "contribution-map", "the-other-side", "purpose-challenge", "commitment-statement",
     ]);
-    expect(piecesOfSelf("self-image")).toEqual(["digital-self"]);
+    expect(piecesOfSelf("self-image")).toEqual(["three-words", "digital-self"]);
   });
 
-  it("knows which selves have no activity yet", () => {
-    // Drafts for these wait on David (new-activities-draft.md, self-activities-draft.md).
-    // When one gets an activity, take it off this list.
-    expect(selfKeys.filter((k) => piecesOfSelf(k).length === 0)).toEqual([
-      "self-awareness", "self-esteem", "self-compassion", "self-confidence", "self-advocacy", "ought-self",
-    ]);
+  it("gives every self at least one activity (D78)", () => {
+    expect(selfKeys.filter((k) => piecesOfSelf(k).length === 0)).toEqual([]);
   });
 });

@@ -1,3 +1,4 @@
+import { SELF_ACTIVITIES } from "./selfActivities";
 import { WEEK_BY_NUMBER, CHARACTER_CODE_ACTIVITY_ID, type Strand } from "./program";
 import type { LifeStage } from "./lifeStage";
 import { activityForStage } from "./stageContent";
@@ -51,6 +52,16 @@ export interface Activity {
    * journey instead of disconnected worksheets.
    */
   wrapUp?: string;
+  /**
+   * Something to do once after the writing, shown on the done screen under the
+   * wrap-up. The eighteen activities written for a self use it (D78).
+   */
+  tryIt?: string;
+  /**
+   * A line added to the wrap-up when the student tapped one particular answer
+   * at one step. Not My Results uses it for "I'm not sure right now".
+   */
+  wrapUpIf?: { step: number; answer: string; text: string };
   /**
    * Multiple-choice answers for "Starter" mode, aligned 1:1 by index with
    * scaffoldingSteps (starterOptions[i] are the choices for scaffoldingSteps[i]).
@@ -665,6 +676,8 @@ export const MISSIONS: Mission[] = [
           "Identity researchers look at several areas a person works out over time: beliefs and worldview, relationships, and gender and sexuality among them. People often explore these at different speeds, and being unsure is a normal part of exploring, not a problem to fix. Naming where you are in each, without pressure to decide, is the kind of reflection that research links to a clearer sense of self.",
         timeEstimate: "About 5 minutes",
       },
+      // Written for a self, and filed here for its address only (selfActivities.ts).
+      ...SELF_ACTIVITIES[1],
     ],
   },
   {
@@ -1006,6 +1019,8 @@ export const MISSIONS: Mission[] = [
           "Research on youth purpose by William Damon and colleagues found that young people with a strong sense of purpose usually had adults around them who talked openly about what they cared about and why. Hearing how someone else's purpose started — often small, often by accident — makes your own feel more possible.",
         timeEstimate: "A conversation, then 5 minutes",
       },
+      // Written for a self, and filed here for its address only (selfActivities.ts).
+      ...SELF_ACTIVITIES[2],
     ],
   },
   {
@@ -1376,6 +1391,8 @@ export const MISSIONS: Mission[] = [
           "Research with young people from many backgrounds, including work by Adriana Uma\u00f1a-Taylor and colleagues, finds that exploring your cultural or ethnic background and feeling good about it go along with stronger self-esteem and wellbeing, and some studies find it helps young people cope with being treated unfairly. It isn't about how much you already know or how cultural you seem. It's about taking an interest and deciding what it means to you.",
         timeEstimate: "About 5 minutes",
       },
+      // Written for a self, and filed here for its address only (selfActivities.ts).
+      ...SELF_ACTIVITIES[3],
     ],
   },
   {
@@ -1773,6 +1790,8 @@ export const MISSIONS: Mission[] = [
           "Picturing your own future works better with other people's input. Cultural psychologists call it prolepsis: the people around you sketching possible futures for you out of their own experience. Hearing that someone's path had wrong turns and second chances also takes the pressure off getting the first choice perfect.",
         timeEstimate: "A conversation, then 5 minutes",
       },
+      // Written for a self, and filed here for its address only (selfActivities.ts).
+      ...SELF_ACTIVITIES[4],
     ],
   },
 ];

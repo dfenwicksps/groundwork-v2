@@ -70,6 +70,7 @@ export const LEVEL_MAP: MapGroup[] = [
           "chapters-so-far", "strengths-mapping", "values-clarifier", "mask-check", "identity-letter",
           "weekly-challenge", "conversation-who-i-was", "parts-of-you", "conversation-family-story",
           "culture-and-heritage", "week-8", "week-9",
+          "name-it", "debrief-it", "three-words"
         ],
       },
     ],
@@ -97,6 +98,7 @@ export const LEVEL_MAP: MapGroup[] = [
         pieces: [
           "belonging", "fitting-in-vs-belonging", "across-the-gap", "people-who-shaped-you",
           "connection-challenge", "week-2", "week-3",
+          "getting-better-at", "not-my-results", "what-id-say-to-a-friend"
         ],
       },
     ],
@@ -118,7 +120,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "self-discipline", name: "Self-discipline", short: "Doing what matters, even when it's hard or boring." },
           { key: "self-motivation", name: "Self-motivation", short: "Finding my own reasons to start and keep going." },
         ],
-        pieces: ["what-matters", "conversation-what-matters", "week-5", "week-7"],
+        pieces: ["what-matters", "conversation-what-matters", "week-5", "week-7", "if-then-plan", "make-it-easier", "my-reason"],
       },
       {
         level: 4,
@@ -132,7 +134,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "self-confidence", name: "Self-confidence", short: "Feeling sure enough of yourself to have a go." },
           { key: "self-trust", name: "Self-trust", short: "Backing my judgement and keeping promises to myself." },
         ],
-        pieces: ["contribution-map", "the-other-side", "purpose-challenge", "week-4"],
+        pieces: ["contribution-map", "the-other-side", "purpose-challenge", "week-4", "proof-file", "smallest-version", "backing-my-call"],
       },
       {
         level: 5,
@@ -147,7 +149,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "self-authorship", name: "Self-authorship", short: "Writing my own story, not borrowing someone else's." },
           { key: "sense-of-purpose", name: "Sense of purpose", short: "Something I care about that's bigger than just me." },
         ],
-        pieces: ["commitment-statement", "where-ive-come-from", "week-6"],
+        pieces: ["commitment-statement", "where-ive-come-from", "week-6", "part-i-choose", "say-what-you-need", "mine-or-borrowed"],
       },
     ],
   },
@@ -170,7 +172,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "feared-self", name: "Feared self", short: "Who I don't want to become." },
           { key: "possible-selves", name: "Possible selves", short: "All the futures I can imagine." },
         ],
-        pieces: ["digital-self", "future-self", "meaning-letter", "conversation-path", "week-1"],
+        pieces: ["digital-self", "future-self", "meaning-letter", "conversation-path", "week-1", "you-are-here", "should-or-choose", "the-other-version"],
       },
       {
         level: 7,
@@ -193,7 +195,7 @@ export const LEVEL_MAP: MapGroup[] = [
 // direct first. A piece can build a self in another level: the purpose steps
 // sit in three levels and all build Sense of purpose. The placements are the
 // agent's reading of each piece (docs/evidence/selves-by-level-review-2026-11.md)
-// and David's to correct. A self with nothing here has no activity yet.
+// and David approved them (D76). Every self has at least one activity (D78).
 export const PIECE_BUILDS: Record<string, string[]> = {
   // Know myself
   "chapters-so-far": ["life-story"],
@@ -208,6 +210,9 @@ export const PIECE_BUILDS: Record<string, string[]> = {
   "culture-and-heritage": ["self-concept"],
   "week-8": ["social-self"],
   "week-9": ["self-reflection"],
+  "name-it": ["self-awareness"],
+  "debrief-it": ["self-reflection"],
+  "three-words": ["self-image"],
   // Value myself
   "belonging": ["belonging"],
   "fitting-in-vs-belonging": ["belonging", "self-respect"],
@@ -216,26 +221,41 @@ export const PIECE_BUILDS: Record<string, string[]> = {
   "connection-challenge": ["belonging", "mattering"],
   "week-2": ["self-respect"],
   "week-3": ["mattering"],
+  "getting-better-at": ["self-esteem"],
+  "not-my-results": ["self-worth"],
+  "what-id-say-to-a-friend": ["self-compassion"],
   // Manage myself
   "what-matters": ["sense-of-purpose", "self-motivation"],
   "conversation-what-matters": ["sense-of-purpose"],
   "week-5": ["self-discipline", "self-efficacy"],
   "week-7": ["self-regulation"],
+  "if-then-plan": ["self-regulation"],
+  "make-it-easier": ["self-discipline"],
+  "my-reason": ["self-motivation"],
   // Believe in myself
   "contribution-map": ["sense-of-purpose"],
   "the-other-side": ["sense-of-purpose"],
   "purpose-challenge": ["self-efficacy", "sense-of-purpose"],
   "week-4": ["self-trust"],
+  "proof-file": ["self-efficacy"],
+  "smallest-version": ["self-confidence"],
+  "backing-my-call": ["self-trust"],
   // Direct myself
   "commitment-statement": ["autonomy", "sense-of-purpose"],
   "where-ive-come-from": ["self-authorship"],
   "week-6": ["autonomy"],
+  "part-i-choose": ["autonomy"],
+  "say-what-you-need": ["self-advocacy"],
+  "mine-or-borrowed": ["self-authorship"],
   // Imagine myself
   "digital-self": ["self-image", "actual-self"],
   "future-self": ["possible-selves"],
   "meaning-letter": ["ideal-self"],
   "conversation-path": ["possible-selves"],
   "week-1": ["ideal-self", "feared-self"],
+  "you-are-here": ["actual-self"],
+  "should-or-choose": ["ought-self"],
+  "the-other-version": ["feared-self"],
   // Authentic self
   "the-through-line": ["authentic-self", "life-story"],
   "meaning-challenge": ["authentic-self"],
@@ -310,7 +330,7 @@ export function allPieces(): Record<string, MapPiece> {
         from: m.title,
         href: `/missions/${m.id}/activities/${a.id}`,
         optional: /^Optional/.test(a.subtitle),
-        kind: /^conversation-/.test(a.id) ? "Talk to someone" : KIND[a.type] ?? "Write",
+        kind: /^conversation-/.test(a.id) || a.id === "three-words" ? "Talk to someone" : KIND[a.type] ?? "Write",
         time: a.timeEstimate ?? null,
         // The prompt says what the step asks, and stands alone; v2's intros lean
         // on the order the missions used to run in.

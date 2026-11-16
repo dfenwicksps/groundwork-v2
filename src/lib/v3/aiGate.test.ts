@@ -12,7 +12,9 @@ describe("the server's check before an AI follow-up", () => {
 
   it("V-C4 refuses every step marked keepFromAi, and its revisit", () => {
     const priv = MISSIONS.flatMap((m) => m.activities.filter((a) => a.keepFromAi).map((a) => ({ activity_id: a.id, mission_id: m.id })));
-    expect(priv.map((p) => p.activity_id).sort()).toEqual(["culture-and-heritage", "parts-of-you"]);
+    expect(priv.map((p) => p.activity_id).sort()).toEqual([
+      "culture-and-heritage", "mine-or-borrowed", "parts-of-you", "say-what-you-need", "should-or-choose", "the-other-version", "what-id-say-to-a-friend",
+    ]);
     for (const entry of priv) {
       expect(mayReflect({ ...base, entry }), entry.activity_id).toBe(false);
       expect(mayReflect({ ...base, entry: { ...entry, activity_id: `${entry.activity_id}-revisit` } })).toBe(false);

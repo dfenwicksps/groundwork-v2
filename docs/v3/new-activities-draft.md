@@ -1,6 +1,6 @@
 # Groundwork v3: eight new activities for Levels 3, 4 and 5 (draft)
 
-**Status: wording approved by David on 16 November 2026 (D77). Not in the app yet: adding them is a build that hasn't started. The counsellor review named in section 5 is still to happen before a class uses them.**
+**Status: wording approved by David on 16 November 2026 (D77) and built into the app the same day (D78). The app's copy is `src/lib/selfActivities.ts`; change the wording here first, with David's approval, then there. The counsellor review named in section 5 is still to happen before a class uses them.**
 
 David decided the thin levels get new activities before launch. This page drafts eight, so that every level has at least five pieces and every self in Levels 3 to 5 has an activity of its own.
 

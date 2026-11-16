@@ -1682,6 +1682,17 @@ function ConversationalActivity({
                 ✨ What you just discovered
               </div>
               <p className="text-sm leading-relaxed">{activity.wrapUp}</p>
+              {activity.wrapUpIf && turns[activity.wrapUpIf.step]?.answer.trim() === activity.wrapUpIf.answer && (
+                <p className="text-sm leading-relaxed mt-3">{activity.wrapUpIf.text}</p>
+              )}
+            </div>
+          )}
+
+          {/* Something to do once, after the writing (D78). */}
+          {activity.tryIt && (
+            <div className="card p-5 mb-5" data-animate="2">
+              <div className="text-xs font-bold uppercase tracking-widest mb-2 text-[--ink-muted]">Try it</div>
+              <p className="text-sm text-[--ink] leading-relaxed">{activity.tryIt}</p>
             </div>
           )}
 
