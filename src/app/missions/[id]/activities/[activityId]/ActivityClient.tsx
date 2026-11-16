@@ -2065,6 +2065,7 @@ function ValuesPickerActivity({
         <div className="card p-5 mb-5">
           <p className="text-[--ink] leading-relaxed">{activity.prompt}</p>
         </div>
+        <BuildsLine pieceId={activity.id} className="mb-4 -mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[--ink-muted]" />
 
         {/* Depth: the phase sets the default; "go deeper" is optional. */}
         <div className="mb-5 rounded-2xl border border-[--border] bg-white p-4">
@@ -2445,6 +2446,7 @@ function ChallengeActivity({
     <div className="min-h-screen" style={{ background: "var(--surface-muted)" }}>
       {header}
       <div className="max-w-lg lg:max-w-2xl mx-auto px-5 pt-6 pb-nav">
+        <BuildsLine pieceId={activity.id} className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[--ink-muted]" />
         {recalled && <RecallCard recalled={recalled} accent={mission.colour} />}
         <div
           className="rounded-2xl p-6 mb-6 text-center"
@@ -2701,6 +2703,7 @@ function StrengthsAssessmentActivity({
                 {activity.title}
               </h1>
               <p className="text-sm text-[--ink-muted]">{activity.subtitle}</p>
+              <BuildsLine pieceId={activity.id} />
             </div>
             {activity.intro && (
               <p className="text-[--ink-muted] text-sm leading-relaxed mb-5">{activity.intro}</p>
