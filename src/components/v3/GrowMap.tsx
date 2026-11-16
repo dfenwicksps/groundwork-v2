@@ -3,7 +3,7 @@ import type { MapGroup } from "@/lib/v3/levelMap";
 import SelfTile from "./SelfTile";
 import { NAVY, YELLOW, accentOn, bandStyle, display, onBand, toneOf } from "./mapStyle";
 
-// The map: four big questions, seven parts of you, 25 selves. Any order.
+// The map: four big questions, seven parts of you, 28 selves. Any order.
 // No numbers, locks, bars or ranks (D3, D52).
 export default function GrowMap({
   groups,

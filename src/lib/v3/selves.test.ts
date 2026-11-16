@@ -6,9 +6,9 @@ import type { Self } from "./content";
 import { SELVES_TEXT } from "./selves";
 
 describe("the selves' text in the app", () => {
-  it("is exactly what the master file says, for all 25", () => {
+  it("is exactly what the master file says, for all 28", () => {
     const rows = buildContent(readFileSync(DEFAULT_HTML, "utf8")).rows.filter((r) => r.kind === "self");
-    expect(SELVES_TEXT).toHaveLength(25);
+    expect(SELVES_TEXT).toHaveLength(28);
     expect(SELVES_TEXT).toEqual(
       rows.map((r) => {
         const s = r.body as Self;

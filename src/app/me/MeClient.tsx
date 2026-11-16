@@ -688,7 +688,7 @@ export default function MeClient({
             {/* Understand the words, then build the qualities. */}
             {/* v3: the selves have their own pages on the map. */}
             <Link href="/grow" className="card block p-5 hover:-translate-y-0.5 transition-transform">
-              <span className="block text-base font-semibold text-navy">The 25 selves</span>
+              <span className="block text-base font-semibold text-navy">The 28 selves</span>
               <span className="block text-sm text-ink-muted mt-1">
                 Self-worth, self-trust, self-compassion and the rest each have a page on the map: what it is, what
                 it isn&apos;t, and something to try.

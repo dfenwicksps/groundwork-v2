@@ -42,7 +42,7 @@ export default function HomeView({
             The self-check
           </h2>
           <p className="mt-3 max-w-2xl text-[17px] font-medium leading-snug text-[#E9E6FF]">
-            25 short statements that point you to a good place to begin. No score, no label, and only you see it.
+            28 short statements that point you to a good place to begin. No score, no label, and only you see it.
           </p>
           <p className="mt-3 text-sm font-bold text-[#C9C3EE]">About 5 minutes</p>
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">

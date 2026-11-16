@@ -187,13 +187,13 @@ export const RENAMED_SELVES: Record<string, { key: string; name: string }> = {
 /** v2's key for a self the master calls something else. */
 const V2_KEY: Record<string, string> = { "self-regulation": "self-control" };
 
-/** The 25 selves of v3, by level (D40). The import fails if the result isn't exactly these. */
+/** The 28 selves of v3, by level (D40, and three added in D74). The import fails if the result isn't exactly these. */
 export const V3_SELVES: Record<number, string[]> = {
-  1: ["self-awareness", "self-reflection", "self-concept", "self-image", "social-self"],
-  2: ["self-esteem", "self-worth", "mattering", "self-respect", "self-compassion"],
+  1: ["self-awareness", "self-reflection", "self-concept", "self-image", "social-self", "life-story"],
+  2: ["self-esteem", "self-worth", "mattering", "self-respect", "self-compassion", "belonging"],
   3: ["self-regulation", "self-discipline", "self-motivation"],
   4: ["self-efficacy", "self-confidence", "self-trust"],
-  5: ["autonomy", "self-advocacy", "self-authorship"],
+  5: ["autonomy", "self-advocacy", "self-authorship", "sense-of-purpose"],
   6: ["actual-self", "ideal-self", "ought-self", "feared-self", "possible-selves"],
   7: ["authentic-self"],
 };
@@ -273,7 +273,7 @@ export function selfRows(html: string): { rows: ImportRow[]; gaps: Gap[] } {
   const missing = want.filter((k) => got.indexOf(k) === -1);
   const extra = got.filter((k) => want.indexOf(k) === -1);
   if (missing.length || extra.length || got.length !== want.length) {
-    throw new Error(`The master doesn't give the 25 selves of D40. Missing: ${missing.join(", ") || "none"}. Unexpected: ${extra.join(", ") || "none"}.`);
+    throw new Error(`The master doesn't give the 28 selves of D40 and D74. Missing: ${missing.join(", ") || "none"}. Unexpected: ${extra.join(", ") || "none"}.`);
   }
   for (const r of rows.filter((x) => x.kind === "self")) {
     const s = r.body as Self;

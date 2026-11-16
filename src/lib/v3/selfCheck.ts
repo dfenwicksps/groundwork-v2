@@ -1,10 +1,11 @@
 // ─── The self-check ──────────────────────────────────────────────────────────
-// 25 short statements, one per self (D30), on a five-point scale from "Not like
+// 28 short statements, one per self (D30), on a five-point scale from "Not like
 // me" to "Very like me". It suggests where a student might start. It is not a
 // test: it gives no score, label or ranking, and only the student sees it
 // (spec section 6; docs/v3/visibility.md V-T2, V-SH7).
 //
-// David approved this wording on 13 Nov 2026 (D58). Seven statements are the
+// David approved this wording on 13 Nov 2026 (D58), and the three statements
+// for Life story, Belonging and Sense of purpose on 16 Nov 2026 (D74, set v2). Seven statements are the
 // spec's examples; the rest were drafted to match. STILL TO DO before a class
 // uses it (spec section 6, "Before release"): a counsellor reviews the "Value
 // myself" statements, and the set is piloted with about 30 students. ITEM_SET
@@ -19,7 +20,7 @@
 
 import { allLevels, type MapLevel, type MapSelf } from "./levelMap";
 
-export const ITEM_SET = "v1";
+export const ITEM_SET = "v2";
 
 export const SCALE = ["Not like me", "A little like me", "Somewhat like me", "Mostly like me", "Very like me"] as const;
 
@@ -31,12 +32,14 @@ export const STATEMENTS: Record<string, string> = {
   "self-concept": "I could describe what I'm like to someone who's never met me.",
   "self-image": "I've got a fair idea of how I come across to other people.",
   "social-self": "I notice how I change depending on who I'm with.",
+  "life-story": "I can see how things I've been through have shaped who I am.",
   // Value myself
   "self-esteem": "Most days, I'm okay with being me.",
   "self-worth": "Even after a rough week, I still feel like I count.",
   "mattering": "There are people who are glad when I turn up.",
   "self-respect": "I stick to what matters to me, even when it would be easier to let it go.",
   "self-compassion": "When I mess up, I talk to myself the way I'd talk to a friend.",
+  "belonging": "There's at least one place where I can be myself and still feel part of things.",
   // Manage myself
   "self-regulation": "When I feel a big reaction coming, I can usually pause before I act.",
   "self-discipline": "I can keep going on something boring when it matters to me.",
@@ -49,6 +52,7 @@ export const STATEMENTS: Record<string, string> = {
   "autonomy": "A lot of what I do each week, I'd choose to do anyway.",
   "self-advocacy": "I can say what I need to a teacher, even when it's awkward.",
   "self-authorship": "I've thought about what I believe, and haven't just taken on what others think.",
+  "sense-of-purpose": "There's something I care about that's bigger than just me.",
   // Imagine myself
   "actual-self": "I can be honest with myself about where I'm at right now.",
   "ideal-self": "I can picture a version of me in five years that I'd like to be.",

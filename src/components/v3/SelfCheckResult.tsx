@@ -33,7 +33,7 @@ export default function SelfCheckResult({
         Where you could start
       </h1>
       <p className="mt-3 text-[17px] font-medium leading-snug text-[--ink-muted]">
-        These are ideas, not results. You know yourself better than 25 statements do, so start somewhere else if
+        These are ideas, not results. You know yourself better than 28 statements do, so start somewhere else if
         that feels right.
       </p>
 

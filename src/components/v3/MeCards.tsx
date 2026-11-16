@@ -52,7 +52,7 @@ export default function MeCards({
           )
         ) : (
           <p className="mt-1.5 text-lg font-extrabold leading-snug" style={onBand}>
-            25 short statements that point you to a good place to start. No score, and only you see it.
+            28 short statements that point you to a good place to start. No score, and only you see it.
           </p>
         )}
         <Link

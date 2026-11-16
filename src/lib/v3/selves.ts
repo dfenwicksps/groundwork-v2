@@ -1,4 +1,4 @@
-// ─── The 25 selves, as a student reads them ──────────────────────────────────
+// ─── The 28 selves, as a student reads them ──────────────────────────────────
 // generated/selves.json is written from the master file by the content import
 // (docs/v3/source/who-am-i-becoming.html), and selves.test.ts fails if the two
 // drift. It holds David's own wording: what each self is, what it isn't, a

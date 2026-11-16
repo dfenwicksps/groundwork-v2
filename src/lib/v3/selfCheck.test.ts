@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { allLevels } from "./levelMap";
 import { ITEM_SET, SCALE, STATEMENTS, allAnswered, canRetake, parseSuggested, resultWords, suggest, type Answers } from "./selfCheck";
 
-const APPROVED_LENGTH = 1502;
+const APPROVED_LENGTH = 1702;
 
 const selves = allLevels().flatMap((l) => l.level.selves.map((s) => ({ key: s.key, level: l.level.level })));
 const all = (v: number): Answers => {
@@ -12,9 +12,9 @@ const all = (v: number): Answers => {
 };
 
 describe("the self-check statements", () => {
-  it("has exactly one statement for each of the 25 selves (D30)", () => {
+  it("has exactly one statement for each of the 28 selves (D30)", () => {
     expect(Object.keys(STATEMENTS).sort()).toEqual(selves.map((s) => s.key).sort());
-    expect(Object.keys(STATEMENTS)).toHaveLength(25);
+    expect(Object.keys(STATEMENTS)).toHaveLength(28);
   });
 
   it("runs from 'Not like me' to 'Very like me' in five steps", () => {
@@ -39,9 +39,10 @@ describe("the self-check statements", () => {
   });
 
   it("names its wording, so a changed set is never compared with this one", () => {
-    // v1 is the wording David approved on 13 Nov 2026 (D58). If a statement
+    // v2 is the wording David approved on 13 Nov 2026 (D58) plus the three
+    // statements of 16 Nov 2026 (D74). If a statement
     // changes, this snapshot fails: change ITEM_SET with it.
-    expect(ITEM_SET).toBe("v1");
+    expect(ITEM_SET).toBe("v2");
     expect(Object.values(STATEMENTS).join("|").length).toBe(APPROVED_LENGTH);
   });
 });

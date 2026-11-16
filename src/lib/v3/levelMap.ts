@@ -1,5 +1,5 @@
-// ─── The map: four names, seven levels, 25 selves ────────────────────────────
-// David's structure for v3 (docs/v3/DECISIONS.md D50, D52, D53): the seven
+// ─── The map: four names, seven levels, 28 selves ────────────────────────────
+// David's structure for v3 (docs/v3/DECISIONS.md D50, D52, D53; three selves added in D73 and D74): the seven
 // levels are the one structure of the program, grouped under the four names
 // the missions used to carry. Every mission step and program week lives in a
 // level (docs/v3/level-map.md).
@@ -64,6 +64,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "self-concept", name: "Self-concept", short: "The description of you — no scores attached." },
           { key: "self-image", name: "Self-image", short: "The picture in your head of how you come across." },
           { key: "social-self", name: "Social self", short: "Who I am with others, and how I think they see me." },
+          { key: "life-story", name: "Life story", short: "The story I tell about how I got to be me." },
         ],
         pieces: [
           "chapters-so-far", "strengths-mapping", "values-clarifier", "mask-check", "identity-letter",
@@ -91,6 +92,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "mattering", name: "Mattering", short: "That people notice you, and count on you for something." },
           { key: "self-respect", name: "Self-respect", short: "Standing by my values and boundaries." },
           { key: "self-compassion", name: "Self-compassion", short: "Being kind to myself when I mess up." },
+          { key: "belonging", name: "Belonging", short: "Having people and places where I fit as I am." },
         ],
         pieces: [
           "belonging", "fitting-in-vs-belonging", "across-the-gap", "people-who-shaped-you",
@@ -143,6 +145,7 @@ export const LEVEL_MAP: MapGroup[] = [
           { key: "autonomy", name: "Autonomy", short: "Making choices that are truly my own." },
           { key: "self-advocacy", name: "Self-advocacy", short: "Speaking up for what I need and believe." },
           { key: "self-authorship", name: "Self-authorship", short: "Writing my own story, not borrowing someone else's." },
+          { key: "sense-of-purpose", name: "Sense of purpose", short: "Something I care about that's bigger than just me." },
         ],
         pieces: ["commitment-statement", "where-ive-come-from", "week-6"],
       },

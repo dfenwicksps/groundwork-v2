@@ -38,11 +38,11 @@ import {
 
 /** Spec section 5, "The 26 selves". */
 const EXPECTED: Record<LevelId, string[]> = {
-  1: ["self-awareness", "self-reflection", "self-concept", "self-image", "social-self"],
-  2: ["self-esteem", "self-worth", "mattering", "self-respect", "self-acceptance", "self-compassion"],
+  1: ["self-awareness", "self-reflection", "self-concept", "self-image", "social-self", "life-story"],
+  2: ["self-esteem", "self-worth", "mattering", "self-respect", "self-acceptance", "self-compassion", "belonging"],
   3: ["self-regulation", "self-discipline", "self-motivation"],
   4: ["self-efficacy", "self-confidence", "self-trust"],
-  5: ["self-determination", "self-advocacy", "self-authorship"],
+  5: ["self-determination", "self-advocacy", "self-authorship", "sense-of-purpose"],
   6: ["actual-self", "ideal-self", "ought-self", "feared-self", "possible-selves"],
   7: ["authentic-self"],
 };
@@ -275,8 +275,8 @@ function main() {
     if (n > 1) setFailures.push({ key: k, field: "key", problem: `appears ${n} times` });
   }
   const expectedAll = Object.values(EXPECTED).flat();
-  for (const k of expectedAll) if (!keys.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the spec's list of 26, not in the master" });
-  for (const k of keys) if (!expectedAll.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the master, not in the spec's list of 26" });
+  for (const k of expectedAll) if (!keys.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the spec's list of 29, not in the master" });
+  for (const k of keys) if (!expectedAll.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the master, not in the spec's list of 29" });
   for (const s of rawSelves) {
     const want = (Object.entries(EXPECTED).find(([, ks]) => ks.includes(String(s.key))) ?? [])[0];
     if (want && Number(want) !== s.level) {

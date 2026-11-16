@@ -76,8 +76,8 @@ describe("the AI boundary travels with the content", () => {
 });
 
 describe("the selves (D40)", () => {
-  it("are the 25 of D40, at the levels the master gives", () => {
-    expect(of("self")).toHaveLength(25);
+  it("are the 28 of D40 and D74, at the levels the master gives", () => {
+    expect(of("self")).toHaveLength(28);
     for (const level of Object.keys(V3_SELVES).map(Number)) {
       const here = of("self").filter((r) => (r.body as Self).level === level).map((r) => r.key);
       expect(here, `level ${level}`).toEqual(V3_SELVES[level]);
@@ -136,7 +136,10 @@ describe("the selves (D40)", () => {
     for (const r of stored) {
       if (r.kind === "self") {
         expect(r.teacherBody?.selfKey, r.key).toBe(r.key);
-        expect(r.teacherBody?.notes.length, r.key).toBe(5);
+        // Life story, Belonging and Sense of purpose were added on 16 Nov 2026 (D74)
+        // with no story yet, so they have no lesson notes until David supplies one.
+        const noStoryYet = ["life-story", "belonging", "sense-of-purpose"].indexOf(r.key) !== -1;
+        expect(r.teacherBody?.notes.length, r.key).toBe(noStoryYet ? 0 : 5);
         for (const n of r.teacherBody?.notes ?? []) expect(JSON.stringify(r.body), r.key).not.toContain(n.text);
       } else {
         expect(r.teacherBody, r.key).toBeNull();
@@ -175,7 +178,7 @@ describe("in the database", () => {
     expect(programWeeksFromRows(back)).toEqual(PROGRAM_WEEKS);
   });
 
-  it("a student reads the 73 published rows and none of the 50 drafts", async () => {
+  it("a student reads the 73 published rows and none of the 56 drafts", async () => {
     const r = await w.db.as(w.student(1), `select kind, key, status from content_items`);
     expect(r.rows).toHaveLength(73);
     expect(r.rows.filter((x) => x.status !== "published")).toEqual([]);
@@ -186,7 +189,7 @@ describe("in the database", () => {
     for (const who of [w.teacher1, w.adminA]) {
       expect((await w.db.as(who, `select key from content_items`)).rows, who).toHaveLength(73);
     }
-    expect((await w.db.as(w.platform, `select key from content_items`)).rows).toHaveLength(123);
+    expect((await w.db.as(w.platform, `select key from content_items`)).rows).toHaveLength(129);
   });
 
   it("no signed-in role can read the teacher notes column", async () => {

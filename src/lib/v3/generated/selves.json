@@ -50,6 +50,16 @@
     "livingIt": "Notice one room this week where you can take the mask off. What makes that room feel safe?"
   },
   {
+    "key": "life-story",
+    "name": "Life story",
+    "level": 1,
+    "short": "The story I tell about how I got to be me.",
+    "what": "The story you tell about how you became who you are: where you've come from, the moments that changed things, and where it seems to be heading. You're the one telling it, and you can tell it again differently as you learn more.",
+    "notThis": "Not a list of everything that's happened to you, and not a script that's already written. Two people can live through the same thing and tell it differently. And not self-authorship: that's about checking your beliefs are your own. This is about how the pieces of your life fit together.",
+    "ask": "If your life so far were a book, what would you call the chapter you're in now?",
+    "livingIt": "Ask someone who's known you a long time for one story about you that you don't remember. What does it add to yours?"
+  },
+  {
     "key": "self-esteem",
     "name": "Self-esteem",
     "level": 2,
@@ -98,6 +108,16 @@
     "notThis": "Not letting yourself off the hook, and not self-pity. People who are kind to themselves actually take more responsibility for mistakes, because owning them doesn't feel like the end of the world.",
     "ask": "What do you say in your head after you stuff up? Would you say that to your best friend?",
     "livingIt": "Next time you mess up, say to yourself what you'd say to a friend. Out loud if you can."
+  },
+  {
+    "key": "belonging",
+    "name": "Belonging",
+    "level": 2,
+    "short": "Having people and places where I fit as I am.",
+    "what": "Feeling that you're part of something: a family, a friendship, a team, a class, a community. You're accepted there as you are, and you'd be missed if you weren't there. Most people have it in some places and not in others.",
+    "notThis": "Not fitting in. Fitting in is changing yourself to be accepted; belonging is being accepted without having to. And not something you build on your own: it depends on the people around you as well. If you don't feel it somewhere, that doesn't mean something's wrong with you.",
+    "ask": "Where do you feel most like you can just be yourself? Who's there?",
+    "livingIt": "Make it a bit easier for someone else to belong this week: save them a seat, ask them along, or use their name."
   },
   {
     "key": "self-regulation",
@@ -188,6 +208,16 @@
     "notThis": "Not rejecting everything you were taught. You can keep plenty of it, as long as you've checked it and chosen it.",
     "ask": "Name one belief you hold. Did you choose it, or did you absorb it?",
     "livingIt": "Write one belief in your own words: where it came from, and whether you'd keep it."
+  },
+  {
+    "key": "sense-of-purpose",
+    "name": "Sense of purpose",
+    "level": 5,
+    "short": "Something I care about that's bigger than just me.",
+    "what": "Something you care about enough to keep working at. It matters to you, and it does some good for someone or something beyond you. It can be big or small: a cause, a craft, the people you look after.",
+    "notThis": "Not a career, and not something you're meant to have worked out by now. Plenty of adults are still finding theirs. And not a goal. A goal gets ticked off. A purpose is the reason you set it.",
+    "ask": "What's something you'd keep caring about even if nobody gave you credit for it?",
+    "livingIt": "Do one small thing this week for something you care about. Notice how it feels compared with something you just had to do."
   },
   {
     "key": "actual-self",

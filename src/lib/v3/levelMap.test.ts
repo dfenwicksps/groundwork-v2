@@ -16,7 +16,7 @@ describe("the level map", () => {
     ]);
   });
 
-  it("holds the 25 selves of D40, each at the level the master file gives it", () => {
+  it("holds the 28 selves of D40 and D74, each at the level the master file gives it", () => {
     for (const { level } of levels) {
       expect(level.selves.map((s) => s.key), level.name).toEqual(V3_SELVES[level.level]);
     }

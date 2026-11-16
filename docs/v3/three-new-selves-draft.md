@@ -1,6 +1,6 @@
 # Groundwork v3: three new selves (draft)
 
-**Status: draft wording for David's review, 16 November 2026. David decided to add the three selves (D73). The wording below is not in the app, the master file or the self-check, and won't be until he approves it line by line.**
+**Status: approved and applied. David approved the three names and all the wording as drafted on 16 November 2026 (D74). The app shows each self's first-person short line, as it does for the other selves taken from the master file. Still to come from David: each one's story, lesson notes, icon and Character Project line. The icons in the master file (clock, home, rocket) are stand-ins.**
 
 The review in [selves-by-level-review-2026-11.md](../evidence/selves-by-level-review-2026-11.md) found the map had no self for my story, for belonging or for purpose. This page drafts a page for each. The map goes from 25 selves to 28.
 

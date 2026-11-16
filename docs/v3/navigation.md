@@ -38,9 +38,9 @@ A redirect from `/dashboard` to `/home` keeps old links and the installed home-s
 
 | Route | Shows | v2 source |
 | --- | --- | --- |
-| `/me` | The Selves map: seven levels, 25 selves (D40), any order, an "explored" mark and nothing else (no locks, percentages or progress bars). The self-check's suggested selves are highlighted. Entry points to the self-check, strengths and the Who I Am card. | **Replaces** `me/MeClient.tsx` (a four-tab page today: profile, reflect, grow, future). The map itself is **new**; its visual language comes from the HTML master's home view. |
+| `/me` | The Selves map: seven levels, 28 selves (D40, D74), any order, an "explored" mark and nothing else (no locks, percentages or progress bars). The self-check's suggested selves are highlighted. Entry points to the self-check, strengths and the Who I Am card. | **Replaces** `me/MeClient.tsx` (a four-tab page today: profile, reflect, grow, future). The map itself is **new**; its visual language comes from the HTML master's home view. |
 | `/me/selves/[key]` | One self: `short`, the story (`hook`, figure, beats, `turn`), `what` and `notThis`, the reflective prompt, the living-it challenge with an "accept" button, `builtBy` links into Grow, the school's `localLink`, at most one featured clip and two extras, and the sources, collapsed. A confused-pair prompt where one exists ("these two get mixed up"). Never the teacher notes. | **Replaces** `me/SelvesSection.tsx` (nine selves in a list). **Reuses** `CONFUSED_PAIRS` from `selves.ts`. |
-| `/me/self-check` | One statement per self, 25 in all (D30, D40), grouped by level, on a five-point scale from "Not like me" to "Very like me". | **New.** Layout can follow `CheckinForm`. |
+| `/me/self-check` | One statement per self, 28 in all (D30, D40, D74), grouped by level, on a five-point scale from "Not like me" to "Very like me". | **New.** Layout can follow `CheckinForm`. |
 | `/me/self-check/result` | Words only: one or two levels where the student is already steady, two or three selves that might be worth exploring. No numbers anywhere. Earlier results side by side, using the revisit pattern. A retake is offered once a term. | **New.** Comparison follows `revisit.ts`. |
 | `/me/strengths` | The VIA-24 profile, Strengths Mapping (take or retake), and strength-in-action practice. | **Reuses** the strengths activity (`strengths.ts`, today at `/missions/1/activities/strengths-mapping`), `PracticeSection`, `BecomingQualities`, `becoming.ts`. |
 | `/me/card` | The Who I Am card: top strengths, values, Character Code, the life-story sentence. | **Reuses** the profile tab of `MeClient.tsx` and `/story` (`StoryClient`, `myStory.ts`). |
@@ -157,7 +157,7 @@ All of it is **new**. v2's `scripts/completion-report.ts` is the precedent for t
 | `/dashboard` | `/home` | Adds the class focus and the suggested selves. |
 | `/me` (profile tab) | `/me/card`, `/me/strengths` | Split by purpose. |
 | `/me` (reflect tab) | `/journal` (The Standard), `/grow` (habits), `/me/moral`, `/home` (check-in results) | Split by purpose. |
-| `/me` (grow tab) | `/grow`, `/me/selves/*`, `/me/strengths` | Selves expand from 9 to 25 (D40). |
+| `/me` (grow tab) | `/grow`, `/me/selves/*`, `/me/strengths` | Selves expand from 9 to 28 (D40, D74). |
 | `/me` (future tab) | `/future/*` | Joined with the subject-choice track. |
 | `/missions`, `/missions/[id]`, `/missions/[id]/activities/[activityId]` | `/grow`, `/grow/missions/*` | One list of journeys. |
 | `/program`, `/program/[week]` | `/grow`, `/grow/program/[week]` | Same. |
