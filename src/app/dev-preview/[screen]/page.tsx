@@ -4,7 +4,7 @@ import GrowMap from "@/components/v3/GrowMap";
 import HomeView from "@/components/v3/HomeView";
 import LevelView from "@/components/v3/LevelView";
 import SelfView from "@/components/v3/SelfView";
-import { GROUP_MISSION, LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf, suggestNext } from "@/lib/v3/levelMap";
+import { GROUP_MISSION, LEVEL_MAP, allLevels, allPieces, findLevel, levelOfSelf, piecesOfSelf, suggestNext } from "@/lib/v3/levelMap";
 import { findSelf } from "@/lib/v3/selves";
 import { MISSIONS, getMission } from "@/lib/missions";
 import MeCards from "@/components/v3/MeCards";
@@ -199,7 +199,7 @@ export default function DevPreview({ params, searchParams }: { params: { screen:
     if (!self || !found) notFound();
     return (
       <AppShell>
-        <SelfView group={found.group} level={found.level} self={self} pieces={found.level.pieces.map((id) => all[id])} doneIds={done} />
+        <SelfView group={found.group} level={found.level} self={self} pieces={found.level.pieces.map((id) => all[id])} own={piecesOfSelf(self.key).map((id) => all[id])} doneIds={done} />
       </AppShell>
     );
   }

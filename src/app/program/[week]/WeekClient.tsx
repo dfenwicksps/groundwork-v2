@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import AppShell from "@/components/layout/AppShell";
 import { tint } from "@/lib/utils";
 import { getMission } from "@/lib/missions";
+import BuildsLine from "@/components/v3/BuildsLine";
 import { NextPieceButton, PieceBackLinks } from "@/components/v3/PieceNav";
 import { GROUP_MISSION, levelOfPiece } from "@/lib/v3/levelMap";
 import CharacterCodeBuilder from "./CharacterCodeBuilder";
@@ -304,6 +305,7 @@ export default function WeekClient({
               {done && <span className="text-sage font-semibold"> · complete</span>}
             </span>
           </p>
+          <BuildsLine pieceId={`week-${week.week}`} className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted" />
           <h1
             className="text-3xl lg:text-4xl text-navy mb-3"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_HTML } from "../../../scripts/v3/selves-master";
 import { V3_SELVES, buildContent } from "../../../scripts/v3/content-import";
 import type { Self } from "./content";
-import { LEVEL_MAP, allLevels, allPieces } from "./levelMap";
+import { LEVEL_MAP, PIECE_BUILDS, allLevels, allPieces, piecesOfSelf, selvesOfPiece } from "./levelMap";
 
 const levels = allLevels();
 
@@ -47,5 +47,35 @@ describe("the level map", () => {
   it("gives no name or text a level number, a lock or a rank (D3, D52)", () => {
     const shown = JSON.stringify(LEVEL_MAP.map((g) => [g.name, g.question, g.levels.map((l) => [l.name, l.selves])]));
     expect(shown).not.toMatch(/level \d|level up|final|unlock|locked|stage \d/i);
+  });
+});
+
+describe("which self each piece builds (D75)", () => {
+  const selfKeys = levels.flatMap((l) => l.level.selves.map((s) => s.key));
+
+  it("ties every piece to at least one self that is on the map", () => {
+    const known = Object.keys(allPieces());
+    expect(Object.keys(PIECE_BUILDS).sort()).toEqual(known.slice().sort());
+    for (const id of known) {
+      expect(PIECE_BUILDS[id].length, id).toBeGreaterThan(0);
+      expect(PIECE_BUILDS[id].length, id).toBeLessThan(3);
+      for (const key of PIECE_BUILDS[id]) expect(selfKeys, `${id} -> ${key}`).toContain(key);
+      expect(selvesOfPiece(id).map((s) => s.key), id).toEqual(PIECE_BUILDS[id]);
+    }
+  });
+
+  it("finds a self's pieces in any level", () => {
+    expect(piecesOfSelf("sense-of-purpose")).toEqual([
+      "what-matters", "conversation-what-matters", "contribution-map", "the-other-side", "purpose-challenge", "commitment-statement",
+    ]);
+    expect(piecesOfSelf("self-image")).toEqual(["digital-self"]);
+  });
+
+  it("knows which selves have no activity yet", () => {
+    // Drafts for these wait on David (new-activities-draft.md, self-activities-draft.md).
+    // When one gets an activity, take it off this list.
+    expect(selfKeys.filter((k) => piecesOfSelf(k).length === 0)).toEqual([
+      "self-awareness", "self-esteem", "self-compassion", "self-confidence", "self-advocacy", "ought-self",
+    ]);
   });
 });

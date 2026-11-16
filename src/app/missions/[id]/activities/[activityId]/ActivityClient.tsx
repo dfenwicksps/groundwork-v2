@@ -26,6 +26,7 @@ import GentleCheck from "@/components/help/GentleCheck";
 import SmallStep from "@/components/SmallStep";
 import ListenButton from "@/components/ListenButton";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
+import BuildsLine from "@/components/v3/BuildsLine";
 import { NextPieceButton, PieceBackLinks } from "@/components/v3/PieceNav";
 import { levelOfPiece } from "@/lib/v3/levelMap";
 import StoryFilm from "@/components/stories/StoryFilm";
@@ -833,6 +834,7 @@ function ConversationalActivity({
                   {activity.timeEstimate}
                 </div>
               )}
+              <BuildsLine pieceId={activity.id} />
             </div>
 
             {/* Depth: the phase sets the default; "go deeper" is optional. */}

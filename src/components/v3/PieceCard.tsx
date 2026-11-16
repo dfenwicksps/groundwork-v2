@@ -1,9 +1,10 @@
 import Link from "next/link";
-import type { MapLevel, MapPiece } from "@/lib/v3/levelMap";
+import { selvesOfPiece, type MapLevel, type MapPiece } from "@/lib/v3/levelMap";
 import { display } from "./mapStyle";
 
 // One thing to do. "Done" is the only mark it can carry: no score, no count.
 export default function PieceCard({ level, piece, done }: { level: MapLevel; piece: MapPiece; done: boolean }) {
+  const builds = selvesOfPiece(piece.id).map((s) => s.name).join(", ");
   return (
     <Link
       href={piece.href}
@@ -23,7 +24,7 @@ export default function PieceCard({ level, piece, done }: { level: MapLevel; pie
       </span>
       {piece.blurb && <span className="text-sm leading-snug text-[--ink-muted]">{piece.blurb}</span>}
       <span className="mt-auto pt-1 text-xs font-semibold text-[--ink-muted]">
-        {[piece.time, piece.optional ? "Optional" : null].filter(Boolean).join(" · ")}
+        {[builds ? `Builds: ${builds}` : null, piece.time, piece.optional ? "Optional" : null].filter(Boolean).join(" · ")}
       </span>
     </Link>
   );

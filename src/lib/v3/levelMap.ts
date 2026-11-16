@@ -188,6 +188,76 @@ export const LEVEL_MAP: MapGroup[] = [
   },
 ];
 
+// ─── Which self each piece builds (D75) ──────────────────────────────────────
+// Every mission step and program week is tied to the self it builds, most
+// direct first. A piece can build a self in another level: the purpose steps
+// sit in three levels and all build Sense of purpose. The placements are the
+// agent's reading of each piece (docs/evidence/selves-by-level-review-2026-11.md)
+// and David's to correct. A self with nothing here has no activity yet.
+export const PIECE_BUILDS: Record<string, string[]> = {
+  // Know myself
+  "chapters-so-far": ["life-story"],
+  "strengths-mapping": ["self-concept"],
+  "values-clarifier": ["self-concept"],
+  "mask-check": ["social-self"],
+  "identity-letter": ["self-concept"],
+  "weekly-challenge": ["self-concept"],
+  "conversation-who-i-was": ["life-story", "social-self"],
+  "parts-of-you": ["self-concept"],
+  "conversation-family-story": ["life-story"],
+  "culture-and-heritage": ["self-concept"],
+  "week-8": ["social-self"],
+  "week-9": ["self-reflection"],
+  // Value myself
+  "belonging": ["belonging"],
+  "fitting-in-vs-belonging": ["belonging", "self-respect"],
+  "across-the-gap": ["belonging"],
+  "people-who-shaped-you": ["self-worth"],
+  "connection-challenge": ["belonging", "mattering"],
+  "week-2": ["self-respect"],
+  "week-3": ["mattering"],
+  // Manage myself
+  "what-matters": ["sense-of-purpose", "self-motivation"],
+  "conversation-what-matters": ["sense-of-purpose"],
+  "week-5": ["self-discipline", "self-efficacy"],
+  "week-7": ["self-regulation"],
+  // Believe in myself
+  "contribution-map": ["sense-of-purpose"],
+  "the-other-side": ["sense-of-purpose"],
+  "purpose-challenge": ["self-efficacy", "sense-of-purpose"],
+  "week-4": ["self-trust"],
+  // Direct myself
+  "commitment-statement": ["autonomy", "sense-of-purpose"],
+  "where-ive-come-from": ["self-authorship"],
+  "week-6": ["autonomy"],
+  // Imagine myself
+  "digital-self": ["self-image", "actual-self"],
+  "future-self": ["possible-selves"],
+  "meaning-letter": ["ideal-self"],
+  "conversation-path": ["possible-selves"],
+  "week-1": ["ideal-self", "feared-self"],
+  // Authentic self
+  "the-through-line": ["authentic-self", "life-story"],
+  "meaning-challenge": ["authentic-self"],
+  "week-10": ["authentic-self"],
+};
+
+/** The selves a piece builds, most direct first. */
+export function selvesOfPiece(pieceId: string): MapSelf[] {
+  const out: MapSelf[] = [];
+  for (const key of PIECE_BUILDS[pieceId] ?? []) {
+    const found = levelOfSelf(key);
+    const self = found?.level.selves.filter((s) => s.key === key)[0];
+    if (self) out.push(self);
+  }
+  return out;
+}
+
+/** The pieces that build a self, in the order the map offers them, from any level. */
+export function piecesOfSelf(selfKey: string): string[] {
+  return piecesInOrder().filter((id) => (PIECE_BUILDS[id] ?? []).indexOf(selfKey) !== -1);
+}
+
 export interface MapPiece {
   id: string;
   title: string;

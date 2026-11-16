@@ -11,16 +11,22 @@ export default function SelfView({
   level,
   self,
   pieces,
+  own,
   doneIds,
 }: {
   group: MapGroup;
   level: MapLevel;
   self: SelfText;
+  /** The level's pieces. */
   pieces: MapPiece[];
+  /** The pieces that build this self, from any level (D75). */
+  own: MapPiece[];
   doneIds: string[];
 }) {
   const tone = toneOf(level);
   const others = level.selves.filter((s) => s.key !== self.key);
+  const ownIds = own.map((p) => p.id);
+  const rest = pieces.filter((p) => ownIds.indexOf(p.id) === -1);
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 lg:px-10 lg:py-10">
       <Link href={`/grow/${level.key}`} className="inline-flex min-h-[44px] items-center text-sm font-bold text-[--ink-muted] hover:underline">
@@ -68,13 +74,28 @@ export default function SelfView({
         </p>
       </section>
 
-      {pieces.length > 0 && (
-        <section aria-labelledby="build" className="mt-8">
-          <h2 id="build" className="text-2xl font-extrabold text-[--navy]" style={display}>
-            Things to do in {level.name}
+      {own.length > 0 && (
+        <section aria-labelledby="own" className="mt-8">
+          <h2 id="own" className="text-2xl font-extrabold text-[--navy]" style={display}>
+            Things to do for {self.name}
           </h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {pieces.map((p) => (
+            {own.map((p) => (
+              <li key={p.id}>
+                <PieceCard level={level} piece={p} done={doneIds.indexOf(p.id) !== -1} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {rest.length > 0 && (
+        <section aria-labelledby="build" className="mt-8">
+          <h2 id="build" className="text-2xl font-extrabold text-[--navy]" style={display}>
+            {own.length > 0 ? `More in ${level.name}` : `Things to do in ${level.name}`}
+          </h2>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {rest.map((p) => (
               <li key={p.id}>
                 <PieceCard level={level} piece={p} done={doneIds.indexOf(p.id) !== -1} />
               </li>
