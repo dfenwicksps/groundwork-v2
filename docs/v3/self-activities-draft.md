@@ -1,6 +1,6 @@
 # Groundwork v3: ten activities for the selves that have none (draft)
 
-**Status: draft wording for David's review, 16 November 2026. None of this is in the app or the content import. Nothing here is published until David approves it line by line.**
+**Status: wording approved by David on 16 November 2026 (D77). Not in the app yet: adding them is a build that hasn't started. The counsellor review named in section 5 is still to happen before a class uses them.**
 
 David asked that every activity specifically build a self. The review in [selves-by-level-review-2026-11.md](../evidence/selves-by-level-review-2026-11.md) found 13 selves with no activity that builds them. Three are covered by the 13 November drafts in [new-activities-draft.md](new-activities-draft.md): self-regulation, self-confidence and self-advocacy. This page drafts the other ten.
 
