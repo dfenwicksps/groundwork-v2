@@ -40,7 +40,7 @@ Small ones. Each unblocks work in the later sections.
 | 2.11 | Say in `frameworks.md` that each level's list is a teaching selection from named research, and add the three new selves and the eighteen activities | Claude | **Done 17 Nov:** `frameworks.md` §2g and the source map. Review recommendation 6. |
 | 2.12 | Bring `deploy.md`, `level-map.md` and the spec up to date (28 selves, 56 activities, what the app now has) | Claude | **Done 17 Nov:** a dated changes note on the spec and `level-map.md`; `deploy.md`'s lists rewritten. `deploy.md` still says the selves' pages and self-check aren't built. |
 | 2.13 | Re-check the two sources cited from memory in the new teacher notes (Baumeister & Leary 1995; Damon, Menon & Bronk 2003) | Claude | **Done 17 Nov:** both confirmed. |
-| 2.14 | Fix: after a save fails and the student resumes, the done screen lists the last answer twice | Claude | Found 17 Nov. In code older than v3; the answer is likely saved twice too. Ask first. |
+| 2.14 | Fix: after a save fails and the student resumes, the done screen lists the last answer twice | Claude | **Done 17 Nov.** From the code, the answer was saved twice as well as shown twice; I didn't capture a save from before the fix. Fixed on `v3` (`src/lib/draftResume.ts`, with tests) and checked in a browser. v2 on `main` has the same fault; not fixed there. |
 
 ## 3. Before any class uses it
 
@@ -109,7 +109,7 @@ Each is a build I'd ask about before starting.
 
 ## What I can start now without waiting on you
 
-Done on 17 November: 2.8, 2.9, 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10. Next without you: 2.14, once you say yes.
+Done on 17 November: 2.8, 2.9, 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10. 2.14 too.
 
 ## What's holding the most up
 

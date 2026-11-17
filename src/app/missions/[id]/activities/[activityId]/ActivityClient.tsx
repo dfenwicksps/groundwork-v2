@@ -27,6 +27,7 @@ import SmallStep from "@/components/SmallStep";
 import ListenButton from "@/components/ListenButton";
 import ActivityBackLink, { ReturnToWeekButton } from "@/components/ActivityBackLink";
 import BuildsLine from "@/components/v3/BuildsLine";
+import { resumeDraft } from "@/lib/draftResume";
 import { NextPieceButton, PieceBackLinks } from "@/components/v3/PieceNav";
 import { levelOfPiece } from "@/lib/v3/levelMap";
 import StoryFilm from "@/components/stories/StoryFilm";
@@ -456,7 +457,10 @@ function ConversationalActivity({
   // When editing, pre-fill a step with the user's previous answer so they can
   // adjust it rather than start from scratch.
   function applyPrefill(idx: number) {
-    const prev = prevAnswersRef.current[idx] || "";
+    prefillWith(prevAnswersRef.current[idx] || "", idx);
+  }
+  /** Puts an answer back on question `idx`: as the chosen option if it is one, else as writing. */
+  function prefillWith(prev: string, idx: number) {
     const opts = activity.starterOptions?.[idx];
     if (idx === activity.sortStep) {
       loadSort(prev);
@@ -530,9 +534,14 @@ function ConversationalActivity({
       const d = JSON.parse(raw);
       const hasSort = d.sort && Object.keys(d.sort).length > 0;
       if (Array.isArray(d.turns) && (d.turns.length > 0 || d.current || hasSort)) {
-        setTurns(d.turns);
-        setQIdx(Math.min(d.qIdx ?? d.turns.length, questions.length - 1));
+        // A draft left by a failed save already holds the answer to the
+        // question it reopens; resumeDraft hands it back instead of keeping it
+        // in the answers, so it isn't added twice.
+        const r = resumeDraft(d.turns, d.qIdx, questions.length);
+        setTurns(r.turns);
+        setQIdx(r.qIdx);
         setCurrent(d.current || "");
+        if (!d.current && r.pending && r.qIdx !== activity.sortStep) prefillWith(r.pending, r.qIdx);
         if (hasSort) setSortChoices(d.sort);
         if (Array.isArray(d.custom)) setCustomItems(d.custom);
         setRestoredDraft(true);
@@ -615,7 +624,8 @@ function ConversationalActivity({
   }
 
   async function advance(answer: string) {
-    const newTurns = [...turns, { question: questions[qIdx], answer }];
+    // One answer per question: answering a question again replaces its answer.
+    const newTurns = [...turns.slice(0, qIdx), { question: questions[qIdx], answer }];
     setCurrent("");
     setSelectedOption(null);
     setTurns(newTurns);
