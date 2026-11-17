@@ -43,6 +43,14 @@ function missionSteps() {
     const steps = [...parts[i + 1].matchAll(/\bid: "([a-z0-9-]+)"/g)].map((m) => m[1]);
     if (steps.length) out[parts[i]] = [...new Set(steps)];
   }
+  // The activities written for a self are kept apart and spread into the
+  // missions (D78). They're JSON, keyed by the mission they're filed under.
+  const selfSrc = fs.readFileSync(path.resolve(__dirname, "../../src/lib/selfActivities.ts"), "utf8");
+  const selfParts = selfSrc.split(/\n\s{2}"(\d)": \[/).slice(1);
+  for (let i = 0; i < selfParts.length; i += 2) {
+    const steps = [...selfParts[i + 1].matchAll(/^\s{6}"id": "([a-z0-9-]+)"/gm)].map((m) => m[1]);
+    out[selfParts[i]] = [...new Set([...(out[selfParts[i]] || []), ...steps])];
+  }
   return out;
 }
 

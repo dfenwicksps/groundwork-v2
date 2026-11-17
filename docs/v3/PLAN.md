@@ -34,12 +34,13 @@ Small ones. Each unblocks work in the later sections.
 | 2.5 | Icons for the same three | David | The master file has stand-ins: clock, home, rocket. |
 | 2.6 | Redraw the poster for 28 selves, with the wording changes from D71 | David | It still shows 25 and the old lines. |
 | 2.7 | Recast the first-person short lines in the second person for the selves that came from the master file | Claude drafts, David approves | Sixteen lines. The three new ones are already approved in both forms. |
-| 2.8 | See the done screen of a new activity working: wrap-up, "Try it" card, and Not My Results' extra line | Claude | After 4.1. The local preview has no database, so nobody has seen it. |
-| 2.9 | Check the new screens in the other three looks, and the Value myself level page | Claude | I've only looked in the default look. |
+| 2.8 | See the done screen of a new activity working: wrap-up, "Try it" card, and Not My Results' extra line | Claude | **Done 17 Nov, on the audit's stand-in database:** Name It and Not My Results finish and show the wrap-up, the "Try it" card and the extra line. Saving to a real database is still untested (4.5). After 4.1. The local preview has no database, so nobody has seen it. |
+| 2.9 | Check the new screens in the other three looks, and the Value myself level page | Claude | **Done 17 Nov:** the audit found nothing in any of the four looks (244 page views each) or at phone widths (366). I've only looked in the default look. |
 | 2.10 | Build the come-back prompt for "try it" activities | Claude | After 1.7, if yes. |
 | 2.11 | Say in `frameworks.md` that each level's list is a teaching selection from named research, and add the three new selves and the eighteen activities | Claude | **Done 17 Nov:** `frameworks.md` §2g and the source map. Review recommendation 6. |
 | 2.12 | Bring `deploy.md`, `level-map.md` and the spec up to date (28 selves, 56 activities, what the app now has) | Claude | **Done 17 Nov:** a dated changes note on the spec and `level-map.md`; `deploy.md`'s lists rewritten. `deploy.md` still says the selves' pages and self-check aren't built. |
 | 2.13 | Re-check the two sources cited from memory in the new teacher notes (Baumeister & Leary 1995; Damon, Menon & Bronk 2003) | Claude | **Done 17 Nov:** both confirmed. |
+| 2.14 | Fix: after a save fails and the student resumes, the done screen lists the last answer twice | Claude | Found 17 Nov. In code older than v3; the answer is likely saved twice too. Ask first. |
 
 ## 3. Before any class uses it
 
@@ -108,7 +109,7 @@ Each is a build I'd ask about before starting.
 
 ## What I can start now without waiting on you
 
-Done on 17 November: 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10. 2.9: see its note.
+Done on 17 November: 2.8, 2.9, 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10. Next without you: 2.14, once you say yes.
 
 ## What's holding the most up
 
