@@ -66,7 +66,7 @@ Each has the fields a self has in the master file. Four fields are left for Davi
 ## 3. What I checked, and what I didn't
 
 - **Checked this month:** Habermas & Bluck (2000), from a later paper by Habermas; Allen et al. (2018); Yeager et al. (2014). Details are in the review.
-- **Not checked, cited from memory:** Baumeister & Leary (1995); Damon, Menon & Bronk (2003).
+- **Checked on 17 November 2026:** Baumeister & Leary (1995), *Psychological Bulletin* 117(3), 497–529 ([Duke record](https://scholars.duke.edu/publication/677016)): the need to belong as a fundamental motivation, confirmed. Damon, Menon & Bronk (2003), *Applied Developmental Science* 7(3), 119–128 ([Stanford copy](https://coa.stanford.edu/sites/default/files/devofpurpose_0.pdf)): confirmed. Their definition is usually quoted as a stable and generalised intention that is meaningful to the self and consequential beyond it; I confirmed that from later papers citing it, not the 2003 text. The teacher note's wording ("a lasting aim that matters to the person and makes a difference beyond them") is a fair paraphrase.
 - The line "Plenty of adults are still finding theirs" is a plain statement, not a research finding.
 - "Fitting in is changing yourself to be accepted" follows the existing activity Fitting In vs. Belonging.
 

@@ -2,6 +2,8 @@
 
 **Status: agreed. David answered the questions on 13 Nov 2026 (section 9, D52) and approved the grouping and four moves in section 10 (D53). The app's map is `src/lib/v3/levelMap.ts`, which has the four moves applied; the tables in section 3 show the placements before them.**
 
+**Since then (17 Nov 2026):** three selves were added (D74), eighteen activities were written and built (D77, D78), and every activity is tied to the self it builds (D75, D76). The map now has 28 selves and 56 activities. This page is kept as the record of how the first 38 were placed; `src/lib/v3/levelMap.ts` is the current map.
+
 David's idea is that the seven levels become the one structure of the program, and the four missions and the 10-week character program are folded into them. This page places every existing piece in a level so the idea can be judged against the real content.
 
 ## 1. How to read this

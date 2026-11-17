@@ -2,6 +2,13 @@
 
 11 November 2026 · David Fenwick
 
+> **Changed since this was written (note added 17 November 2026).** The text below is kept as written; `DECISIONS.md` is the record. The main changes:
+> - **Selves:** 28, not 26. Self-acceptance was dropped and self-determination renamed Autonomy (D40); Life story, Belonging and Sense of purpose were added (D74).
+> - **Self-check:** 28 statements, one per self (D30, D74), not 21.
+> - **Levels:** grouped under Identity, Connection, Purpose and Meaning (D53). Students see level names, never numbers (D52).
+> - **Activities:** 56, each tied to the self it builds (D75, D76), with at least one for every self (D78).
+> - **What's left, and who does it:** `PLAN.md`.
+
 ### 1. Purpose, scope and decisions
 
 Groundwork v3 is a restructure of the existing `groundwork-v2` repo into a teacher-led, multi-school platform. It is built around the "Who am I becoming?" Selves map, VIA character strengths and an integrated careers pathway. It is not a rewrite from scratch: v2's content libraries, safety components and evidence work carry over (section 11).

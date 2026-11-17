@@ -78,13 +78,17 @@ Nobody can be made platform admin from the app. That's deliberate (rule V-A8).
 
 ## What this first version doesn't have
 
-- **The selves' own pages, the self-check and lesson mode.** Those are Phase 2. The map shows each self's name and one line only.
-- **The eight new activities.** They're drafts waiting for your approval and aren't in the app.
-- **Stories.** v2's eight mission stories aren't in the v3 database yet, so story screens are empty.
+*Updated 17 November 2026. The full list of what's left, with who does each item, is `PLAN.md`.*
+
+Built since this page was first written: each self's own page, the self-check, 28 selves, and 56 activities with at least one for every self.
+
+- **Lesson mode.** Not built.
+- **Stories.** The selves' stories aren't shown until each has been checked against its source and given an age band. v2's eight mission stories aren't in the v3 database yet, so story screens are empty.
 - **Class patterns will mostly show a dash** until at least five students have joined and a day has passed.
 - **Privacy and terms pages** still describe v2. They need rewriting for the teacher layer before any real class joins.
 - **School settings, sharing an entry with a teacher, and leaving a class from Settings** aren't on a screen yet, though the database supports them.
+- **A counsellor hasn't yet read** the Value myself self-check statements, Belonging's page, or four of the new activities (`counsellor-pack.md`). Do this before a class uses the app.
 
 ## What hasn't been checked
 
-The database rules are tested (116 tests, on an in-memory database and on a real Supabase database in CI), and the app builds. **The new screens have not been opened in a browser**, because that needs a Supabase project and the agent doesn't have one. Expect small faults on first use and report what you see.
+The database rules are tested (116 tests, on an in-memory database and on a real Supabase database in CI), and the app builds. The new screens have been opened in a browser on stand-in data, and the audit checks every page in all four looks. **They have never run against a real database**, because that needs a Supabase project and the agent doesn't have one. Saving, and every screen that follows a save (such as an activity's done screen), is untested. Expect small faults on first use and report what you see.

@@ -370,6 +370,45 @@ of the app's content is [`evidence/evidence-review-2026-11.md`](evidence/evidenc
 
 ---
 
+## 2g. The map: 28 selves, and an activity for each
+
+v3 organises the app as a map: four groups (Identity, Connection, Purpose, Meaning), seven
+levels, and 28 selves (D40, D74). Each of the 56 activities is tied to the self it builds
+(`PIECE_BUILDS` in [`src/lib/v3/levelMap.ts`](../src/lib/v3/levelMap.ts), D75, D76), and
+every self has at least one (D78).
+
+**What to claim, and what not to.** No published framework lists these selves under these
+seven headings. Each level's list is a teaching selection drawn from named research, put
+together for Groundwork. Say "each self is drawn from research" and name it; don't say
+"research shows knowing yourself is made up of these five". Keep the second kind of claim
+out of school-facing materials too. The full check, level by level, is
+[`evidence/selves-by-level-review-2026-11.md`](evidence/selves-by-level-review-2026-11.md).
+
+| Level | Research it draws on most |
+| --- | --- |
+| Know myself | Australian Curriculum Personal and Social capability (self-awareness); Neisser's kinds of self-knowledge; reflection versus rumination (Trapnell & Campbell); the looking-glass self (Cooley); narrative identity (Habermas & Bluck; McAdams) for Life story |
+| Value myself | Rosenberg and Harter on self-esteem; Crocker and Kernis on contingent and secure self-worth; sociometer theory (Leary & Baumeister); mattering (Rosenberg & McCullough; Prilleltensky); Neff on self-compassion; Renger on self-respect; the need to belong (Baumeister & Leary) for Belonging |
+| Manage, Believe in, Direct myself | Self-Determination Theory's competence and autonomy (Ryan & Deci); Bandura on agency and self-efficacy; implementation intentions (Gollwitzer & Sheeran); situation design (Duckworth et al.); purpose (Damon, Menon & Bronk) for Sense of purpose |
+| Imagine myself | Self-discrepancy theory (Higgins); possible selves (Markus & Nurius; Oyserman et al.) |
+| Authentic self | Authenticity (Wood et al.; Kernis & Goldman) |
+
+**Thin research.** Five selves rest more on reasoning than on research: self-trust (no
+research construct found; Groundwork's own), self-respect, self-image as separate from
+self-concept, self-confidence as separate from self-efficacy, and self-authorship in
+school-age students (the research is with university students and adults).
+
+**Two overlaps worth knowing.** Self-esteem and self-worth are one construct in most
+research, and the app's split rests on Crocker and Kernis. The actual self is the
+self-concept under another name; it's kept as the starting point for Imagine myself.
+
+**The eighteen activities written for a self** ([`src/lib/selfActivities.ts`](../src/lib/selfActivities.ts))
+each rest on a finding about the underlying idea, listed with what was and wasn't confirmed
+in [`v3/new-activities-draft.md`](v3/new-activities-draft.md) and
+[`v3/self-activities-draft.md`](v3/self-activities-draft.md). None has been tested as an
+activity.
+
+---
+
 ## 3. How the frameworks shape the product
 
 - **No fixed sequence** — the map can be entered at any level. The four groups keep v2's
@@ -404,6 +443,12 @@ of the app's content is [`evidence/evidence-review-2026-11.md`](evidence/evidenc
 | Bandura's four sources of self-efficacy | `selves.ts`, week 5 (`program.ts`), boosts |
 | Mattering (Rosenberg & McCullough; Prilleltensky) | The Standard (`standard.ts`), week 3 |
 | Moral identity (Aquino & Reed) | Character Code, The Standard, moral compass |
+| The 28 selves and the research behind each level | `src/lib/v3/levelMap.ts`, `src/lib/v3/generated/selves.json`; see §2g |
+| Which self each activity builds | `PIECE_BUILDS`, `src/lib/v3/levelMap.ts` |
+| Self-discrepancy theory (Higgins); feared and hoped-for selves (Oyserman & Markus) | Should or Choose?, The Other Version, `src/lib/selfActivities.ts` |
+| Self-compassion (Neff) | What I'd Say to a Friend, `src/lib/selfActivities.ts` |
+| Utility value (Hulleman & Harackiewicz); self-transcendent purpose (Yeager et al.) | My Reason, `src/lib/selfActivities.ts` |
+| Need to belong (Baumeister & Leary) | The Belonging self, `selves.json` |
 
 ## 5. Social-Emotional Learning (CASEL) mapping
 

@@ -345,6 +345,8 @@ Each was found by search, with the main finding read from the abstract, the publ
 - Nook, Sasse, Lambert, McLaughlin & Somerville (2018), *Psychological Science* 29(8): 143 people aged 5 to 25 ([PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC6088506))
 - Harter & Monsour (1992), *Developmental Psychology* 28, 251–260, from later papers ([Cambridge](https://core-prod.cambridgecore.org/core/journals/development-and-psychopathology/article/development-of-multiple-rolerelated-selves-during-adolescence/89BEAF4B26E09C3C78590CEA4ABB83B2))
 - Higgins (1987), "Self-discrepancy", *Psychological Review* 94, 319–340 ([Columbia copy](https://www.columbia.edu/cu/psychology/higgins/papers/HIGGINS%3DPSYCH%20REVIEW%201987.pdf))
+- Baumeister & Leary (1995), "The need to belong", *Psychological Bulletin* 117(3), 497–529 ([Duke record](https://scholars.duke.edu/publication/677016)). Checked 17 November.
+- Damon, Menon & Bronk (2003), "The development of purpose during adolescence", *Applied Developmental Science* 7(3), 119–128 ([Stanford copy](https://coa.stanford.edu/sites/default/files/devofpurpose_0.pdf)). Checked 17 November, from later papers citing its definition.
 - Lally et al. (2010), habit formation, *European Journal of Social Psychology* ([UCL summary](https://www.ucl.ac.uk/news/2009/aug/how-long-does-it-take-form-habit))
 
 ### Checked for earlier Groundwork reviews
@@ -353,4 +355,4 @@ Listed with links in `self-outcomes-map.md`, `evidence-review-2026-11.md`, `iden
 
 ### Not checked: standard references cited from memory
 
-Cooley (1902); James (1890); Fenigstein, Scheier & Buss (1975); Rosenberg (1965); Harter on self-esteem; Kernis (2003); Dillon on self-respect; Baumeister & Leary (1995); Damon, Menon & Bronk (2003); Snyder's hope theory; Markus & Nurius (1986), where I confirmed the citation but not the text; values affirmation (Cohen and colleagues), including my statement that school findings are mixed; the personal, relational and collective identity distinction.
+Cooley (1902); James (1890); Fenigstein, Scheier & Buss (1975); Rosenberg (1965); Harter on self-esteem; Kernis (2003); Dillon on self-respect; Snyder's hope theory; Markus & Nurius (1986), where I confirmed the citation but not the text; values affirmation (Cohen and colleagues), including my statement that school findings are mixed; the personal, relational and collective identity distinction.

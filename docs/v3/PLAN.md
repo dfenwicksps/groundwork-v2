@@ -37,9 +37,9 @@ Small ones. Each unblocks work in the later sections.
 | 2.8 | See the done screen of a new activity working: wrap-up, "Try it" card, and Not My Results' extra line | Claude | After 4.1. The local preview has no database, so nobody has seen it. |
 | 2.9 | Check the new screens in the other three looks, and the Value myself level page | Claude | I've only looked in the default look. |
 | 2.10 | Build the come-back prompt for "try it" activities | Claude | After 1.7, if yes. |
-| 2.11 | Say in `frameworks.md` that each level's list is a teaching selection from named research, and add the three new selves and the eighteen activities | Claude | Review recommendation 6. |
-| 2.12 | Bring `deploy.md`, `level-map.md` and the spec up to date (28 selves, 56 activities, what the app now has) | Claude | `deploy.md` still says the selves' pages and self-check aren't built. |
-| 2.13 | Re-check the two sources cited from memory in the new teacher notes (Baumeister & Leary 1995; Damon, Menon & Bronk 2003) | Claude | |
+| 2.11 | Say in `frameworks.md` that each level's list is a teaching selection from named research, and add the three new selves and the eighteen activities | Claude | **Done 17 Nov:** `frameworks.md` §2g and the source map. Review recommendation 6. |
+| 2.12 | Bring `deploy.md`, `level-map.md` and the spec up to date (28 selves, 56 activities, what the app now has) | Claude | **Done 17 Nov:** a dated changes note on the spec and `level-map.md`; `deploy.md`'s lists rewritten. `deploy.md` still says the selves' pages and self-check aren't built. |
+| 2.13 | Re-check the two sources cited from memory in the new teacher notes (Baumeister & Leary 1995; Damon, Menon & Bronk 2003) | Claude | **Done 17 Nov:** both confirmed. |
 
 ## 3. Before any class uses it
 
@@ -51,12 +51,12 @@ These are the safety and review gates. None can be skipped.
 | 3.2 | Counsellor reads the Value myself self-check statements, including Belonging's | Counsellor, arranged by David | Required by the spec. |
 | 3.3 | Counsellor reads four activities: Not My Results, What I'd Say to a Friend, Should or Choose?, The Other Version | Counsellor, arranged by David | |
 | 3.4 | Counsellor reads Belonging's page | Counsellor, arranged by David | |
-| 3.5 | Prepare a pack for the counsellor: every item to read, on a few pages | Claude | I can do this now. |
+| 3.5 | Prepare a pack for the counsellor: every item to read, on a few pages | Claude | **Done 17 Nov:** `counsellor-pack.md`, with a notes table for the reviewer. |
 | 3.6 | Apply whatever the counsellor changes | Claude drafts, David approves | After 3.2 to 3.4. |
 | 3.7 | Wellbeing lead signs off the visibility table (what teachers can and can't see) | David arranges | Phase 0 item, still unticked in the spec. |
 | 3.8 | Have the Culture and Heritage step reviewed by the communities it speaks to | David arranges | Identity review, item 9. |
 | 3.9 | Verify each story against its source, and set its age band | David | 25 stories in the master file, plus the three new ones. |
-| 3.10 | Replace the three story sources that cite Wikipedia | David, or Claude finds candidates for David to confirm | |
+| 3.10 | Replace the three story sources that cite Wikipedia | David, or Claude finds candidates for David to confirm | **Candidates found 17 Nov:** `story-sources.md`. Two facts may be wrong; yours to check.  |
 | 3.11 | Rewrite the privacy and terms pages for v3 and the teacher layer | Claude drafts, David approves | They still describe v2. You may want legal advice on these. |
 | 3.12 | Connect a proper email service, or rely on Google and Microsoft sign-in | David | Supabase's built-in sender is for testing only. |
 
@@ -108,7 +108,7 @@ Each is a build I'd ask about before starting.
 
 ## What I can start now without waiting on you
 
-2.9, 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10.
+Done on 17 November: 2.11, 2.12, 2.13, 3.5, and the candidate sources for 3.10. 2.9: see its note.
 
 ## What's holding the most up
 
