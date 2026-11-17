@@ -36,7 +36,7 @@ import {
 
 // ─── What the spec says should be there ──────────────────────────────────────
 
-/** Spec section 5, "The 26 selves". */
+/** Spec section 5, "The 26 selves", plus the three added by D74. */
 const EXPECTED: Record<LevelId, string[]> = {
   1: ["self-awareness", "self-reflection", "self-concept", "self-image", "social-self", "life-story"],
   2: ["self-esteem", "self-worth", "mattering", "self-respect", "self-acceptance", "self-compassion", "belonging"],
@@ -46,6 +46,17 @@ const EXPECTED: Record<LevelId, string[]> = {
   6: ["actual-self", "ideal-self", "ought-self", "feared-self", "possible-selves"],
   7: ["authentic-self"],
 };
+
+/**
+ * Selves whose wording is approved and in the app, and whose story, lesson
+ * notes and Character Project line are still to come from David (D74). For
+ * these, and only these, an empty story field is reported as "waiting on a
+ * person" and doesn't fail the run. Anything else wrong with them still
+ * fails, and so does leaving a self here once its story has arrived.
+ */
+const STORY_PENDING = new Set(["life-story", "belonging", "sense-of-purpose"]);
+/** The fields that arrive with a story. */
+const STORY_FIELDS = new Set(["hook", "turn", "cp"]);
 
 /** v2 keys that the master renames. The v2 text is compared under the new key. */
 const RENAMED: Record<string, string> = { "self-control": "self-regulation" };
@@ -119,12 +130,20 @@ const KNOWN_FIELDS = new Set(STRING_FIELDS.concat(["level", "fig", "beats", "not
 /** Everything a student reads. Teacher notes and the source line are left out. */
 const STUDENT_FIELDS = ["short", "hook", "turn", "is_", "isnt", "ask", "living"];
 
-function checkSelf(s: Raw, i: number, levelIds: Set<number>, icons: Set<string>): Problem[] {
+function checkSelf(s: Raw, i: number, levelIds: Set<number>, icons: Set<string>): { failures: Problem[]; pending: Problem[] } {
   const key = isText(s.key) ? s.key : `SELVES[${i}]`;
   const out: Problem[] = [];
+  const pending: Problem[] = [];
   const fail = (field: string, problem: string) => out.push({ key, field, problem });
+  /** An empty story field: waited for if this self's story is still to come, a failure otherwise. */
+  const storyPending = STORY_PENDING.has(key);
+  const absent = (field: string, problem: string) => (storyPending ? pending : out).push({ key, field, problem });
 
-  for (const f of STRING_FIELDS) if (!isText(s[f])) fail(f, "missing or empty");
+  for (const f of STRING_FIELDS) {
+    if (isText(s[f])) continue;
+    if (STORY_FIELDS.has(f)) absent(f, "missing or empty");
+    else fail(f, "missing or empty");
+  }
   for (const f of Object.keys(s)) if (!KNOWN_FIELDS.has(f)) fail(f, "a field the v3 mapping doesn't know");
 
   if (isText(s.key) && !/^[a-z]+(-[a-z]+)*$/.test(s.key)) fail("key", `not lower-case words joined by hyphens: ${s.key}`);
@@ -137,11 +156,11 @@ function checkSelf(s: Raw, i: number, levelIds: Set<number>, icons: Set<string>)
   const fig = s.fig as Raw | undefined;
   if (!fig || typeof fig !== "object") fail("fig", "missing: the story has nobody in it");
   else {
-    for (const f of FIG_FIELDS) if (!isText(fig[f])) fail(`fig.${f}`, "missing or empty");
+    for (const f of FIG_FIELDS) if (!isText(fig[f])) absent(`fig.${f}`, "missing or empty");
     if (isText(fig.icon) && icons.size && !icons.has(fig.icon)) fail("fig.icon", `"${fig.icon}" isn't in the master's icon set`);
   }
 
-  if (!Array.isArray(s.beats) || s.beats.length === 0) fail("beats", "missing: the story has no beats");
+  if (!Array.isArray(s.beats) || s.beats.length === 0) absent("beats", "missing: the story has no beats");
   else {
     s.beats.forEach((b, n) => {
       if (!isText(b)) fail(`beats[${n}]`, "empty");
@@ -154,7 +173,7 @@ function checkSelf(s: Raw, i: number, levelIds: Set<number>, icons: Set<string>)
   if (!Array.isArray(s.notes)) fail("notes", "missing");
   else {
     if (s.notes.length !== LESSON_STEPS.length) {
-      fail("notes", `expected ${LESSON_STEPS.length} (one per lesson step), got ${s.notes.length}`);
+      (s.notes.length === 0 ? absent : fail)("notes", `expected ${LESSON_STEPS.length} (one per lesson step), got ${s.notes.length}`);
     }
     s.notes.forEach((n, k) => {
       if (!isText(n)) fail(`notes[${k}]`, "empty");
@@ -164,7 +183,11 @@ function checkSelf(s: Raw, i: number, levelIds: Set<number>, icons: Set<string>)
   // The reflective prompt is never a risk-language question (brief rule 3).
   if (isText(s.ask) && mentionsCrisis(s.ask)) fail("ask", "matches the risk-phrase check; a prompt must never use risk language");
 
-  return out;
+  if (storyPending && pending.length === 0) {
+    fail("STORY_PENDING", "its story has arrived; take it off the STORY_PENDING list in the validator");
+  }
+
+  return { failures: out, pending };
 }
 
 /** Student-facing text that would itself trip one of the on-device checks. Worth a person's eye; not a failure. */
@@ -267,7 +290,7 @@ function main() {
   const { levels, failures: levelFailures } = checkLevels(rawLevels);
   const levelIds = new Set<number>(levels.map((l) => l.id));
 
-  // Set-level checks: the right 26, each once, each on the level the spec gives it.
+  // Set-level checks: the right selves, each once, each on the level the spec gives it.
   const setFailures: Problem[] = [];
   const keys = rawSelves.map((s) => String(s.key));
   for (const k of Array.from(new Set(keys))) {
@@ -275,17 +298,18 @@ function main() {
     if (n > 1) setFailures.push({ key: k, field: "key", problem: `appears ${n} times` });
   }
   const expectedAll = Object.values(EXPECTED).flat();
-  for (const k of expectedAll) if (!keys.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the spec's list of 29, not in the master" });
-  for (const k of keys) if (!expectedAll.includes(k)) setFailures.push({ key: k, field: "key", problem: "in the master, not in the spec's list of 29" });
+  for (const k of expectedAll) if (!keys.includes(k)) setFailures.push({ key: k, field: "key", problem: `in the spec's list of ${expectedAll.length}, not in the master` });
+  for (const k of keys) if (!expectedAll.includes(k)) setFailures.push({ key: k, field: "key", problem: `in the master, not in the spec's list of ${expectedAll.length}` });
   for (const s of rawSelves) {
     const want = (Object.entries(EXPECTED).find(([, ks]) => ks.includes(String(s.key))) ?? [])[0];
     if (want && Number(want) !== s.level) {
       setFailures.push({ key: String(s.key), field: "level", problem: `the spec puts it on level ${want}; the master has ${s.level}` });
     }
   }
-  if (rawSelves.length !== 26) setFailures.push({ key: "SELVES", field: "length", problem: `expected 26, got ${rawSelves.length}` });
+  if (rawSelves.length !== expectedAll.length) setFailures.push({ key: "SELVES", field: "length", problem: `expected ${expectedAll.length}, got ${rawSelves.length}` });
 
-  const perSelf = rawSelves.map((s, i) => ({ raw: s, failures: checkSelf(s, i, levelIds, icons) }));
+  const perSelf = rawSelves.map((s, i) => ({ raw: s, ...checkSelf(s, i, levelIds, icons) }));
+  const allPending = perSelf.flatMap((p) => p.pending);
   const mapped = rawSelves.map(mapSelf);
   const gaps = mapped.flatMap(gapsFor);
   const notes = rawSelves.flatMap(phraseNotes);
@@ -332,6 +356,9 @@ function main() {
   L.push("## 1. Summary", "");
   L.push(`- Levels found: ${levels.length}. Selves found: ${rawSelves.length}. Icons in the master's set: ${icons.size}.`);
   L.push(`- **Failures: ${allFailures.length}.** Selves passing: ${perSelf.filter((p) => p.failures.length === 0 && !failed.has(String(p.raw.key))).length} of ${rawSelves.length}.`);
+  if (allPending.length) {
+    L.push(`- Story still to come (not failures, D74): ${perSelf.filter((p) => p.pending.length).length} selves, ${allPending.length} empty field(s).`);
+  }
   L.push(`- Curation gaps (a person has to supply these): ${gaps.length}, across ${new Set(gaps.map((g) => g.key)).size} selves.`);
   L.push(`- Wording that D3 says must change: ${wordingOnce.length} place(s).`);
   L.push(`- v2 selves compared: ${V2_SELVES.length - missing.length} of ${V2_SELVES.length}. Fields that differ: ${diffs.filter((d) => !d.same).length} of ${diffs.length}.`, "");
@@ -342,7 +369,7 @@ function main() {
     const key = String(p.raw.key);
     const mine = allFailures.filter((f) => f.key === key);
     const g = gaps.filter((x) => x.key === key).length;
-    L.push(`| ${p.raw.level} | \`${key}\` | ${mine.length ? "**FAIL**" : "pass"} | ${mine.length ? mine.map((f) => cell(`${f.field}: ${f.problem}`)).join("; ") : "none"} | ${g} |`);
+    L.push(`| ${p.raw.level} | \`${key}\` | ${mine.length ? "**FAIL**" : p.pending.length ? "pass, story to come" : "pass"} | ${mine.length ? mine.map((f) => cell(`${f.field}: ${f.problem}`)).join("; ") : "none"} | ${g} |`);
   }
   L.push("");
 
@@ -351,6 +378,14 @@ function main() {
   else {
     L.push("| Where | Field | Problem |", "| --- | --- | --- |");
     for (const f of allFailures) L.push(`| \`${f.key}\` | ${cell(f.field)} | ${cell(f.problem)} |`);
+    L.push("");
+  }
+
+  if (allPending.length) {
+    L.push("### Story still to come", "");
+    L.push("Not failures. These selves have approved wording and are in the app (D74); their story, lesson notes and Character Project line are David's to supply. The run fails again if anything else is wrong with them, or if one is left on the validator's `STORY_PENDING` list after its story arrives.", "");
+    L.push("| Self | Empty fields |", "| --- | --- |");
+    for (const p of perSelf) if (p.pending.length) L.push(`| \`${String(p.raw.key)}\` | ${p.pending.map((f) => cell(f.field)).join(", ")} |`);
     L.push("");
   }
 
@@ -428,7 +463,8 @@ function main() {
 
   console.log(
     `\n${allFailures.length ? "FAIL" : "PASS"}: ${allFailures.length} failure(s), ${gaps.length} curation gap(s), ` +
-      `${diffs.filter((d) => !d.same).length} differing field(s) against v2.`
+      `${diffs.filter((d) => !d.same).length} differing field(s) against v2.` +
+      (allPending.length ? ` ${allPending.length} story field(s) still to come, not counted as failures.` : "")
   );
   process.exit(allFailures.length ? 1 : 0);
 }
